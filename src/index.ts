@@ -1,24 +1,34 @@
-import { TransactionType } from "@msafe/sui3-utils";
+import {
+  CoinTransferIntention,
+  ObjectTransferIntention,
+  TransactionType,
+} from "@msafe/sui3-utils";
+import { SuiClient } from "@mysten/sui.js/client";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import {
   SuiSignTransactionBlockInput,
   WalletAccount,
 } from "@mysten/wallet-standard";
-import { CoinTransferIntention, ExampleWallet } from "./app/example";
+import { MSafeCoreWallet } from "./app/msafe";
 
 export interface MSafeWalletApi {
   /**
-   * Deserilize transaction block data to human readable data struccture.
+   * Deserialize transaction block data to human readable data structure.
    * @param input transaction block input
    */
-  deserilize(
+  deserialize(
     input: SuiSignTransactionBlockInput
   ): Promise<TransactionIntention<keyof TransactionIntentions>>;
 
   build(input: {
     transactionIntention: TransactionIntention<keyof TransactionIntentions>;
-    account: WalletAccount;
+    context: MSafeWalletContext;
   }): Promise<TransactionBlock>;
+}
+
+export interface MSafeWalletContext {
+  suiClient: SuiClient;
+  account: WalletAccount;
 }
 
 export interface TransactionIntention<T extends keyof TransactionIntentions> {
@@ -33,8 +43,9 @@ export interface TransactionIntention<T extends keyof TransactionIntentions> {
  */
 export interface TransactionIntentions {
   CoinTransfer: CoinTransferIntention;
+  ObjectTransfer: ObjectTransferIntention;
 }
 
 export class MSafeApps {
-  public example = new ExampleWallet();
+  public msafeCore = new MSafeCoreWallet();
 }

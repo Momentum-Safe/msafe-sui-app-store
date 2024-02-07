@@ -730,10 +730,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@msafe/sui3-utils@^3.1.9":
-  version "3.1.11"
-  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.11.tgz#52e4480fcc9ffac6b671edc0a3c314c56049f71a"
-  integrity sha512-L2CKR5GIfMOwWWcZHHbdY4zSl5zhcZ4JBXxXyCVKWUBbInHobQZ+cbH0SMH9dKqkA3jUNM3zKRPzIM4y/jZJkQ==
+"@msafe/sui3-utils@^3.1.18":
+  version "3.1.18"
+  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.18.tgz#837077cde1362cc3fd80faec772fe0fff2dc8f72"
+  integrity sha512-nBTQzZNDV8NeNHmF24yR2uQDA304l+quIpsGeVWegisR1Xnzz7H8vK56Hxgpdkt8FbFViw0qVXr/MlEPB9RjZg==
   dependencies:
     "@types/crypto-js" "^4.2.2"
     crypto-js "^4.2.0"
