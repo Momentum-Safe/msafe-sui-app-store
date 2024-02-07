@@ -7,6 +7,7 @@ import {
 import {
   CoinTransferIntention,
   ObjectTransferIntention,
+  TransactionSubTypes,
   buildCoinTransferTxb,
   buildObjectTransferTxb,
 } from "@msafe/sui3-utils";
@@ -27,13 +28,13 @@ export class MSafeCoreWallet implements MSafeWalletApi {
   }): Promise<TransactionBlock> {
     const { transactionIntention, context } = input;
     switch (transactionIntention.txSubType) {
-      case "CoinTransfer":
+      case TransactionSubTypes.assets.coin.send:
         return buildCoinTransferTxb(
           context.suiClient,
           transactionIntention.data as CoinTransferIntention,
           context.account.address
         );
-      case "ObjectTransfer":
+      case TransactionSubTypes.assets.object.send:
         return buildObjectTransferTxb(
           context.suiClient,
           transactionIntention.data as ObjectTransferIntention,
