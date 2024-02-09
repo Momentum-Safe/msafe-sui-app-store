@@ -13,7 +13,11 @@ export type CoreIntention = CoinTransferIntention | ObjectTransferIntention;
 export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData;
 
 export class CoreHelper implements MSafeAppHelper<CoreIntention, CoreIntentionData> {
-  application: 'msafe-core';
+  application: string;
+
+  constructor() {
+    this.application = 'msafe-core';
+  }
 
   deserialize(): CoreIntention {
     throw new Error('MSafe core transaction intention should be build from API');
