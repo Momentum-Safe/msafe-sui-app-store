@@ -1,28 +1,31 @@
-import {CoreBaseIntention} from "@/apps/msafe-core/intention";
-import {TransactionIntention} from "@/apps/interface";
-import {CoinTransferPayload, TransactionType} from "@msafe/sui3-utils";
-import {TransactionBlock} from "@mysten/sui.js/transactions"
-import {WalletAccount} from "@mysten/wallet-standard";
+import { TransactionType, buildCoinTransferTxb } from '@msafe/sui3-utils';
+import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
+
+import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 export interface CoinTransferIntentionData {
-	recipient: string;
-	coinType: string;
-	amount: bigint;
+  recipient: string;
+  coinType: string;
+  amount: string;
 }
 
 export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntentionData> {
-	txType: TransactionType.Assets;
-	txSubType: "coin-transfer";
+  txType: TransactionType.Assets;
 
-	constructor(public readonly data: CoinTransferIntentionData) {
-		super(data);
-	}
+  txSubType: 'coin-transfer';
 
-	async build(input: {suiClient: SuiClient, account: WalletAccount}): Promise<TransactionBlock> {
-		return new TransactionBlock();
+  constructor(public readonly data: CoinTransferIntentionData) {
+    super(data);
   }
 
-	static fromData(data: CoinTransferIntentionData) {
-		return new CoinTransferIntention(data);
-	}
+  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
+    const { suiClient, account } = input;
+    return buildCoinTransferTxb(suiClient, this.data, account.address);
+  }
+
+  static fromData(data: CoinTransferIntentionData) {
+    return new CoinTransferIntention(data);
+  }
 }

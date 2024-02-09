@@ -1,21 +1,24 @@
-import {TransactionIntention} from "@/apps/interface";
-import {TransactionType} from "@msafe/sui3-utils";
-import {TransactionBlock} from "@mysten/sui.js/transactions"
+import { TransactionType } from '@msafe/sui3-utils';
+import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-export abstract class CoreBaseIntention<D> implements TransactionIntention<D>{
-	abstract txType: TransactionType;
-	abstract txSubType: string;
+import { TransactionIntention } from '@/apps/interface';
 
-	protected constructor(public readonly data: D) {
-	}
+export abstract class CoreBaseIntention<D> implements TransactionIntention<D> {
+  abstract txType: TransactionType;
 
-	get application() {
-		return 'msafe-core'
-	}
+  abstract txSubType: string;
 
-	serialize() {
-		return JSON.stringify(this.data);
-	}
+  protected constructor(public readonly data: D) {}
 
-	abstract build(input: {suiClient: SuiClient, account: WalletAccount}): Promise<TransactionBlock>;
+  get application() {
+    return 'msafe-core';
+  }
+
+  serialize() {
+    return JSON.stringify(this.data);
+  }
+
+  abstract build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock>;
 }
