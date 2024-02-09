@@ -44,7 +44,8 @@
     "MSafe Sui"
   ],
   "dependencies": {
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "sort-keys": "^5.0.0"
   },
   "devDependencies": {
     "@msafe/sui3-utils": "^3.1.18",
