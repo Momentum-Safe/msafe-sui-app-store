@@ -1,3 +1,0 @@
-describe("Wallet", () => {
-  it("Example", () => {});
-});
