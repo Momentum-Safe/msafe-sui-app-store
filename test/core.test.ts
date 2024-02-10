@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
 
-import { CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
+import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { appHelpers } from '@/index';
 
 import { Account, Client } from './config';
@@ -24,5 +24,15 @@ describe('MSafe Core Wallet', () => {
     });
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66');
+  });
+
+  it('Test intention serialization', () => {
+    const intention = CoinTransferIntention.fromData({
+      recipient: 'a',
+      coinType: 'b',
+      amount: '100',
+    });
+
+    expect(intention.serialize()).toBe('{"amount":"100","coinType":"b","recipient":"a"}');
   });
 });
