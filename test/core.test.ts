@@ -1,4 +1,4 @@
-import { TransactionType } from '@msafe/sui3-utils';
+import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
 
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { appHelpers } from '@/index';
@@ -13,7 +13,7 @@ describe('MSafe Core Wallet', () => {
 
     const res = await appHelper.build({
       txType: TransactionType.Assets,
-      txSubType: 'coin-transfer',
+      txSubType: TransactionSubTypes.assets.coin.send,
       suiClient: Client,
       account: Account,
       intentionData: {
