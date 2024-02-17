@@ -14,7 +14,7 @@ export interface CoinTransferIntentionData {
 export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntentionData> {
   txType: TransactionType.Assets;
 
-  txSubType: 'coin-transfer';
+  txSubType: 'SendCoin';
 
   constructor(public readonly data: CoinTransferIntentionData) {
     super(data);

@@ -754,10 +754,10 @@
     mysql2 "^3.6.3"
     reflect-metadata "^0.1.13"
 
-"@msafe/sui3-utils@^3.1.18":
-  version "3.1.31"
-  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.31.tgz#44f29ce99901f249fedeefff7e1ba76b4fb0218f"
-  integrity sha512-e4vwWGuc9Gm9ScWKxO584Ld0j8GX0uDVmF+zOuXSNvoZnx/f5EWFOAAHKg6wbnxRyFXOydfqFxApqyP19fRnkQ==
+"@msafe/sui3-utils@^3.1.35":
+  version "3.1.35"
+  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.35.tgz#faaccd0f790f3c65c7c577655af98bfd26b63fde"
+  integrity sha512-Ih72OUvTfjJO8FXmmopy4tWe16QnqwxaJdE/hXgtAThjmCTZPo+lFGCMch7/KoltleHlEgG3GAI4AghLe4Tz6Q==
   dependencies:
     "@msafe/sui3-model" "^1.0.29"
     "@types/crypto-js" "^4.2.2"

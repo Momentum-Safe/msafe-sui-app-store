@@ -14,7 +14,7 @@ export interface ObjectTransferIntentionData {
 export class ObjectTransferIntention extends CoreBaseIntention<ObjectTransferIntentionData> {
   txType: TransactionType.Assets;
 
-  txSubType: 'object-transfer';
+  txSubType: 'SendObject';
 
   constructor(public readonly data: ObjectTransferIntentionData) {
     super(data);

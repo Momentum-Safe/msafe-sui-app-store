@@ -1,4 +1,4 @@
-import { TransactionType } from '@msafe/sui3-utils';
+import { TransactionDefaultApplication, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
@@ -7,16 +7,17 @@ import { MSafeAppHelper } from '@/apps/interface';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 
 import { ObjectTransferIntention, ObjectTransferIntentionData } from './object-transfer';
+import { PlainPayloadIntention, PlainPayloadIntentionData } from './plain-payload';
 
-export type CoreIntention = CoinTransferIntention | ObjectTransferIntention;
+export type CoreIntention = CoinTransferIntention | ObjectTransferIntention | PlainPayloadIntention;
 
-export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData;
+export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData | PlainPayloadIntentionData;
 
 export class CoreHelper implements MSafeAppHelper<CoreIntention, CoreIntentionData> {
   application: string;
 
   constructor() {
-    this.application = 'msafe-core';
+    this.application = TransactionDefaultApplication;
   }
 
   deserialize(): CoreIntention {
@@ -33,11 +34,14 @@ export class CoreHelper implements MSafeAppHelper<CoreIntention, CoreIntentionDa
     const { suiClient, account } = input;
     let intention: CoreIntention;
     switch (input.txSubType) {
-      case 'coin-transfer':
+      case TransactionSubTypes.assets.coin.send:
         intention = CoinTransferIntention.fromData(input.intentionData as CoinTransferIntentionData);
         break;
-      case 'object-transfer':
+      case TransactionSubTypes.assets.object.send:
         intention = ObjectTransferIntention.fromData(input.intentionData as ObjectTransferIntentionData);
+        break;
+      case TransactionSubTypes.others.plain:
+        intention = PlainPayloadIntention.fromData(input.intentionData as PlainPayloadIntentionData);
         break;
       default:
         throw new Error('not implemented');
