@@ -172,3 +172,7 @@ import { registerWallet } from '@mysten/wallet-standard';
 
 registerWallet(new MSafeWallet('<your app name>'));
 ```
+
+### Next Step
+
+Once the development mentioned above is complete, MSafe team will assist in verifying the integration. Feedback will be provided to your team upon completion of the verification process.
