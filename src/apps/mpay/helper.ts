@@ -6,22 +6,36 @@ import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-stan
 import { MSafeAppHelper } from '@/apps/interface';
 import { SuiNetworks } from '@/types';
 
+import { Env, Globals } from './common';
 import { CreateStreamIntention, CreateStreamIntentionData } from './create-stream';
+import { DecodeHelper } from './decoder/decoder';
+import { StreamTransactionType } from './types/decode';
 
 export type MPayIntention = CreateStreamIntention;
 
 export type MPayIntentionData = CreateStreamIntentionData;
 
-export class MPayAppHelper implements MSafeAppHelper<MPayIntention, MPayIntentionData> {
-  application: string;
+export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
+  application = 'mpay';
 
-  constructor() {
-    this.application = 'mpay';
-  }
-
-  deserialize(input: SuiSignTransactionBlockInput): CreateStreamIntention {
-    console.log('🚀 ~ MPayHelper ~ deserialize ~ input:', input);
-    throw new Error('Invalid transaction');
+  deserialize(input: SuiSignTransactionBlockInput): {
+    txType: TransactionType;
+    txSubType: string;
+    intentionData: MPayIntentionData;
+  } {
+    const { chain, transactionBlock } = input;
+    const globals = Globals.new(chain === 'sui:mainnet' ? Env.prod : Env.dev);
+    const decoder = new DecodeHelper(globals, transactionBlock);
+    const result = decoder.decode();
+    console.log('🚀 ~ MPayHelper ~ deserialize ~ input:', input, result);
+    if (result.type === StreamTransactionType.CREATE_STREAM) {
+      return {
+        txType: TransactionType.Other,
+        txSubType: StreamEventType.Create,
+        intentionData: result.info,
+      };
+    }
+    throw new Error(`Unknown transaction type: ${result.type}`);
   }
 
   async build(input: {

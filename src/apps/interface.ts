@@ -5,14 +5,18 @@ import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-stan
 
 import { SuiNetworks } from '@/types';
 
-export interface MSafeAppHelper<T extends TransactionIntention<D>, D> {
+export interface MSafeAppHelper<T> {
   application: string;
-  deserialize(input: SuiSignTransactionBlockInput): T;
+  deserialize(input: SuiSignTransactionBlockInput): {
+    txType: TransactionType;
+    txSubType: string;
+    intentionData: T;
+  };
   build(input: {
     network: SuiNetworks;
     txType: TransactionType;
     txSubType: string;
-    intentionData: D;
+    intentionData: T;
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<TransactionBlock>;

@@ -13,14 +13,18 @@ export type CoreIntention = CoinTransferIntention | ObjectTransferIntention | Pl
 
 export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData | PlainPayloadIntentionData;
 
-export class CoreHelper implements MSafeAppHelper<CoreIntention, CoreIntentionData> {
+export class CoreHelper implements MSafeAppHelper<CoreIntentionData> {
   application: string;
 
   constructor() {
     this.application = TransactionDefaultApplication;
   }
 
-  deserialize(): CoreIntention {
+  deserialize(): {
+    txType: TransactionType;
+    txSubType: string;
+    intentionData: CoreIntentionData;
+  } {
     throw new Error('MSafe core transaction intention should be build from API');
   }
 
