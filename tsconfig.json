@@ -17,5 +17,5 @@
     "paths": { "@/*": ["./src/*"] },
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "test/**/*", "./tsconfig.json", "./jest.config.ts", "./tsup.config.ts"]
 }
