@@ -14,7 +14,8 @@
     "lib": ["esnext"],
     "strictNullChecks": false,
     "strict": true,
-    "paths": { "@/*": ["./src/*"] }
+    "paths": { "@/*": ["./src/*"] },
+    "resolveJsonModule": true
   },
   "include": ["src/**/*", "test/**/*", "./tsconfig.json", "./jest.config.ts", "./tsup.config.ts"]
 }

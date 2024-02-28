@@ -3,6 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
 import { MSafeAppHelper } from '@/apps/interface';
+import { SuiNetworks } from '@/types';
 
 export class MSafeApps {
   apps: Map<string, MSafeAppHelper<any, any>>;
@@ -26,6 +27,7 @@ export class MSafeApps {
   build(
     appName: string,
     input: {
+      network: SuiNetworks;
       intentionData: any;
       txType: TransactionType;
       txSubType: string;
