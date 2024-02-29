@@ -7,11 +7,17 @@ import { SuiNetworks } from '@/types';
 
 export interface MSafeAppHelper<T> {
   application: string;
-  deserialize(input: SuiSignTransactionBlockInput): {
+  deserialize(
+    input: SuiSignTransactionBlockInput & {
+      network: SuiNetworks;
+      suiClient: SuiClient;
+      account: WalletAccount;
+    },
+  ): Promise<{
     txType: TransactionType;
     txSubType: string;
     intentionData: T;
-  };
+  }>;
   build(input: {
     network: SuiNetworks;
     txType: TransactionType;

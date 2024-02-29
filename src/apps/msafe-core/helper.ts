@@ -20,11 +20,7 @@ export class CoreHelper implements MSafeAppHelper<CoreIntentionData> {
     this.application = TransactionDefaultApplication;
   }
 
-  deserialize(): {
-    txType: TransactionType;
-    txSubType: string;
-    intentionData: CoreIntentionData;
-  } {
+  deserialize(): Promise<{ txType: TransactionType; txSubType: string; intentionData: CoreIntentionData }> {
     throw new Error('MSafe core transaction intention should be build from API');
   }
 
