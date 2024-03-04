@@ -164,7 +164,7 @@ export class CreateStreamHelper {
   }
 
   private amountForRecipient(recipient: RecipientInfoInternal, numEpoch: bigint) {
-    return recipient.amountPerEpoch * numEpoch + recipient.cliffAmount;
+    return BigInt(recipient.amountPerEpoch) * BigInt(numEpoch) + BigInt(recipient.cliffAmount);
   }
 
   get flatSuiFee() {
