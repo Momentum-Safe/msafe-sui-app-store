@@ -8,6 +8,7 @@ import { SuiNetworks } from '@/types';
 
 import { Env } from './common';
 import { MPayClient } from './stream/client';
+import { StreamTransactionType } from './types/decode';
 
 export interface CreateStreamIntentionData {
   name: string;
@@ -26,9 +27,9 @@ export interface RecipientWithAmount {
 }
 
 export class CreateStreamIntention extends CoreBaseIntention<CreateStreamIntentionData> {
-  txType: TransactionType.Assets;
+  txType: TransactionType.Other;
 
-  txSubType: 'CreateStream';
+  txSubType: StreamTransactionType.CREATE_STREAM;
 
   constructor(public readonly data: CreateStreamIntentionData) {
     super(data);

@@ -1,5 +1,19 @@
 # MSafe Sui App Store
 
+## Background
+
+Due to Sui blockchain version limitations, multisig account can't propose multiple transactions at the same time. It's needed to be create as transaction intention first and propose transaction 1 by 1 for vote & execution.
+
+## Overview
+
+![Overview](./diagram.png)
+
+## Demos
+
+https://msafe-sui-web-v3.vercel.app/
+
+We provide a demo dApp for MSafe app store integration. please refer below GitHub repository: https://github.com/Momentum-Safe/msafe-sui-app-arbitrary-transaction
+
 ## How to contribute
 
 - Fork the repository
@@ -14,13 +28,12 @@
 
 ### Create intentions
 
-Due to Sui blockchain version limitations, multisig account can't propose multiple transactions at the same time. It's needed to be create as transaction intention first and propose transaction 1 by 1 for vote & execution.
-
 - Create your dapp intentions under `src/apps/<your app>` folder
 
 Here is an example for transaction intention, if your dapp have multiple transaction types, you need to define 1 by 1 for each type of transaction intention.
 
 ```typescript
+
 export interface CoinTransferIntentionData {
   recipient: string;
   coinType: string;
@@ -30,7 +43,7 @@ export interface CoinTransferIntentionData {
 export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntentionData> {
   txType: TransactionType.Assets;
 
-  txSubType: 'coin-transfer';
+  txSubType: 'SendCoin';
 
   constructor(public readonly data: CoinTransferIntentionData) {
     super(data);

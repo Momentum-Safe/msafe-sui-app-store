@@ -1,4 +1,4 @@
-import { TransactionType } from '@msafe/sui3-utils';
+import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { fromHEX, toHEX } from '@mysten/sui.js/utils';
@@ -13,7 +13,7 @@ export type PlainTransactionData = {
 };
 
 export const PlainTransactionApplication = 'msafe-plain-tx';
-export const PlainTransactionType = 'PlainTransaction';
+export const PlainTransactionType = TransactionSubTypes.others.plain;
 
 export class PlainTransactionIntention implements TransactionIntention<PlainTransactionData> {
   application = PlainTransactionApplication;
