@@ -4,12 +4,13 @@ import { DateTime, Duration } from 'luxon';
 
 import { StreamFilterStatus } from './backend';
 import { IStream, IStreamGroup, StreamStatus } from './stream';
-import { IMSafeAccount } from './wallet';
+import { IMSafeAccount, ISingleWallet } from './wallet';
 import { SuiIterator } from '../sui/iterator/iterator';
 
 export interface IMPayClient {
   helper: IMPayHelper;
 
+  connectSingleWallet(wallet: ISingleWallet): void;
   connectMSafeAccount(msafe: IMSafeAccount): void;
 
   getStream(streamId: string): Promise<IStream>;

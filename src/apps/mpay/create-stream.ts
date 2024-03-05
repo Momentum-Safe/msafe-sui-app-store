@@ -7,7 +7,7 @@ import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
 import { Env } from './common';
-import { MPayClient } from './stream/client';
+import { MPayClient, MSafeSingleWallet } from './stream/client';
 import { StreamTransactionType } from './types/decode';
 
 export interface CreateStreamIntentionData {
@@ -40,9 +40,10 @@ export class CreateStreamIntention extends CoreBaseIntention<CreateStreamIntenti
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {
-    const { network } = input;
+    const { network, account } = input;
 
     const mpayClient = new MPayClient(network === 'sui:mainnet' ? Env.prod : Env.dev);
+    mpayClient.connectSingleWallet(new MSafeSingleWallet(account));
 
     const txb = await mpayClient.createStream(this.data);
     return txb;

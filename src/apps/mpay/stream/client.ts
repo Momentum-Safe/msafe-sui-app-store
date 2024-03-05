@@ -1,20 +1,34 @@
+import { SuiClient } from '@mysten/sui.js/dist/cjs/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { SUI_TYPE_ARG, normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { WalletAccount } from '@mysten/wallet-standard';
 
 import { MPayHelper } from './helper';
 import { PagedStreamListIterator } from './query';
 import { Stream } from './Stream';
 import { MPayBuilder } from '../builder/MPayBuilder';
-import { Globals, Env, EnvConfigOptions } from '../common';
+import { Env, EnvConfigOptions, Globals } from '../common';
+import { InvalidInputError } from '../error/InvalidInputError';
+import { SanityError } from '../error/SanityError';
+import { getCoinsWithAmount } from '../sui/iterator/coin';
+import { isSameCoinType } from '../sui/utils';
 import { StreamFilterStatus } from '../types/backend';
 import {
-  IMPayClient,
   CreateStreamInfo,
-  IncomingStreamQuery,
+  IMPayClient,
   IPagedStreamListIterator,
+  IncomingStreamQuery,
   OutgoingStreamQuery,
 } from '../types/client';
-import { CoinRequest, CoinRequestResponse, IWallet, WalletType, IMSafeAccount } from '../types/wallet';
+import {
+  CoinRequest,
+  CoinRequestResponse,
+  GAS_OBJECT_SPEC,
+  IMSafeAccount,
+  ISingleWallet,
+  IWallet,
+  WalletType,
+} from '../types/wallet';
 
 export class MSafeAccountAdapter implements IWallet {
   constructor(private readonly msafe: IMSafeAccount) {}
@@ -32,6 +46,52 @@ export class MSafeAccountAdapter implements IWallet {
   }
 }
 
+export class MSafeSingleWallet {
+  constructor(private account: WalletAccount) {}
+
+  async address(): Promise<string> {
+    return this.account.address;
+  }
+}
+
+export class SingleWalletAdapter implements IWallet {
+  constructor(
+    private readonly singleWallet: ISingleWallet,
+    private readonly suiClient: SuiClient,
+  ) {}
+
+  get type() {
+    return WalletType.single;
+  }
+
+  async address() {
+    return this.singleWallet.address();
+  }
+
+  async requestCoins(reqs: CoinRequest[]): Promise<CoinRequestResponse[]> {
+    return Promise.all(reqs.map((req) => this.requestCoin(req)));
+  }
+
+  async requestCoin(req: CoinRequest): Promise<CoinRequestResponse> {
+    if (isSameCoinType(req.coinType, SUI_TYPE_ARG)) {
+      return {
+        primaryCoin: GAS_OBJECT_SPEC,
+      };
+    }
+    if (req.amount <= 0) {
+      throw new InvalidInputError('Invalid coin request', 'coinAmount', req.amount);
+    }
+    const coins = await getCoinsWithAmount(this.suiClient, await this.address(), req.amount, req.coinType);
+    if (coins.length === 0) {
+      throw new SanityError('no coins available');
+    }
+    return {
+      primaryCoin: coins[0].coinObjectId,
+      mergedCoins: coins.slice(1).map((coin) => coin.coinObjectId),
+    };
+  }
+}
+
 export class MPayClient implements IMPayClient {
   public readonly globals: Globals;
 
@@ -40,6 +100,11 @@ export class MPayClient implements IMPayClient {
   constructor(env: Env, options?: EnvConfigOptions) {
     this.globals = Globals.new(env, options);
     this.helper = new MPayHelper(this.globals);
+  }
+
+  connectSingleWallet(wallet: ISingleWallet) {
+    const adapter = new SingleWalletAdapter(wallet, this.globals.suiClient);
+    this.globals.connectWallet(adapter);
   }
 
   connectMSafeAccount(msafe: IMSafeAccount) {
