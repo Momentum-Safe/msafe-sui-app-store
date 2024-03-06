@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 import { DevInspectResults, SuiExecutionResult } from '@mysten/sui.js/client';
 import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 
