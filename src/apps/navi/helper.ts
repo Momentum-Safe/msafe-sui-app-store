@@ -20,11 +20,7 @@ export type NAVIIntentionData =
   | EntryWithdrawIntentionData;
 
 export class NAVIAppHelper implements MSafeAppHelper<NAVIIntentionData> {
-  application: string;
-
-  constructor() {
-    this.application = TransactionDefaultApplication;
-  }
+  application = 'navi';
 
   deserialize(): Promise<{ txType: TransactionType; txSubType: string; intentionData: NAVIIntentionData }> {
     throw new Error('MSafe core transaction intention should be build from API');
