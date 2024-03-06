@@ -57,6 +57,18 @@ export class PlainTransactionHelper implements MSafeAppHelper<PlainTransactionDa
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {
-    return TransactionBlock.from(fromHEX(input.intentionData.content));
+    const { suiClient, account } = input;
+    const txb = TransactionBlock.from(fromHEX(input.intentionData.content));
+
+    const inspectResult = await suiClient.devInspectTransactionBlock({
+      transactionBlock: txb,
+      sender: account.address,
+    });
+    const success = inspectResult.effects.status.status === 'success';
+    if (!success) {
+      throw new Error(inspectResult.effects.status.error);
+    }
+
+    return txb;
   }
 }
