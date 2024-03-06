@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.16",
+  "version": "0.0.23",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -48,14 +48,14 @@
     "axios": "^1.6.7",
     "buffer": "^6.0.3",
     "luxon": "^3.4.4",
-    "nanoid": "^5.0.6",
     "sort-keys-recursive": "^2.1.10"
   },
   "devDependencies": {
-    "@msafe/sui3-utils": "^3.1.47",
+    "@msafe/sui3-utils": "^3.1.53",
     "@mysten/wallet-standard": "^0.10.1",
     "@types/jest": "^29.2.1",
     "@types/luxon": "^3.4.2",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "eslint": "^8.42.0",

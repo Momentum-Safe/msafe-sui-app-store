@@ -5,6 +5,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
 import { TransactionIntention } from '@/apps/interface';
+import { SuiNetworks } from '@/types';
 
 export abstract class CoreBaseIntention<D> implements TransactionIntention<D> {
   abstract txType: TransactionType;
@@ -21,5 +22,9 @@ export abstract class CoreBaseIntention<D> implements TransactionIntention<D> {
     return JSON.stringify(sortKeys(this.data));
   }
 
-  abstract build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock>;
+  abstract build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<TransactionBlock>;
 }

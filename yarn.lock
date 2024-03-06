@@ -754,10 +754,10 @@
     mysql2 "^3.6.3"
     reflect-metadata "^0.1.13"
 
-"@msafe/sui3-utils@^3.1.47":
-  version "3.1.47"
-  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.47.tgz#a8fb943b279eb283cdbcf03b919164da398f26b3"
-  integrity sha512-KUqz4EFeLEtyGSYaChYm3dhmI+rx8gWp6/KDquqT4W4oAV27QxCq3/88MtZr0Sd/zPCj1Xb39Gt4yfTJaLaNgQ==
+"@msafe/sui3-utils@^3.1.53":
+  version "3.1.53"
+  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.53.tgz#25e6f14c2fbf7a7aa2ab01fadcc7cfbaf1c4cfba"
+  integrity sha512-7Ym5h7oYm+oaG/gMoCaCmxIhEQ0+7A2d+Got1MUZegBUxi/9sipGlat5u42GgwIHyHS3ZgXmFxRuOCTNL4EbXw==
   dependencies:
     "@msafe/sui3-model" "^1.0.29"
     "@noble/hashes" "^1.3.3"
@@ -1080,6 +1080,11 @@
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.3.tgz#6209321eb2c1712a7e7466422b8cb1fc0d9dd5d8"
   integrity sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==
+
+"@types/uuid@^9.0.8":
+  version "9.0.8"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.8.tgz#7545ba4fc3c003d6c756f651f3bf163d8f0f29ba"
+  integrity sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==
 
 "@types/yargs-parser@*":
   version "21.0.3"
@@ -3554,11 +3559,6 @@ named-placeholders@^1.1.3:
   integrity sha512-eLoBxg6wE/rZkJPhU/xRX1WTpkFEwDJEN96oxFrTsqBdbT5ec295Q+CoHrL9IT0DipqKhmGcaZmwOt8OON5x1w==
   dependencies:
     lru-cache "^7.14.1"
-
-nanoid@^5.0.6:
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.6.tgz#7f99a033aa843e4dcf9778bdaec5eb02f4dc44d5"
-  integrity sha512-rRq0eMHoGZxlvaFOUdK1Ev83Bd1IgzzR+WJ3IbDJ7QOSdAxYjlurSPqFs9s4lJg29RT6nPwizFtJhQS6V5xgiA==
 
 natural-compare-lite@^1.4.0:
   version "1.4.0"

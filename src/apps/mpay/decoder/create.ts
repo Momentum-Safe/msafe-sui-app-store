@@ -7,12 +7,11 @@ import { CreateStreamHelper } from '../builder/CreateStreamHelper';
 import { Globals } from '../common';
 import { FeeContract } from '../contract/FeeContract';
 import { StreamContract } from '../contract/StreamContract';
-import { RecipientWithAmount } from '../create-stream';
 import { InvalidInputError } from '../error/InvalidInputError';
 import { SanityError } from '../error/SanityError';
 import { decodeMetadata } from '../stream/metadata';
 import { isSameTarget } from '../sui/utils';
-import { CreateStreamInfo } from '../types/client';
+import { CreateStreamInfo, RecipientWithAmount } from '../types/client';
 import { DecodedCreateStream, StreamTransactionType, CoinMerge } from '../types/decode';
 
 export class CreateStreamDecodeHelper {
