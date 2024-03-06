@@ -3,3 +3,5 @@ dist
 *.sh
 coverage
 .idea
+.yalc/
+yalc.lock

@@ -1,8 +1,7 @@
 import { TransactionArgument, TransactionBlock, TransactionObjectArgument } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, SUI_TYPE_ARG } from '@mysten/sui.js/utils';
-import { nanoid } from 'nanoid';
+import { SUI_TYPE_ARG, normalizeStructTag } from '@mysten/sui.js/utils';
 
-import { FEE_NUMERATOR, FEE_DENOMINATOR, CLAIM_FEE_NUMERATOR, FLAT_FEE_SUI } from './const';
+import { CLAIM_FEE_NUMERATOR, FEE_DENOMINATOR, FEE_NUMERATOR, FLAT_FEE_SUI } from './const';
 import { Globals } from '../common';
 import { ResultRef } from '../common/transaction';
 import { FeeContract } from '../contract/FeeContract';
@@ -17,7 +16,8 @@ import {
   PaymentWithFee,
   RecipientInfoInternal,
 } from '../types/client';
-import { CoinRequestResponse, GAS_OBJECT_SPEC, CoinRequest } from '../types/wallet';
+import { CoinRequest, CoinRequestResponse, GAS_OBJECT_SPEC } from '../types/wallet';
+import { generateGroupId } from '../utils/random';
 
 export class CreateStreamHelper {
   constructor(
@@ -30,7 +30,7 @@ export class CreateStreamHelper {
     return {
       metadata: encodeMetadata({
         name: info.name,
-        groupId: nanoid(),
+        groupId: generateGroupId(),
       }),
       coinType: normalizeStructTag(info.coinType),
       recipients: info.recipients.map((recipient) => ({

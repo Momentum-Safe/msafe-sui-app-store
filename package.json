@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "yarn clean && yarn _build:browser && yarn _build:node",
+    "build": "yarn clean && yarn _build:browser",
     "build-yalc": "yarn build && yalc publish --private",
     "_build:browser": "tsup --platform browser --format iife --global-name MSafeWallet --minify",
     "_build:node": "tsup --format cjs,esm --dts",
