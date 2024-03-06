@@ -31,7 +31,7 @@ export class SetAutoClaimStreamIntention extends CoreBaseIntention<SetAutoClaimI
 
     const stream = await mpayClient.getStream(this.data.streamId);
 
-    const txb = await stream.setAutoClaim(true);
+    const txb = await stream.setAutoClaim(this.data.enabled);
 
     return txb;
   }
