@@ -1,4 +1,4 @@
-import { TransactionType } from '@msafe/sui3-utils';
+import { ClaimStreamIntentionData, TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/dist/cjs/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
@@ -9,10 +9,6 @@ import { SuiNetworks } from '@/types';
 import { Env } from './common';
 import { MPayClient, MSafeSingleWallet } from './stream/client';
 import { StreamTransactionType } from './types/decode';
-
-export interface ClaimStreamIntentionData {
-  streamId: string;
-}
 
 export class ClaimStreamIntention extends CoreBaseIntention<ClaimStreamIntentionData> {
   txType: TransactionType.Other;

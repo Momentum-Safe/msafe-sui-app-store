@@ -1,4 +1,11 @@
-import { TransactionType } from '@msafe/sui3-utils';
+import {
+  CancelStreamIntentionData,
+  ClaimByProxyStreamIntentionData,
+  ClaimStreamIntentionData,
+  CreateStreamIntentionData,
+  SetAutoClaimIntentionData,
+  TransactionType,
+} from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
@@ -6,13 +13,13 @@ import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-stan
 import { MSafeAppHelper } from '@/apps/interface';
 import { SuiNetworks } from '@/types';
 
-import { CancelStreamIntention, CancelStreamIntentionData } from './cancel-stream';
-import { ClaimByProxyStreamIntention, ClaimByProxyStreamIntentionData } from './claim-by-proxy-stream';
-import { ClaimStreamIntention, ClaimStreamIntentionData } from './claim-stream';
+import { CancelStreamIntention } from './cancel-stream';
+import { ClaimByProxyStreamIntention } from './claim-by-proxy-stream';
+import { ClaimStreamIntention } from './claim-stream';
 import { Env, Globals } from './common';
-import { CreateStreamIntention, CreateStreamIntentionData } from './create-stream';
+import { CreateStreamIntention } from './create-stream';
 import { DecodeHelper } from './decoder/decoder';
-import { SetAutoClaimIntentionData, SetAutoClaimStreamIntention } from './set-auto-claim-stream';
+import { SetAutoClaimStreamIntention } from './set-auto-claim-stream';
 import { StreamTransactionType } from './types/decode';
 
 export type MPayIntention =
@@ -41,14 +48,14 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
     const result = decoder.decode();
     if (result.type === StreamTransactionType.CREATE_STREAM) {
       return {
-        txType: TransactionType.Other,
+        txType: TransactionType.Stream,
         txSubType: result.type,
         intentionData: result.info,
       };
     }
     if (result.type === StreamTransactionType.CLAIM) {
       return {
-        txType: TransactionType.Other,
+        txType: TransactionType.Stream,
         txSubType: result.type,
         intentionData: {
           streamId: result.streamId,
@@ -57,7 +64,7 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
     }
     if (result.type === StreamTransactionType.CLAIM_BY_PROXY) {
       return {
-        txType: TransactionType.Other,
+        txType: TransactionType.Stream,
         txSubType: result.type,
         intentionData: {
           streamId: result.streamId,
@@ -66,7 +73,7 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
     }
     if (result.type === StreamTransactionType.SET_AUTO_CLAIM) {
       return {
-        txType: TransactionType.Other,
+        txType: TransactionType.Stream,
         txSubType: result.type,
         intentionData: {
           streamId: result.streamId,
@@ -76,7 +83,7 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
     }
     if (result.type === StreamTransactionType.CANCEL) {
       return {
-        txType: TransactionType.Other,
+        txType: TransactionType.Stream,
         txSubType: result.type,
         intentionData: {
           streamId: result.streamId,

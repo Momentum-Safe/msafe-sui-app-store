@@ -1,4 +1,4 @@
-import { TransactionType } from '@msafe/sui3-utils';
+import { CreateStreamIntentionData, TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
@@ -9,22 +9,6 @@ import { SuiNetworks } from '@/types';
 import { Env } from './common';
 import { MPayClient, MSafeSingleWallet } from './stream/client';
 import { StreamTransactionType } from './types/decode';
-
-export interface CreateStreamIntentionData {
-  name: string;
-  coinType: string;
-  recipients: RecipientWithAmount[];
-  interval: bigint;
-  steps: bigint;
-  startTimeMs: bigint;
-  cancelable: boolean;
-}
-
-export interface RecipientWithAmount {
-  address: string;
-  amountPerStep: bigint;
-  cliffAmount: bigint;
-}
 
 export class CreateStreamIntention extends CoreBaseIntention<CreateStreamIntentionData> {
   txType: TransactionType.Other;
