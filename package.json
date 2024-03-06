@@ -22,10 +22,8 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "yarn clean && yarn _build:browser",
+    "build": "yarn clean && tsup --platform browser --format cjs,esm --minify --dts",
     "build-yalc": "yarn build && yalc publish --private",
-    "_build:browser": "tsup --platform browser --format iife --global-name MSafeWallet --minify",
-    "_build:node": "tsup --format cjs,esm --dts",
     "test": "jest",
     "coverage": "jest --coverage"
   },
