@@ -1,7 +1,7 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
 import config from '../config';
-import { PoolConfig } from '../types';
+import { OptionType, PoolConfig } from '../types';
 
 export function depositToken(txb: TransactionBlock, pool: PoolConfig, coinObject: any, amount: number) {
   txb.moveCall({
@@ -68,6 +68,22 @@ export function repayToken(txb: TransactionBlock, pool: PoolConfig, coinObject: 
       coinObject,
       txb.pure(amount),
       txb.object(config.IncentiveV2),
+    ],
+    typeArguments: [pool.type],
+  });
+  return txb;
+}
+
+export function claimReward(txb: TransactionBlock, pool: PoolConfig, option: OptionType) {
+  txb.moveCall({
+    target: `${config.ProtocolPackage}::incentive_v2::claim_reward`,
+    arguments: [
+      txb.object('0x06'),
+      txb.object(config.IncentiveV2),
+      txb.object(pool.fondPoolId),
+      txb.object(config.StorageId),
+      txb.pure(pool.assetId),
+      txb.pure(option),
     ],
     typeArguments: [pool.type],
   });

@@ -1,23 +1,30 @@
-import { TransactionDefaultApplication, TransactionType } from '@msafe/sui3-utils';
+import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { MSafeAppHelper } from '@/apps/interface';
 
+import { ClaimRewardIntention, ClaimRewardIntentionData } from './intentions/claim-reward';
 import { EntryBorrowIntention, EntryBorrowIntentionData } from './intentions/entry-borrow';
 import { EntryDepositIntention, EntryDepositIntentionData } from './intentions/entry-deposit';
 import { EntryRepayIntention, EntryRepayIntentionData } from './intentions/entry-repay';
 import { EntryWithdrawIntention, EntryWithdrawIntentionData } from './intentions/entry-withdraw';
 import { TransactionSubType } from './types';
 
-export type NAVIIntention = EntryDepositIntention | EntryBorrowIntention | EntryRepayIntention | EntryWithdrawIntention;
+export type NAVIIntention =
+  | EntryDepositIntention
+  | EntryBorrowIntention
+  | EntryRepayIntention
+  | EntryWithdrawIntention
+  | ClaimRewardIntention;
 
 export type NAVIIntentionData =
   | EntryDepositIntentionData
   | EntryBorrowIntentionData
   | EntryRepayIntentionData
-  | EntryWithdrawIntentionData;
+  | EntryWithdrawIntentionData
+  | ClaimRewardIntentionData;
 
 export class NAVIAppHelper implements MSafeAppHelper<NAVIIntentionData> {
   application = 'navi';
@@ -47,6 +54,9 @@ export class NAVIAppHelper implements MSafeAppHelper<NAVIIntentionData> {
         break;
       case TransactionSubType.EntryWithdraw:
         intention = EntryWithdrawIntention.fromData(input.intentionData as EntryWithdrawIntentionData);
+        break;
+      case TransactionSubType.ClaimReward:
+        intention = ClaimRewardIntention.fromData(input.intentionData as ClaimRewardIntentionData);
         break;
       default:
         throw new Error('not implemented');

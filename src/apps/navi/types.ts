@@ -15,6 +15,7 @@ export interface PoolConfig {
   name: string;
   assetId: number;
   poolId: string; // Type must be ${PriceOraclePackage}::pool::Pool<${CoinType}>
+  fondPoolId?: string;
   type: string; // CoinType
   reserveObjectId: string; // Get it from dynamic object, type must be ${ProtocolPackage}::storage::ReserveData
   borrowBalanceParentId: string; // Get it from dynamic object, type must be ${ProtocolPackage}::storage::TokenBalance
@@ -26,4 +27,12 @@ export enum TransactionSubType {
   EntryBorrow = 'EntryBorrow',
   EntryRepay = 'EntryRepay',
   EntryWithdraw = 'EntryWithdraw',
+  ClaimReward = 'ClaimReward',
+}
+
+export enum OptionType {
+  Supply = 1,
+  Withdraw = 2,
+  Borrow = 3,
+  Repay = 4,
 }
