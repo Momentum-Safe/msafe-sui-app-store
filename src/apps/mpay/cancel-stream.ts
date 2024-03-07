@@ -3,40 +3,30 @@ import { SuiClient } from '@mysten/sui.js/dist/cjs/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { Env } from './common';
-import { MPayClient, MSafeSingleWallet } from './stream/client';
+import { StreamIntention } from './intention';
 import { StreamTransactionType } from './types/decode';
 
-export class CancelStreamIntention extends CoreBaseIntention<CancelStreamIntentionData> {
-  txType: TransactionType.Other;
+export class CancelStreamIntention extends StreamIntention<CancelStreamIntentionData> {
+  txType = TransactionType.Stream;
 
-  txSubType: StreamTransactionType.CANCEL;
+  txSubType = StreamTransactionType.CANCEL;
 
   constructor(public readonly data: CancelStreamIntentionData) {
     super(data);
   }
 
   async build(input: {
+    network: SuiNetworks;
+    txType: TransactionType;
+    txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
-    network: SuiNetworks;
   }): Promise<TransactionBlock> {
     const { network, account } = input;
-
-    const mpayClient = new MPayClient(network === 'sui:mainnet' ? Env.prod : Env.dev);
-    mpayClient.connectSingleWallet(new MSafeSingleWallet(account));
-
+    const mpayClient = this.getClient(network, account);
     const stream = await mpayClient.getStream(this.data.streamId);
-
-    const txb = await stream.cancel();
-
-    return txb;
-  }
-
-  static fromData(data: CancelStreamIntentionData) {
-    return new CancelStreamIntention(data);
+    return stream.cancel();
   }
 }

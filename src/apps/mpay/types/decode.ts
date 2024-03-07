@@ -21,7 +21,6 @@ export interface DecodedCreateStream {
 
   info: CreateStreamInfo;
   fees: PaymentWithFee;
-  coinMerges: CoinMerge[];
 }
 
 export interface CoinMerge {
