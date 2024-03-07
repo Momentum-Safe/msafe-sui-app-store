@@ -46,51 +46,34 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
     const globals = Globals.new(chain === 'sui:mainnet' ? Env.prod : Env.dev);
     const decoder = new DecodeHelper(globals, transactionBlock);
     const result = decoder.decode();
-    if (result.type === StreamTransactionType.CREATE_STREAM) {
-      return {
-        txType: TransactionType.Stream,
-        txSubType: result.type,
-        intentionData: result.info,
-      };
+
+    let intention: MPayIntention;
+
+    switch (result.type) {
+      case StreamTransactionType.CREATE_STREAM:
+        intention = new CreateStreamIntention(result.info);
+        break;
+      case StreamTransactionType.SET_AUTO_CLAIM:
+        intention = new SetAutoClaimStreamIntention({ streamId: result.streamId, enabled: result.enabled });
+        break;
+      case StreamTransactionType.CLAIM:
+        intention = new ClaimStreamIntention({ streamId: result.streamId });
+        break;
+      case StreamTransactionType.CLAIM_BY_PROXY:
+        intention = new ClaimByProxyStreamIntention({ streamId: result.streamId });
+        break;
+      case StreamTransactionType.CANCEL:
+        intention = new CancelStreamIntention({ streamId: result.streamId });
+        break;
+      default:
+        throw new Error(`Unknown transaction type: ${result}`);
     }
-    if (result.type === StreamTransactionType.CLAIM) {
-      return {
-        txType: TransactionType.Stream,
-        txSubType: result.type,
-        intentionData: {
-          streamId: result.streamId,
-        },
-      };
-    }
-    if (result.type === StreamTransactionType.CLAIM_BY_PROXY) {
-      return {
-        txType: TransactionType.Stream,
-        txSubType: result.type,
-        intentionData: {
-          streamId: result.streamId,
-        },
-      };
-    }
-    if (result.type === StreamTransactionType.SET_AUTO_CLAIM) {
-      return {
-        txType: TransactionType.Stream,
-        txSubType: result.type,
-        intentionData: {
-          streamId: result.streamId,
-          enabled: result.enabled,
-        },
-      };
-    }
-    if (result.type === StreamTransactionType.CANCEL) {
-      return {
-        txType: TransactionType.Stream,
-        txSubType: result.type,
-        intentionData: {
-          streamId: result.streamId,
-        },
-      };
-    }
-    throw new Error(`Unknown transaction type: ${result}`);
+
+    return {
+      txType: intention.txType,
+      txSubType: intention.txSubType,
+      intentionData: intention.data,
+    };
   }
 
   async build(input: {
@@ -101,27 +84,27 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const { network, intentionData, suiClient, account } = input;
+    const { intentionData } = input;
     let intention: MPayIntention;
     switch (input.txSubType as StreamTransactionType) {
       case StreamTransactionType.CREATE_STREAM:
-        intention = CreateStreamIntention.fromData(intentionData as CreateStreamIntentionData);
+        intention = new CreateStreamIntention(intentionData as CreateStreamIntentionData);
         break;
       case StreamTransactionType.CLAIM:
-        intention = ClaimStreamIntention.fromData(intentionData as ClaimStreamIntentionData);
+        intention = new ClaimStreamIntention(intentionData as ClaimStreamIntentionData);
         break;
       case StreamTransactionType.CLAIM_BY_PROXY:
-        intention = ClaimByProxyStreamIntention.fromData(intentionData as ClaimByProxyStreamIntentionData);
+        intention = new ClaimByProxyStreamIntention(intentionData as ClaimByProxyStreamIntentionData);
         break;
       case StreamTransactionType.SET_AUTO_CLAIM:
-        intention = SetAutoClaimStreamIntention.fromData(intentionData as SetAutoClaimIntentionData);
+        intention = new SetAutoClaimStreamIntention(intentionData as SetAutoClaimIntentionData);
         break;
       case StreamTransactionType.CANCEL:
-        intention = CancelStreamIntention.fromData(intentionData as CancelStreamIntentionData);
+        intention = new CancelStreamIntention(intentionData as CancelStreamIntentionData);
         break;
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ network, suiClient, account });
+    return intention.build({ ...input });
   }
 }

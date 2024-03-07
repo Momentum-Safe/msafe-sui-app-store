@@ -3,17 +3,15 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { Env } from './common';
-import { MPayClient, MSafeSingleWallet } from './stream/client';
+import { StreamIntention } from './intention';
 import { StreamTransactionType } from './types/decode';
 
-export class CreateStreamIntention extends CoreBaseIntention<CreateStreamIntentionData> {
-  txType: TransactionType.Other;
+export class CreateStreamIntention extends StreamIntention<CreateStreamIntentionData> {
+  txType = TransactionType.Stream;
 
-  txSubType: StreamTransactionType.CREATE_STREAM;
+  txSubType = StreamTransactionType.CREATE_STREAM;
 
   constructor(public readonly data: CreateStreamIntentionData) {
     super(data);
@@ -21,19 +19,13 @@ export class CreateStreamIntention extends CoreBaseIntention<CreateStreamIntenti
 
   async build(input: {
     network: SuiNetworks;
+    txType: TransactionType;
+    txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {
     const { network, account } = input;
-
-    const mpayClient = new MPayClient(network === 'sui:mainnet' ? Env.prod : Env.dev);
-    mpayClient.connectSingleWallet(new MSafeSingleWallet(account));
-
-    const txb = await mpayClient.createStream(this.data);
-    return txb;
-  }
-
-  static fromData(data: CreateStreamIntentionData) {
-    return new CreateStreamIntention(data);
+    const mpayClient = this.getClient(network, account);
+    return mpayClient.createStream(this.data);
   }
 }

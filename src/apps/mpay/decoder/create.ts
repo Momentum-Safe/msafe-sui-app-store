@@ -1,6 +1,5 @@
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, SUI_TYPE_ARG } from '@mysten/sui.js/utils';
 
 import { MoveCallHelper } from './moveCall';
 import { CreateStreamHelper } from '../builder/CreateStreamHelper';
@@ -12,7 +11,7 @@ import { SanityError } from '../error/SanityError';
 import { decodeMetadata } from '../stream/metadata';
 import { isSameTarget } from '../sui/utils';
 import { CreateStreamInfo, RecipientWithAmount } from '../types/client';
-import { DecodedCreateStream, StreamTransactionType, CoinMerge } from '../types/decode';
+import { DecodedCreateStream, StreamTransactionType } from '../types/decode';
 
 export class CreateStreamDecodeHelper {
   constructor(
@@ -23,12 +22,10 @@ export class CreateStreamDecodeHelper {
   decode(): DecodedCreateStream {
     const streamInfo = this.decodeCreateStreamInfo();
     const fees = this.createStreamHelper().calculateCreateStreamFees(streamInfo);
-    const coinMerges = this.getCoinMerges();
     return {
       type: StreamTransactionType.CREATE_STREAM,
       info: streamInfo,
       fees,
-      coinMerges,
     };
   }
 
@@ -106,79 +103,6 @@ export class CreateStreamDecodeHelper {
       startTimeMs: infos[0].timeStart,
       cancelable: infos[0].cancelable,
     };
-  }
-
-  private getCoinMerges() {
-    const createStreamTx = this.createStreamTransactions()[0];
-    return this.getCoinMergeForCreateStream(createStreamTx);
-  }
-
-  private getCoinMergeForCreateStream(moveCall: MoveCallHelper) {
-    const coinType = moveCall.typeArg(0);
-
-    const paymentCoin = moveCall.txArg(2);
-    const paymentCoinMerge = this.getCoinMergeFromNestedResult(paymentCoin, coinType, moveCall);
-
-    if (coinType === normalizeStructTag(SUI_TYPE_ARG)) {
-      return [paymentCoinMerge];
-    }
-    const flatFeeCoin = moveCall.txArg(3);
-    const flatCoinMerge = this.getCoinMergeFromNestedResult(flatFeeCoin, normalizeStructTag(SUI_TYPE_ARG), moveCall);
-    return [paymentCoinMerge, flatCoinMerge];
-  }
-
-  private getCoinMergeFromNestedResult(
-    coinArg: TransactionArgument,
-    coinType: string,
-    moveCall: MoveCallHelper,
-  ): CoinMerge {
-    if (coinArg.kind === 'GasCoin') {
-      return {
-        primary: 'GAS',
-        coinType,
-      };
-    }
-    if (coinArg.kind === 'Input') {
-      const arg = this.getInputArg(coinArg);
-      const objectId = MoveCallHelper.getOwnedObjectId(arg);
-
-      const mergeTx = this.transactions.find((tx) => {
-        if (tx.kind !== 'MergeCoins') {
-          return false;
-        }
-        if (tx.destination.kind !== 'Input') {
-          throw new Error('merge coin destination not Input type');
-        }
-        const primaryCoinInput = this.getInputArg(tx.destination);
-        return MoveCallHelper.getOwnedObjectId(primaryCoinInput) === objectId;
-      });
-      if (!mergeTx) {
-        return {
-          primary: objectId,
-          coinType,
-        };
-      }
-      return {
-        primary: objectId,
-        merged: (mergeTx as any).sources.map((sourceArg: any) => {
-          const sourceInputArg = this.getInputArg(sourceArg);
-          return MoveCallHelper.getOwnedObjectId(sourceInputArg);
-        }),
-        coinType,
-      };
-    }
-    if (coinArg.kind === 'NestedResult') {
-      // Expect parent is split coin transaction.
-      const parentTx = this.transactions[coinArg.index];
-      if (parentTx.kind !== 'SplitCoins') {
-        throw new InvalidInputError(`Transaction type not expected. Expect SplitCoins, got ${parentTx.kind}`);
-      }
-      return this.getCoinMergeFromNestedResult(parentTx.coin, coinType, moveCall);
-    }
-    if (coinArg.kind === 'Result') {
-      throw new Error('Result type not expected for coin inputs');
-    }
-    throw new Error(`Unknown argument kind`);
   }
 
   private mergeCoinTransactions() {
