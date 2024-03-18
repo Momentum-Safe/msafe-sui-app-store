@@ -13,6 +13,7 @@ export type Pool = { [key in CoinType]: PoolConfig };
 
 export interface PoolConfig {
   name: string;
+  coinType: CoinType;
   assetId: number;
   poolId: string; // Type must be ${PriceOraclePackage}::pool::Pool<${CoinType}>
   fondPoolId?: string;

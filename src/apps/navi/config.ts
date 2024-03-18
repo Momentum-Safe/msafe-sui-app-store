@@ -1,4 +1,4 @@
-import type { Pool } from './types';
+import { CoinType, type Pool } from './types';
 
 const config = {
   ProtocolPackage: '0xd92d9db3ae5e2e932eda336b15f97e02255d152201d0cf29a29ca0c4fb0205f3',
@@ -15,6 +15,7 @@ const config = {
       poolId: '0x96df0fce3c471489f4debaaa762cf960b3d97820bd1f3f025ff8190730e958c5',
       fondPoolId: '0xf975bc2d4cca10e3ace8887e20afd77b46c383b4465eac694c4688344955dea4',
       type: '0x2::sui::SUI',
+      coinType: CoinType.sui,
       reserveObjectId: '0xab644b5fd11aa11e930d1c7bc903ef609a9feaf9ffe1b23532ad8441854fbfaf',
       borrowBalanceParentId: '0xe7ff0daa9d090727210abe6a8b6c0c5cd483f3692a10610386e4dc9c57871ba7',
       supplyBalanceParentId: '0x589c83af4b035a3bc64c40d9011397b539b97ea47edf7be8f33d643606bf96f8',
@@ -22,6 +23,7 @@ const config = {
     usdc: {
       name: 'USDC',
       assetId: 1,
+      coinType: CoinType.usdc,
       poolId: '0xa02a98f9c88db51c6f5efaaf2261c81f34dd56d86073387e0ef1805ca22e39c8',
       type: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
       reserveObjectId: '0xeb3903f7748ace73429bd52a70fff278aac1725d3b58afa781f25ce3450ac203',
@@ -30,6 +32,7 @@ const config = {
     },
     usdt: {
       name: 'USDT',
+      coinType: CoinType.usdt,
       assetId: 2,
       poolId: '0x0e060c3b5b8de00fb50511b7a45188c8e34b6995c01f69d98ea5a466fe10d103',
       type: '0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN',
@@ -39,6 +42,7 @@ const config = {
     },
     weth: {
       name: 'WETH',
+      coinType: CoinType.weth,
       assetId: 3,
       poolId: '0x71b9f6e822c48ce827bceadce82201d6a7559f7b0350ed1daa1dc2ba3ac41b56',
       type: '0xaf8cd5edc19c4512f4259f0bee101a40d41ebed738ade5874359610ef8eeced5::coin::COIN',
@@ -48,6 +52,7 @@ const config = {
     },
     cetus: {
       name: 'CETUS',
+      coinType: CoinType.cetus,
       assetId: 4,
       poolId: '0x3c376f857ec4247b8ee456c1db19e9c74e0154d4876915e54221b5052d5b1e2e',
       type: '0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS',
@@ -57,6 +62,7 @@ const config = {
     },
     voloSui: {
       name: 'VoloSui',
+      coinType: CoinType.voloSui,
       assetId: 5,
       poolId: '0x9790c2c272e15b6bf9b341eb531ef16bcc8ed2b20dfda25d060bf47f5dd88d01',
       fondPoolId: '0xe2b5ada45273676e0da8ae10f8fe079a7cec3d0f59187d3d20b1549c275b07ea',
@@ -67,6 +73,7 @@ const config = {
     },
     haSui: {
       name: 'HaedalSui',
+      coinType: CoinType.haSui,
       assetId: 6,
       poolId: '0x6fd9cb6ebd76bc80340a9443d72ea0ae282ee20e2fd7544f6ffcd2c070d9557a',
       fondPoolId: '0xa20e18085ce04be8aa722fbe85423f1ad6b1ae3b1be81ffac00a30f1d6d6ab51',
@@ -77,6 +84,7 @@ const config = {
     },
     navx: {
       name: 'NAVX',
+      coinType: CoinType.navx,
       assetId: 7,
       poolId: '0xc0e02e7a245e855dd365422faf76f87d9f5b2148a26d48dda6e8253c3fe9fa60',
       fondPoolId: '0x9dae0cf104a193217904f88a48ce2cf0221e8cd9073878edd05101d6b771fa09',
