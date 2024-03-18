@@ -1,10 +1,12 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount } from '@mysten/wallet-standard';
+import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 
 import { MSafeAppHelper } from '@/apps/interface';
+import { SuiNetworks } from '@/types';
 
+import { Decoder } from './decoder';
 import { ClaimRewardIntention, ClaimRewardIntentionData } from './intentions/claim-reward';
 import { EntryBorrowIntention, EntryBorrowIntentionData } from './intentions/entry-borrow';
 import { EntryDepositIntention, EntryDepositIntentionData } from './intentions/entry-deposit';
@@ -29,8 +31,17 @@ export type NAVIIntentionData =
 export class NAVIAppHelper implements MSafeAppHelper<NAVIIntentionData> {
   application = 'navi';
 
-  deserialize(): Promise<{ txType: TransactionType; txSubType: string; intentionData: NAVIIntentionData }> {
-    throw new Error('MSafe core transaction intention should be build from API');
+  async deserialize(
+    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+  ): Promise<{ txType: TransactionType; txSubType: TransactionSubType; intentionData: NAVIIntentionData }> {
+    const { transactionBlock } = input;
+    const decoder = new Decoder(transactionBlock);
+    const result = decoder.decode();
+    return {
+      txType: TransactionType.Other,
+      txSubType: result.type,
+      intentionData: result.intentionData,
+    };
   }
 
   async build(input: {
