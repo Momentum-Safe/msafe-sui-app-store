@@ -1,3 +1,4 @@
+import { CetusHelper } from '@/apps/cetus/helper';
 import { MPayAppHelper } from '@/apps/mpay/helper';
 import { CoreHelper } from '@/apps/msafe-core/helper';
 import { NAVIAppHelper } from '@/apps/navi/helper';
@@ -10,4 +11,5 @@ export const appHelpers = new MSafeApps([
   new NAVIAppHelper(),
   new MPayAppHelper(),
   new PlainTransactionHelper(),
+  new CetusHelper(),
 ]);
