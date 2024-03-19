@@ -1,15 +1,27 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { MSafeAppHelper } from '@/apps/interface';
 import { SuiClient } from '@mysten/sui.js/client';
-import { WalletAccount } from '@mysten/wallet-standard';
+import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { fromHEX, toHEX } from '@mysten/sui.js/utils';
 import { CetusIntention, CetusIntentionData } from './intention'
+import { SuiNetworks } from './types'
 
 export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
   application = 'cetus'
 
-  deserialize(): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
-    throw new Error('MSafe core transaction intention should be build from API');
+  async deserialize(
+    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+  ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
+    const { transactionBlock, suiClient } = input;
+
+    const content = await transactionBlock.build({ client: suiClient });
+
+    return {
+      txType: TransactionType.Other,
+      txSubType: 'CetusTransaction',
+      intentionData: { content: toHEX(content) },
+    };
   }
 
   async build(input: {
