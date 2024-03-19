@@ -99,7 +99,7 @@ export class Decoder {
     const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.ClaimReward,
+      type: TransactionSubType.EntryBorrow,
       intentionData: {
         amount,
         coinType: pool.coinType,
@@ -113,7 +113,7 @@ export class Decoder {
     const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.ClaimReward,
+      type: TransactionSubType.EntryDeposit,
       intentionData: {
         amount,
         coinType: pool.coinType,
@@ -127,7 +127,7 @@ export class Decoder {
     const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.ClaimReward,
+      type: TransactionSubType.EntryRepay,
       intentionData: {
         amount,
         coinType: pool.coinType,
@@ -141,7 +141,7 @@ export class Decoder {
     const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.ClaimReward,
+      type: TransactionSubType.EntryWithdraw,
       intentionData: {
         amount,
         coinType: pool.coinType,
