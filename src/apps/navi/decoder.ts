@@ -47,44 +47,28 @@ export class Decoder {
     return this.txb.blockData.transactions;
   }
 
+  private getMoveCallTransaction(target: string) {
+    return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
+  }
+
   private isClaimRewardTransaction() {
-    return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, `${config.ProtocolPackage}::incentive_v2::claim_reward`)
-    );
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::claim_reward`);
   }
 
   private isEntryBorrowTransaction() {
-    return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, `${config.ProtocolPackage}::incentive_v2::entry_borrow`)
-    );
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_borrow`);
   }
 
   private isEntryDepositTransaction() {
-    return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, `${config.ProtocolPackage}::incentive_v2::entry_deposit`)
-    );
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_deposit`);
   }
 
   private isEntryRepayTransaction(): boolean {
-    return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, `${config.ProtocolPackage}::incentive_v2::entry_repay`)
-    );
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_repay`);
   }
 
   private isEntryWithdrawTransaction(): boolean {
-    return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, `${config.ProtocolPackage}::incentive_v2::entry_withdraw`)
-    );
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_withdraw`);
   }
 
   private findPoolByAssetId(assetId: number) {
@@ -166,7 +150,9 @@ export class Decoder {
   }
 
   private get helper() {
-    const moveCall = this.transactions[0] as MoveCallTransaction;
+    const moveCall = this.transactions.find(
+      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(config.ProtocolPackage),
+    ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }
 }
