@@ -4,11 +4,11 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { fromHEX, toHEX } from '@mysten/sui.js/utils';
-import { CetusIntention, CetusIntentionData } from './intention'
-import { SuiNetworks } from './types'
+import { CetusIntention, CetusIntentionData } from './intention';
+import { SuiNetworks } from './types';
 
 export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
-  application = 'cetus'
+  application = 'cetus';
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
@@ -32,7 +32,7 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
     account: WalletAccount;
   }): Promise<TransactionBlock> {
     const { suiClient, account } = input;
-    const intention = CetusIntention.fromData(input.intentionData)
+    const intention = CetusIntention.fromData(input.intentionData);
     return intention.build({ suiClient, account });
   }
 }
