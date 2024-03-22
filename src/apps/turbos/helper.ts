@@ -1,8 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount } from '@mysten/wallet-standard';
+import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import { MSafeAppHelper } from '../interface';
+import { Decoder } from './decoder';
 import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
 import { BurnIntention, BurnIntentionData } from './intentions/burn';
 import { CollectFeeIntention, CollectFeeIntentionData } from './intentions/collect-fee';
@@ -35,12 +36,21 @@ export type TURBOSIntentionData =
 export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   application = 'turbos';
 
-  deserialize(): Promise<{
+  async deserialize(
+    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+  ): Promise<{
     txType: TransactionType;
-    txSubType: string;
+    txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
-    throw new Error('MSafe core transaction intention should be build from API');
+    const { transactionBlock, suiClient } = input;
+    const decoder = new Decoder(transactionBlock);
+    const result = decoder.decode();
+    return {
+      txType: TransactionType.Other,
+      txSubType: result.type,
+      intentionData: result.intentionData,
+    };
   }
 
   async build(input: {
