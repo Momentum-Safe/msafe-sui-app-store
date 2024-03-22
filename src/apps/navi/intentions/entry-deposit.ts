@@ -28,6 +28,7 @@ export class EntryDepositIntention extends CoreBaseIntention<EntryDepositIntenti
     const { suiClient, account } = input;
     const { coinType, amount } = this.data;
     const tx = new TransactionBlock();
+    console.log('build', this.data);
 
     if (coinType === 'sui') {
       const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
@@ -55,7 +56,7 @@ export class EntryDepositIntention extends CoreBaseIntention<EntryDepositIntenti
       }
     }
 
-    return depositToken(tx, pool, coinObj, amount);
+    return depositToken(tx, pool, tx.object(coinObj), amount);
   }
 
   static fromData(data: EntryDepositIntentionData) {

@@ -24,6 +24,7 @@ export class EntryBorrowIntention extends CoreBaseIntention<EntryBorrowIntention
   async build(): Promise<TransactionBlock> {
     const { coinType, amount } = this.data;
     const tx = new TransactionBlock();
+    console.log('build', this.data);
 
     const pool = config.pool[coinType];
 

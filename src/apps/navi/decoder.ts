@@ -5,7 +5,7 @@ import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transact
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import config from './config';
-import { TransactionSubType } from './types';
+import { CoinType, TransactionSubType } from './types';
 
 export function isSameCoinType(type1: string, type2: string) {
   return normalizeStructTag(type1) === normalizeStructTag(type2);
@@ -25,6 +25,7 @@ export class Decoder {
   constructor(public readonly txb: TransactionBlock) {}
 
   decode() {
+    console.log('txb', this.txb);
     if (this.isClaimRewardTransaction()) {
       return this.decodeClaimReward();
     }
@@ -80,15 +81,28 @@ export class Decoder {
   }
 
   private decodeClaimReward(): DecodeResult {
-    const assetId = this.helper.decodeInputU8(4);
-    const optionId = this.helper.decodeInputU8(5);
-    const pool = this.findPoolByAssetId(assetId);
+    const claims = [] as {
+      coinType: CoinType;
+      option: number;
+    }[];
+    this.transactions.forEach((trans) => {
+      if (trans.kind === 'MoveCall' && trans.target === `${config.ProtocolPackage}::incentive_v2::claim_reward`) {
+        const helper = new MoveCallHelper(trans, this.txb);
+        const assetId = helper.decodeInputU8(4);
+        const optionId = helper.decodeInputU8(5);
+        const pool = this.findPoolByAssetId(assetId);
+        claims.push({
+          coinType: pool.coinType,
+          option: optionId,
+        });
+      }
+    });
+    console.log('decode claims', claims);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.ClaimReward,
       intentionData: {
-        coinType: pool.coinType,
-        option: optionId,
+        claims,
       },
     };
   }
