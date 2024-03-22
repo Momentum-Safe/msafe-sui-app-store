@@ -49,7 +49,7 @@ export class DecodeHelper {
     if (this.isClaimStreamTransaction()) {
       return this.decodeClaimTransaction();
     }
-    return undefined;
+    throw new Error('Unknown stream transaction type');
   }
 
   private get transactions() {

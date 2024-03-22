@@ -42,8 +42,8 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
   ): Promise<{ txType: TransactionType; txSubType: string; intentionData: MPayIntentionData }> {
-    const { chain, transactionBlock } = input;
-    const globals = Globals.new(chain === 'sui:mainnet' ? Env.prod : Env.dev);
+    const { network, transactionBlock } = input;
+    const globals = Globals.new(network === 'sui:mainnet' ? Env.prod : Env.dev);
     const decoder = new DecodeHelper(globals, transactionBlock);
     const result = decoder.decode();
 
