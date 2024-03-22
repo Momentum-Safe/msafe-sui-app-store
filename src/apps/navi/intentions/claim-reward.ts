@@ -8,8 +8,10 @@ import config from '../config';
 import { CoinType, TransactionSubType, OptionType } from '../types';
 
 export interface ClaimRewardIntentionData {
-  coinType: CoinType;
-  option: OptionType;
+  claims: {
+    coinType: CoinType;
+    option: OptionType;
+  }[];
 }
 
 export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntentionData> {
@@ -22,20 +24,26 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
   }
 
   async build(): Promise<TransactionBlock> {
-    const { coinType, option } = this.data;
+    const { claims } = this.data;
     const tx = new TransactionBlock();
 
-    const pool = config.pool[coinType];
+    claims.forEach((claim) => {
+      const { coinType, option } = claim;
+      const pool = config.pool[coinType];
+      console.log('build', this.data);
 
-    if (!pool) {
-      throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
-    }
+      if (!pool) {
+        throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
+      }
 
-    if (!pool.fondPoolId) {
-      throw new Error(`${coinType} not support claim reward.`);
-    }
+      if (!pool.fondPoolId) {
+        throw new Error(`${coinType} not support claim reward.`);
+      }
 
-    return claimReward(tx, pool, option);
+      claimReward(tx, pool, option);
+    });
+
+    return tx;
   }
 
   static fromData(data: ClaimRewardIntentionData) {

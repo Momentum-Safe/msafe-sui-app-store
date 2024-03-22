@@ -28,6 +28,7 @@ export class EntryRepayIntention extends CoreBaseIntention<EntryRepayIntentionDa
     const { suiClient, account } = input;
     const { coinType, amount } = this.data;
     const tx = new TransactionBlock();
+    console.log('build', this.data);
 
     if (coinType === 'sui') {
       const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
@@ -55,7 +56,7 @@ export class EntryRepayIntention extends CoreBaseIntention<EntryRepayIntentionDa
       }
     }
 
-    return repayToken(tx, pool, coinObj, amount);
+    return repayToken(tx, pool, tx.object(coinObj), amount);
   }
 
   static fromData(data: EntryRepayIntentionData) {
