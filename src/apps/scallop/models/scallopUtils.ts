@@ -1,16 +1,11 @@
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_TYPE_ARG, normalizeStructTag } from '@mysten/sui.js/utils';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { SuiPriceServiceConnection } from '@pythnetwork/pyth-sui-js';
 
 import { ScallopAddress } from './scallopAddress';
-import { ScallopQuery } from './scallopQuery';
 import {
   ADDRESSES_ID,
   PROTOCOL_OBJECT_ID,
-  SUPPORT_POOLS,
-  SUPPORT_COLLATERALS,
   spoolRewardCoins,
   borrowIncentiveRewardCoins,
   coinDecimals,
@@ -18,8 +13,6 @@ import {
   voloCoinIds,
   coinIds,
 } from '../constants';
-import { PYTH_ENDPOINTS } from '../constants/pyth';
-import { queryObligation } from '../queries';
 import type {
   ScallopUtilsParams,
   ScallopInstanceParams,
@@ -28,13 +21,11 @@ import type {
   SupportMarketCoins,
   SupportStakeMarketCoins,
   SupportBorrowIncentiveCoins,
-  CoinPrices,
-  PriceMap,
   CoinWrappedType,
   SupportPoolCoins,
   SuiTxArg,
 } from '../types';
-import { parseDataFromPythPriceFeed, isMarketCoin, parseAssetSymbol } from '../utils';
+import { isMarketCoin, parseAssetSymbol } from '../utils';
 
 /**
  * @description
@@ -55,11 +46,7 @@ export class ScallopUtils {
 
   private _address: ScallopAddress;
 
-  private _client: SuiClient;
-
-  private _query: ScallopQuery;
-
-  private _priceMap: PriceMap = new Map();
+  public client: SuiClient;
 
   public constructor(params: ScallopUtilsParams, instance?: ScallopInstanceParams) {
     this.params = params;
@@ -69,13 +56,8 @@ export class ScallopUtils {
         id: params?.addressesId || ADDRESSES_ID,
         network: params?.networkType,
       });
-    this._query =
-      instance?.query ??
-      new ScallopQuery(params, {
-        address: this._address,
-      });
     this.isTestnet = params.networkType ? params.networkType === 'testnet' : false;
-    this._client = params.client;
+    this.client = params.client;
   }
 
   /**
@@ -89,10 +71,6 @@ export class ScallopUtils {
       await this._address.read();
     } else {
       this._address = address;
-    }
-
-    if (!this._query.address.getAddresses()) {
-      await this._query.init(force, this._address);
     }
   }
 
@@ -292,7 +270,7 @@ export class ScallopUtils {
     let hasNext = true;
     let nextCursor: string | null | undefined = null;
     while (hasNext && totalAmount < amount) {
-      const coins = await this._client.getCoins({
+      const coins = await this.client.getCoins({
         owner: address,
         coinType,
         cursor: nextCursor,
@@ -318,99 +296,6 @@ export class ScallopUtils {
       throw new Error('No valid coins found for the transaction.');
     }
     return selectedCoins.map((coin) => coin.objectId);
-  }
-
-  /**
-   * Get all asset coin names in the obligation record by obligation id.
-   *
-   * @description
-   * This can often be used to determine which assets in an obligation require
-   * price updates before interacting with specific instructions of the Scallop contract.
-   *
-   * @param obligationId - The obligation id.
-   * @return Asset coin Names.
-   */
-  public async getObligationCoinNames(obligationId: string) {
-    const obligation = await queryObligation(this._query, obligationId);
-    const collateralCoinTypes = obligation.collaterals.map((collateral) => `0x${collateral.type.name}`);
-    const debtCoinTypes = obligation.debts.map((debt) => `0x${debt.type.name}`);
-    const obligationCoinTypes = [...new Set([...collateralCoinTypes, ...debtCoinTypes])];
-    const obligationCoinNames = obligationCoinTypes.map((coinType) => this.parseCoinNameFromType(coinType));
-    return obligationCoinNames;
-  }
-
-  /**
-   * Get asset coin price.
-   *
-   * @description
-   * The strategy for obtaining the price is to get it through API first,
-   * and then on-chain data if API cannot be retrieved.
-   * Currently, we only support obtaining from pyth protocol, other
-   * oracles will be supported in the future.
-   *
-   * @param assetCoinNames - Specific an array of support asset coin name.
-   * @return  Asset coin price.
-   */
-  public async getCoinPrices(assetCoinNames?: SupportAssetCoins[]) {
-    const listAsssetCoinNames =
-      assetCoinNames || ([...new Set([...SUPPORT_POOLS, ...SUPPORT_COLLATERALS])] as SupportAssetCoins[]);
-
-    const coinPrices: CoinPrices = {};
-    const existPricesCoinNames: SupportAssetCoins[] = [];
-    const lackPricesCoinNames: SupportAssetCoins[] = [];
-
-    listAsssetCoinNames.forEach((assetCoinName) => {
-      if (
-        this._priceMap.has(assetCoinName) &&
-        Date.now() - this._priceMap.get(assetCoinName)!.publishTime < 1000 * 60
-      ) {
-        existPricesCoinNames.push(assetCoinName);
-      } else {
-        lackPricesCoinNames.push(assetCoinName);
-      }
-    });
-
-    if (existPricesCoinNames.length > 0) {
-      existPricesCoinNames.forEach((coinName) => {
-        const coinPrice = this._priceMap.get(coinName);
-        if (coinPrice) {
-          coinPrices[coinName] = coinPrice.price;
-        }
-      });
-    }
-
-    if (lackPricesCoinNames.length > 0) {
-      const endpoints = this.params.pythEndpoints ?? PYTH_ENDPOINTS[this.isTestnet ? 'testnet' : 'mainnet'];
-      try {
-        endpoints.forEach(async (endpoint) => {
-          const pythConnection = new SuiPriceServiceConnection(endpoint);
-          const priceIds = lackPricesCoinNames.map((coinName) =>
-            this._address.get(`core.coins.${coinName}.oracle.pyth.feed`),
-          );
-          const priceFeeds = (await pythConnection.getLatestPriceFeeds(priceIds)) || [];
-          priceFeeds.forEach((feed, index) => {
-            const data = parseDataFromPythPriceFeed(feed, this._address);
-            const coinName = lackPricesCoinNames[index];
-            this._priceMap.set(coinName, {
-              price: data.price,
-              publishTime: data.publishTime,
-            });
-            coinPrices[coinName] = data.price;
-          });
-        });
-      } catch (_e) {
-        lackPricesCoinNames.forEach(async (coinName) => {
-          const price = await this._query.getPriceFromPyth(coinName);
-          this._priceMap.set(coinName, {
-            price,
-            publishTime: Date.now(),
-          });
-          coinPrices[coinName] = price;
-        });
-      }
-    }
-
-    return coinPrices;
   }
 
   /**

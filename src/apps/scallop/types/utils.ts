@@ -30,3 +30,15 @@ export type ObjectCallArg = {
 export type SuiAddressArg = TransactionArgument | SerializedBcs<any> | string | PureCallArg;
 export type SuiObjectArg = TransactionObjectArgument | string | SharedObjectRef | SuiObjectRef | ObjectCallArg;
 export type SuiTxArg = SuiAddressArg | number | bigint | boolean;
+export type SuiNetworks = 'sui:devnet' | 'sui:testnet' | 'sui:localnet' | 'sui:mainnet';
+export enum TransactionSubType {
+  SupplyLending = 'SupplyLending',
+  WithdrawLending = 'WithdrawLending',
+  StakeSpool = 'StakeSpool',
+  UnstakeSpool = 'UnstakeSpool',
+  DepositCollateral = 'DepositCollateral',
+  WithdrawCollateral = 'WithdrawCollateral',
+  Borrow = 'Borrow',
+  Repay = 'Repay',
+  ClaimReward = 'ClaimReward',
+}

@@ -1,38 +1,25 @@
+import { SuiClient } from '@mysten/sui.js/client';
+
 import { ScallopAddress } from './scallopAddress';
+import { ScallopUtils } from './scallopUtils';
 import { ADDRESSES_ID, SUPPORT_SPOOLS } from '../constants';
 import {
-  queryMarket,
   getObligations,
-  queryObligation,
   getStakeAccounts,
   getStakePool,
   getStakeRewardPool,
   getPythPrice,
-  getMarketPools,
-  getMarketPool,
-  getMarketCollaterals,
-  getMarketCollateral,
-  getSpools,
-  getSpool,
-  queryBorrowIncentivePools,
   queryBorrowIncentiveAccounts,
   getCoinAmounts,
   getCoinAmount,
   getMarketCoinAmounts,
   getMarketCoinAmount,
-  getLendings,
-  getLending,
-  getObligationAccounts,
-  getObligationAccount,
-  getTotalValueLocked,
 } from '../queries';
 import {
   ScallopQueryParams,
   ScallopInstanceParams,
   SupportStakeMarketCoins,
   SupportAssetCoins,
-  SupportPoolCoins,
-  SupportCollateralCoins,
   SupportMarketCoins,
   StakePools,
   StakeRewardPools,
@@ -56,6 +43,10 @@ export class ScallopQuery {
 
   public address: ScallopAddress;
 
+  public client: SuiClient;
+
+  public utils: ScallopUtils;
+
   public constructor(params: ScallopQueryParams, instance?: ScallopInstanceParams) {
     this.params = params;
     this.address =
@@ -64,6 +55,8 @@ export class ScallopQuery {
         id: params?.addressesId || ADDRESSES_ID,
         network: params?.networkType,
       });
+    this.client = params.client;
+    this.utils = instance?.utils ?? new ScallopUtils(this.params, { address: this.address });
   }
 
   /**
@@ -83,67 +76,6 @@ export class ScallopQuery {
   /* ==================== Core Query Methods ==================== */
 
   /**
-   * Query market data.
-   * @param indexer - Whether to use indexer.
-   * @return Market data.
-   */
-  public async queryMarket(indexer = false) {
-    return queryMarket(this, indexer);
-  }
-
-  /**
-   * Get market pools.
-   *
-   * @description
-   * To obtain all market pools at once, it is recommended to use
-   * the `queryMarket` method to reduce time consumption.
-   *
-   * @param poolCoinNames - Specific an array of support pool coin name.
-   * @param indexer - Whether to use indexer.
-   * @return Market pools data.
-   */
-  public async getMarketPools(poolCoinNames?: SupportPoolCoins[], indexer = false) {
-    return getMarketPools(this, poolCoinNames, indexer);
-  }
-
-  /**
-   * Get  market pool
-   *
-   * @param poolCoinName - Specific support pool coin name.
-   * @param indexer - Whether to use indexer.
-   * @return Market pool data.
-   */
-  public async getMarketPool(poolCoinName: SupportPoolCoins, indexer = false) {
-    return getMarketPool(this, poolCoinName, indexer);
-  }
-
-  /**
-   * Get market collaterals.
-   *
-   * @description
-   * To obtain all market collaterals at once, it is recommended to use
-   * the `queryMarket` method to reduce time consumption.
-   *
-   * @param collateralCoinNames - Specific an array of support collateral coin name.
-   * @param indexer - Whether to use indexer.
-   * @return Market collaterals data.
-   */
-  public async getMarketCollaterals(collateralCoinNames?: SupportCollateralCoins[], indexer = false) {
-    return getMarketCollaterals(this, collateralCoinNames, indexer);
-  }
-
-  /**
-   * Get market collateral
-   *
-   * @param collateralCoinName - Specific support collateral coin name.
-   * @param indexer - Whether to use indexer.
-   * @return Market collateral data.
-   */
-  public async getMarketCollateral(collateralCoinName: SupportCollateralCoins, indexer = false) {
-    return getMarketCollateral(this, collateralCoinName, indexer);
-  }
-
-  /**
    * Get obligations data.
    *
    * @param ownerAddress - The owner address.
@@ -154,24 +86,14 @@ export class ScallopQuery {
   }
 
   /**
-   * Query obligation data.
-   *
-   * @param obligationId - The obligation id.
-   * @return Obligation data.
-   */
-  public async queryObligation(obligationId: string) {
-    return queryObligation(this, obligationId);
-  }
-
-  /**
    * Get all asset coin amounts.
    *
    * @param assetCoinNames - Specific an array of support asset coin name.
    * @param ownerAddress - The owner address.
    * @return All coin amounts.
    */
-  public async getCoinAmounts(assetCoinNames?: SupportAssetCoins[], ownerAddress?: string) {
-    return getCoinAmounts(this, assetCoinNames, ownerAddress);
+  public async getCoinAmounts(ownerAddress: string, assetCoinNames?: SupportAssetCoins[]) {
+    return getCoinAmounts(this, ownerAddress, assetCoinNames);
   }
 
   /**
@@ -192,8 +114,8 @@ export class ScallopQuery {
    * @param ownerAddress - The owner address.
    * @return All market market coin amounts.
    */
-  public async getMarketCoinAmounts(marketCoinNames?: SupportMarketCoins[], ownerAddress?: string) {
-    return getMarketCoinAmounts(this, marketCoinNames, ownerAddress);
+  public async getMarketCoinAmounts(ownerAddress: string, marketCoinNames?: SupportMarketCoins[]) {
+    return getMarketCoinAmounts(this, ownerAddress, marketCoinNames);
   }
 
   /**
@@ -218,28 +140,6 @@ export class ScallopQuery {
   }
 
   /* ==================== Spool Query Methods ==================== */
-
-  /**
-   * Get spools data.
-   *
-   * @param stakeMarketCoinNames - Specific an array of support stake market coin name.
-   * @param indexer - Whether to use indexer.
-   * @return Spools data.
-   */
-  public async getSpools(stakeMarketCoinNames?: SupportStakeMarketCoins[], indexer = false) {
-    return getSpools(this, stakeMarketCoinNames, indexer);
-  }
-
-  /**
-   * Get spool data.
-   *
-   * @param stakeMarketCoinName - Specific support stake market coin name.
-   * @param indexer - Whether to use indexer.
-   * @return Spool data.
-   */
-  public async getSpool(stakeMarketCoinName: SupportStakeMarketCoins, indexer = false) {
-    return getSpool(this, stakeMarketCoinName, indexer);
-  }
 
   /**
    * Get stake accounts data for all stake pools (spools).
@@ -338,17 +238,6 @@ export class ScallopQuery {
   }
 
   /**
-   * Get borrow incentive pools data.
-   *
-   * @param coinNames - Specific an array of support borrow incentive coin name.
-   * @param indexer - Whether to use indexer.
-   * @return Borrow incentive pools data.
-   */
-  public async getBorrowIncentivePools(coinNames?: SupportBorrowIncentiveCoins[], indexer = false) {
-    return queryBorrowIncentivePools(this, coinNames, indexer);
-  }
-
-  /**
    * Get borrow incentive accounts data.
    *
    * @param coinNames - Specific support borrow incentive coin name.
@@ -357,71 +246,5 @@ export class ScallopQuery {
    */
   public async getBorrowIncentiveAccounts(obligationId: string, coinNames?: SupportBorrowIncentiveCoins[]) {
     return queryBorrowIncentiveAccounts(this, obligationId, coinNames);
-  }
-
-  /**
-   * Get user lending and spool infomation for specific pools.
-   *
-   * @param poolCoinNames - Specific an array of support pool coin name.
-   * @param ownerAddress - The owner address.
-   * @param indexer - Whether to use indexer.
-   * @return All lending and spool infomation.
-   */
-  public async getLendings(poolCoinNames?: SupportPoolCoins[], ownerAddress?: string, indexer = false) {
-    return getLendings(this, poolCoinNames, ownerAddress, indexer);
-  }
-
-  /**
-   * Get user lending and spool information for specific pool.
-   *
-   * @param poolCoinName - Specific support pool coin name.
-   * @param ownerAddress - The owner address.
-   * @param indexer - Whether to use indexer.
-   * @return Lending pool data.
-   */
-  public async getLending(poolCoinName: SupportPoolCoins, ownerAddress?: string, indexer = false) {
-    return getLending(this, poolCoinName, ownerAddress, indexer);
-  }
-
-  /**
-   * Get user all obligation accounts information.
-   *
-   * @description
-   * All collateral and borrowing information in all obligation accounts owned by the user.
-   *
-   * @param ownerAddress - The owner address.
-   * @param indexer - Whether to use indexer.
-   * @return All obligation accounts information.
-   */
-  public async getObligationAccounts(ownerAddress?: string, indexer = false) {
-    return getObligationAccounts(this, ownerAddress, indexer);
-  }
-
-  /**
-   * Get obligation account information for specific id.
-   *
-   * @description
-   * borrowing and obligation information for specific pool.
-   *
-   * @param obligationId - The obligation id.
-   * @param ownerAddress - The owner address.
-   * @param indexer - Whether to use indexer.
-   * @return Borrowing and collateral information.
-   */
-  public async getObligationAccount(obligationId: string, ownerAddress?: string, indexer = false) {
-    return getObligationAccount(this, obligationId, ownerAddress, indexer);
-  }
-
-  /**
-   * Get total value locked.
-   *
-   * @param indexer - Whether to use indexer.
-   * @description
-   * Include total supplied value and total borrowed value.
-   *
-   * @return Total value locked.
-   */
-  public async getTvl(indexer = false) {
-    return getTotalValueLocked(this, indexer);
   }
 }
