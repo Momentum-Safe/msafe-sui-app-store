@@ -9,9 +9,7 @@ type OptionalKeys<T> = {
   [K in keyof T]?: T[K];
 };
 
-export type BorrowIncentivePools = OptionalKeys<
-  Record<SupportBorrowIncentiveCoins, BorrowIncentivePool>
->;
+export type BorrowIncentivePools = OptionalKeys<Record<SupportBorrowIncentiveCoins, BorrowIncentivePool>>;
 
 export type BorrowIncentivePool = {
   coinName: SupportBorrowIncentiveCoins;
@@ -22,12 +20,7 @@ export type BorrowIncentivePool = {
   rewardCoinDecimal: number;
   coinPrice: number;
   rewardCoinPrice: number;
-} & Required<
-  Pick<
-    ParsedBorrowIncentivePoolData,
-    'maxPoint' | 'distributedPoint' | 'maxStake'
-  >
-> &
+} & Required<Pick<ParsedBorrowIncentivePoolData, 'maxPoint' | 'distributedPoint' | 'maxStake'>> &
   CalculatedBorrowIncentivePoolData &
   BorrowIncentiveRewardPool;
 
@@ -72,10 +65,7 @@ export type CalculatedBorrowIncentivePoolData = {
 };
 
 export type BorrowIncentiveRewardPool = Required<
-  Pick<
-    ParsedBorrowIncentiveRewardPoolData,
-    'exchangeRateNumerator' | 'exchangeRateDenominator'
-  >
+  Pick<ParsedBorrowIncentiveRewardPoolData, 'exchangeRateNumerator' | 'exchangeRateDenominator'>
 > &
   CalculatedBorrowIncentiveRewardPoolData;
 

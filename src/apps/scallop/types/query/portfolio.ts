@@ -7,20 +7,12 @@ type OptionalKeys<T> = {
 };
 
 export type Lendings = OptionalKeys<Record<SupportPoolCoins, Lending>>;
-export type ObligationAccounts = OptionalKeys<
-  Record<string, ObligationAccount>
->;
+export type ObligationAccounts = OptionalKeys<Record<string, ObligationAccount>>;
 
 export type Lending = Required<
   Pick<
     MarketPool,
-    | 'coinName'
-    | 'symbol'
-    | 'coinType'
-    | 'marketCoinType'
-    | 'coinDecimal'
-    | 'coinPrice'
-    | 'conversionRate'
+    'coinName' | 'symbol' | 'coinType' | 'marketCoinType' | 'coinDecimal' | 'coinPrice' | 'conversionRate'
   > &
     Pick<Spool, 'marketCoinPrice'>
 > & {
@@ -65,13 +57,9 @@ export type ObligationAccount = {
   totalRiskLevel: number;
   totalDepositedPools: number;
   totalBorrowedPools: number;
-  collaterals: OptionalKeys<
-    Record<SupportCollateralCoins, ObligationCollateral>
-  >;
+  collaterals: OptionalKeys<Record<SupportCollateralCoins, ObligationCollateral>>;
   debts: OptionalKeys<Record<SupportPoolCoins, ObligationDebt>>;
-  borrowIncentives: OptionalKeys<
-    Record<SupportPoolCoins, ObligationBorrowIncentive>
-  >;
+  borrowIncentives: OptionalKeys<Record<SupportPoolCoins, ObligationBorrowIncentive>>;
 };
 
 export type ObligationCollateral = {

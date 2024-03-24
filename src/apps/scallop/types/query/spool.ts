@@ -17,9 +17,7 @@ export type Spool = {
   coinPrice: number;
   marketCoinPrice: number;
   rewardCoinPrice: number;
-} & Required<
-  Pick<ParsedSpoolData, 'maxPoint' | 'distributedPoint' | 'maxStake'>
-> &
+} & Required<Pick<ParsedSpoolData, 'maxPoint' | 'distributedPoint' | 'maxStake'>> &
   CalculatedSpoolData &
   SpoolRewardPool;
 
@@ -62,10 +60,7 @@ export type CalculatedSpoolData = {
 };
 
 export type SpoolRewardPool = Required<
-  Pick<
-    ParsedSpoolRewardPoolData,
-    'exchangeRateNumerator' | 'exchangeRateDenominator'
-  >
+  Pick<ParsedSpoolRewardPoolData, 'exchangeRateNumerator' | 'exchangeRateDenominator'>
 > &
   CalculatedSpoolRewardPoolData;
 
@@ -99,12 +94,8 @@ export type CalculatedSpoolRewardPoolData = {
   rewardPerSec: number;
 };
 
-export type StakePools = OptionalKeys<
-  Record<SupportStakeMarketCoins, StakePool>
->;
-export type StakeRewardPools = OptionalKeys<
-  Record<SupportStakeMarketCoins, StakeRewardPool>
->;
+export type StakePools = OptionalKeys<Record<SupportStakeMarketCoins, StakePool>>;
+export type StakeRewardPools = OptionalKeys<Record<SupportStakeMarketCoins, StakeRewardPool>>;
 export type StakeAccounts = Record<SupportStakeMarketCoins, StakeAccount[]>;
 
 export interface StakeAccount {

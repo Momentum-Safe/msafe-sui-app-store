@@ -1,22 +1,13 @@
-import type {
-  SupportPoolCoins,
-  SupportCollateralCoins,
-  SupportMarketCoins,
-  CoinWrappedType,
-} from '../constant';
+import type { SupportPoolCoins, SupportCollateralCoins, SupportMarketCoins, CoinWrappedType } from '../constant';
 
 type OptionalKeys<T> = {
   [K in keyof T]?: T[K];
 };
 
 export type MarketPools = OptionalKeys<Record<SupportPoolCoins, MarketPool>>;
-export type MarketCollaterals = OptionalKeys<
-  Record<SupportCollateralCoins, MarketCollateral>
->;
+export type MarketCollaterals = OptionalKeys<Record<SupportCollateralCoins, MarketCollateral>>;
 export type CoinAmounts = OptionalKeys<Record<SupportPoolCoins, number>>;
-export type MarketCoinAmounts = OptionalKeys<
-  Record<SupportMarketCoins, number>
->;
+export type MarketCoinAmounts = OptionalKeys<Record<SupportMarketCoins, number>>;
 
 export type BalanceSheet = {
   cash: string;
@@ -150,11 +141,7 @@ export type MarketCollateral = {
 } & Required<
   Pick<
     ParsedMarketCollateralData,
-    | 'collateralFactor'
-    | 'liquidationFactor'
-    | 'liquidationDiscount'
-    | 'liquidationPanelty'
-    | 'liquidationReserveFactor'
+    'collateralFactor' | 'liquidationFactor' | 'liquidationDiscount' | 'liquidationPanelty' | 'liquidationReserveFactor'
   >
 > &
   CalculatedMarketCollateralData;
