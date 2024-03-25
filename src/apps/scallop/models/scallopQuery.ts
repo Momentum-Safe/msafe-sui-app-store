@@ -14,6 +14,7 @@ import {
   getCoinAmount,
   getMarketCoinAmounts,
   getMarketCoinAmount,
+  queryObligation,
 } from '../queries';
 import {
   ScallopQueryParams,
@@ -24,6 +25,7 @@ import {
   StakePools,
   StakeRewardPools,
   SupportBorrowIncentiveCoins,
+  SuiAddressArg,
 } from '../types';
 
 /**
@@ -47,6 +49,8 @@ export class ScallopQuery {
 
   public utils: ScallopUtils;
 
+  public walletAddress: string;
+
   public constructor(params: ScallopQueryParams, instance?: ScallopInstanceParams) {
     this.params = params;
     this.address =
@@ -57,6 +61,7 @@ export class ScallopQuery {
       });
     this.client = params.client;
     this.utils = instance?.utils ?? new ScallopUtils(this.params, { address: this.address });
+    this.walletAddress = params.walletAddress;
   }
 
   /**
@@ -246,5 +251,24 @@ export class ScallopQuery {
    */
   public async getBorrowIncentiveAccounts(obligationId: string, coinNames?: SupportBorrowIncentiveCoins[]) {
     return queryBorrowIncentiveAccounts(this, obligationId, coinNames);
+  }
+
+  /**
+   * Get all asset coin names in the obligation record by obligation id.
+   *
+   * @description
+   * This can often be used to determine which assets in an obligation require
+   * price updates before interacting with specific instructions of the Scallop contract.
+   *
+   * @param obligationId - The obligation id.
+   * @return Asset coin Names.
+   */
+  public async getObligationCoinNames(obligationId: SuiAddressArg) {
+    const obligation = await queryObligation(this, obligationId);
+    const collateralCoinTypes = obligation.collaterals.map((collateral) => `0x${collateral.type.name}`);
+    const debtCoinTypes = obligation.debts.map((debt) => `0x${debt.type.name}`);
+    const obligationCoinTypes = [...new Set([...collateralCoinTypes, ...debtCoinTypes])];
+    const obligationCoinNames = obligationCoinTypes.map((coinType) => this.utils.parseCoinNameFromType(coinType));
+    return obligationCoinNames;
   }
 }

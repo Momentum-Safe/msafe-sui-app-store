@@ -1,14 +1,57 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
+import { updateOracles } from './oracle';
 import type { ScallopBuilder } from '../models';
+import { getObligations } from '../queries';
 import type {
   CoreIds,
   GenerateCoreNormalMethod,
   SuiTxBlockWithCoreNormalMethods,
   CoreTxBlock,
   ScallopTxBlock,
+  GenerateCoreQuickMethod,
+  SuiAddressArg,
 } from '../types';
+
+/**
+ * Check and get Obligation information from transaction block.
+ *
+ * @description
+ * If the obligation id is provided, direactly return it.
+ * If both obligation id and key is provided, direactly return them.
+ * Otherwise, automatically get obligation id and key from the sender.
+ *
+ * @param builder - Scallop builder instance.
+ * @param txBlock - TxBlock created by SuiKit.
+ * @param obligationId - Obligation id.
+ * @param obligationKey - Obligation key.
+ * @return Obligation id and key.
+ */
+const requireObligationInfo = async (
+  ...params: [
+    builder: ScallopBuilder,
+    obligationId?: SuiAddressArg,
+    obligationKey?: SuiAddressArg,
+    walletAddress?: SuiAddressArg,
+  ]
+) => {
+  const [builder, obligationId, obligationKey, walletAddress] = params;
+  if (params.length === 3 && obligationId) {
+    return { obligationId };
+  }
+  if (params.length === 4 && obligationId && obligationKey) {
+    return { obligationId, obligationKey };
+  }
+  const obligations = await getObligations(builder.query, walletAddress as string);
+  if (obligations.length === 0) {
+    throw new Error(`No obligation found for sender ${walletAddress}`);
+  }
+  return {
+    obligationId: obligations[0].id,
+    obligationKey: obligations[0].keyId,
+  };
+};
 
 /**
  * Generate core normal methods.
@@ -200,6 +243,108 @@ const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, txBlock }
 };
 
 /**
+ * Generate core quick methods.
+ *
+ * @description
+ * The quick methods are the same as the normal methods, but they will automatically
+ * help users organize transaction blocks, include query obligation info, and transfer
+ * coins to the sender. So, they are all asynchronous methods.
+ *
+ * @param builder - Scallop builder instance.
+ * @param txBlock - TxBlock created by SuiKit.
+ * @return Core quick methods.
+ */
+const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBlock }) => ({
+  addCollateralQuick: async (amount, collateralCoinName, obligationId, walletAddress) => {
+    const { obligationId: obligationArg } = await requireObligationInfo(
+      builder,
+      obligationId,
+      undefined,
+      walletAddress,
+    );
+
+    if (collateralCoinName === 'sui') {
+      const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
+      txBlock.addCollateral(obligationArg, suiCoin, collateralCoinName);
+    } else {
+      const { leftCoin, takeCoin } = await builder.selectCoin(
+        txBlock as ScallopTxBlock,
+        collateralCoinName,
+        amount,
+        walletAddress as string,
+      );
+      txBlock.addCollateral(obligationArg, takeCoin, collateralCoinName);
+      txBlock.transferObjects([leftCoin], walletAddress as string);
+    }
+  },
+  takeCollateralQuick: async (amount, collateralCoinName, obligationId, obligationKey, walletAddress) => {
+    const obligationInfo = await requireObligationInfo(builder, obligationId, obligationKey, walletAddress);
+    const updateCoinNames = await builder.query.getObligationCoinNames(obligationInfo.obligationId);
+    await updateOracles(builder, txBlock, updateCoinNames);
+    return txBlock.takeCollateral(
+      obligationInfo.obligationId,
+      obligationInfo.obligationKey as SuiAddressArg,
+      amount,
+      collateralCoinName,
+    );
+  },
+  depositQuick: async (amount, poolCoinName, walletAddress) => {
+    if (poolCoinName === 'sui') {
+      const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
+      return txBlock.deposit(suiCoin, poolCoinName);
+    }
+    const { leftCoin, takeCoin } = await builder.selectCoin(
+      txBlock as ScallopTxBlock,
+      poolCoinName,
+      amount,
+      walletAddress as string,
+    );
+    txBlock.transferObjects([leftCoin], walletAddress as string);
+    return txBlock.deposit(takeCoin, poolCoinName);
+  },
+  withdrawQuick: async (amount, poolCoinName, walletAddress) => {
+    const marketCoinName = builder.utils.parseMarketCoinName(poolCoinName);
+    const { leftCoin, takeCoin } = await builder.selectMarketCoin(
+      txBlock,
+      marketCoinName,
+      amount,
+      walletAddress as string,
+    );
+    txBlock.transferObjects([leftCoin], walletAddress as string);
+    return txBlock.withdraw(takeCoin, poolCoinName);
+  },
+  borrowQuick: async (amount, poolCoinName, obligationId, obligationKey, walletAddress) => {
+    const obligationInfo = await requireObligationInfo(builder, obligationId, obligationKey, walletAddress);
+    const obligationCoinNames = await builder.query.getObligationCoinNames(obligationInfo.obligationId);
+    const updateCoinNames = [...obligationCoinNames, poolCoinName];
+    await updateOracles(builder, txBlock, updateCoinNames);
+    return txBlock.borrow(
+      obligationInfo.obligationId,
+      obligationInfo.obligationKey as SuiAddressArg,
+      amount,
+      poolCoinName,
+    );
+  },
+  repayQuick: async (amount, poolCoinName, obligationId, walletAddress) => {
+    const obligationInfo = await requireObligationInfo(builder, obligationId);
+
+    if (poolCoinName === 'sui') {
+      const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
+      return txBlock.repay(obligationInfo.obligationId, suiCoin, poolCoinName);
+    }
+    const { leftCoin, takeCoin } = await builder.selectCoin(
+      txBlock as ScallopTxBlock,
+      poolCoinName,
+      amount,
+      walletAddress as string,
+    );
+    txBlock.transferObjects([leftCoin], walletAddress as string);
+    return txBlock.repay(obligationInfo.obligationId, takeCoin, poolCoinName);
+  },
+  updateAssetPricesQuick: async (assetCoinNames) => updateOracles(builder, txBlock, assetCoinNames),
+});
+
+/**
  * Create an enhanced transaction block instance for interaction with core modules of the Scallop contract.
  *
  * @param builder - Scallop builder instance.
@@ -224,7 +369,17 @@ export const newCoreTxBlock = (builder: ScallopBuilder, initTxBlock?: ScallopTxB
     },
   }) as SuiTxBlockWithCoreNormalMethods;
 
+  const quickMethod = generateCoreQuickMethod({
+    builder,
+    txBlock: normalTxBlock,
+  });
+
   return new Proxy(normalTxBlock, {
-    get: (target, prop) => Reflect.get(target, prop),
+    get: (target, prop) => {
+      if (prop in quickMethod) {
+        return Reflect.get(quickMethod, prop);
+      }
+      return Reflect.get(target, prop);
+    },
   }) as CoreTxBlock;
 };

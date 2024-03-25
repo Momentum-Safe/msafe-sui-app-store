@@ -1,4 +1,5 @@
 import type { SuiObjectResponse, SuiObjectData } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import BigNumber from 'bignumber.js';
 
 import { SUPPORT_POOLS, PROTOCOL_OBJECT_ID } from '../constants';
@@ -10,6 +11,8 @@ import {
   CoinAmounts,
   MarketCoinAmounts,
   SupportMarketCoins,
+  SuiAddressArg,
+  ObligationQueryInterface,
 } from '../types';
 
 /**
@@ -306,4 +309,29 @@ export const getMarketCoinAmount = async (
     }
   });
   return marketCoinAmount;
+};
+
+/**
+ * Query obligation data.
+ *
+ * @description
+ * Use inspectTxn call to obtain the data provided in the scallop contract query module.
+ *
+ * @param query - The Scallop query instance.
+ * @param obligationId - The obligation id.
+ * @return Obligation data.
+ */
+export const queryObligation = async (query: ScallopQuery, obligationId: SuiAddressArg) => {
+  const packageId = query.address.get('core.packages.query.id');
+  const queryTarget = `${packageId}::obligation_query::obligation_data` as `${string}::${string}::${string}`;
+  const txBlock = new TransactionBlock();
+  txBlock.moveCall({
+    target: queryTarget,
+    arguments: [txBlock.object(obligationId as string)],
+  });
+  const queryResult = await query.client.devInspectTransactionBlock({
+    transactionBlock: txBlock,
+    sender: query.walletAddress,
+  });
+  return queryResult.events[0].parsedJson as ObligationQueryInterface;
 };

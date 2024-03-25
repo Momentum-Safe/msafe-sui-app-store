@@ -251,9 +251,8 @@ export class ScallopClient {
   ): Promise<TransactionBlock> {
     const txBlock = this.builder.createTxBlock();
     const sender = walletAddress || this.walletAddress;
-    txBlock.setSender(sender);
 
-    const marketCoin = await txBlock.depositQuick(amount, poolCoinName);
+    const marketCoin = await txBlock.depositQuick(amount, poolCoinName, walletAddress);
     txBlock.transferObjects([marketCoin], sender);
     return txBlock;
   }

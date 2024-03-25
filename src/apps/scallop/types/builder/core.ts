@@ -49,22 +49,38 @@ export type CoreQuickMethods = {
     amount: number,
     collateralCoinName: SupportCollateralCoins,
     obligationId?: SuiAddressArg,
+    walletAddress?: SuiAddressArg,
   ) => Promise<void>;
   takeCollateralQuick: (
     amount: number,
     collateralCoinName: SupportCollateralCoins,
     obligationId?: SuiAddressArg,
     obligationKey?: SuiAddressArg,
+    walletAddress?: SuiAddressArg,
   ) => Promise<TransactionResult>;
   borrowQuick: (
     amount: number,
     poolCoinName: SupportPoolCoins,
     obligationId?: SuiAddressArg,
     obligationKey?: SuiAddressArg,
+    walletAddress?: SuiAddressArg,
   ) => Promise<TransactionResult>;
-  depositQuick: (amount: number, poolCoinName: SupportPoolCoins) => Promise<TransactionResult>;
-  withdrawQuick: (amount: number, poolCoinName: SupportPoolCoins) => Promise<TransactionResult>;
-  repayQuick: (amount: number, poolCoinName: SupportPoolCoins, obligationId?: SuiAddressArg) => Promise<void>;
+  depositQuick: (
+    amount: number,
+    poolCoinName: SupportPoolCoins,
+    walletAddress?: SuiAddressArg,
+  ) => Promise<TransactionResult>;
+  withdrawQuick: (
+    amount: number,
+    poolCoinName: SupportPoolCoins,
+    walletAddress?: SuiAddressArg,
+  ) => Promise<TransactionResult>;
+  repayQuick: (
+    amount: number,
+    poolCoinName: SupportPoolCoins,
+    obligationId?: SuiAddressArg,
+    walletAddress?: SuiAddressArg,
+  ) => Promise<void>;
   updateAssetPricesQuick: (assetCoinNames?: SupportAssetCoins[]) => Promise<void>;
 };
 

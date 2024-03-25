@@ -26,6 +26,7 @@ export type ScallopParams = {
   addressesId?: string;
   networkType?: NetworkType;
   client: SuiClient;
+  walletAddress: string;
 };
 
 export type ScallopClientParams = ScallopParams & {
