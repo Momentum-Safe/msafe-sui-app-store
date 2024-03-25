@@ -1,11 +1,14 @@
 import type { SuiClient } from '@mysten/sui.js/client';
-import type { TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopBuilder } from './scallopBuilder';
 import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
+import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveBuilder';
+import { generateCoreQuickMethod } from '../builders/coreBuilder';
+import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS } from '../constants';
 import type {
   ScallopInstanceParams,
@@ -168,10 +171,11 @@ export class ScallopClient {
    * @return Transaction block response or transaction block.
    */
   public async openObligation(walletAddress?: string): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const coreQuickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
-    txBlock.openObligationEntry();
+    coreQuickMethod.normalMethod.openObligationEntry();
     return txBlock;
   }
 
@@ -191,18 +195,19 @@ export class ScallopClient {
     obligationId?: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
+    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
 
     const obligations = await this.query.getObligations(sender);
     const specificObligationId = obligationId || obligations?.[0]?.id;
     if (specificObligationId) {
-      await txBlock.addCollateralQuick(amount, collateralCoinName, specificObligationId);
+      await quickMethod.addCollateralQuick(amount, collateralCoinName, specificObligationId);
     } else {
-      const [obligation, obligationKey, hotPotato] = txBlock.openObligation();
-      await txBlock.addCollateralQuick(amount, collateralCoinName, obligation);
-      txBlock.returnObligation(obligation, hotPotato);
+      const [obligation, obligationKey, hotPotato] = quickMethod.normalMethod.openObligation();
+      await quickMethod.addCollateralQuick(amount, collateralCoinName, obligation);
+      quickMethod.normalMethod.returnObligation(obligation, hotPotato);
       txBlock.transferObjects([obligationKey], sender);
     }
     return txBlock;
@@ -226,11 +231,17 @@ export class ScallopClient {
     obligationKey: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const collateralCoin = await txBlock.takeCollateralQuick(amount, collateralCoinName, obligationId, obligationKey);
+    const collateralCoin = await quickMethod.takeCollateralQuick(
+      amount,
+      collateralCoinName,
+      obligationId,
+      obligationKey,
+    );
     txBlock.transferObjects([collateralCoin], sender);
     return txBlock;
   }
@@ -249,10 +260,16 @@ export class ScallopClient {
     amount: number,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const quickMethod = generateCoreQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
     const sender = walletAddress || this.walletAddress;
+    txBlock.splitCoins(txBlock.gas, [amount]);
+    txBlock.setSender(sender);
 
-    const marketCoin = await txBlock.depositQuick(amount, poolCoinName, walletAddress);
+    const marketCoin = await quickMethod.depositQuick(amount, poolCoinName, walletAddress);
     txBlock.transferObjects([marketCoin], sender);
     return txBlock;
   }
@@ -271,11 +288,15 @@ export class ScallopClient {
     amount: number,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
     const sender = walletAddress || this.walletAddress;
+    const quickMethod = generateCoreQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
     txBlock.setSender(sender);
 
-    const coin = await txBlock.withdrawQuick(amount, poolCoinName);
+    const coin = await quickMethod.withdrawQuick(amount, poolCoinName);
     txBlock.transferObjects([coin], sender);
     return txBlock;
   }
@@ -298,18 +319,23 @@ export class ScallopClient {
     obligationKey: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
     const availableStake = (SUPPORT_BORROW_INCENTIVE_POOLS as readonly SupportPoolCoins[]).includes(poolCoinName);
     if (availableStake) {
-      await txBlock.unstakeObligationQuick(obligationId, obligationKey);
+      await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKey);
     }
-    const coin = await txBlock.borrowQuick(amount, poolCoinName, obligationId, obligationKey);
+    const coin = await quickMethod.borrowQuick(amount, poolCoinName, obligationId, obligationKey);
     txBlock.transferObjects([coin], sender);
     if (availableStake) {
-      await txBlock.stakeObligationQuick(obligationId, obligationKey);
+      await borrowIncentiveQuickMethod.stakeObligationQuick(obligationId, obligationKey);
     }
     return txBlock;
   }
@@ -331,17 +357,22 @@ export class ScallopClient {
     obligationKey: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
     const availableStake = (SUPPORT_BORROW_INCENTIVE_POOLS as readonly SupportPoolCoins[]).includes(poolCoinName);
     if (availableStake) {
-      await txBlock.unstakeObligationQuick(obligationId, obligationKey);
+      await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKey);
     }
-    await txBlock.repayQuick(amount, poolCoinName, obligationId);
+    await quickMethod.repayQuick(amount, poolCoinName, obligationId);
     if (availableStake) {
-      await txBlock.stakeObligationQuick(obligationId, obligationKey);
+      await borrowIncentiveQuickMethod.stakeObligationQuick(obligationId, obligationKey);
     }
     return txBlock;
   }
@@ -359,11 +390,12 @@ export class ScallopClient {
     marketCoinName: SupportStakeMarketCoins,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const stakeAccount = txBlock.createStakeAccount(marketCoinName);
+    const stakeAccount = spoolQuickMethod.normalMethod.createStakeAccount(marketCoinName);
     txBlock.transferObjects([stakeAccount], sender);
     return txBlock;
   }
@@ -384,17 +416,18 @@ export class ScallopClient {
     stakeAccountId?: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const stakeAccounts = await this.query.getStakeAccounts(stakeMarketCoinName);
+    const stakeAccounts = await this.query.getStakeAccounts(stakeMarketCoinName, sender);
     const targetStakeAccount = stakeAccountId || stakeAccounts[0].id;
     if (targetStakeAccount) {
-      await txBlock.stakeQuick(amount, stakeMarketCoinName, targetStakeAccount);
+      await spoolQuickMethod.stakeQuick(amount, stakeMarketCoinName, targetStakeAccount);
     } else {
-      const account = txBlock.createStakeAccount(stakeMarketCoinName);
-      await txBlock.stakeQuick(amount, stakeMarketCoinName, account);
+      const account = spoolQuickMethod.normalMethod.createStakeAccount(stakeMarketCoinName);
+      await spoolQuickMethod.stakeQuick(amount, stakeMarketCoinName, account);
       txBlock.transferObjects([account], sender);
     }
     return txBlock;
@@ -416,11 +449,12 @@ export class ScallopClient {
     stakeAccountId?: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const marketCoins = await txBlock.unstakeQuick(amount, stakeMarketCoinName, stakeAccountId);
+    const marketCoins = await spoolQuickMethod.unstakeQuick(amount, stakeMarketCoinName, stakeAccountId);
     txBlock.transferObjects(marketCoins, sender);
     return txBlock;
   }
@@ -440,11 +474,12 @@ export class ScallopClient {
     stakeAccountId?: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const rewardCoins = await txBlock.claimQuick(stakeMarketCoinName, stakeAccountId);
+    const rewardCoins = await spoolQuickMethod.claimQuick(stakeMarketCoinName, stakeAccountId);
     txBlock.transferObjects(rewardCoins, sender);
     return txBlock;
   }
@@ -512,12 +547,17 @@ export class ScallopClient {
     obligationKeyId: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
-    const txBlock = this.builder.createTxBlock();
+    const txBlock = new TransactionBlock();
+    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const rewardCoin = await txBlock.claimBorrowIncentiveQuick(coinName, obligationId, obligationKeyId);
-    txBlock.transferObjects(rewardCoin, sender);
+    const rewardCoin = await borrowIncentiveQuickMethod.claimBorrowIncentiveQuick(
+      coinName,
+      obligationId,
+      obligationKeyId,
+    );
+    txBlock.transferObjects([rewardCoin], sender);
     return txBlock;
   }
 }

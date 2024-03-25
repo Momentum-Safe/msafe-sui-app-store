@@ -64,7 +64,10 @@ export const getStakeAccounts = async (query: ScallopQuery, ownerAddress: string
   const stakeObjectIds: string[] = stakeObjectsResponse
     .map((ref: any) => ref?.data?.objectId)
     .filter((id: any) => id !== undefined);
-  const stakeObjects = await query.client.multiGetObjects({ ids: stakeObjectIds });
+  const stakeObjects = await query.client.multiGetObjects({
+    ids: stakeObjectIds,
+    options: { showContent: true, showType: true },
+  });
   stakeObjects.forEach((stakeObject) => {
     const id = stakeObject.data.objectId;
     const type = stakeObject.data.type!;

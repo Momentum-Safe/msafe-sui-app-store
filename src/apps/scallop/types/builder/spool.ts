@@ -20,6 +20,7 @@ export type SpoolNormalMethods = {
 };
 
 export type SpoolQuickMethods = {
+  normalMethod: SpoolNormalMethods;
   stakeQuick(
     amountOrMarketCoin: SuiObjectArg | number,
     stakeMarketCoinName: SupportStakeMarketCoins,
@@ -47,5 +48,5 @@ export type GenerateSpoolNormalMethod = (params: {
 
 export type GenerateSpoolQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: SuiTxBlockWithSpoolNormalMethods;
+  txBlock: TransactionBlock;
 }) => SpoolQuickMethods;

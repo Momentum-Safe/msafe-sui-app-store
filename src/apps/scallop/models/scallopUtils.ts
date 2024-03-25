@@ -126,7 +126,7 @@ export class ScallopUtils {
     if (voloPckageIds.includes(coinPackageId)) {
       return `${coinPackageId}::cert::CERT`;
     }
-    return `${coinPackageId}::${coinName}::${coinName.toUpperCase()}`;
+    return `${coinPackageId}::${validCoinName}::${validCoinName.toUpperCase()}`;
   }
 
   /**

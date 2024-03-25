@@ -45,6 +45,7 @@ export type CoreNormalMethods = {
 };
 
 export type CoreQuickMethods = {
+  normalMethod: CoreNormalMethods;
   addCollateralQuick: (
     amount: number,
     collateralCoinName: SupportCollateralCoins,
@@ -95,5 +96,5 @@ export type GenerateCoreNormalMethod = (params: {
 
 export type GenerateCoreQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: SuiTxBlockWithCoreNormalMethods;
+  txBlock: TransactionBlock;
 }) => CoreQuickMethods;

@@ -55,7 +55,7 @@ const requireObligationInfo = async (
  * @param txBlock - TxBlock created by SuiKit .
  * @return Borrow incentive normal methods.
  */
-const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalMethod = ({ builder, txBlock }) => {
+export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalMethod = ({ builder, txBlock }) => {
   const borrowIncentiveIds: BorrowIncentiveIds = {
     borrowIncentivePkg: builder.address.get('borrowIncentive.id'),
     query: builder.address.get('borrowIncentive.query'),
@@ -129,44 +129,49 @@ const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalMethod =
  * @param txBlock - TxBlock created by SuiKit .
  * @return Spool quick methods.
  */
-const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMethod = ({ builder, txBlock }) => ({
-  stakeObligationQuick: async (obligation, obligationKey) => {
-    const {
-      obligationId: obligationArg,
-      obligationKey: obligationtKeyArg,
-      obligationLocked,
-    } = await requireObligationInfo(builder, txBlock, obligation as string, obligationKey as string);
+export const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMethod = ({ builder, txBlock }) => {
+  const normalMethod = generateBorrowIncentiveNormalMethod({ builder, txBlock });
+  return {
+    normalMethod,
+    stakeObligationQuick: async (obligation, obligationKey) => {
+      const {
+        obligationId: obligationArg,
+        obligationKey: obligationtKeyArg,
+        obligationLocked,
+      } = await requireObligationInfo(builder, txBlock, obligation as string, obligationKey as string);
 
-    const unstakeObligationBeforeStake = !!txBlock.blockData.transactions.find(
-      (txn) => txn.kind === 'MoveCall' && txn.target === `${builder.address.get('borrowIncentive.id')}::user::unstake`,
-    );
+      const unstakeObligationBeforeStake = !!txBlock.blockData.transactions.find(
+        (txn) =>
+          txn.kind === 'MoveCall' && txn.target === `${builder.address.get('borrowIncentive.id')}::user::unstake`,
+      );
 
-    if (!obligationLocked || unstakeObligationBeforeStake) {
-      txBlock.stakeObligation(obligationArg, obligationtKeyArg);
-    }
-  },
-  unstakeObligationQuick: async (obligation, obligationKey) => {
-    const {
-      obligationId: obligationArg,
-      obligationKey: obligationtKeyArg,
-      obligationLocked,
-    } = await requireObligationInfo(builder, txBlock, obligation as string, obligationKey as string);
+      if (!obligationLocked || unstakeObligationBeforeStake) {
+        normalMethod.stakeObligation(obligationArg, obligationtKeyArg);
+      }
+    },
+    unstakeObligationQuick: async (obligation, obligationKey) => {
+      const {
+        obligationId: obligationArg,
+        obligationKey: obligationtKeyArg,
+        obligationLocked,
+      } = await requireObligationInfo(builder, txBlock, obligation as string, obligationKey as string);
 
-    if (obligationLocked) {
-      txBlock.unstakeObligation(obligationArg, obligationtKeyArg);
-    }
-  },
-  claimBorrowIncentiveQuick: async (coinName, obligation, obligationKey) => {
-    const { obligationId: obligationArg, obligationKey: obligationtKeyArg } = await requireObligationInfo(
-      builder,
-      txBlock,
-      obligation as string,
-      obligationKey as string,
-    );
+      if (obligationLocked) {
+        normalMethod.unstakeObligation(obligationArg, obligationtKeyArg);
+      }
+    },
+    claimBorrowIncentiveQuick: async (coinName, obligation, obligationKey) => {
+      const { obligationId: obligationArg, obligationKey: obligationtKeyArg } = await requireObligationInfo(
+        builder,
+        txBlock,
+        obligation as string,
+        obligationKey as string,
+      );
 
-    return txBlock.claimBorrowIncentive(obligationArg, obligationtKeyArg, coinName);
-  },
-});
+      return normalMethod.claimBorrowIncentive(obligationArg, obligationtKeyArg, coinName);
+    },
+  };
+};
 
 /**
  * Create an enhanced transaction block instance for interaction with borrow incentive modules of the Scallop contract.

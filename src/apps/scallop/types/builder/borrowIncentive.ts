@@ -23,6 +23,7 @@ export type BorrowIncentiveNormalMethods = {
 };
 
 export type BorrowIncentiveQuickMethods = {
+  normalMethod: BorrowIncentiveNormalMethods;
   stakeObligationQuick(obligation?: SuiAddressArg, obligationKey?: SuiAddressArg): Promise<void>;
   unstakeObligationQuick(obligation?: SuiAddressArg, obligationKey?: SuiAddressArg): Promise<void>;
   claimBorrowIncentiveQuick(
@@ -43,5 +44,5 @@ export type GenerateBorrowIncentiveNormalMethod = (params: {
 
 export type GenerateBorrowIncentiveQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: SuiTxBlockWithBorrowIncentiveNormalMethods;
+  txBlock: TransactionBlock;
 }) => BorrowIncentiveQuickMethods;

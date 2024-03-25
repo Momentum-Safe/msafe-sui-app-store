@@ -13,6 +13,7 @@ import type {
   GenerateCoreQuickMethod,
   SuiAddressArg,
 } from '../types';
+import { requireSender } from '../utils';
 
 /**
  * Check and get Obligation information from transaction block.
@@ -30,22 +31,23 @@ import type {
  */
 const requireObligationInfo = async (
   ...params: [
+    txBlock: TransactionBlock,
     builder: ScallopBuilder,
     obligationId?: SuiAddressArg,
     obligationKey?: SuiAddressArg,
-    walletAddress?: SuiAddressArg,
   ]
 ) => {
-  const [builder, obligationId, obligationKey, walletAddress] = params;
+  const [txBlock, builder, obligationId, obligationKey] = params;
   if (params.length === 3 && obligationId) {
     return { obligationId };
   }
   if (params.length === 4 && obligationId && obligationKey) {
     return { obligationId, obligationKey };
   }
-  const obligations = await getObligations(builder.query, walletAddress as string);
+  const sender = requireSender(txBlock);
+  const obligations = await getObligations(builder.query, sender);
   if (obligations.length === 0) {
-    throw new Error(`No obligation found for sender ${walletAddress}`);
+    throw new Error(`No obligation found for sender ${sender}`);
   }
   return {
     obligationId: obligations[0].id,
@@ -60,7 +62,7 @@ const requireObligationInfo = async (
  * @param txBlock - TxBlock created by SuiKit.
  * @return Core normal methods.
  */
-const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, txBlock }) => {
+export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, txBlock }) => {
   const coreIds: CoreIds = {
     protocolPkg: builder.address.get('core.packages.protocol.id'),
     market: builder.address.get('core.market'),
@@ -254,95 +256,91 @@ const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, txBlock }
  * @param txBlock - TxBlock created by SuiKit.
  * @return Core quick methods.
  */
-const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBlock }) => ({
-  addCollateralQuick: async (amount, collateralCoinName, obligationId, walletAddress) => {
-    const { obligationId: obligationArg } = await requireObligationInfo(
-      builder,
-      obligationId,
-      undefined,
-      walletAddress,
-    );
+export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBlock }) => {
+  const normalMethod = generateCoreNormalMethod({ builder, txBlock });
+  return {
+    normalMethod,
+    addCollateralQuick: async (amount, collateralCoinName, obligationId) => {
+      const sender = requireSender(txBlock);
+      const { obligationId: obligationArg } = await requireObligationInfo(txBlock, builder, obligationId);
 
-    if (collateralCoinName === 'sui') {
-      const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
-      txBlock.addCollateral(obligationArg, suiCoin, collateralCoinName);
-    } else {
+      if (collateralCoinName === 'sui') {
+        const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
+        normalMethod.addCollateral(obligationArg, suiCoin, collateralCoinName);
+      } else {
+        const { leftCoin, takeCoin } = await builder.selectCoin(
+          txBlock as ScallopTxBlock,
+          collateralCoinName,
+          amount,
+          sender,
+        );
+        normalMethod.addCollateral(obligationArg, takeCoin, collateralCoinName);
+        txBlock.transferObjects([leftCoin], sender);
+      }
+    },
+    takeCollateralQuick: async (amount, collateralCoinName, obligationId, obligationKey) => {
+      const obligationInfo = await requireObligationInfo(txBlock, builder, obligationId, obligationKey);
+      const updateCoinNames = await builder.query.getObligationCoinNames(obligationInfo.obligationId);
+      await updateOracles(builder, txBlock, updateCoinNames);
+      return normalMethod.takeCollateral(
+        obligationInfo.obligationId,
+        obligationInfo.obligationKey as SuiAddressArg,
+        amount,
+        collateralCoinName,
+      );
+    },
+    depositQuick: async (amount, poolCoinName, walletAddress) => {
+      if (poolCoinName === 'sui') {
+        const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
+        return normalMethod.deposit(suiCoin, poolCoinName);
+      }
       const { leftCoin, takeCoin } = await builder.selectCoin(
         txBlock as ScallopTxBlock,
-        collateralCoinName,
+        poolCoinName,
         amount,
         walletAddress as string,
       );
-      txBlock.addCollateral(obligationArg, takeCoin, collateralCoinName);
       txBlock.transferObjects([leftCoin], walletAddress as string);
-    }
-  },
-  takeCollateralQuick: async (amount, collateralCoinName, obligationId, obligationKey, walletAddress) => {
-    const obligationInfo = await requireObligationInfo(builder, obligationId, obligationKey, walletAddress);
-    const updateCoinNames = await builder.query.getObligationCoinNames(obligationInfo.obligationId);
-    await updateOracles(builder, txBlock, updateCoinNames);
-    return txBlock.takeCollateral(
-      obligationInfo.obligationId,
-      obligationInfo.obligationKey as SuiAddressArg,
-      amount,
-      collateralCoinName,
-    );
-  },
-  depositQuick: async (amount, poolCoinName, walletAddress) => {
-    if (poolCoinName === 'sui') {
-      const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
-      return txBlock.deposit(suiCoin, poolCoinName);
-    }
-    const { leftCoin, takeCoin } = await builder.selectCoin(
-      txBlock as ScallopTxBlock,
-      poolCoinName,
-      amount,
-      walletAddress as string,
-    );
-    txBlock.transferObjects([leftCoin], walletAddress as string);
-    return txBlock.deposit(takeCoin, poolCoinName);
-  },
-  withdrawQuick: async (amount, poolCoinName, walletAddress) => {
-    const marketCoinName = builder.utils.parseMarketCoinName(poolCoinName);
-    const { leftCoin, takeCoin } = await builder.selectMarketCoin(
-      txBlock,
-      marketCoinName,
-      amount,
-      walletAddress as string,
-    );
-    txBlock.transferObjects([leftCoin], walletAddress as string);
-    return txBlock.withdraw(takeCoin, poolCoinName);
-  },
-  borrowQuick: async (amount, poolCoinName, obligationId, obligationKey, walletAddress) => {
-    const obligationInfo = await requireObligationInfo(builder, obligationId, obligationKey, walletAddress);
-    const obligationCoinNames = await builder.query.getObligationCoinNames(obligationInfo.obligationId);
-    const updateCoinNames = [...obligationCoinNames, poolCoinName];
-    await updateOracles(builder, txBlock, updateCoinNames);
-    return txBlock.borrow(
-      obligationInfo.obligationId,
-      obligationInfo.obligationKey as SuiAddressArg,
-      amount,
-      poolCoinName,
-    );
-  },
-  repayQuick: async (amount, poolCoinName, obligationId, walletAddress) => {
-    const obligationInfo = await requireObligationInfo(builder, obligationId);
+      return normalMethod.deposit(takeCoin, poolCoinName);
+    },
+    withdrawQuick: async (amount, poolCoinName) => {
+      const sender = requireSender(txBlock);
+      const marketCoinName = builder.utils.parseMarketCoinName(poolCoinName);
+      const { leftCoin, takeCoin } = await builder.selectMarketCoin(txBlock, marketCoinName, amount, sender);
+      txBlock.transferObjects([leftCoin], sender);
+      return normalMethod.withdraw(takeCoin, poolCoinName);
+    },
+    borrowQuick: async (amount, poolCoinName, obligationId, obligationKey) => {
+      const obligationInfo = await requireObligationInfo(txBlock, builder, obligationId, obligationKey);
+      const obligationCoinNames = await builder.query.getObligationCoinNames(obligationInfo.obligationId);
+      const updateCoinNames = [...obligationCoinNames, poolCoinName];
+      await updateOracles(builder, txBlock, updateCoinNames);
+      return normalMethod.borrow(
+        obligationInfo.obligationId,
+        obligationInfo.obligationKey as SuiAddressArg,
+        amount,
+        poolCoinName,
+      );
+    },
+    repayQuick: async (amount, poolCoinName, obligationId, walletAddress) => {
+      const obligationInfo = await requireObligationInfo(txBlock, builder, obligationId);
 
-    if (poolCoinName === 'sui') {
-      const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
-      return txBlock.repay(obligationInfo.obligationId, suiCoin, poolCoinName);
-    }
-    const { leftCoin, takeCoin } = await builder.selectCoin(
-      txBlock as ScallopTxBlock,
-      poolCoinName,
-      amount,
-      walletAddress as string,
-    );
-    txBlock.transferObjects([leftCoin], walletAddress as string);
-    return txBlock.repay(obligationInfo.obligationId, takeCoin, poolCoinName);
-  },
-  updateAssetPricesQuick: async (assetCoinNames) => updateOracles(builder, txBlock, assetCoinNames),
-});
+      if (poolCoinName === 'sui') {
+        const [suiCoin] = txBlock.splitCoins(txBlock.gas, [amount]);
+        return normalMethod.repay(obligationInfo.obligationId, suiCoin, poolCoinName);
+      }
+      const { leftCoin, takeCoin } = await builder.selectCoin(
+        txBlock as ScallopTxBlock,
+        poolCoinName,
+        amount,
+        walletAddress as string,
+      );
+      txBlock.transferObjects([leftCoin], walletAddress as string);
+      return normalMethod.repay(obligationInfo.obligationId, takeCoin, poolCoinName);
+    },
+    updateAssetPricesQuick: async (assetCoinNames) => updateOracles(builder, txBlock, assetCoinNames),
+  };
+};
 
 /**
  * Create an enhanced transaction block instance for interaction with core modules of the Scallop contract.
