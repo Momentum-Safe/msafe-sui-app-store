@@ -7,8 +7,6 @@ import { getObligations } from '../queries';
 import type {
   CoreIds,
   GenerateCoreNormalMethod,
-  SuiTxBlockWithCoreNormalMethods,
-  CoreTxBlock,
   ScallopTxBlock,
   GenerateCoreQuickMethod,
   SuiAddressArg,
@@ -340,44 +338,4 @@ export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBl
     },
     updateAssetPricesQuick: async (assetCoinNames) => updateOracles(builder, txBlock, assetCoinNames),
   };
-};
-
-/**
- * Create an enhanced transaction block instance for interaction with core modules of the Scallop contract.
- *
- * @param builder - Scallop builder instance.
- * @param initTxBlock - Scallop txBlock, txBlock created by SuiKit, or original transaction block.
- * @return Scallop core txBlock.
- */
-export const newCoreTxBlock = (builder: ScallopBuilder, initTxBlock?: ScallopTxBlock | TransactionBlock) => {
-  const txBlock =
-    initTxBlock instanceof TransactionBlock ? new TransactionBlock(initTxBlock) : initTxBlock || new TransactionBlock();
-
-  const normalMethod = generateCoreNormalMethod({
-    builder,
-    txBlock,
-  });
-
-  const normalTxBlock = new Proxy(txBlock, {
-    get: (target, prop) => {
-      if (prop in normalMethod) {
-        return Reflect.get(normalMethod, prop);
-      }
-      return Reflect.get(target, prop);
-    },
-  }) as SuiTxBlockWithCoreNormalMethods;
-
-  const quickMethod = generateCoreQuickMethod({
-    builder,
-    txBlock: normalTxBlock,
-  });
-
-  return new Proxy(normalTxBlock, {
-    get: (target, prop) => {
-      if (prop in quickMethod) {
-        return Reflect.get(quickMethod, prop);
-      }
-      return Reflect.get(target, prop);
-    },
-  }) as CoreTxBlock;
 };

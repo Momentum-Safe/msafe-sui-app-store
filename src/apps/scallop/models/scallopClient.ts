@@ -543,11 +543,11 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = this.builder.createTxBlock();
+    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    await txBlock.stakeObligationQuick(obligationId, obligationKeyId);
-
+    await borrowIncentiveQuickMethod.stakeObligationQuick(obligationId, obligationKeyId);
     return txBlock;
   }
 
@@ -566,10 +566,11 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = this.builder.createTxBlock();
+    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    await txBlock.unstakeObligationQuick(obligationId, obligationKeyId);
+    await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKeyId);
     return txBlock;
   }
 

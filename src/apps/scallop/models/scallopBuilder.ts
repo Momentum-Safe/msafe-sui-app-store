@@ -1,11 +1,10 @@
 import type { SuiClient } from '@mysten/sui.js/client';
-import type { TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
-import { newScallopTxBlock } from '../builders';
 import { ADDRESSES_ID } from '../constants';
 import type {
   ScallopInstanceParams,
@@ -88,7 +87,7 @@ export class ScallopBuilder {
    * @return Scallop txBlock.
    */
   public createTxBlock(txBlock?: ScallopTxBlock | TransactionBlock) {
-    return newScallopTxBlock(this, txBlock);
+    return new TransactionBlock(txBlock);
   }
 
   /**

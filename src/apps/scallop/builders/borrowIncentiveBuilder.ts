@@ -9,9 +9,6 @@ import type {
   BorrowIncentiveIds,
   GenerateBorrowIncentiveNormalMethod,
   GenerateBorrowIncentiveQuickMethod,
-  SuiTxBlockWithBorrowIncentiveNormalMethods,
-  BorrowIncentiveTxBlock,
-  ScallopTxBlock,
   VescaIds,
   SuiAddressArg,
 } from '../types';
@@ -303,44 +300,4 @@ export const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMet
       return normalMethod.claimBorrowIncentive(obligationArg, obligationtKeyArg, coinName, rewardCoinName);
     },
   };
-};
-
-/**
- * Create an enhanced transaction block instance for interaction with borrow incentive modules of the Scallop contract.
- *
- * @param builder - Scallop builder instance.
- * @param initTxBlock - Scallop txBlock, txBlock created by SuiKit, or original transaction block.
- * @return Scallop borrow incentive txBlock.
- */
-export const newBorrowIncentiveTxBlock = (builder: ScallopBuilder, initTxBlock?: ScallopTxBlock | TransactionBlock) => {
-  const txBlock =
-    initTxBlock instanceof TransactionBlock ? new TransactionBlock(initTxBlock) : initTxBlock || new TransactionBlock();
-
-  const normalMethod = generateBorrowIncentiveNormalMethod({
-    builder,
-    txBlock,
-  });
-
-  const normalTxBlock = new Proxy(txBlock, {
-    get: (target, prop) => {
-      if (prop in normalMethod) {
-        return Reflect.get(normalMethod, prop);
-      }
-      return Reflect.get(target, prop);
-    },
-  }) as SuiTxBlockWithBorrowIncentiveNormalMethods;
-
-  const quickMethod = generateBorrowIncentiveQuickMethod({
-    builder,
-    txBlock: normalTxBlock,
-  });
-
-  return new Proxy(normalTxBlock, {
-    get: (target, prop) => {
-      if (prop in quickMethod) {
-        return Reflect.get(quickMethod, prop);
-      }
-      return Reflect.get(target, prop);
-    },
-  }) as BorrowIncentiveTxBlock;
 };

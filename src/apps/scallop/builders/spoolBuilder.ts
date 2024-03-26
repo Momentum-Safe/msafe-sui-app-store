@@ -9,10 +9,7 @@ import type {
   SpoolIds,
   GenerateSpoolNormalMethod,
   GenerateSpoolQuickMethod,
-  SuiTxBlockWithSpoolNormalMethods,
-  SpoolTxBlock,
   SupportStakeMarketCoins,
-  ScallopTxBlock,
   SuiAddressArg,
 } from '../types';
 import { requireSender } from '../utils';
@@ -212,44 +209,4 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = ({ builder, tx
       return rewardCoins;
     },
   };
-};
-
-/**
- * Create an enhanced transaction block instance for interaction with spool modules of the Scallop contract.
- *
- * @param builder - Scallop builder instance.
- * @param initTxBlock - Scallop txBlock, txBlock created by SuiKit, or original transaction block.
- * @return Scallop spool txBlock.
- */
-export const newSpoolTxBlock = (builder: ScallopBuilder, initTxBlock?: ScallopTxBlock | TransactionBlock) => {
-  const txBlock =
-    initTxBlock instanceof TransactionBlock ? new TransactionBlock(initTxBlock) : initTxBlock || new TransactionBlock();
-
-  const normalMethod = generateSpoolNormalMethod({
-    builder,
-    txBlock,
-  });
-
-  const normalTxBlock = new Proxy(txBlock, {
-    get: (target, prop) => {
-      if (prop in normalMethod) {
-        return Reflect.get(normalMethod, prop);
-      }
-      return Reflect.get(target, prop);
-    },
-  }) as SuiTxBlockWithSpoolNormalMethods;
-
-  const quickMethod = generateSpoolQuickMethod({
-    builder,
-    txBlock: normalTxBlock,
-  });
-
-  return new Proxy(normalTxBlock, {
-    get: (target, prop) => {
-      if (prop in quickMethod) {
-        return Reflect.get(quickMethod, prop);
-      }
-      return Reflect.get(target, prop);
-    },
-  }) as SpoolTxBlock;
 };
