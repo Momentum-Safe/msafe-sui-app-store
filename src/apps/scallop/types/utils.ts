@@ -43,4 +43,5 @@ export enum TransactionSubType {
   ClaimSupplyReward = 'ClaimSupplyReward',
   ClaimBorrowReward = 'ClaimBorrowReward',
   OpenObligation = 'OpenObligation',
+  BorrowWithBoost = 'BorrowWithBoost',
 }

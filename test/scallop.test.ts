@@ -1,6 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 
 import { BorrowIntention, BorrowIntentionData } from '@/apps/scallop/intentions/borrow';
+import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from '@/apps/scallop/intentions/borrow-with-boost';
 import {
   ClaimBorrowRewardIntention,
   ClaimBorrowRewardIntentionData,
@@ -24,7 +25,7 @@ import {
 } from '@/apps/scallop/intentions/withdraw-collateral';
 import { appHelpers } from '@/index';
 
-import { Account, Client, Obligation } from './scallop.config';
+import { Account, Client, Obligation, vescaKey } from './scallop.config';
 
 describe('Scallop App', () => {
   it('Test Supply Lending Transaction Build', async () => {
@@ -128,6 +129,29 @@ describe('Scallop App', () => {
         amount: 10000000,
         obligationKey: Obligation.obligationKey,
       } as BorrowIntentionData,
+    });
+    expect(res.blockData.version).toBe(1);
+    expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
+  });
+
+  it('Test Borrow With Boost Transaction Build', async () => {
+    const appHelper = appHelpers.getAppHelper('scallop');
+
+    expect(appHelper.application).toBe('scallop');
+
+    const res = await appHelper.build({
+      txType: TransactionType.Other,
+      txSubType: 'BorrowWithBoost',
+      suiClient: Client,
+      account: Account,
+      network: 'sui:mainnet',
+      intentionData: {
+        coinName: 'sui',
+        obligationId: Obligation.obligationId,
+        amount: 10000000,
+        obligationKey: Obligation.obligationKey,
+        vescaKey,
+      } as BorrowWithBoostIntentionData,
     });
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -306,6 +330,20 @@ describe('Scallop App', () => {
 
     expect(intention.serialize()).toBe(
       `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}"}`,
+    );
+  });
+
+  it('Test Borrow With Boost intention serialization', () => {
+    const intention = BorrowWithBoostIntention.fromData({
+      amount: 1000,
+      coinName: 'sui',
+      obligationId: Obligation.obligationId,
+      obligationKey: Obligation.obligationKey,
+      vescaKey,
+    });
+
+    expect(intention.serialize()).toBe(
+      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","vescaKey":"${vescaKey}"}`,
     );
   });
 

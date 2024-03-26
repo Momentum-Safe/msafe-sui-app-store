@@ -5,6 +5,7 @@ import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-stan
 
 import { Decoder } from './decoder';
 import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
+import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/borrow-with-boost';
 import { ClaimBorrowRewardIntention, ClaimBorrowRewardIntentionData } from './intentions/claim-borrow-reward';
 import { ClaimSupplyRewardIntention, ClaimSupplyRewardIntentionData } from './intentions/claim-supply-reward';
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/deposit-collateral';
@@ -31,7 +32,8 @@ export type ScallopIntention =
   | StakeSpoolIntention
   | UnstakeSpoolIntention
   | ClaimBorrowRewardIntention
-  | ClaimSupplyRewardIntention;
+  | ClaimSupplyRewardIntention
+  | BorrowWithBoostIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -44,7 +46,8 @@ export type ScallopIntentionData =
   | StakeSpoolIntentionData
   | UnstakeSpoolIntentionData
   | ClaimBorrowRewardIntentionData
-  | ClaimSupplyRewardIntentionData;
+  | ClaimSupplyRewardIntentionData
+  | BorrowWithBoostIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -115,6 +118,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.ClaimSupplyReward:
         intention = ClaimSupplyRewardIntention.fromData(input.intentionData as ClaimSupplyRewardIntentionData);
+        break;
+      case TransactionSubType.BorrowWithBoost:
+        intention = BorrowWithBoostIntention.fromData(input.intentionData as BorrowWithBoostIntentionData);
         break;
       default:
         throw new Error('not implemented');

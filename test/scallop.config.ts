@@ -18,3 +18,5 @@ export const Obligation = {
 export const SpoolStakeAccount = {
   susdc: '0x7ba3aae255483cdb6f0b733a63534de49c6883222e7b4a9ffc0be43d6737ed50',
 };
+
+export const vescaKey = '0x5e2c54651ca4e2352475e8419e3419cfcfe424af272ca59ae053e3c248c13c16';
