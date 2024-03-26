@@ -1,5 +1,5 @@
 import type { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
 import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
@@ -9,7 +9,7 @@ import { ScallopUtils } from './scallopUtils';
 import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveBuilder';
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
-import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS } from '../constants';
+import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_BORROW_INCENTIVE_REWARDS } from '../constants';
 import type {
   ScallopInstanceParams,
   ScallopClientParams,
@@ -552,12 +552,17 @@ export class ScallopClient {
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const rewardCoin = await borrowIncentiveQuickMethod.claimBorrowIncentiveQuick(
-      coinName,
-      obligationId,
-      obligationKeyId,
-    );
-    txBlock.transferObjects([rewardCoin], sender);
+    const rewardCoins: TransactionResult[] = [];
+    SUPPORT_BORROW_INCENTIVE_REWARDS.forEach(async (rewardCoinName) => {
+      const rewardCoin = await borrowIncentiveQuickMethod.claimBorrowIncentiveQuick(
+        coinName,
+        rewardCoinName,
+        obligationId,
+        obligationKeyId,
+      );
+      rewardCoins.push(rewardCoin);
+    });
+    txBlock.transferObjects(rewardCoins, sender);
     return txBlock;
   }
 }

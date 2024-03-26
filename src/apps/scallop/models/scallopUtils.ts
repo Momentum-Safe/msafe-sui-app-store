@@ -12,6 +12,8 @@ import {
   wormholeCoinIds,
   voloCoinIds,
   coinIds,
+  UNLOCK_ROUND_DURATION,
+  MAX_LOCK_DURATION,
 } from '../constants';
 import type {
   ScallopUtilsParams,
@@ -25,7 +27,7 @@ import type {
   SupportPoolCoins,
   SuiTxArg,
 } from '../types';
-import { isMarketCoin, parseAssetSymbol } from '../utils';
+import { findClosestUnlockRound, isMarketCoin, parseAssetSymbol } from '../utils';
 
 /**
  * @description
@@ -328,5 +330,39 @@ export class ScallopUtils {
     }
     const [sendCoin] = txBlock.splitCoins(mergedCoin, [txBlock.pure(amount)]);
     return [sendCoin, mergedCoin];
+  }
+
+  /**
+   * Give extend lock period to get unlock at in seconds timestamp.
+   *
+   * @description
+   * - When the user without remaining unlock period, If the extended unlock day is not specified,
+   *   the unlock period will be increased by one day by default.
+   * - When the given extended day plus the user's remaining unlock period exceeds the maximum
+   *    unlock period, the maximum unlock period is used as unlock period.
+   *
+   * @param extendLockPeriodInDay The extend lock period in day.
+   * @param unlockAtInSecondTimestamp The unlock timestamp from veSca object.
+   * @return New unlock at in seconds timestamp.
+   */
+  public getUnlockAt(extendLockPeriodInDay?: number, unlockAtInSecondTimestamp?: number) {
+    const now = Math.floor(new Date().getTime() / 1000);
+    const remainingLockPeriod = unlockAtInSecondTimestamp ? Math.max(unlockAtInSecondTimestamp - now, 0) : 0;
+
+    let newUnlockAtInSecondTimestamp = 0;
+
+    if (remainingLockPeriod === 0) {
+      const lockPeriod = (extendLockPeriodInDay ?? 1) * UNLOCK_ROUND_DURATION;
+      newUnlockAtInSecondTimestamp = Math.min(now + lockPeriod, now + MAX_LOCK_DURATION);
+    } else {
+      const lockPeriod = Math.min(
+        extendLockPeriodInDay
+          ? extendLockPeriodInDay * UNLOCK_ROUND_DURATION + remainingLockPeriod
+          : remainingLockPeriod,
+        MAX_LOCK_DURATION,
+      );
+      newUnlockAtInSecondTimestamp = now + lockPeriod;
+    }
+    return findClosestUnlockRound(newUnlockAtInSecondTimestamp);
   }
 }

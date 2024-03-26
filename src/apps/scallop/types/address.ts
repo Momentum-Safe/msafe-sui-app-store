@@ -85,6 +85,15 @@ export interface AddressesInterface {
     query: string;
     incentivePools: string;
     incentiveAccounts: string;
+    config: string;
+  };
+  vesca: {
+    id: string;
+    adminCap: string;
+    tableId: string;
+    table: string;
+    treasury: string;
+    config: string;
   };
 }
 

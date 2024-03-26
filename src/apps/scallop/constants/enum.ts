@@ -18,6 +18,7 @@ export const coinDecimals: SupportCoinDecimals = {
   sui: 9,
   apt: 8,
   sol: 8,
+  sca: 9,
   cetus: 9,
   afsui: 9,
   hasui: 9,
@@ -33,6 +34,7 @@ export const coinDecimals: SupportCoinDecimals = {
   safsui: 9,
   shasui: 9,
   svsui: 9,
+  ssca: 9,
 };
 
 export const assetCoins: AssetCoins = {
@@ -47,6 +49,7 @@ export const assetCoins: AssetCoins = {
   afsui: 'afsui',
   hasui: 'hasui',
   vsui: 'vsui',
+  sca: 'sca',
 };
 
 export const marketCoins: MarketCoins = {
@@ -61,6 +64,7 @@ export const marketCoins: MarketCoins = {
   safsui: 'safsui',
   shasui: 'shasui',
   svsui: 'svsui',
+  ssca: 'ssca',
 };
 
 export const stakeMarketCoins: StakeMarketCoins = {
@@ -86,9 +90,9 @@ export const spoolRewardCoins: StakeRewardCoins = {
 };
 
 export const borrowIncentiveRewardCoins: BorrowIncentiveRewardCoins = {
-  sui: 'sui',
-  usdc: 'sui',
-  usdt: 'sui',
+  sui: ['sui', 'sca'],
+  usdc: ['sui', 'sca'],
+  usdt: ['sui', 'sca'],
 };
 
 export const coinIds: AssetCoinIds = {
@@ -103,6 +107,7 @@ export const coinIds: AssetCoinIds = {
   afsui: '0xf325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc',
   hasui: '0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d',
   vsui: '0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55',
+  sca: '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6',
 };
 
 export const wormholeCoinIds: WormholeCoinIds = {
