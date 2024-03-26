@@ -9,6 +9,7 @@ import { ScallopUtils } from './scallopUtils';
 import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveBuilder';
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
+import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
 import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_BORROW_INCENTIVE_REWARDS } from '../constants';
 import type {
   ScallopInstanceParams,
@@ -604,6 +605,105 @@ export class ScallopClient {
       rewardCoins.push(rewardCoin);
     });
     txBlock.transferObjects(rewardCoins, sender);
+    return txBlock;
+  }
+
+  /**
+   * Stake SCA.
+   *
+   * @param amount - Types of mak coin.
+   * @param lockPeriod - The amount of coins would deposit.
+   * @param walletAddress - The wallet address of the owner.
+   * @return Transaction block response or transaction block.
+   */
+  public async stakeSca(amount: number, lockPeriod: number, walletAddress?: string): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.setSender(sender);
+
+    await vescaQuickMethod.lockScaQuick(amount, lockPeriod);
+    return txBlock;
+  }
+
+  /**
+   * Stake more SCA.
+   *
+   * @param amount - Types of mak coin.
+   * @param vescaKey - The vesca key object.
+   * @param walletAddress - The wallet address of the owner.
+   * @return Transaction block response or transaction block.
+   */
+  public async stakeMoreSca(amount: number, vescaKey?: string, walletAddress?: string): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.setSender(sender);
+
+    await vescaQuickMethod.extendLockAmountQuick(amount, vescaKey);
+    return txBlock;
+  }
+
+  /**
+   * Extend stake lock period.
+   *
+   * @param lockPeriodInDays
+   * @param vescaKey
+   * @param walletAddress
+   * @returns Transaction block response or transaction block.
+   */
+  public async extendStakeScaLockPeriod(
+    lockPeriodInDays: number,
+    vescaKey?: string,
+    walletAddress?: string,
+  ): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.setSender(sender);
+
+    await vescaQuickMethod.extendLockPeriodQuick(lockPeriodInDays, vescaKey);
+    return txBlock;
+  }
+
+  /**
+   * Renew expired stake SCA.
+   *
+   * @param amount
+   * @param lockPeriodInDays
+   * @param vescaKey
+   * @param walletAddress
+   * @returns Transaction block response or transaction block.
+   */
+  public async renewExpiredStakeSca(
+    amount: number,
+    lockPeriodInDays: number,
+    vescaKey?: string,
+    walletAddress?: string,
+  ): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.setSender(sender);
+
+    await vescaQuickMethod.renewExpiredVeScaQuick(amount, lockPeriodInDays, vescaKey);
+    return txBlock;
+  }
+
+  /**
+   * Withdraw unlocked SCA.
+   *
+   * @param vescaKey
+   * @param walletAddress
+   * @returns Transaction block response or transaction block.
+   */
+  public async withdrawUnlockedSca(vescaKey?: string, walletAddress?: string): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.setSender(sender);
+
+    await vescaQuickMethod.redeemScaQuick(vescaKey);
     return txBlock;
   }
 }

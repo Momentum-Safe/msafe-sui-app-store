@@ -1,5 +1,5 @@
-import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/dist/cjs/utils';
 import { TransactionObjectArgument } from '@mysten/sui.js/transactions';
+import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { requireVeSca } from './borrowIncentiveBuilder';
 import { SCA_COIN_TYPE } from '../constants';
@@ -124,7 +124,7 @@ export const generateQuickVeScaMethod: GenerateVeScaQuickMethod = ({ builder, tx
         transferObjects.push(leftCoin);
       } else {
         // With amountOrCoin is SuiObjectArg, we cannot validate the minimum sca amount for locking and topup
-        scaCoin = typeof amountOrCoin === 'number' ? amountOrCoin.toString() : amountOrCoin;
+        scaCoin = amountOrCoin as SuiObjectArg;
       }
 
       const newUnlockAt = builder.utils.getUnlockAt(lockPeriodInDays, veSca?.unlockAt);

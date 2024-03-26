@@ -9,13 +9,18 @@ import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intent
 import { ClaimBorrowRewardIntention, ClaimBorrowRewardIntentionData } from './intentions/claim-borrow-reward';
 import { ClaimSupplyRewardIntention, ClaimSupplyRewardIntentionData } from './intentions/claim-supply-reward';
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/deposit-collateral';
+import { ExtendStakeScaPeriodIntention, ExtendStakeScaPeriodIntentionData } from './intentions/extend-stake-sca-period';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/open-obligation';
+import { RenewExpStakePeriodIntention, RenewExpStakePeriodIntentionData } from './intentions/renew-exp-stake-period';
 import { RepayIntention, RepayIntentionData } from './intentions/repay';
+import { StakeMoreScaIntention, StakeMoreScaIntentionData } from './intentions/stake-more-sca';
+import { StakeScaIntention, StakeScaIntentionData } from './intentions/stake-sca';
 import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/stake-spool';
 import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/supply-lending';
 import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/unstake-spool';
 import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/withdraw-collateral';
 import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/withdraw-lending';
+import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/withdraw-staked-sca';
 import { ScallopBuilder } from './models';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
@@ -33,7 +38,12 @@ export type ScallopIntention =
   | UnstakeSpoolIntention
   | ClaimBorrowRewardIntention
   | ClaimSupplyRewardIntention
-  | BorrowWithBoostIntention;
+  | BorrowWithBoostIntention
+  | StakeScaIntention
+  | StakeMoreScaIntention
+  | ExtendStakeScaPeriodIntention
+  | RenewExpStakePeriodIntention
+  | WithdrawStakedScaIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -47,7 +57,12 @@ export type ScallopIntentionData =
   | UnstakeSpoolIntentionData
   | ClaimBorrowRewardIntentionData
   | ClaimSupplyRewardIntentionData
-  | BorrowWithBoostIntentionData;
+  | BorrowWithBoostIntentionData
+  | StakeScaIntentionData
+  | StakeMoreScaIntentionData
+  | ExtendStakeScaPeriodIntentionData
+  | RenewExpStakePeriodIntentionData
+  | WithdrawStakedScaIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -121,6 +136,21 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.BorrowWithBoost:
         intention = BorrowWithBoostIntention.fromData(input.intentionData as BorrowWithBoostIntentionData);
+        break;
+      case TransactionSubType.StakeSca:
+        intention = StakeScaIntention.fromData(input.intentionData as StakeScaIntentionData);
+        break;
+      case TransactionSubType.StakeMoreSca:
+        intention = StakeMoreScaIntention.fromData(input.intentionData as StakeMoreScaIntentionData);
+        break;
+      case TransactionSubType.ExtendStakeScaPeriod:
+        intention = ExtendStakeScaPeriodIntention.fromData(input.intentionData as ExtendStakeScaPeriodIntentionData);
+        break;
+      case TransactionSubType.RenewExpStakePeriod:
+        intention = RenewExpStakePeriodIntention.fromData(input.intentionData as RenewExpStakePeriodIntentionData);
+        break;
+      case TransactionSubType.WithdrawStakedSca:
+        intention = WithdrawStakedScaIntention.fromData(input.intentionData as WithdrawStakedScaIntentionData);
         break;
       default:
         throw new Error('not implemented');
