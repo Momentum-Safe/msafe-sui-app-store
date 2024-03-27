@@ -11,6 +11,7 @@ export interface ClaimRewardIntentionData {
   claims: {
     coinType: CoinType;
     option: OptionType;
+    typeArguments: string[];
   }[];
 }
 
@@ -28,7 +29,7 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
     const tx = new TransactionBlock();
 
     claims.forEach((claim) => {
-      const { coinType, option } = claim;
+      const { coinType, option, typeArguments } = claim;
       const pool = config.pool[coinType];
       console.log('build', this.data);
 
@@ -40,7 +41,7 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
         throw new Error(`${coinType} not support claim reward.`);
       }
 
-      claimReward(tx, pool, option);
+      claimReward(tx, pool, option, typeArguments);
     });
 
     return tx;

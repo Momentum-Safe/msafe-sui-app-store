@@ -84,6 +84,7 @@ export class Decoder {
     const claims = [] as {
       coinType: CoinType;
       option: number;
+      typeArguments: string[];
     }[];
     this.transactions.forEach((trans) => {
       if (trans.kind === 'MoveCall' && trans.target === `${config.ProtocolPackage}::incentive_v2::claim_reward`) {
@@ -91,9 +92,11 @@ export class Decoder {
         const assetId = helper.decodeInputU8(4);
         const optionId = helper.decodeInputU8(5);
         const pool = this.findPoolByAssetId(assetId);
+        const typeArguments = [...trans.typeArguments];
         claims.push({
           coinType: pool.coinType,
           option: optionId,
+          typeArguments,
         });
       }
     });
