@@ -157,6 +157,7 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
       txBlock.moveCall({
         target: `${borrowIncentiveIds.borrowIncentivePkg}::user::stake`,
         arguments: [
+          txBlock.object(borrowIncentiveIds.config),
           txBlock.object(borrowIncentiveIds.incentivePools),
           txBlock.object(borrowIncentiveIds.incentiveAccounts),
           txBlock.object(obligationKey as string),
@@ -188,6 +189,7 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
       txBlock.moveCall({
         target: `${borrowIncentiveIds.borrowIncentivePkg}::user::unstake`,
         arguments: [
+          txBlock.object(borrowIncentiveIds.config),
           txBlock.object(borrowIncentiveIds.incentivePools),
           txBlock.object(borrowIncentiveIds.incentiveAccounts),
           txBlock.object(obligationKey as string),
@@ -205,6 +207,7 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
       return txBlock.moveCall({
         target: `${borrowIncentiveIds.borrowIncentivePkg}::user::redeem_rewards`,
         arguments: [
+          txBlock.object(borrowIncentiveIds.config),
           txBlock.object(borrowIncentiveIds.incentivePools),
           txBlock.object(borrowIncentiveIds.incentiveAccounts),
           txBlock.object(obligationKey as string),

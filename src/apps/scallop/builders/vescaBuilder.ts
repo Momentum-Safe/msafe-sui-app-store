@@ -1,4 +1,4 @@
-import { TransactionObjectArgument } from '@mysten/sui.js/transactions';
+import { TransactionArgument, TransactionObjectArgument } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { requireVeSca } from './borrowIncentiveBuilder';
@@ -36,7 +36,7 @@ const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock
           txBlock.object(veScaIds.config),
           txBlock.object(veScaIds.table),
           txBlock.object(veScaIds.treasury),
-          txBlock.pure(scaCoin),
+          typeof scaCoin === 'string' ? txBlock.pure(scaCoin) : (scaCoin as TransactionArgument),
           txBlock.pure(unlockAtInSecondTimestamp),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
@@ -62,7 +62,7 @@ const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock
           txBlock.object(veScaKey as string),
           txBlock.object(veScaIds.table),
           txBlock.object(veScaIds.treasury),
-          txBlock.pure(scaCoin),
+          typeof scaCoin === 'string' ? txBlock.pure(scaCoin) : (scaCoin as TransactionArgument),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
       });
@@ -75,7 +75,7 @@ const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock
           txBlock.object(veScaKey as string),
           txBlock.object(veScaIds.table),
           txBlock.object(veScaIds.treasury),
-          txBlock.pure(scaCoin),
+          typeof scaCoin === 'string' ? txBlock.pure(scaCoin) : (scaCoin as TransactionArgument),
           txBlock.pure(newUnlockAtInSecondTimestamp),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],

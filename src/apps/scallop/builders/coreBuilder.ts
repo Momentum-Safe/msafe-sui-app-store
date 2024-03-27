@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { updateOracles } from './oracle';
@@ -96,7 +96,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
           txBlock.object(coreIds.version),
           txBlock.object(obligation as string),
           txBlock.object(coreIds.market),
-          txBlock.pure(coin),
+          typeof coin !== 'string' ? (coin as TransactionArgument) : txBlock.pure(coin),
         ],
         typeArguments: [coinType],
       });
@@ -125,7 +125,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
         arguments: [
           txBlock.object(coreIds.version),
           txBlock.object(coreIds.market),
-          txBlock.pure(coin),
+          typeof coin !== 'string' ? (coin as TransactionArgument) : txBlock.pure(coin),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
         typeArguments: [coinType],
@@ -138,7 +138,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
         arguments: [
           txBlock.object(coreIds.version),
           txBlock.object(coreIds.market),
-          txBlock.pure(coin),
+          typeof coin !== 'string' ? (coin as TransactionArgument) : txBlock.pure(coin),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
         typeArguments: [coinType],
@@ -151,7 +151,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
         arguments: [
           txBlock.object(coreIds.version),
           txBlock.object(coreIds.market),
-          txBlock.pure(marketCoin),
+          typeof marketCoin !== 'string' ? (marketCoin as TransactionArgument) : txBlock.pure(marketCoin),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
         typeArguments: [coinType],
@@ -164,7 +164,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
         arguments: [
           txBlock.object(coreIds.version),
           txBlock.object(coreIds.market),
-          txBlock.pure(marketCoin),
+          typeof marketCoin !== 'string' ? (marketCoin as TransactionArgument) : txBlock.pure(marketCoin),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
         typeArguments: [coinType],
@@ -212,7 +212,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
           txBlock.object(coreIds.version),
           txBlock.object(obligation as string),
           txBlock.object(coreIds.market),
-          txBlock.pure(coin),
+          typeof coin !== 'string' ? (coin as TransactionArgument) : txBlock.pure(coin),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
         typeArguments: [coinType],

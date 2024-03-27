@@ -1,6 +1,7 @@
 import type { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
 import { normalizeSuiAddress } from '@mysten/sui.js/utils';
+import BigNumber from 'bignumber.js';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopBuilder } from './scallopBuilder';
@@ -11,6 +12,7 @@ import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
 import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_BORROW_INCENTIVE_REWARDS } from '../constants';
+import { queryBorrowIncentivePools } from '../queries';
 import type {
   ScallopInstanceParams,
   ScallopClientParams,
@@ -595,17 +597,33 @@ export class ScallopClient {
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
+    const incentiveAccount = await this.query.getBorrowIncentiveAccounts(obligationId, sender, [coinName]);
+    const borrowIncentivePool = await queryBorrowIncentivePools(this.query, [coinName]);
+    if (!incentiveAccount[coinName]) {
+      throw new Error(`No incentive account found for ${coinName}`);
+    }
+
     const rewardCoins: TransactionResult[] = [];
-    SUPPORT_BORROW_INCENTIVE_REWARDS.forEach(async (rewardCoinName) => {
+    for (let i = 0; i < SUPPORT_BORROW_INCENTIVE_REWARDS.length; i++) {
+      const supportedRewardCoin = SUPPORT_BORROW_INCENTIVE_REWARDS[i];
+      const accountPoint = incentiveAccount[coinName].pointList[supportedRewardCoin];
+      const poolPoint = borrowIncentivePool[coinName].points[supportedRewardCoin];
+      if (accountPoint === undefined || poolPoint === undefined) {
+        continue;
+      }
+      const availableClaimCoin = this.calculateAvailableClaimCoin(accountPoint, poolPoint);
+      if (availableClaimCoin.isZero()) {
+        continue;
+      }
       const rewardCoin = await borrowIncentiveQuickMethod.claimBorrowIncentiveQuick(
         coinName,
-        rewardCoinName,
+        SUPPORT_BORROW_INCENTIVE_REWARDS[i],
         obligationId,
         obligationKeyId,
       );
       rewardCoins.push(rewardCoin);
-    });
-    txBlock.transferObjects(rewardCoins, sender);
+    }
+    txBlock.transferObjects(rewardCoins, txBlock.pure(sender));
     return txBlock;
   }
 
@@ -706,5 +724,17 @@ export class ScallopClient {
 
     await vescaQuickMethod.redeemScaQuick(vescaKey);
     return txBlock;
+  }
+
+  private calculateAvailableClaimCoin(accountPoint: any, poolPoint: any): BigNumber {
+    const borrowAmount = new BigNumber(accountPoint.weightedAmount);
+    const baseIndexRate = 1e9;
+    const increasePointRate = poolPoint.currentPointIndex
+      ? BigNumber(poolPoint.currentPointIndex - accountPoint.index).dividedBy(baseIndexRate)
+      : 1;
+    return borrowAmount
+      .multipliedBy(increasePointRate)
+      .plus(accountPoint.points)
+      .shiftedBy(-1 * poolPoint.coinDecimal);
   }
 }

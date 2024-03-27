@@ -36,7 +36,7 @@ export class UnstakeSpoolIntention extends CoreBaseIntention<UnstakeSpoolIntenti
       networkType: input.network.split(':')[1] as any,
     });
     await scallopClient.init();
-    return scallopClient.unstake(this.data.marketCoinName, Number(this.data.amount), input.account.address);
+    return scallopClient.unstake(this.data.marketCoinName, Number(this.data.amount), undefined, input.account.address);
   }
 
   static fromData(data: UnstakeSpoolIntentionData): UnstakeSpoolIntention {

@@ -49,9 +49,9 @@ export const updateOracles = async (
 
   // Remove duplicate coin names.
   const updateAssetCoinNames = [...new Set(coinNames)];
-  updateAssetCoinNames.forEach(async (assetCoinName) => {
-    await updateOracle(builder, txBlock, assetCoinName, rules);
-  });
+  for (let i = 0; i < updateAssetCoinNames.length; i++) {
+    await updateOracle(builder, txBlock, updateAssetCoinNames[i], rules);
+  }
 };
 
 /**

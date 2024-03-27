@@ -48,17 +48,21 @@ export const getObligations = async (query: ScallopQuery, ownerAddress: string) 
   const keyObjectIds: string[] = keyObjectsResponse
     .map((ref: any) => ref?.data?.objectId)
     .filter((id: any) => id !== undefined);
-  const keyObjects = await query.client.multiGetObjects({ ids: keyObjectIds });
+  const keyObjects = await query.client.multiGetObjects({
+    ids: keyObjectIds,
+    options: { showContent: true, showType: true },
+  });
   const obligations: Obligation[] = [];
-  keyObjects.forEach(async (keyObject: any) => {
-    const keyId = keyObject.objectId;
-    if (keyObject.content && 'fields' in keyObject.content) {
-      const fields = keyObject.content.fields as any;
+  for (let i = 0; i < keyObjects.length; i++) {
+    const keyId = keyObjects[i].data.objectId;
+    const { content } = keyObjects[i].data;
+    if (content && 'fields' in content) {
+      const fields = content.fields as any;
       const obligationId = String(fields.ownership.fields.of);
       const locked = await getObligationLocked(query, obligationId);
       obligations.push({ id: obligationId, keyId, locked });
     }
-  });
+  }
   return obligations;
 };
 

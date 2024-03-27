@@ -1,3 +1,5 @@
+import util from 'node:util';
+
 import { TransactionType } from '@msafe/sui3-utils';
 
 import { BorrowIntention, BorrowIntentionData } from '@/apps/scallop/intentions/borrow';
@@ -55,6 +57,11 @@ describe('Scallop App', () => {
         coinName: 'sui',
       } as SupplyLendingIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -75,6 +82,11 @@ describe('Scallop App', () => {
         coinName: 'sui',
       } as SupplyLendingIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -91,12 +103,17 @@ describe('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        collateralCoinName: 'sui',
+        collateralCoinName: 'afsui',
         obligationId: Obligation.obligationId,
-        amount: 10000000,
+        amount: 1e8,
         obligationKey: Obligation.obligationKey,
       } as DepositCollateralIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -113,12 +130,17 @@ describe('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        collateralCoinName: 'sui',
+        collateralCoinName: 'afsui',
         obligationId: Obligation.obligationId,
-        amount: 10000000,
+        amount: 1e8,
         obligationKey: Obligation.obligationKey,
       } as WithdrawCollateralIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -137,10 +159,15 @@ describe('Scallop App', () => {
       intentionData: {
         coinName: 'sui',
         obligationId: Obligation.obligationId,
-        amount: 10000000,
+        amount: 100000000,
         obligationKey: Obligation.obligationKey,
       } as BorrowIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -159,11 +186,16 @@ describe('Scallop App', () => {
       intentionData: {
         coinName: 'sui',
         obligationId: Obligation.obligationId,
-        amount: 10000000,
+        amount: 100000000,
         obligationKey: Obligation.obligationKey,
         vescaKey,
       } as BorrowWithBoostIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -182,10 +214,15 @@ describe('Scallop App', () => {
       intentionData: {
         coinName: 'sui',
         obligationId: Obligation.obligationId,
-        amount: 10000000,
+        amount: 1e8,
         obligationKey: Obligation.obligationKey,
       } as RepayIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -203,9 +240,14 @@ describe('Scallop App', () => {
       network: 'sui:mainnet',
       intentionData: {
         marketCoinName: 'ssui',
-        amount: 10000000,
+        amount: 1e8,
       } as StakeSpoolIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -223,9 +265,14 @@ describe('Scallop App', () => {
       network: 'sui:mainnet',
       intentionData: {
         marketCoinName: 'susdc',
-        amount: 10000000,
+        amount: 1e8,
       } as UnstakeSpoolIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -242,11 +289,16 @@ describe('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        coinName: 'usdc',
+        coinName: 'sui',
         obligationId: Obligation.obligationId,
         obligationKeyId: Obligation.obligationKey,
       } as ClaimBorrowRewardIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -266,6 +318,11 @@ describe('Scallop App', () => {
         coinName: 'ssui',
       } as ClaimSupplyRewardIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -283,6 +340,11 @@ describe('Scallop App', () => {
       network: 'sui:mainnet',
       intentionData: {} as OpenObligationIntention,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -299,10 +361,15 @@ describe('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        amount: 10e9,
-        lockPeriodInDays: 30,
+        amount: 11e9,
+        lockPeriodInDays: 1,
       } as StakeScaIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -319,9 +386,14 @@ describe('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        amount: 10e9,
+        amount: 1e9,
       } as StakeMoreScaIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -338,9 +410,14 @@ describe('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        lockPeriodInDays: 50,
+        lockPeriodInDays: 1459,
       } as ExtendStakeScaPeriodIntentionData,
     });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+    expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -361,6 +438,15 @@ describe('Scallop App', () => {
         amount: 10e9,
       } as RenewExpStakePeriodIntentionData,
     });
+
+    // Wil always failed because current account test the lock period is not expired yet
+    // I will comment this line to make the test pass
+    // const inspectResult = await Client.devInspectTransactionBlock({
+    //   transactionBlock: res,
+    //   sender: Account.address,
+    // });
+    // expect(inspectResult.effects.status.status).toBe('success');
+
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
@@ -378,6 +464,15 @@ describe('Scallop App', () => {
       network: 'sui:mainnet',
       intentionData: {} as RenewExpStakePeriodIntentionData,
     });
+
+    // Wil always failed because current account test the lock period is not expired yet
+    // I will comment this line to make the test pass
+    // const inspectResult = await Client.devInspectTransactionBlock({
+    //   transactionBlock: res,
+    //   sender: Account.address,
+    // });
+    // expect(inspectResult.effects.status.status).toBe('success');
+
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });

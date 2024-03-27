@@ -181,13 +181,14 @@ export class ScallopQuery {
   public async getStakePools(stakeMarketCoinNames?: SupportStakeMarketCoins[]) {
     const marketCoinNames = stakeMarketCoinNames ?? [...SUPPORT_SPOOLS];
     const stakePools: StakePools = {};
-    marketCoinNames.forEach(async (stakeMarketCoinName) => {
+    for (let i = 0; i < marketCoinNames.length; i++) {
+      const stakeMarketCoinName = marketCoinNames[i];
       const stakePool = await getStakePool(this, stakeMarketCoinName);
 
       if (stakePool) {
         stakePools[stakeMarketCoinName] = stakePool;
       }
-    });
+    }
     return stakePools;
   }
 
@@ -218,13 +219,13 @@ export class ScallopQuery {
   public async getStakeRewardPools(stakeMarketCoinNames?: SupportStakeMarketCoins[]) {
     const marketCoinNames = stakeMarketCoinNames ?? [...SUPPORT_SPOOLS];
     const stakeRewardPools: StakeRewardPools = {};
-    marketCoinNames.forEach(async (stakeMarketCoinName) => {
-      const stakeRewardPool = await getStakeRewardPool(this, stakeMarketCoinName);
+    for (let i = 0; i < marketCoinNames.length; i++) {
+      const stakeRewardPool = await getStakeRewardPool(this, marketCoinNames[i]);
 
       if (stakeRewardPool) {
-        stakeRewardPools[stakeMarketCoinName] = stakeRewardPool;
+        stakeRewardPools[marketCoinNames[i]] = stakeRewardPool;
       }
-    });
+    }
     return stakeRewardPools;
   }
 
@@ -249,8 +250,12 @@ export class ScallopQuery {
    * @param ownerAddress - The owner address.
    * @return Borrow incentive accounts data.
    */
-  public async getBorrowIncentiveAccounts(obligationId: string, coinNames?: SupportBorrowIncentiveCoins[]) {
-    return queryBorrowIncentiveAccounts(this, obligationId, coinNames);
+  public async getBorrowIncentiveAccounts(
+    obligationId: string,
+    walletAddress: string,
+    coinNames?: SupportBorrowIncentiveCoins[],
+  ) {
+    return queryBorrowIncentiveAccounts(this, obligationId, walletAddress || this.walletAddress, coinNames);
   }
 
   /**

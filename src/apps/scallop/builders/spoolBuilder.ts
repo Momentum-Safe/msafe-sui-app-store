@@ -1,5 +1,5 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import type { TransactionResult } from '@mysten/sui.js/transactions';
+import type { TransactionArgument, TransactionResult } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { spoolRewardCoins } from '../constants/enum';
@@ -111,7 +111,7 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = ({ builder, 
         arguments: [
           txBlock.object(stakePoolId),
           txBlock.object(stakeAccount as string),
-          txBlock.pure(coin),
+          typeof coin === 'string' ? txBlock.pure(coin) : (coin as TransactionArgument),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
         typeArguments: [marketCoinType],
