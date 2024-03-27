@@ -84,6 +84,8 @@ export class Decoder {
     const claims = [] as {
       coinType: CoinType;
       option: number;
+      poolId: string;
+      assetId: number;
       typeArguments: string[];
     }[];
     this.transactions.forEach((trans) => {
@@ -91,12 +93,15 @@ export class Decoder {
         const helper = new MoveCallHelper(trans, this.txb);
         const assetId = helper.decodeInputU8(4);
         const optionId = helper.decodeInputU8(5);
+        const poolId = helper.decodeSharedObjectId(2);
         const pool = this.findPoolByAssetId(assetId);
         const typeArguments = [...trans.typeArguments];
         claims.push({
           coinType: pool.coinType,
           option: optionId,
           typeArguments,
+          assetId,
+          poolId,
         });
       }
     });
