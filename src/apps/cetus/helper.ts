@@ -11,8 +11,12 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
   application = 'cetus';
 
   async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {
+      action?: string;
+      payloadParams?: any;
+    },
   ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
+    console.log('Helper deserialize input: ', input);
     const { transactionBlock, suiClient } = input;
 
     const content = await transactionBlock.build({ client: suiClient });
