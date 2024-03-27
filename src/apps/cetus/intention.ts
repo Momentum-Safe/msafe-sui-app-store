@@ -29,7 +29,8 @@ export class CetusIntention extends CoreBaseIntention<CetusIntentionData> {
     });
     const success = inspectResult.effects.status.status === 'success';
     if (!success) {
-      throw new Error(inspectResult.effects.status.error);
+      // throw new Error(inspectResult.effects.status.error);
+      console.log('Intention build Error: ', inspectResult.effects.status.error);
     }
 
     return txb;
