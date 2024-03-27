@@ -1,11 +1,14 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { MSafeAppHelper } from '@/apps/interface';
 import { SuiClient } from '@mysten/sui.js/client';
-import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { fromHEX, toHEX } from '@mysten/sui.js/utils';
-import { CetusIntention, CetusIntentionData } from './intention';
-import { SuiNetworks } from './types';
+import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
+
+import { MSafeAppHelper } from '@/apps/interface';
+
+import { SwapIntention } from './intentions/swap';
+import { SuiNetworks, CetusIntentionData, TransactionSubType } from './types';
+
+export type CetusIntention = SwapIntention;
 
 export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
   application = 'cetus';
@@ -17,14 +20,18 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
     },
   ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
     console.log('Helper deserialize input: ', input);
-    const { transactionBlock, suiClient } = input;
+    // const { transactionBlock, suiClient, payloadParams, action } = input;
+    const { payloadParams, action } = input;
 
-    const content = await transactionBlock.build({ client: suiClient });
+    // const content = await transactionBlock.build({ client: suiClient });
 
     return {
       txType: TransactionType.Other,
-      txSubType: 'CetusTransaction',
-      intentionData: { content: toHEX(content) },
+      txSubType: `Cetus${action}`,
+      intentionData: {
+        payloadParams,
+        action,
+      },
     };
   }
 
@@ -36,7 +43,14 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
     account: WalletAccount;
   }): Promise<TransactionBlock> {
     const { suiClient, account } = input;
-    const intention = CetusIntention.fromData(input.intentionData);
+    let intention: CetusIntention;
+    switch (input.txSubType) {
+      case TransactionSubType.CetusSwap:
+        intention = SwapIntention.fromData(input.intentionData) as CetusIntention;
+        break;
+      default:
+        throw new Error('not implemented');
+    }
     return intention.build({ suiClient, account });
   }
 }
