@@ -1,7 +1,7 @@
 import { CetusClmmSDK, TransactionUtil } from '@cetusprotocol/cetus-sui-clmm-sdk';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
-import { clmmConfig } from '../config';
+import { clmmConfig } from './config';
 
 const clmmSdk = new CetusClmmSDK(clmmConfig);
 
