@@ -48,8 +48,8 @@ export class Decoder {
   }
 
   private decodeAddLiquidity(): DecodeResult {
-    console.log(this.helper, 'this.helper')
-    const pool = this.helper.decodeInputString(1);
+    console.log(this.helper, 'this.helper');
+    const pool = this.helper.decodeSharedObjectId(1);
     const address = this.helper.decodeInputAddress(11);
 
     const amountA = this.helper.decodeInputU64(9);
