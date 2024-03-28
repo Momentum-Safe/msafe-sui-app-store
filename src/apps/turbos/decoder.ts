@@ -48,13 +48,14 @@ export class Decoder {
   }
 
   private decodeAddLiquidity(): DecodeResult {
-    const pool = this.helper.decodeInputString(0);
-    const address = this.helper.decodeInputAddress(12);
+    console.log(this.helper, 'this.helper')
+    const pool = this.helper.decodeInputString(1);
+    const address = this.helper.decodeInputAddress(11);
 
-    const amountA = this.helper.decodeInputU64(8);
-    const amountB = this.helper.decodeInputU64(9);
-    const tickLower = this.helper.decodeInputU32(4);
-    const tickUpper = this.helper.decodeInputU32(6);
+    const amountA = this.helper.decodeInputU64(9);
+    const amountB = this.helper.decodeInputU64(10);
+    const tickLower = this.helper.decodeInputU32(5);
+    const tickUpper = this.helper.decodeInputU32(7);
 
     return {
       txType: TransactionType.Other,
@@ -103,6 +104,7 @@ export class Decoder {
     const moveCall = this.transactions.find(
       (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(''),
     ) as MoveCallTransaction;
+    console.log(moveCall, this.txb, 'this.txb');
     return new MoveCallHelper(moveCall, this.txb);
   }
 }
