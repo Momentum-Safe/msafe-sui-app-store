@@ -52,10 +52,10 @@ export class Decoder {
     const pool = this.helper.decodeSharedObjectId(0);
     const address = this.helper.decodeInputAddress(12);
 
-    const amountA = this.helper.decodeInputU64(10);
-    const amountB = this.helper.decodeInputU64(11);
-    const tickLower = this.helper.decodeInputU32(6);
-    const tickUpper = this.helper.decodeInputU32(8);
+    const amountA = this.helper.decodeInputU64(8);
+    const amountB = this.helper.decodeInputU64(9);
+    const tickLower = this.helper.decodeInputU32(5);
+    const tickUpper = this.helper.decodeInputU32(7);
 
     return {
       txType: TransactionType.Other,
