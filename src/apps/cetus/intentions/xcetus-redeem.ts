@@ -5,13 +5,13 @@ import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
-import { getSwapRouterTxb } from '../api/swap';
+import { getXcetusRedeemTxb } from '../api/xcetus';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
-export class SwapIntention extends CoreBaseIntention<CetusIntentionData> {
+export class XcetusRedeemIntention extends CoreBaseIntention<CetusIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.Swap;
+  txSubType: TransactionSubType.xCETUSRedeem;
 
   constructor(public override readonly data: CetusIntentionData) {
     super(data);
@@ -20,18 +20,12 @@ export class SwapIntention extends CoreBaseIntention<CetusIntentionData> {
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
-    const txb = await getSwapRouterTxb(
-      txbParams?.createTxParams,
-      txbParams?.slippage,
-      txbParams?.account,
-      account,
-      suiClient,
-    );
-    console.log('Swap intention build txb: ', txb);
+    const txb = await getXcetusRedeemTxb(txbParams, account, suiClient);
+    console.log('XcetusRedeemIntention build txb: ', txb);
     return txb;
   }
 
   static fromData(data: CetusIntentionData) {
-    return new SwapIntention(data);
+    return new XcetusRedeemIntention(data);
   }
 }
