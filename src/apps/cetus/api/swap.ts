@@ -16,7 +16,7 @@ export const getSwapRouterTxb = async (
   console.log('getSwapRouterTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account;
   const allCoinAsset = await clmmSdk.getOwnerCoinAssets(account);
-  const txb: any = await TransactionUtil.buildAggregatorSwapTransaction(
+  const txb: TransactionBlock = await TransactionUtil.buildAggregatorSwapTransaction(
     clmmSdk,
     createTxParams,
     allCoinAsset,

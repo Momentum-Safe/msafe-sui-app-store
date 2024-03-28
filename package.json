@@ -42,8 +42,8 @@
     "MSafe Sui"
   ],
   "dependencies": {
-    "@cetusprotocol/cetus-periphery-sdk": "^2.0.0",
-    "@cetusprotocol/cetus-sui-clmm-sdk": "^4.0.0",
+    "@cetusprotocol/cetus-periphery-sdk": "0.0.0-experimental-20240328223108",
+    "@cetusprotocol/cetus-sui-clmm-sdk": "0.0.0-experimental-20240328222824",
     "@mysten/sui.js": "^0.50.1",
     "axios": "^1.6.7",
     "buffer": "^6.0.3",
