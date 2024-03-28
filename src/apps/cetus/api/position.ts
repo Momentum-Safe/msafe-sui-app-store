@@ -13,7 +13,7 @@ export const getAddLiquidityTxb = async (
 ): Promise<TransactionBlock> => {
   console.log('getAddLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: any = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
+  const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
   );
@@ -27,7 +27,7 @@ export const getIncreaseLiquidityTxb = async (
 ): Promise<TransactionBlock> => {
   console.log('getIncreaseLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: any = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
+  const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
   );
@@ -41,7 +41,7 @@ export const getRemoveLiquidityTxb = async (
 ): Promise<TransactionBlock> => {
   console.log('getRemoveLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: any = await clmmSdk.Position.closePositionTransactionPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await clmmSdk.Position.closePositionTransactionPayload(txbParams?.parameter);
   return txb;
 };
 
@@ -52,7 +52,7 @@ export const getDecreaseLiquidityTxb = async (
 ): Promise<TransactionBlock> => {
   console.log('getDecreaseLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: any = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams?.parameter);
   return txb;
 };
 
@@ -63,6 +63,6 @@ export const getClaimFeeAndMiningTxb = async (
 ): Promise<TransactionBlock> => {
   console.log('getClaimFeeAndMiningTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: any = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams?.parameter);
   return txb;
 };
