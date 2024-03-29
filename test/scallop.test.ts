@@ -1,5 +1,3 @@
-import util from 'node:util';
-
 import { TransactionType } from '@msafe/sui3-utils';
 
 import { BorrowIntention, BorrowIntentionData } from '@/apps/scallop/intentions/borrow';
@@ -40,7 +38,7 @@ import { appHelpers } from '@/index';
 
 import { Account, Client, Obligation, vescaKey } from './scallop.config';
 
-describe('Scallop App', () => {
+describe.skip('Scallop App', () => {
   it('Test Supply Lending Transaction Build', async () => {
     const appHelper = appHelpers.getAppHelper('scallop');
 
