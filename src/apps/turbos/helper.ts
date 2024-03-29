@@ -43,9 +43,9 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
     txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
-    const { transactionBlock, suiClient } = input;
+    const { transactionBlock, account } = input;
     const decoder = new Decoder(transactionBlock);
-    const result = decoder.decode();
+    const result = decoder.decode(account.address);
     return {
       txType: TransactionType.Other,
       txSubType: result.type,
