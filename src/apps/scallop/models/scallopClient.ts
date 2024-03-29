@@ -11,7 +11,12 @@ import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveB
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
-import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_BORROW_INCENTIVE_REWARDS } from '../constants';
+import {
+  ADDRESSES_ID,
+  SUPPORT_BORROW_INCENTIVE_POOLS,
+  SUPPORT_BORROW_INCENTIVE_REWARDS,
+  SUPPORT_SPOOLS,
+} from '../constants';
 import { queryBorrowIncentivePools } from '../queries';
 import type {
   ScallopInstanceParams,
@@ -444,6 +449,72 @@ export class ScallopClient {
     return txBlock;
   }
 
+  public async supplyAndStake(
+    poolCoinName: SupportPoolCoins,
+    amount: number,
+    stakeAccountId: string,
+    walletAddress?: string,
+  ): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const quickMethod = generateCoreQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
+    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.splitCoins(txBlock.gas, [amount]);
+    txBlock.setSender(sender);
+
+    const marketCoin = await quickMethod.depositQuick(amount, poolCoinName, walletAddress);
+    const stakeMarketCoinName = this.utils.parseMarketCoinName(poolCoinName);
+    if (!SUPPORT_SPOOLS.find((coin) => coin === stakeMarketCoinName)) {
+      return txBlock;
+    }
+    const stakeAccounts = await this.query.getStakeAccounts(stakeMarketCoinName as SupportStakeMarketCoins, sender);
+    const targetStakeAccount = stakeAccountId || (stakeAccounts.length > 0 ? stakeAccounts[0].id : undefined);
+    if (targetStakeAccount) {
+      await spoolQuickMethod.stakeQuick(marketCoin, stakeMarketCoinName as SupportStakeMarketCoins, targetStakeAccount);
+    } else {
+      const account = spoolQuickMethod.normalMethod.createStakeAccount(stakeMarketCoinName as SupportStakeMarketCoins);
+      await spoolQuickMethod.stakeQuick(marketCoin, stakeMarketCoinName as SupportStakeMarketCoins, account);
+      txBlock.transferObjects([account], sender);
+    }
+    return txBlock;
+  }
+
+  public async unstakeAndWithdraw(
+    poolCoinName: SupportPoolCoins,
+    amount: number,
+    unstakeAccount: { id: string; coin: number }[],
+  ) {
+    const txBlock = new TransactionBlock();
+    const quickMethod = generateCoreQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
+    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = this.walletAddress;
+    const withdrawCoins = [];
+    txBlock.setSender(sender);
+    const stakeMarketCoinName = this.utils.parseMarketCoinName(poolCoinName) as SupportStakeMarketCoins;
+    for (let i = 0; i < unstakeAccount.length; i++) {
+      const account = unstakeAccount[i];
+      console.log(account);
+      const [marketCoin] = await spoolQuickMethod.unstakeQuick(account.coin, stakeMarketCoinName, account.id);
+      console.log(marketCoin);
+      if (marketCoin) {
+        const wdScoin = quickMethod.normalMethod.withdraw(marketCoin, poolCoinName);
+        withdrawCoins.push(wdScoin);
+      }
+    }
+    if (amount > 0) {
+      const wdCoin = await quickMethod.withdrawQuick(amount, poolCoinName);
+      withdrawCoins.push(wdCoin);
+    }
+    txBlock.transferObjects(withdrawCoins, sender);
+    return txBlock;
+  }
+
   /**
    * Stake market coin into the specific spool.
    *
@@ -466,7 +537,7 @@ export class ScallopClient {
     txBlock.setSender(sender);
 
     const stakeAccounts = await this.query.getStakeAccounts(stakeMarketCoinName, sender);
-    const targetStakeAccount = stakeAccountId || stakeAccounts[0].id;
+    const targetStakeAccount = stakeAccountId || (stakeAccounts.length > 0 ? stakeAccounts[0].id : undefined);
     if (targetStakeAccount) {
       await spoolQuickMethod.stakeQuick(amount, stakeMarketCoinName, targetStakeAccount);
     } else {

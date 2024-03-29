@@ -1,6 +1,4 @@
-import axios, { AxiosInstance } from 'axios';
-
-import { API_BASE_URL } from '../constants';
+import { config } from '../config';
 import type { ScallopAddressParams, AddressesInterface, AddressStringPath, NetworkType } from '../types';
 
 /**
@@ -16,8 +14,6 @@ import type { ScallopAddressParams, AddressesInterface, AddressStringPath, Netwo
  */
 export class ScallopAddress {
   private readonly _auth?: string;
-
-  private _requestClient: AxiosInstance;
 
   private _id?: string;
 
@@ -36,14 +32,6 @@ export class ScallopAddress {
     this._id = id;
     this._network = network || 'mainnet';
     this._addressesMap = new Map();
-    this._requestClient = axios.create({
-      baseURL: API_BASE_URL,
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      timeout: 30000,
-    });
   }
 
   /**
@@ -155,31 +143,15 @@ export class ScallopAddress {
    * @param id - The id of the addresses to get.
    * @return All addresses.
    */
-  public async read(id?: string) {
-    const addressesId = id || this._id || undefined;
-
-    if (addressesId !== undefined) {
-      const response = await this._requestClient.get(`${API_BASE_URL}/addresses/${addressesId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.status === 200) {
-        Object.entries<AddressesInterface>(response.data).forEach(([network, addresses]) => {
-          if (['localnet', 'devnet', 'testnet', 'mainnet'].includes(network)) {
-            if (network === this._network) {
-              this._currentAddresses = addresses;
-            }
-            this._addressesMap.set(network as NetworkType, addresses);
-          }
-        });
-        this._id = response.data.id;
-        return this.getAllAddresses();
+  public async read() {
+    Object.entries<AddressesInterface>(config).forEach(([network, addresses]) => {
+      if (['localnet', 'devnet', 'testnet', 'mainnet'].includes(network)) {
+        if (network === this._network) {
+          this._currentAddresses = addresses;
+        }
+        this._addressesMap.set(network as NetworkType, addresses);
       }
-      throw Error('Failed to create addresses.');
-    } else {
-      throw Error('Please provide API addresses id.');
-    }
+    });
+    return this.getAllAddresses();
   }
 }

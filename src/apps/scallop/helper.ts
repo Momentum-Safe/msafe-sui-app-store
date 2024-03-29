@@ -16,8 +16,16 @@ import { RepayIntention, RepayIntentionData } from './intentions/repay';
 import { StakeMoreScaIntention, StakeMoreScaIntentionData } from './intentions/stake-more-sca';
 import { StakeScaIntention, StakeScaIntentionData } from './intentions/stake-sca';
 import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/stake-spool';
+import {
+  SupplyAndStakeLendingIntention,
+  SupplyAndStakeLendingIntentionData,
+} from './intentions/supply-and-stake-lending';
 import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/supply-lending';
 import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/unstake-spool';
+import {
+  WithdrawAndUnstakeLendingIntention,
+  WithdrawAndUnstakeLendingIntentionData,
+} from './intentions/withdraw-and-unstake-lending';
 import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/withdraw-collateral';
 import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/withdraw-lending';
 import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/withdraw-staked-sca';
@@ -43,7 +51,9 @@ export type ScallopIntention =
   | StakeMoreScaIntention
   | ExtendStakeScaPeriodIntention
   | RenewExpStakePeriodIntention
-  | WithdrawStakedScaIntention;
+  | WithdrawStakedScaIntention
+  | SupplyAndStakeLendingIntention
+  | WithdrawAndUnstakeLendingIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -62,7 +72,9 @@ export type ScallopIntentionData =
   | StakeMoreScaIntentionData
   | ExtendStakeScaPeriodIntentionData
   | RenewExpStakePeriodIntentionData
-  | WithdrawStakedScaIntentionData;
+  | WithdrawStakedScaIntentionData
+  | SupplyAndStakeLendingIntentionData
+  | WithdrawAndUnstakeLendingIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -81,7 +93,7 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
     });
     await builder.init();
     const { transactionBlock } = input;
-    const decoder = new Decoder(transactionBlock, builder.address.get('core.packages.protocol.id'));
+    const decoder = new Decoder(transactionBlock, builder);
     const result = decoder.decode();
     return {
       txType: TransactionType.Other,
@@ -151,6 +163,14 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.WithdrawStakedSca:
         intention = WithdrawStakedScaIntention.fromData(input.intentionData as WithdrawStakedScaIntentionData);
+        break;
+      case TransactionSubType.SupplyAndStakeLending:
+        intention = SupplyAndStakeLendingIntention.fromData(input.intentionData as SupplyAndStakeLendingIntentionData);
+        break;
+      case TransactionSubType.WithdrawAndUnstakeLending:
+        intention = WithdrawAndUnstakeLendingIntention.fromData(
+          input.intentionData as WithdrawAndUnstakeLendingIntentionData,
+        );
         break;
       default:
         throw new Error('not implemented');
