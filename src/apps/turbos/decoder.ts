@@ -37,12 +37,12 @@ export class Decoder {
       return this.decodeCollectFeeLiquidity();
     }
 
-    if (this.isCollectRewardLiquidityTransaction()) {
+    if (this.isCollectRewardLTransaction()) {
       return this.decodeCollectRewardLiquidity();
     }
 
-    if(this.isBurnTransaction()){
-      return this.decodeCollectRewardLiquidity();
+    if (this.isBurnTransaction()) {
+      return this.decodeBurnLiquidity();
     }
 
     throw new Error(`Unknown transaction type`);
@@ -68,8 +68,8 @@ export class Decoder {
     return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::collect`);
   }
 
-  private isCollectRewardLiquidityTransaction() {
-    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::collect`);
+  private isCollectRewardLTransaction() {
+    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::collect_reward`);
   }
 
   private isBurnTransaction() {
@@ -84,7 +84,9 @@ export class Decoder {
     const amountA = this.helper.decodeInputU64(8);
     const amountB = this.helper.decodeInputU64(9);
     const tickLower = this.helper.decodeInputU32(4);
+    const tickLowerIsNeg = this.helper.decodeInputBool(5);
     const tickUpper = this.helper.decodeInputU32(6);
+    const tickUpperIsNeg = this.helper.decodeInputBool(7);
 
     return {
       txType: TransactionType.Other,
@@ -95,8 +97,8 @@ export class Decoder {
         address,
         amountA,
         amountB,
-        tickLower,
-        tickUpper,
+        tickLower: tickLowerIsNeg ? -tickLower : tickLower,
+        tickUpper: tickUpperIsNeg ? -tickUpper : tickUpper,
       },
     };
   }
@@ -167,6 +169,7 @@ export class Decoder {
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const address = this.helper.decodeInputAddress(5);
+    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
 
     return {
       txType: TransactionType.Other,
@@ -174,7 +177,7 @@ export class Decoder {
       intentionData: {
         pool,
         address,
-        rewardAmounts: [0, 0, 0],
+        rewardAmounts,
         nft,
       },
     };
@@ -197,16 +200,16 @@ export class Decoder {
   private get helper() {
     console.log(this.transactions, 'this.transactions');
     const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith('') && trans.target !== '0x2::coin::zero',
+      (trans) => trans.kind === 'MoveCall' && trans.target !== '0x2::coin::zero',
     ) as MoveCallTransaction;
     console.log(moveCall, this.txb, 'this.txb');
     return new MoveCallHelper(moveCall, this.txb);
   }
 
-  private get helpers() {
+  private get collectRewardHelper() {
     console.log(this.transactions, 'this.transactions');
     const moveCalls = this.transactions.filter(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith('') && trans.target !== '0x2::coin::zero',
+      (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::collect_reward`,
     ) as MoveCallTransaction[];
     console.log(moveCalls, this.txb, 'this.txb');
     return moveCalls.map((moveCall) => new MoveCallHelper(moveCall, this.txb));
