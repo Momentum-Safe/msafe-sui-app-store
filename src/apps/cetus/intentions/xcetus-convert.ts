@@ -9,9 +9,9 @@ import { getXcetusConvertTxb } from '../api/xcetus';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class XcetusConvertIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.xCETUSConvert;
+  txSubType = TransactionSubType.xCETUSConvert;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

@@ -9,9 +9,9 @@ import { getFarmingAddLiquidityTxb } from '../api/farming';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class FarmingAddLiquidityIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.FarmingOpenAndAddLiquidity;
+  txSubType = TransactionSubType.FarmingOpenAndAddLiquidity;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

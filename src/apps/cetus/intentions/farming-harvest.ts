@@ -9,9 +9,9 @@ import { getFarmingBatchHarvest } from '../api/farming';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class FarmingHarvestIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.FarmingHarvest;
+  txSubType = TransactionSubType.FarmingHarvest;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

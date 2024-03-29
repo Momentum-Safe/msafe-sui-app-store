@@ -9,9 +9,9 @@ import { getXcetusRedeemLockTxb } from '../api/xcetus';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class XcetusRedeemLockIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.xCETUSRedeemLock;
+  txSubType = TransactionSubType.xCETUSRedeemLock;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);
