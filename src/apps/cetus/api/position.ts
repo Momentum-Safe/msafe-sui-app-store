@@ -12,6 +12,7 @@ export const getAddLiquidityTxb = async (
   suiClient?: any,
 ): Promise<TransactionBlock> => {
   console.log('getAddLiquidityTxb suiClient: ', suiClient);
+  console.log('getAddLiquidityTxb txbParams: ', txbParams);
   clmmSdk.senderAddress = account.address;
   const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
@@ -27,6 +28,7 @@ export const getIncreaseLiquidityTxb = async (
 ): Promise<TransactionBlock> => {
   console.log('getIncreaseLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
+  console.log('getIncreaseLiquidityTxb txbParams: ', txbParams);
   const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
@@ -39,6 +41,7 @@ export const getRemoveLiquidityTxb = async (
   account: WalletAccount,
   suiClient?: any,
 ): Promise<TransactionBlock> => {
+  console.log('getRemoveLiquidityTxb txbParams: ', txbParams);
   console.log('getRemoveLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const txb: TransactionBlock = await clmmSdk.Position.closePositionTransactionPayload(txbParams?.parameter);
@@ -50,6 +53,7 @@ export const getDecreaseLiquidityTxb = async (
   account: WalletAccount,
   suiClient?: any,
 ): Promise<TransactionBlock> => {
+  console.log('getDecreaseLiquidityTxb txbParams: ', txbParams);
   console.log('getDecreaseLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const txb: TransactionBlock = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams?.parameter);
@@ -61,6 +65,7 @@ export const getClaimFeeAndMiningTxb = async (
   account: WalletAccount,
   suiClient?: any,
 ): Promise<TransactionBlock> => {
+  console.log('getClaimFeeAndMiningTxb txbParams: ', txbParams);
   console.log('getClaimFeeAndMiningTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const txb: TransactionBlock = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams?.parameter);

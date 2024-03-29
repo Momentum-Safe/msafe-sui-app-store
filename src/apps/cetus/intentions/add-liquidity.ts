@@ -20,6 +20,8 @@ export class AddLiquidityIntention extends CoreBaseIntention<CetusIntentionData>
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('AddLiquidityIntention this.data: ', this.data);
+    console.log('AddLiquidityIntention txbParams: ', txbParams);
     const txb = await getAddLiquidityTxb(txbParams, account, suiClient);
     console.log('AddLiquidityIntention build txb: ', txb);
     return txb;

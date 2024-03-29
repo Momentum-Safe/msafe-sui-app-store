@@ -20,6 +20,8 @@ export class DecreaseLiquidityIntention extends CoreBaseIntention<CetusIntention
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('DecreaseLiquidityIntention this.data: ', this.data);
+    console.log('DecreaseLiquidityIntention txbParams: ', txbParams);
     const txb = await getDecreaseLiquidityTxb(txbParams, account, suiClient);
     console.log('DecreaseLiquidityIntention build txb: ', txb);
     return txb;

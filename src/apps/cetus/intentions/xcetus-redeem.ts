@@ -20,6 +20,8 @@ export class XcetusRedeemIntention extends CoreBaseIntention<CetusIntentionData>
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('XcetusRedeemIntention this.data: ', this.data);
+    console.log('XcetusRedeemIntention txbParams: ', txbParams);
     const txb = await getXcetusRedeemTxb(txbParams, account, suiClient);
     console.log('XcetusRedeemIntention build txb: ', txb);
     return txb;

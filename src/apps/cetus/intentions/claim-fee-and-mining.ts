@@ -20,6 +20,8 @@ export class ClaimFeeAndMiningIntention extends CoreBaseIntention<CetusIntention
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('ClaimFeeAndMiningIntention this.data: ', this.data);
+    console.log('ClaimFeeAndMiningIntention txbParams: ', txbParams);
     const txb = await getClaimFeeAndMiningTxb(txbParams, account, suiClient);
     console.log('ClaimFeeAndMiningIntention build txb: ', txb);
     return txb;

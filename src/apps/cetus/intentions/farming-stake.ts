@@ -20,6 +20,8 @@ export class FarmingStakeIntention extends CoreBaseIntention<CetusIntentionData>
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('FarmingStakeIntention this.data: ', this.data);
+    console.log('FarmingStakeIntention txbParams: ', txbParams);
     const txb = await getFarmingStake(txbParams, account, suiClient);
     console.log('FarmingStakeIntention build txb: ', txb);
     return txb;
