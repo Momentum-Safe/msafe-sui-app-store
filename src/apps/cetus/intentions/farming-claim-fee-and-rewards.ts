@@ -13,7 +13,7 @@ export class FarmingClaimFeeAndRewardIntention extends CoreBaseIntention<CetusIn
 
   txSubType: TransactionSubType.FarmingClaimFeeAndReward;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 

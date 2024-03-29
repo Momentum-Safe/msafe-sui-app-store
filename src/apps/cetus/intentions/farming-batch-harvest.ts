@@ -13,7 +13,7 @@ export class FarmingBatchHarvestIntention extends CoreBaseIntention<CetusIntenti
 
   txSubType: TransactionSubType.FarmingBatchHarvest;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 

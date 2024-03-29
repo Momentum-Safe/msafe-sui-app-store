@@ -13,7 +13,7 @@ export class IncreaseLiquidityIntention extends CoreBaseIntention<CetusIntention
 
   txSubType: TransactionSubType.IncreaseLiquidity;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 

@@ -13,7 +13,7 @@ export class SwapIntention extends CoreBaseIntention<CetusIntentionData> {
 
   txSubType: TransactionSubType.Swap;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 
