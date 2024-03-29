@@ -1,13 +1,14 @@
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
-import { SuiNetworks, TransactionSubType } from '../types';
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { Pool } from 'turbos-clmm-sdk';
-import { SuiClient } from '@mysten/sui.js/dist/cjs/client';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { TurbosSdk, Network } from 'turbos-clmm-sdk';
+import { Network, Pool, TurbosSdk } from 'turbos-clmm-sdk';
 
-export interface CollectFeeIntentionData extends Pool.CollectFeeOptions {}
+import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+
+import { SuiNetworks, TransactionSubType } from '../types';
+
+export type CollectFeeIntentionData = Pool.CollectFeeOptions;
 
 export class CollectFeeIntention extends CoreBaseIntention<CollectFeeIntentionData> {
   txType!: TransactionType.Other;

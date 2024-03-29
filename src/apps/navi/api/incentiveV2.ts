@@ -74,18 +74,24 @@ export function repayToken(txb: TransactionBlock, pool: PoolConfig, coinObject: 
   return txb;
 }
 
-export function claimReward(txb: TransactionBlock, pool: PoolConfig, option: OptionType) {
+export function claimReward(
+  txb: TransactionBlock,
+  assetId: number,
+  poolId: string,
+  option: OptionType,
+  typeArguments: string[],
+) {
   txb.moveCall({
     target: `${config.ProtocolPackage}::incentive_v2::claim_reward`,
     arguments: [
       txb.object('0x06'),
       txb.object(config.IncentiveV2),
-      txb.object(pool.fondPoolId),
+      txb.object(poolId),
       txb.object(config.StorageId),
-      txb.pure(pool.assetId),
+      txb.pure(assetId),
       txb.pure(option),
     ],
-    typeArguments: [pool.type],
+    typeArguments,
   });
   return txb;
 }

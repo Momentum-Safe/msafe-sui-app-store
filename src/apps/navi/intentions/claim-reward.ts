@@ -4,13 +4,15 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 import { claimReward } from '../api/incentiveV2';
-import config from '../config';
 import { CoinType, TransactionSubType, OptionType } from '../types';
 
 export interface ClaimRewardIntentionData {
   claims: {
     coinType: CoinType;
     option: OptionType;
+    poolId: string;
+    assetId: number;
+    typeArguments: string[];
   }[];
 }
 
@@ -28,19 +30,9 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
     const tx = new TransactionBlock();
 
     claims.forEach((claim) => {
-      const { coinType, option } = claim;
-      const pool = config.pool[coinType];
-      console.log('build', this.data);
+      const { assetId, poolId, option, typeArguments } = claim;
 
-      if (!pool) {
-        throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
-      }
-
-      if (!pool.fondPoolId) {
-        throw new Error(`${coinType} not support claim reward.`);
-      }
-
-      claimReward(tx, pool, option);
+      claimReward(tx, assetId, poolId, option, typeArguments);
     });
 
     return tx;
