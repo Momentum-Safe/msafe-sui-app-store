@@ -6,8 +6,7 @@ import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-stan
 import { Decoder } from './decoder';
 import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
 import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/borrow-with-boost';
-import { ClaimBorrowRewardIntention, ClaimBorrowRewardIntentionData } from './intentions/claim-borrow-reward';
-import { ClaimSupplyRewardIntention, ClaimSupplyRewardIntentionData } from './intentions/claim-supply-reward';
+import { ClaimIncentiveRewardIntention, ClaimIncentiveRewardIntentionData } from './intentions/claim-incentive-reward';
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/deposit-collateral';
 import { ExtendStakeScaPeriodIntention, ExtendStakeScaPeriodIntentionData } from './intentions/extend-stake-sca-period';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/open-obligation';
@@ -44,8 +43,7 @@ export type ScallopIntention =
   | OpenObligationIntention
   | StakeSpoolIntention
   | UnstakeSpoolIntention
-  | ClaimBorrowRewardIntention
-  | ClaimSupplyRewardIntention
+  | ClaimIncentiveRewardIntention
   | BorrowWithBoostIntention
   | StakeScaIntention
   | StakeMoreScaIntention
@@ -65,8 +63,7 @@ export type ScallopIntentionData =
   | OpenObligationIntentionData
   | StakeSpoolIntentionData
   | UnstakeSpoolIntentionData
-  | ClaimBorrowRewardIntentionData
-  | ClaimSupplyRewardIntentionData
+  | ClaimIncentiveRewardIntentionData
   | BorrowWithBoostIntentionData
   | StakeScaIntentionData
   | StakeMoreScaIntentionData
@@ -140,11 +137,8 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
       case TransactionSubType.UnstakeSpool:
         intention = UnstakeSpoolIntention.fromData(input.intentionData as UnstakeSpoolIntentionData);
         break;
-      case TransactionSubType.ClaimBorrowReward:
-        intention = ClaimBorrowRewardIntention.fromData(input.intentionData as ClaimBorrowRewardIntentionData);
-        break;
-      case TransactionSubType.ClaimSupplyReward:
-        intention = ClaimSupplyRewardIntention.fromData(input.intentionData as ClaimSupplyRewardIntentionData);
+      case TransactionSubType.ClaimIncentiveReward:
+        intention = ClaimIncentiveRewardIntention.fromData(input.intentionData as ClaimIncentiveRewardIntentionData);
         break;
       case TransactionSubType.BorrowWithBoost:
         intention = BorrowWithBoostIntention.fromData(input.intentionData as BorrowWithBoostIntentionData);

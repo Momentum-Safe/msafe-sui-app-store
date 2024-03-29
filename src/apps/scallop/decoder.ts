@@ -1,12 +1,12 @@
-import util from 'node:util';
-
 import { TransactionType } from '@msafe/sui3-utils';
 import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction, SplitCoinsTransaction } from '@mysten/sui.js/dist/cjs/builder';
 import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
+import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from './constants';
 import { ScallopBuilder } from './models';
+import { SupportBorrowIncentiveRewardCoins, SupportStakeMarketCoins } from './types';
 import { TransactionSubType } from './types/utils';
 
 type DecodeResult = {
@@ -56,6 +56,9 @@ export class Decoder {
     if (this.isUnstakeSpoolTransaction()) {
       return this.decodeUnstakeSpool();
     }
+    if (this.isClaimRewardTransaction()) {
+      return this.decodeClaimReward();
+    }
     throw new Error(`Unknown transaction type`);
   }
 
@@ -67,6 +70,7 @@ export class Decoder {
       coinDecimalsRegistry: this._builder.address.get('core.coinDecimalsRegistry'),
       xOracle: this._builder.address.get('core.oracles.xOracle'),
       spoolPkg: this._builder.address.get('spool.id'),
+      borrowIncentivePkg: this._builder.address.get('borrowIncentive.id'),
     };
   }
 
@@ -128,6 +132,12 @@ export class Decoder {
 
   private isCreateStakeAccountTransaction() {
     return !!this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::new_spool_account`);
+  }
+
+  private isClaimRewardTransaction() {
+    const lendingIncentive = this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::redeem_rewards`);
+    const borrowIncentiveV2 = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::redeem_rewards`);
+    return !!lendingIncentive && !!borrowIncentiveV2;
   }
 
   private decodeSupplyLending(): DecodeResult {
@@ -304,6 +314,91 @@ export class Decoder {
         stakeAccountId: stakeAccountWithAmount,
       },
     };
+  }
+
+  private decodeClaimReward(): DecodeResult {
+    const lendingReward: {
+      stakeMarketCoinName: SupportStakeMarketCoins;
+      stakeAccountId: string;
+    }[] = [];
+    const borrowRewardV2: {
+      obligationId: string;
+      obligationKey: string;
+      rewardCoinName: SupportBorrowIncentiveRewardCoins;
+    }[] = [];
+
+    const borrowReward: {
+      obligationId: string;
+      obligationKey: string;
+      rewardCoinName: SupportBorrowIncentiveRewardCoins;
+    }[] = [];
+
+    this.helperClaimLendingReward.forEach((tx) => {
+      const stakeAccountId = tx.decodeOwnedObjectId(2);
+      const stakeMarketCoinName = tx.typeArg(0);
+      const coinName = this._builder.utils.parseCoinNameFromType(stakeMarketCoinName);
+      lendingReward.push({ stakeMarketCoinName: coinName as SupportStakeMarketCoins, stakeAccountId });
+    });
+
+    this.helperClaimBorrowV2Reward.forEach((tx) => {
+      const obligationId = tx.decodeSharedObjectId(3);
+      const obligationKey = tx.decodeOwnedObjectId(4);
+      const rewardCoinName = this._builder.utils.parseCoinNameFromType(
+        tx.typeArg(0),
+      ) as SupportBorrowIncentiveRewardCoins;
+      borrowRewardV2.push({ obligationId, obligationKey, rewardCoinName });
+    });
+
+    this.helperClaimBorrowReward.forEach((tx) => {
+      const obligationId = tx.decodeSharedObjectId(2);
+      const obligationKey = tx.decodeOwnedObjectId(3);
+      const rewardCoinName = this._builder.utils.parseCoinNameFromType(
+        tx.typeArg(0),
+      ) as SupportBorrowIncentiveRewardCoins;
+      borrowReward.push({ obligationId, obligationKey, rewardCoinName });
+    });
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.ClaimIncentiveReward,
+      intentionData: {
+        lendingIncentive: lendingReward,
+        borrowIncentiveV2: borrowRewardV2,
+        borrowIncentive: borrowReward,
+      },
+    };
+  }
+
+  private get helperClaimLendingReward() {
+    const moveCalls = this.transactions
+      .filter(
+        (trans) =>
+          trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.spoolPkg}::user::redeem_rewards`),
+      )
+      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+    return moveCalls;
+  }
+
+  private get helperClaimBorrowV2Reward() {
+    const moveCalls = this.transactions
+      .filter(
+        (trans) =>
+          trans.kind === 'MoveCall' &&
+          trans.target.startsWith(`${this.coreId.borrowIncentivePkg}::user::redeem_rewards`),
+      )
+      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+    return moveCalls;
+  }
+
+  private get helperClaimBorrowReward() {
+    const moveCalls = this.transactions
+      .filter(
+        (trans) =>
+          trans.kind === 'MoveCall' &&
+          trans.target.startsWith(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`),
+      )
+      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+    return moveCalls;
   }
 
   private get helperMint() {

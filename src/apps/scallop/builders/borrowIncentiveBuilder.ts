@@ -2,7 +2,6 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '../constants';
-import { borrowIncentiveRewardCoins } from '../constants/enum';
 import type { ScallopBuilder } from '../models';
 import { getObligations, getObligationLocked, getVeSca, getVeScas } from '../queries';
 import type {
@@ -147,6 +146,11 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
     obligationAccessStore: builder.address.get('core.obligationAccessStore'),
     config: builder.address.get('borrowIncentive.config'),
   };
+  const OldBorrowIncentiveContract = {
+    id: '0xc63072e7f5f4983a2efaf5bdba1480d5e7d74d57948e1c7cc436f8e22cbeb410',
+    incentivePools: '0x64972b713ccec45ec3964809e477cea6f97350c0c50ca3aec85bb631639266ec',
+    incentiveAccounts: '0x3c0b707068bdcea8bb859d751ad3e2149a9f83c13fcf4054ef91372a00bccdd3',
+  };
   const veScaIds: Omit<VescaIds, 'pkgId'> = {
     table: builder.address.get('vesca.table'),
     treasury: builder.address.get('vesca.treasury'),
@@ -198,11 +202,7 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
         ],
       });
     },
-    claimBorrowIncentive: (obligationId, obligationKey, coinName, rewardCoinName) => {
-      const rewardCoinNames = borrowIncentiveRewardCoins[coinName];
-      if (rewardCoinNames.includes(rewardCoinName) === false) {
-        throw new Error(`Invalid reward coin name ${rewardCoinName}`);
-      }
+    claimBorrowIncentive: (obligationId, obligationKey, rewardCoinName) => {
       const rewardType = builder.utils.parseCoinType(rewardCoinName);
       return txBlock.moveCall({
         target: `${borrowIncentiveIds.borrowIncentivePkg}::user::redeem_rewards`,
@@ -210,6 +210,20 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
           txBlock.object(borrowIncentiveIds.config),
           txBlock.object(borrowIncentiveIds.incentivePools),
           txBlock.object(borrowIncentiveIds.incentiveAccounts),
+          txBlock.object(obligationKey as string),
+          txBlock.object(obligationId as string),
+          txBlock.object(SUI_CLOCK_OBJECT_ID),
+        ],
+        typeArguments: [rewardType],
+      });
+    },
+    oldClaimBorrowIncentive(obligationId, obligationKey, rewardCoinName) {
+      const rewardType = builder.utils.parseCoinType(rewardCoinName);
+      return txBlock.moveCall({
+        target: `${OldBorrowIncentiveContract.id}::user::redeem_rewards`,
+        arguments: [
+          txBlock.object(OldBorrowIncentiveContract.incentivePools),
+          txBlock.object(OldBorrowIncentiveContract.incentiveAccounts),
           txBlock.object(obligationKey as string),
           txBlock.object(obligationId as string),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
@@ -292,15 +306,7 @@ export const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMet
         }
       }
     },
-    claimBorrowIncentiveQuick: async (coinName, rewardCoinName, obligation, obligationKey) => {
-      const { obligationId: obligationArg, obligationKey: obligationtKeyArg } = await requireObligationInfo(
-        builder,
-        txBlock,
-        obligation as string,
-        obligationKey as string,
-      );
-
-      return normalMethod.claimBorrowIncentive(obligationArg, obligationtKeyArg, coinName, rewardCoinName);
-    },
+    claimBorrowIncentiveQuick: (rewardCoinName, obligation, obligationKey) =>
+      normalMethod.claimBorrowIncentive(obligation, obligationKey, rewardCoinName),
   };
 };

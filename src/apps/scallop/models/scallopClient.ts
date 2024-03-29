@@ -11,20 +11,14 @@ import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveB
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
-import {
-  ADDRESSES_ID,
-  SUPPORT_BORROW_INCENTIVE_POOLS,
-  SUPPORT_BORROW_INCENTIVE_REWARDS,
-  SUPPORT_SPOOLS,
-} from '../constants';
-import { queryBorrowIncentivePools } from '../queries';
+import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SPOOLS } from '../constants';
 import type {
   ScallopInstanceParams,
   ScallopClientParams,
   SupportPoolCoins,
   SupportCollateralCoins,
   SupportStakeMarketCoins,
-  SupportBorrowIncentiveCoins,
+  SupportBorrowIncentiveRewardCoins,
 } from '../types';
 
 /**
@@ -585,17 +579,72 @@ export class ScallopClient {
    * @return Transaction block response or transaction block.
    */
   public async claim(
-    stakeMarketCoinName: SupportStakeMarketCoins,
-    stakeAccountId?: string,
+    lendingIncentive: {
+      stakeMarketCoinName: SupportStakeMarketCoins;
+      stakeAccountId: string;
+    }[],
+    borrowIncentiveV2: {
+      obligationId: string;
+      obligationKey: string;
+      rewardCoinName: SupportBorrowIncentiveRewardCoins;
+    }[],
+    borrowIncentive: {
+      obligationId: string;
+      obligationKey: string;
+      rewardCoinName: SupportBorrowIncentiveRewardCoins;
+    }[],
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
     const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveRewarad = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    const rewardCoins = await spoolQuickMethod.claimQuick(stakeMarketCoinName, stakeAccountId);
-    txBlock.transferObjects(rewardCoins, sender);
+    const rewardCoins: { sui: TransactionResult[]; sca: TransactionResult[] } = {
+      sui: [],
+      sca: [],
+    };
+
+    for (let i = 0; i < lendingIncentive.length; i++) {
+      const { stakeMarketCoinName, stakeAccountId } = lendingIncentive[i];
+      const rewardCoin = spoolQuickMethod.normalMethod.claim(stakeAccountId, stakeMarketCoinName);
+      rewardCoins.sui.push(rewardCoin);
+    }
+
+    for (let i = 0; i < borrowIncentiveV2.length; i++) {
+      const { obligationId, obligationKey, rewardCoinName } = borrowIncentiveV2[i];
+      const rewardCoin = borrowIncentiveRewarad.normalMethod.claimBorrowIncentive(
+        obligationId,
+        obligationKey,
+        rewardCoinName,
+      );
+      rewardCoins[rewardCoinName].push(rewardCoin);
+    }
+
+    for (let i = 0; i < borrowIncentive.length; i++) {
+      const { obligationId, obligationKey, rewardCoinName } = borrowIncentive[i];
+      const rewardCoin = borrowIncentiveRewarad.normalMethod.oldClaimBorrowIncentive(
+        obligationId,
+        obligationKey,
+        rewardCoinName,
+      );
+      rewardCoins[rewardCoinName].push(rewardCoin);
+    }
+
+    if (rewardCoins.sui.length > 0) {
+      if (rewardCoins.sui.length > 1) {
+        txBlock.mergeCoins(rewardCoins.sui[0], rewardCoins.sui.slice(1));
+      }
+      txBlock.transferObjects([rewardCoins.sui[0]], txBlock.pure(sender));
+    }
+
+    if (rewardCoins.sca.length > 0) {
+      if (rewardCoins.sca.length > 1) {
+        txBlock.mergeCoins(rewardCoins.sca[0], rewardCoins.sca.slice(1));
+      }
+      txBlock.transferObjects([rewardCoins.sca[0]], txBlock.pure(sender));
+    }
     return txBlock;
   }
 
@@ -644,57 +693,6 @@ export class ScallopClient {
     txBlock.setSender(sender);
 
     await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKeyId);
-    return txBlock;
-  }
-
-  /**
-   * unstake market coin from the specific spool.
-   *
-   * @param marketCoinName - Types of mak coin.
-   * @param amount - The amount of coins would deposit.
-   * @param sign - Decide to directly sign the transaction or return the transaction block.
-   * @param accountId - The stake account object.
-   * @param walletAddress - The wallet address of the owner.
-   * @return Transaction block response or transaction block
-   */
-  public async claimBorrowIncentive(
-    coinName: SupportBorrowIncentiveCoins,
-    obligationId: string,
-    obligationKeyId: string,
-    walletAddress?: string,
-  ): Promise<TransactionBlock> {
-    const txBlock = new TransactionBlock();
-    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
-    txBlock.setSender(sender);
-
-    const incentiveAccount = await this.query.getBorrowIncentiveAccounts(obligationId, sender, [coinName]);
-    const borrowIncentivePool = await queryBorrowIncentivePools(this.query, [coinName]);
-    if (!incentiveAccount[coinName]) {
-      throw new Error(`No incentive account found for ${coinName}`);
-    }
-
-    const rewardCoins: TransactionResult[] = [];
-    for (let i = 0; i < SUPPORT_BORROW_INCENTIVE_REWARDS.length; i++) {
-      const supportedRewardCoin = SUPPORT_BORROW_INCENTIVE_REWARDS[i];
-      const accountPoint = incentiveAccount[coinName].pointList[supportedRewardCoin];
-      const poolPoint = borrowIncentivePool[coinName].points[supportedRewardCoin];
-      if (accountPoint === undefined || poolPoint === undefined) {
-        continue;
-      }
-      const availableClaimCoin = this.calculateAvailableClaimCoin(accountPoint, poolPoint);
-      if (availableClaimCoin.isZero()) {
-        continue;
-      }
-      const rewardCoin = await borrowIncentiveQuickMethod.claimBorrowIncentiveQuick(
-        coinName,
-        SUPPORT_BORROW_INCENTIVE_REWARDS[i],
-        obligationId,
-        obligationKeyId,
-      );
-      rewardCoins.push(rewardCoin);
-    }
-    txBlock.transferObjects(rewardCoins, txBlock.pure(sender));
     return txBlock;
   }
 

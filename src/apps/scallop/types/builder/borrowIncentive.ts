@@ -1,7 +1,7 @@
 import type { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
 
 import type { ScallopBuilder } from '../../models';
-import type { SupportBorrowIncentiveCoins, SupportBorrowIncentiveRewardCoins } from '../constant';
+import type { SupportBorrowIncentiveRewardCoins } from '../constant';
 import { SuiAddressArg, SuiTxArg } from '../utils';
 
 export type BorrowIncentiveIds = {
@@ -20,7 +20,11 @@ export type BorrowIncentiveNormalMethods = {
   claimBorrowIncentive: (
     obligation: SuiAddressArg,
     obligationKey: SuiAddressArg,
-    coinName: SupportBorrowIncentiveCoins,
+    rewardType: SupportBorrowIncentiveRewardCoins,
+  ) => TransactionResult;
+  oldClaimBorrowIncentive: (
+    obligation: SuiAddressArg,
+    obligationKey: SuiAddressArg,
     rewardType: SupportBorrowIncentiveRewardCoins,
   ) => TransactionResult;
 };
@@ -35,11 +39,10 @@ export type BorrowIncentiveQuickMethods = {
     veScaKey?: SuiAddressArg,
   ): Promise<void>;
   claimBorrowIncentiveQuick(
-    coinName: SupportBorrowIncentiveCoins,
     rewardType: SupportBorrowIncentiveRewardCoins,
     obligation?: SuiAddressArg,
     obligationKey?: SuiAddressArg,
-  ): Promise<TransactionResult>;
+  ): TransactionResult;
 };
 
 export type SuiTxBlockWithBorrowIncentiveNormalMethods = TransactionBlock & BorrowIncentiveNormalMethods;
