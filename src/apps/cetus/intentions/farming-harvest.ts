@@ -20,6 +20,8 @@ export class FarmingHarvestIntention extends CoreBaseIntention<CetusIntentionDat
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('FarmingHarvestIntention this.data: ', this.data);
+    console.log('FarmingHarvestIntention txbParams: ', txbParams);
     const txb = await getFarmingBatchHarvest(txbParams, account, suiClient);
     console.log('FarmingHarvestIntention build txb: ', txb);
     return txb;

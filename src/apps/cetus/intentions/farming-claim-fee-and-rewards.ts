@@ -20,6 +20,8 @@ export class FarmingClaimFeeAndRewardIntention extends CoreBaseIntention<CetusIn
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('FarmingClaimFeeAndRewardIntention this.data: ', this.data);
+    console.log('FarmingClaimFeeAndRewardIntention txbParams: ', txbParams);
     const txb = await getFarmingClaimFeeAndRewardTxb(txbParams, account, suiClient);
     console.log('FarmingClaimFeeAndRewardIntention build txb: ', txb);
     return txb;

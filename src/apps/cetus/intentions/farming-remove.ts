@@ -20,6 +20,8 @@ export class FarmingRemoveLiquidityIntention extends CoreBaseIntention<CetusInte
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('FarmingRemoveLiquidityIntention this.data: ', this.data);
+    console.log('FarmingRemoveLiquidityIntention txbParams: ', txbParams);
     const txb = await getFarmingRemoveLiquidityTxb(txbParams, account, suiClient);
     console.log('FarmingRemoveLiquidityIntention build txb: ', txb);
     return txb;

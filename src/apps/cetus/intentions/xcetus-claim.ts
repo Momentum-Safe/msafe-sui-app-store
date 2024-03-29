@@ -20,6 +20,8 @@ export class XcetusClaimingStakeRewardsIntention extends CoreBaseIntention<Cetus
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('XcetusClaimingStakeRewardsIntention this.data: ', this.data);
+    console.log('XcetusClaimingStakeRewardsIntention txbParams: ', txbParams);
     const txb = await getXcetusClaimingStakeRewardsTxb(txbParams, account, suiClient);
     console.log('XcetusClaimingStakeRewardsIntention build txb: ', txb);
     return txb;

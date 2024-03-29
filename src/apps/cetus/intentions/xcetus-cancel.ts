@@ -20,6 +20,8 @@ export class XcetusCancelIntention extends CoreBaseIntention<CetusIntentionData>
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('XcetusCancelIntention this.data: ', this.data);
+    console.log('XcetusCancelIntention txbParams: ', txbParams);
     const txb = await getXcetusCancelRedeemTxb(txbParams, account, suiClient);
     console.log('XcetusCancelIntention build txb: ', txb);
     return txb;

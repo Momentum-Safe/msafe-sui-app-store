@@ -20,6 +20,8 @@ export class XcetusConvertIntention extends CoreBaseIntention<CetusIntentionData
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account, suiClient } = input;
     const { txbParams } = this.data;
+    console.log('XcetusConvertIntention this.data: ', this.data);
+    console.log('XcetusConvertIntention txbParams: ', txbParams);
     const txb = await getXcetusConvertTxb(txbParams, account, suiClient);
     console.log('XcetusConvertIntention build txb: ', txb);
     return txb;
