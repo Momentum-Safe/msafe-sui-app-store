@@ -56,7 +56,7 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
       txbParams?: any;
     },
   ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
-    console.log('Helper deserialize input: ', input);
+    console.log('Cetus helper deserialize input: ', input);
     const { txbParams, action } = input;
 
     return {
@@ -142,6 +142,7 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
       default:
         throw new Error('not implemented');
     }
+    console.log('helper build intention: ', intention);
     return intention.build({ suiClient, account });
   }
 }

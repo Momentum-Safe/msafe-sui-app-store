@@ -13,7 +13,7 @@ export class XcetusConvertIntention extends CoreBaseIntention<CetusIntentionData
 
   txSubType: TransactionSubType.xCETUSConvert;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 

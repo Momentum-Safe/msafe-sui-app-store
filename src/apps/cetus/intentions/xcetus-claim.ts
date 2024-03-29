@@ -13,7 +13,7 @@ export class XcetusClaimingStakeRewardsIntention extends CoreBaseIntention<Cetus
 
   txSubType: TransactionSubType.xCETUSClaimStakingRwewards;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 

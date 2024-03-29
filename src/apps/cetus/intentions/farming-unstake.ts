@@ -13,7 +13,7 @@ export class FarmingUnstakeIntention extends CoreBaseIntention<CetusIntentionDat
 
   txSubType: TransactionSubType.FarmingUnstake;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 

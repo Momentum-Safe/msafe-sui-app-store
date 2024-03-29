@@ -13,7 +13,7 @@ export class XcetusCancelIntention extends CoreBaseIntention<CetusIntentionData>
 
   txSubType: TransactionSubType.xCETUSCancelRedeem;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 
