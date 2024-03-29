@@ -17,7 +17,7 @@ export const getFarmingAddLiquidityTxb = async (
   console.log('getFarmingAddLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.openPositionAddLiquidityStakePaylod(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.openPositionAddLiquidityStakePaylod(txbParams);
   return txb;
 };
 
@@ -30,7 +30,7 @@ export const getFarmingIncreaseLiquidityTxb = async (
   console.log('getFarmingIncreaseLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.addLiquidityFixCoinPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.addLiquidityFixCoinPayload(txbParams);
   return txb;
 };
 
@@ -43,7 +43,7 @@ export const getFarmingDecreaseLiquidityTxb = async (
   console.log('getFarmingDecreaseLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.removeLiquidityPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.removeLiquidityPayload(txbParams);
   return txb;
 };
 
@@ -56,7 +56,7 @@ export const getFarmingRemoveLiquidityTxb = async (
   console.log('getFarmingRemoveLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.removeLiquidityPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.removeLiquidityPayload(txbParams);
   return txb;
 };
 
@@ -69,7 +69,7 @@ export const getFarmingClaimFeeAndRewardTxb = async (
   console.log('getFarmingClaimFeeAndRewardTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.claimFeeAndClmmReward(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.claimFeeAndClmmReward(txbParams);
   return txb;
 };
 
@@ -82,7 +82,7 @@ export const getFarmingBatchHarvest = async (
   console.log('getFarmingBatchHarvest suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.batchHarvestPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.batchHarvestPayload(txbParams);
   return txb;
 };
 
@@ -95,7 +95,7 @@ export const getFarmingStake = async (
   console.log('getFarmingStake suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.depositPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.depositPayload(txbParams);
   return txb;
 };
 
@@ -108,6 +108,6 @@ export const getFarmingUnstake = async (
   console.log('getFarmingUnstake suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.withdrawPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.Farms.withdrawPayload(txbParams);
   return txb;
 };

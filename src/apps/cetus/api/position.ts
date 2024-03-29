@@ -44,7 +44,7 @@ export const getRemoveLiquidityTxb = async (
   console.log('getRemoveLiquidityTxb txbParams: ', txbParams);
   console.log('getRemoveLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: TransactionBlock = await clmmSdk.Position.closePositionTransactionPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await clmmSdk.Position.closePositionTransactionPayload(txbParams);
   return txb;
 };
 
@@ -56,7 +56,7 @@ export const getDecreaseLiquidityTxb = async (
   console.log('getDecreaseLiquidityTxb txbParams: ', txbParams);
   console.log('getDecreaseLiquidityTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: TransactionBlock = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams);
   return txb;
 };
 
@@ -68,6 +68,6 @@ export const getClaimFeeAndMiningTxb = async (
   console.log('getClaimFeeAndMiningTxb txbParams: ', txbParams);
   console.log('getClaimFeeAndMiningTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
-  const txb: TransactionBlock = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams);
   return txb;
 };
