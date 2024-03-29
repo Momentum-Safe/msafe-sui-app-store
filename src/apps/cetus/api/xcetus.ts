@@ -17,7 +17,7 @@ export const getXcetusConvertTxb = async (
   console.log('getXcetusConvertTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.XCetusModule.convertPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.XCetusModule.convertPayload(txbParams);
   return txb;
 };
 
@@ -30,7 +30,7 @@ export const getXcetusRedeemLockTxb = async (
   console.log('getXcetusRedeemLockTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.XCetusModule.redeemLockPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.XCetusModule.redeemLockPayload(txbParams);
   return txb;
 };
 
@@ -44,9 +44,9 @@ export const getXcetusClaimingStakeRewardsTxb = async (
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
   const txb: TransactionBlock = await peripherySdk.XCetusModule.redeemDividendV2Payload(
-    txbParams.parameter.venft_id,
-    txbParams.parameter.bonus_types,
-    txbParams.parameter.xTokenType,
+    txbParams.venft_id,
+    txbParams.bonus_types,
+    txbParams.xTokenType,
   );
   return txb;
 };
@@ -60,7 +60,7 @@ export const getXcetusCancelRedeemTxb = async (
   console.log('getXcetusCancelRedeemTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.XCetusModule.cancelRedeemPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.XCetusModule.cancelRedeemPayload(txbParams);
   return txb;
 };
 
@@ -73,6 +73,6 @@ export const getXcetusRedeemTxb = async (
   console.log('getXcetusRedeemTxb suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.XCetusModule.redeemPayload(txbParams?.parameter);
+  const txb: TransactionBlock = await peripherySdk.XCetusModule.redeemPayload(txbParams);
   return txb;
 };
