@@ -9,9 +9,9 @@ import { getSwapRouterTxb } from '../api/swap';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class SwapIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.Swap;
+  txSubType = TransactionSubType.Swap;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

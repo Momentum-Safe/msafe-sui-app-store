@@ -9,9 +9,9 @@ import { getIncreaseLiquidityTxb } from '../api/position';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class IncreaseLiquidityIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.IncreaseLiquidity;
+  txSubType = TransactionSubType.IncreaseLiquidity;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

@@ -9,9 +9,9 @@ import { getFarmingUnstake } from '../api/farming';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class FarmingUnstakeIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.FarmingUnstake;
+  txSubType = TransactionSubType.FarmingUnstake;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

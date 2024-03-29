@@ -9,9 +9,9 @@ import { getClaimFeeAndMiningTxb } from '../api/position';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class ClaimFeeAndMiningIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.ClaimFeeAndMining;
+  txSubType = TransactionSubType.ClaimFeeAndMining;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

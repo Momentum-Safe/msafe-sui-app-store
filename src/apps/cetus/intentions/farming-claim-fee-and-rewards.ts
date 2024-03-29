@@ -9,9 +9,9 @@ import { getFarmingClaimFeeAndRewardTxb } from '../api/farming';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class FarmingClaimFeeAndRewardIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.FarmingClaimFeeAndReward;
+  txSubType = TransactionSubType.FarmingClaimFeeAndReward;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);

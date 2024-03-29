@@ -9,9 +9,9 @@ import { getXcetusClaimingStakeRewardsTxb } from '../api/xcetus';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class XcetusClaimingStakeRewardsIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.xCETUSClaimStakingRwewards;
+  txSubType = TransactionSubType.xCETUSClaimStakingRwewards;
 
   constructor(public readonly data: CetusIntentionData) {
     super(data);
