@@ -63,7 +63,7 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
       txType: TransactionType.Other,
       txSubType: action,
       intentionData: {
-        txbParams,
+        txbParams: { ...txbParams },
         action,
       },
     };
@@ -77,6 +77,9 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
     account: WalletAccount;
   }): Promise<TransactionBlock> {
     const { suiClient, account } = input;
+    console.log('helper build input: ', input);
+    console.log('helper build input.intentionData: ', input.intentionData);
+    console.log('helper build input.intentionData JSON: ', JSON.stringify(input.intentionData));
     let intention: CetusIntention;
     switch (input.txSubType) {
       case TransactionSubType.OpenAndAddLiquidity:
