@@ -11,7 +11,12 @@ import { TransactionSubType } from '../types/utils';
 
 export interface StakeScaIntentionData {
   amount: number;
-  lockPeriodInDays: number; // max 1459 days
+  isObligationLocked: boolean;
+  isOldBorrowIncentive: boolean;
+  obligationId: string | undefined;
+  obligationKey: string | undefined;
+  lockPeriodInDays: number | undefined;
+  vescaKey: string | undefined;
 }
 
 export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> {
@@ -33,8 +38,17 @@ export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> 
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
-    return scallopClient.stakeSca(this.data.amount, this.data.lockPeriodInDays, input.account.address);
+    scallopClient.init();
+    return scallopClient.stakeSca(
+      this.data.amount,
+      this.data.isObligationLocked,
+      this.data.isOldBorrowIncentive,
+      this.data.obligationId,
+      this.data.obligationKey,
+      this.data.lockPeriodInDays,
+      this.data.vescaKey,
+      input.account.address,
+    );
   }
 
   static fromData(data: StakeScaIntentionData): StakeScaIntention {

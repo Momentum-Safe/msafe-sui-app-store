@@ -1,5 +1,5 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
+import { SUI_CLOCK_OBJECT_ID, SUI_TYPE_ARG } from '@mysten/sui.js/utils';
 
 import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '../constants';
 import type { ScallopBuilder } from '../models';
@@ -200,6 +200,19 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
           txBlock.object(obligationId as string),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
+      });
+    },
+    oldUnstakeObligation: (obligationId, obligationKey) => {
+      txBlock.moveCall({
+        target: `${borrowIncentiveIds.borrowIncentivePkg}::user::unstake`,
+        arguments: [
+          txBlock.object(OldBorrowIncentiveContract.incentivePools),
+          txBlock.object(OldBorrowIncentiveContract.incentiveAccounts),
+          txBlock.object(obligationKey as string),
+          txBlock.object(obligationId as string),
+          txBlock.object(SUI_CLOCK_OBJECT_ID),
+        ],
+        typeArguments: [SUI_TYPE_ARG],
       });
     },
     claimBorrowIncentive: (obligationId, obligationKey, rewardCoinName) => {

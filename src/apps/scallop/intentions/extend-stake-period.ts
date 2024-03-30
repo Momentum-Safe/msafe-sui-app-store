@@ -9,17 +9,21 @@ import { SuiNetworks } from '@/types';
 import { ScallopClient } from '../models/scallopClient';
 import { TransactionSubType } from '../types/utils';
 
-export interface ExtendStakeScaPeriodIntentionData {
-  lockPeriodInDays: number; // max 1459 days
-  vescaKey?: string;
+export interface ExtendStakePeriodIntentionData {
+  isObligationLocked: boolean;
+  isOldBorrowIncentive: boolean;
+  obligationId: string | undefined;
+  obligationKey: string | undefined;
+  lockPeriodInDays: number | undefined;
+  vescaKey: string | undefined;
 }
 
-export class ExtendStakeScaPeriodIntention extends CoreBaseIntention<ExtendStakeScaPeriodIntentionData> {
+export class ExtendStakePeriodIntention extends CoreBaseIntention<ExtendStakePeriodIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.ExtendStakeScaPeriod;
+  txSubType: TransactionSubType.ExtendStakePeriod;
 
-  constructor(public readonly data: ExtendStakeScaPeriodIntentionData) {
+  constructor(public readonly data: ExtendStakePeriodIntentionData) {
     super(data);
   }
 
@@ -33,15 +37,19 @@ export class ExtendStakeScaPeriodIntention extends CoreBaseIntention<ExtendStake
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.extendStakeScaLockPeriod(
       this.data.lockPeriodInDays,
       this.data.vescaKey,
+      this.data.obligationId,
+      this.data.obligationKey,
+      this.data.isObligationLocked,
+      this.data.isOldBorrowIncentive,
       input.account.address,
     );
   }
 
-  static fromData(data: ExtendStakeScaPeriodIntentionData): ExtendStakeScaPeriodIntention {
-    return new ExtendStakeScaPeriodIntention(data);
+  static fromData(data: ExtendStakePeriodIntentionData): ExtendStakePeriodIntention {
+    return new ExtendStakePeriodIntention(data);
   }
 }

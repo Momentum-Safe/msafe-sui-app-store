@@ -35,7 +35,7 @@ export class StakeSpoolIntention extends CoreBaseIntention<StakeSpoolIntentionDa
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.stake(this.data.marketCoinName, Number(this.data.amount), undefined, input.account.address);
   }
 

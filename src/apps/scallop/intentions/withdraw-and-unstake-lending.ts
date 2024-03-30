@@ -36,7 +36,7 @@ export class WithdrawAndUnstakeLendingIntention extends CoreBaseIntention<Withdr
       walletAddress: input.account.address,
       networkType: network,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.unstakeAndWithdraw(this.data.coinName, Number(this.data.amount), this.data.stakeAccountId);
   }
 

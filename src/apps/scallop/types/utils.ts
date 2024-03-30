@@ -46,9 +46,10 @@ export enum TransactionSubType {
   BorrowWithBoost = 'BorrowWithBoost',
   StakeSca = 'StakeSca',
   StakeMoreSca = 'StakeMoreSca',
-  ExtendStakeScaPeriod = 'ExtendStakeScaPeriod',
+  ExtendPeriodAndStakeMore = 'ExtendPeriodAndStakeMore',
   RenewExpStakePeriod = 'RenewExpStakePeriod',
   WithdrawStakedSca = 'WithdrawStakedSca',
   SupplyAndStakeLending = 'SupplyAndStakeLending',
   WithdrawAndUnstakeLending = 'WithdrawAndUnstakeLending',
+  ExtendStakePeriod = 'ExtendStakePeriod',
 }

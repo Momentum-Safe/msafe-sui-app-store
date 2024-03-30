@@ -8,11 +8,14 @@ import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
 import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/borrow-with-boost';
 import { ClaimIncentiveRewardIntention, ClaimIncentiveRewardIntentionData } from './intentions/claim-incentive-reward';
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/deposit-collateral';
-import { ExtendStakeScaPeriodIntention, ExtendStakeScaPeriodIntentionData } from './intentions/extend-stake-sca-period';
+import {
+  ExtendPeriodAndStakeMoreIntention,
+  ExtendPeriodAndStakeMoreIntentionData,
+} from './intentions/extend-period-and-stake-more';
+import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/extend-stake-period';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/open-obligation';
 import { RenewExpStakePeriodIntention, RenewExpStakePeriodIntentionData } from './intentions/renew-exp-stake-period';
 import { RepayIntention, RepayIntentionData } from './intentions/repay';
-import { StakeMoreScaIntention, StakeMoreScaIntentionData } from './intentions/stake-more-sca';
 import { StakeScaIntention, StakeScaIntentionData } from './intentions/stake-sca';
 import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/stake-spool';
 import {
@@ -46,8 +49,8 @@ export type ScallopIntention =
   | ClaimIncentiveRewardIntention
   | BorrowWithBoostIntention
   | StakeScaIntention
-  | StakeMoreScaIntention
-  | ExtendStakeScaPeriodIntention
+  | ExtendStakePeriodIntention
+  | ExtendPeriodAndStakeMoreIntention
   | RenewExpStakePeriodIntention
   | WithdrawStakedScaIntention
   | SupplyAndStakeLendingIntention
@@ -66,8 +69,8 @@ export type ScallopIntentionData =
   | ClaimIncentiveRewardIntentionData
   | BorrowWithBoostIntentionData
   | StakeScaIntentionData
-  | StakeMoreScaIntentionData
-  | ExtendStakeScaPeriodIntentionData
+  | ExtendStakePeriodIntentionData
+  | ExtendPeriodAndStakeMoreIntentionData
   | RenewExpStakePeriodIntentionData
   | WithdrawStakedScaIntentionData
   | SupplyAndStakeLendingIntentionData
@@ -146,11 +149,13 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
       case TransactionSubType.StakeSca:
         intention = StakeScaIntention.fromData(input.intentionData as StakeScaIntentionData);
         break;
-      case TransactionSubType.StakeMoreSca:
-        intention = StakeMoreScaIntention.fromData(input.intentionData as StakeMoreScaIntentionData);
+      case TransactionSubType.ExtendStakePeriod:
+        intention = ExtendStakePeriodIntention.fromData(input.intentionData as ExtendStakePeriodIntentionData);
         break;
-      case TransactionSubType.ExtendStakeScaPeriod:
-        intention = ExtendStakeScaPeriodIntention.fromData(input.intentionData as ExtendStakeScaPeriodIntentionData);
+      case TransactionSubType.ExtendPeriodAndStakeMore:
+        intention = ExtendPeriodAndStakeMoreIntention.fromData(
+          input.intentionData as ExtendPeriodAndStakeMoreIntentionData,
+        );
         break;
       case TransactionSubType.RenewExpStakePeriod:
         intention = RenewExpStakePeriodIntention.fromData(input.intentionData as RenewExpStakePeriodIntentionData);

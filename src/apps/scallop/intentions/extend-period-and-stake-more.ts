@@ -7,22 +7,24 @@ import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../models/scallopClient';
-import { SupportPoolCoins } from '../types';
 import { TransactionSubType } from '../types/utils';
 
-export interface RepayIntentionData {
-  coinName: SupportPoolCoins;
-  amount: number | string;
-  obligationId: string;
-  obligationKey: string;
+export interface ExtendPeriodAndStakeMoreIntentionData {
+  amount: number;
+  vescaKey: string;
+  lockPeriodInDays: number;
+  obligation: string | undefined;
+  obligationKey: string | undefined;
+  isOldBorrowIncentive: boolean;
+  isObligationLocked: boolean;
 }
 
-export class RepayIntention extends CoreBaseIntention<RepayIntentionData> {
+export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendPeriodAndStakeMoreIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.Repay;
+  txSubType: TransactionSubType.ExtendPeriodAndStakeMore;
 
-  constructor(public readonly data: RepayIntentionData) {
+  constructor(public readonly data: ExtendPeriodAndStakeMoreIntentionData) {
     super(data);
   }
 
@@ -37,16 +39,19 @@ export class RepayIntention extends CoreBaseIntention<RepayIntentionData> {
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.repay(
-      this.data.coinName,
-      Number(this.data.amount),
-      this.data.obligationId,
+    return scallopClient.extendPeriodAndStakeMoreSca(
+      this.data.amount,
+      this.data.vescaKey,
+      this.data.lockPeriodInDays,
+      this.data.obligation,
       this.data.obligationKey,
+      this.data.isObligationLocked,
+      this.data.isOldBorrowIncentive,
       input.account.address,
     );
   }
 
-  static fromData(data: RepayIntentionData): RepayIntention {
-    return new RepayIntention(data);
+  static fromData(data: ExtendPeriodAndStakeMoreIntentionData): ExtendPeriodAndStakeMoreIntention {
+    return new ExtendPeriodAndStakeMoreIntention(data);
   }
 }

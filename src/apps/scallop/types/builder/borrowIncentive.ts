@@ -17,6 +17,7 @@ export type BorrowIncentiveNormalMethods = {
   stakeObligation: (obligation: SuiAddressArg, obligationKey: SuiAddressArg) => void;
   stakeObligationWithVesca: (obligation: SuiAddressArg, obligationKey: SuiAddressArg, veScaKey: SuiTxArg) => void;
   unstakeObligation: (obligation: SuiAddressArg, obligationKey: SuiAddressArg) => void;
+  oldUnstakeObligation: (obligation: SuiAddressArg, obligationKey: SuiAddressArg) => void;
   claimBorrowIncentive: (
     obligation: SuiAddressArg,
     obligationKey: SuiAddressArg,

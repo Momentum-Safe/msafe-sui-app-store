@@ -33,7 +33,7 @@ export class OpenObligationIntention extends CoreBaseIntention<OpenObligationInt
       walletAddress: input.account.address,
       networkType: network,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.openObligation();
   }
 

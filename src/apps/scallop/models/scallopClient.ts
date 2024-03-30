@@ -11,7 +11,7 @@ import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveB
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
-import { ADDRESSES_ID, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SPOOLS } from '../constants';
+import { ADDRESSES_ID, SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SPOOLS } from '../constants';
 import type {
   ScallopInstanceParams,
   ScallopClientParams,
@@ -702,13 +702,48 @@ export class ScallopClient {
    * @param walletAddress - The wallet address of the owner.
    * @return Transaction block response or transaction block.
    */
-  public async stakeSca(amount: number, lockPeriod: number, walletAddress?: string): Promise<TransactionBlock> {
+  public async stakeSca(
+    amount: number,
+    isObligationLocked = false,
+    isOldBorrowIncentive = false,
+    obligationId?: string,
+    obligationKey?: string,
+    lockPeriod?: number,
+    vescaKey?: string,
+    walletAddress?: string,
+  ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
     const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    await vescaQuickMethod.lockScaQuick(amount, lockPeriod);
+    // Get all SCA and merge them into one.
+    const coins = await this.builder.utils.selectCoinIds(amount, SCA_COIN_TYPE, sender);
+    const [takeCoin, leftCoin] = this.builder.utils.takeAmountFromCoins(txBlock, coins, amount);
+
+    let newVescaKey;
+    if (!vescaKey) {
+      newVescaKey = vescaQuickMethod.normalMethod.lockSca(takeCoin, lockPeriod);
+    } else {
+      vescaQuickMethod.normalMethod.extendLockAmount(vescaKey, takeCoin);
+    }
+
+    if (obligationId && obligationKey) {
+      if (isObligationLocked) {
+        if (isOldBorrowIncentive) {
+          borrowIncentive.normalMethod.oldUnstakeObligation(obligationId, obligationKey);
+        } else {
+          borrowIncentive.normalMethod.unstakeObligation(obligationId, obligationKey);
+        }
+      }
+      borrowIncentive.normalMethod.stakeObligationWithVesca(obligationId, obligationKey, vescaKey || newVescaKey);
+    }
+
+    if (!vescaKey) {
+      txBlock.transferObjects([newVescaKey, leftCoin], sender);
+    }
+
     return txBlock;
   }
 
@@ -722,11 +757,11 @@ export class ScallopClient {
    */
   public async stakeMoreSca(amount: number, vescaKey?: string, walletAddress?: string): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    // const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    await vescaQuickMethod.extendLockAmountQuick(amount, vescaKey);
+    // await vescaQuickMethod.extendLockAmountQuick(amount, vescaKey);
     return txBlock;
   }
 
@@ -740,15 +775,66 @@ export class ScallopClient {
    */
   public async extendStakeScaLockPeriod(
     lockPeriodInDays: number,
-    vescaKey?: string,
+    vescaKey: string,
+    obligationId?: string,
+    obligationKey?: string,
+    isObligationLocked = false,
+    isOldBorrowIncentive = false,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
     const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    await vescaQuickMethod.extendLockPeriodQuick(lockPeriodInDays, vescaKey);
+    vescaQuickMethod.normalMethod.extendLockPeriod(vescaKey, lockPeriodInDays);
+    if (obligationId && obligationKey) {
+      if (isObligationLocked) {
+        if (isOldBorrowIncentive) {
+          borrowIncentive.normalMethod.oldUnstakeObligation(obligationId, obligationKey);
+        } else {
+          borrowIncentive.normalMethod.unstakeObligation(obligationId, obligationKey);
+        }
+      }
+      borrowIncentive.normalMethod.stakeObligationWithVesca(obligationId, obligationKey, vescaKey);
+    }
+    return txBlock;
+  }
+
+  public async extendPeriodAndStakeMoreSca(
+    amount: number,
+    vescaKey: string,
+    lockPeriodInDays: number,
+    obligation?: string,
+    obligationKey?: string,
+    isObligationLocked = false,
+    isOldBorrowIncentive = false,
+    walletAddress?: string,
+  ): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.setSender(sender);
+
+    // Get all SCA and merge them into one.
+    const coins = await this.builder.utils.selectCoinIds(amount, SCA_COIN_TYPE, sender);
+    const [takeCoin, leftCoin] = this.builder.utils.takeAmountFromCoins(txBlock, coins, amount);
+    vescaQuickMethod.normalMethod.extendLockPeriod(vescaKey, lockPeriodInDays);
+    vescaQuickMethod.normalMethod.extendLockAmount(vescaKey, takeCoin);
+    txBlock.transferObjects([leftCoin], sender);
+    if (!obligation || !obligationKey) {
+      return txBlock;
+    }
+    if (isObligationLocked) {
+      if (isOldBorrowIncentive) {
+        borrowIncentive.normalMethod.oldUnstakeObligation(obligation, obligationKey);
+      } else {
+        borrowIncentive.normalMethod.unstakeObligation(obligation, obligationKey);
+      }
+    }
+    borrowIncentive.normalMethod.stakeObligationWithVesca(obligation, obligationKey, vescaKey);
     return txBlock;
   }
 
@@ -764,15 +850,42 @@ export class ScallopClient {
   public async renewExpiredStakeSca(
     amount: number,
     lockPeriodInDays: number,
-    vescaKey?: string,
+    vescaKey: string,
+    isHaveRedeem = false,
+    obligation?: string,
+    obligationKey?: string,
+    isObligationLocked = false,
+    isOldBorrowIncentive = false,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
     const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
-    await vescaQuickMethod.renewExpiredVeScaQuick(amount, lockPeriodInDays, vescaKey);
+    if (isHaveRedeem) {
+      const redeem = vescaQuickMethod.normalMethod.redeemSca(vescaKey);
+      txBlock.transferObjects([redeem], sender);
+    }
+
+    // Get all SCA and merge them into one.
+    const coins = await this.builder.utils.selectCoinIds(amount, SCA_COIN_TYPE, sender);
+    const [takeCoin, leftCoin] = this.builder.utils.takeAmountFromCoins(txBlock, coins, amount);
+    txBlock.transferObjects([leftCoin], sender);
+    // renew veSCA
+    vescaQuickMethod.normalMethod.renewExpiredVeSca(vescaKey, takeCoin, lockPeriodInDays);
+    if (!obligation || !obligationKey) {
+      return txBlock;
+    }
+    if (isObligationLocked) {
+      if (isOldBorrowIncentive) {
+        borrowIncentive.normalMethod.oldUnstakeObligation(obligation, obligationKey);
+      } else {
+        borrowIncentive.normalMethod.unstakeObligation(obligation, obligationKey);
+      }
+    }
+    borrowIncentive.normalMethod.stakeObligationWithVesca(obligation, obligationKey, vescaKey);
     return txBlock;
   }
 

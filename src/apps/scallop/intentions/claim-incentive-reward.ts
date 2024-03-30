@@ -46,7 +46,7 @@ export class ClaimIncentiveRewardIntention extends CoreBaseIntention<ClaimIncent
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.claim(
       this.data.lendingIncentive,
       this.data.borrowIncentiveV2,
