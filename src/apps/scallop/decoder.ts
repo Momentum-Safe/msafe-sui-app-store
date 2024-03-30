@@ -71,6 +71,9 @@ export class Decoder {
     if (this.isExtendPeriod()) {
       return this.decodeExtendStakePeriod();
     }
+    if (this.isOpenObligationTransaction()) {
+      return this.decodeOpenObligation();
+    }
     throw new Error(`Unknown transaction type`);
   }
 
@@ -173,6 +176,18 @@ export class Decoder {
 
   private isRenewExpiredVeSca() {
     return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::renew_expired_ve_sca`);
+  }
+
+  private isOpenObligationTransaction() {
+    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::open_obligation::open_obligation_entry`);
+  }
+
+  private decodeOpenObligation(): DecodeResult {
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.OpenObligation,
+      intentionData: {},
+    };
   }
 
   private decodeRenewExpiredVeSca(): DecodeResult {
