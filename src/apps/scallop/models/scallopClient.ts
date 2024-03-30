@@ -83,14 +83,14 @@ export class ScallopClient {
    *
    * @param force - Whether to force initialization.
    */
-  public async init(force = false) {
+  public init(force = false) {
     if (force || !this.address.getAddresses()) {
-      await this.address.read();
+      this.address.read();
     }
 
-    await this.builder.init(force, this.address);
-    await this.query.init(force, this.address);
-    await this.utils.init(force, this.address);
+    this.builder.init(force, this.address);
+    this.query.init(force, this.address);
+    this.utils.init(force, this.address);
   }
 
   /* ==================== Query Method ==================== */
@@ -493,9 +493,7 @@ export class ScallopClient {
     const stakeMarketCoinName = this.utils.parseMarketCoinName(poolCoinName) as SupportStakeMarketCoins;
     for (let i = 0; i < unstakeAccount.length; i++) {
       const account = unstakeAccount[i];
-      console.log(account);
       const [marketCoin] = await spoolQuickMethod.unstakeQuick(account.coin, stakeMarketCoinName, account.id);
-      console.log(marketCoin);
       if (marketCoin) {
         const wdScoin = quickMethod.normalMethod.withdraw(marketCoin, poolCoinName);
         withdrawCoins.push(wdScoin);

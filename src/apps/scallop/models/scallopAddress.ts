@@ -137,13 +137,7 @@ export class ScallopAddress {
     return Object.fromEntries(this._addressesMap);
   }
 
-  /**
-   * Read and synchronizes all addresses from the API into instance.
-   *
-   * @param id - The id of the addresses to get.
-   * @return All addresses.
-   */
-  public async read() {
+  public read() {
     Object.entries<AddressesInterface>(config).forEach(([network, addresses]) => {
       if (['localnet', 'devnet', 'testnet', 'mainnet'].includes(network)) {
         if (network === this._network) {

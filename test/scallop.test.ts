@@ -1,17 +1,8 @@
-import util from 'node:util';
-
 import { TransactionType } from '@msafe/sui3-utils';
 
 import { BorrowIntention, BorrowIntentionData } from '@/apps/scallop/intentions/borrow';
 import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from '@/apps/scallop/intentions/borrow-with-boost';
-import {
-  ClaimBorrowRewardIntention,
-  ClaimBorrowRewardIntentionData,
-} from '@/apps/scallop/intentions/claim-borrow-reward';
-import {
-  ClaimSupplyRewardIntention,
-  ClaimSupplyRewardIntentionData,
-} from '@/apps/scallop/intentions/claim-supply-reward';
+import { ClaimIncentiveRewardIntentionData } from '@/apps/scallop/intentions/claim-incentive-reward';
 import {
   DepositCollateralIntention,
   DepositCollateralIntentionData,
@@ -29,12 +20,15 @@ import { RepayIntention, RepayIntentionData } from '@/apps/scallop/intentions/re
 import { StakeMoreScaIntention, StakeMoreScaIntentionData } from '@/apps/scallop/intentions/stake-more-sca';
 import { StakeScaIntention, StakeScaIntentionData } from '@/apps/scallop/intentions/stake-sca';
 import { StakeSpoolIntention, StakeSpoolIntentionData } from '@/apps/scallop/intentions/stake-spool';
+import { SupplyAndStakeLendingIntentionData } from '@/apps/scallop/intentions/supply-and-stake-lending';
 import { SupplyLendingIntention, SupplyLendingIntentionData } from '@/apps/scallop/intentions/supply-lending';
 import { UnstakeSpoolIntentionData } from '@/apps/scallop/intentions/unstake-spool';
+import { WithdrawAndUnstakeLendingIntentionData } from '@/apps/scallop/intentions/withdraw-and-unstake-lending';
 import {
   WithdrawCollateralIntention,
   WithdrawCollateralIntentionData,
 } from '@/apps/scallop/intentions/withdraw-collateral';
+import { WithdrawLendingIntentionData } from '@/apps/scallop/intentions/withdraw-lending';
 import { WithdrawStakedScaIntention } from '@/apps/scallop/intentions/withdraw-staked-sca';
 import { appHelpers } from '@/index';
 
@@ -61,6 +55,60 @@ describe('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
+
+    expect(inspectResult.effects.status.status).toBe('success');
+    expect(res.blockData.version).toBe(1);
+    expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
+  });
+
+  it('Test Supply and Stake Lending Transaction Build', async () => {
+    const appHelper = appHelpers.getAppHelper('scallop');
+
+    expect(appHelper.application).toBe('scallop');
+
+    const res = await appHelper.build({
+      txType: TransactionType.Other,
+      txSubType: 'SupplyAndStakeLending',
+      suiClient: Client,
+      account: Account,
+      network: 'sui:mainnet',
+      intentionData: {
+        amount: 10000000,
+        coinName: 'sui',
+      } as SupplyAndStakeLendingIntentionData,
+    });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+
+    expect(inspectResult.effects.status.status).toBe('success');
+    expect(res.blockData.version).toBe(1);
+    expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
+  });
+
+  it('Test Withdraw and Unstake Lending Transaction Build', async () => {
+    const appHelper = appHelpers.getAppHelper('scallop');
+
+    expect(appHelper.application).toBe('scallop');
+
+    const res = await appHelper.build({
+      txType: TransactionType.Other,
+      txSubType: 'WithdrawAndUnstakeLending',
+      suiClient: Client,
+      account: Account,
+      network: 'sui:mainnet',
+      intentionData: {
+        amount: 1e6,
+        stakeAccountId: [{ id: '0x7ba3aae255483cdb6f0b733a63534de49c6883222e7b4a9ffc0be43d6737ed50', coin: 441183 }],
+        coinName: 'usdc',
+      } as WithdrawAndUnstakeLendingIntentionData,
+    });
+    const inspectResult = await Client.devInspectTransactionBlock({
+      transactionBlock: res,
+      sender: Account.address,
+    });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -73,19 +121,20 @@ describe('Scallop App', () => {
 
     const res = await appHelper.build({
       txType: TransactionType.Other,
-      txSubType: 'SupplyLending',
+      txSubType: 'WithdrawLending',
       suiClient: Client,
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
         amount: 10000000,
         coinName: 'sui',
-      } as SupplyLendingIntentionData,
+      } as WithdrawLendingIntentionData,
     });
     const inspectResult = await Client.devInspectTransactionBlock({
       transactionBlock: res,
       sender: Account.address,
     });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -113,6 +162,7 @@ describe('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -140,6 +190,7 @@ describe('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -167,6 +218,7 @@ describe('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -195,6 +247,7 @@ describe('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -222,6 +275,7 @@ describe('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -247,6 +301,7 @@ describe('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
+
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
@@ -277,32 +332,6 @@ describe('Scallop App', () => {
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
   });
 
-  it('Test Claim Borrow Reward Transaction Build', async () => {
-    const appHelper = appHelpers.getAppHelper('scallop');
-
-    expect(appHelper.application).toBe('scallop');
-
-    const res = await appHelper.build({
-      txType: TransactionType.Other,
-      txSubType: 'ClaimBorrowReward',
-      suiClient: Client,
-      account: Account,
-      network: 'sui:mainnet',
-      intentionData: {
-        coinName: 'sui',
-        obligationId: Obligation.obligationId,
-        obligationKeyId: Obligation.obligationKey,
-      } as ClaimBorrowRewardIntentionData,
-    });
-    const inspectResult = await Client.devInspectTransactionBlock({
-      transactionBlock: res,
-      sender: Account.address,
-    });
-    expect(inspectResult.effects.status.status).toBe('success');
-    expect(res.blockData.version).toBe(1);
-    expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
-  });
-
   it('Test Claim Supply Reward Transaction Build', async () => {
     const appHelper = appHelpers.getAppHelper('scallop');
 
@@ -310,13 +339,36 @@ describe('Scallop App', () => {
 
     const res = await appHelper.build({
       txType: TransactionType.Other,
-      txSubType: 'ClaimSupplyReward',
+      txSubType: 'ClaimIncentiveReward',
       suiClient: Client,
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        coinName: 'ssui',
-      } as ClaimSupplyRewardIntentionData,
+        lendingIncentive: [
+          {
+            stakeAccountId: '0xa2386ac96423be515003d2962cbd319da2a3e155350ae09fbcd4ce2b864e72cf',
+            stakeMarketCoinName: 'ssui',
+          },
+          {
+            stakeAccountId: '0x7ba3aae255483cdb6f0b733a63534de49c6883222e7b4a9ffc0be43d6737ed50',
+            stakeMarketCoinName: 'susdc',
+          },
+        ],
+        borrowIncentiveV2: [
+          {
+            obligationId: '0x56574789e0e6bb0837ba090e85757e046390cab25cace7f09838314207a2ce74',
+            obligationKey: '0x10873534fbdf2f844bae0878a5b660fcc95cdf4838f23bcf0890b0d73b8f170b',
+            rewardCoinName: 'sca',
+          },
+        ],
+        borrowIncentive: [
+          {
+            obligationId: '0x56574789e0e6bb0837ba090e85757e046390cab25cace7f09838314207a2ce74',
+            obligationKey: '0x10873534fbdf2f844bae0878a5b660fcc95cdf4838f23bcf0890b0d73b8f170b',
+            rewardCoinName: 'sui',
+          },
+        ],
+      } as ClaimIncentiveRewardIntentionData,
     });
     const inspectResult = await Client.devInspectTransactionBlock({
       transactionBlock: res,
@@ -579,25 +631,13 @@ describe('Scallop App', () => {
     expect(intention.serialize()).toBe('{"amount":1000,"marketCoinName":"ssui"}');
   });
 
-  it('Test Claim Borrow Reward intention serialization', () => {
-    const intention = ClaimBorrowRewardIntention.fromData({
-      coinName: 'usdc',
-      obligationId: Obligation.obligationId,
-      obligationKeyId: Obligation.obligationKey,
-    });
+  // it('Test Claim Supply Reward intention serialization', () => {
+  //   const intention = ClaimIncentiveRewardIntention.fromData({
+  //     coinName: 'ssui',
+  //   });
 
-    expect(intention.serialize()).toBe(
-      `{"coinName":"usdc","obligationId":"${Obligation.obligationId}","obligationKeyId":"${Obligation.obligationKey}"}`,
-    );
-  });
-
-  it('Test Claim Supply Reward intention serialization', () => {
-    const intention = ClaimSupplyRewardIntention.fromData({
-      coinName: 'ssui',
-    });
-
-    expect(intention.serialize()).toBe('{"coinName":"ssui"}');
-  });
+  //   expect(intention.serialize()).toBe('{"coinName":"ssui"}');
+  // });
 
   it('Test Open Obligation intention serialization', () => {
     const intention = OpenObligationIntention.fromData({});

@@ -68,9 +68,9 @@ export class ScallopUtils {
    * @param force - Whether to force initialization.
    * @param address - ScallopAddress instance.
    */
-  public async init(force = false, address?: ScallopAddress) {
+  public init(force = false, address?: ScallopAddress) {
     if (force || !this._address.getAddresses() || !address?.getAddresses()) {
-      await this._address.read();
+      this._address.read();
     } else {
       this._address = address;
     }
