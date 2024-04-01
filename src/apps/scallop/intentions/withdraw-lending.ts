@@ -34,7 +34,7 @@ export class WithdrawLendingIntention extends CoreBaseIntention<WithdrawLendingI
       walletAddress: input.account.address,
       networkType: network,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.withdraw(this.data.coinName, Number(this.data.amount), input.account.address);
   }
 

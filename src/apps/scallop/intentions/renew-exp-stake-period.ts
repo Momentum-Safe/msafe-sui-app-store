@@ -11,8 +11,13 @@ import { TransactionSubType } from '../types/utils';
 
 export interface RenewExpStakePeriodIntentionData {
   amount: number;
-  lockPeriodInDays: number; // max 1459 days
-  vescaKey?: string;
+  lockPeriodInDays: number;
+  vescaKey: string;
+  isHaveRedeem: boolean;
+  obligation?: string;
+  obligationKey?: string;
+  isObligationLocked: boolean;
+  isOldBorrowIncentive: boolean;
 }
 
 export class RenewExpStakePeriodIntention extends CoreBaseIntention<RenewExpStakePeriodIntentionData> {
@@ -34,11 +39,16 @@ export class RenewExpStakePeriodIntention extends CoreBaseIntention<RenewExpStak
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.renewExpiredStakeSca(
       this.data.amount,
       this.data.lockPeriodInDays,
       this.data.vescaKey,
+      this.data.isHaveRedeem,
+      this.data.obligation,
+      this.data.obligationKey,
+      this.data.isObligationLocked,
+      this.data.isOldBorrowIncentive,
       input.account.address,
     );
   }

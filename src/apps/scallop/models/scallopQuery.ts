@@ -70,9 +70,9 @@ export class ScallopQuery {
    * @param force - Whether to force initialization.
    * @param address - ScallopAddress instance.
    */
-  public async init(force = false, address?: ScallopAddress) {
+  public init(force = false, address?: ScallopAddress) {
     if (force || !this.address.getAddresses() || !address?.getAddresses()) {
-      await this.address.read();
+      this.address.read();
     } else {
       this.address = address;
     }

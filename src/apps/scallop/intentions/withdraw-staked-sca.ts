@@ -32,7 +32,7 @@ export class WithdrawStakedScaIntention extends CoreBaseIntention<WithdrawStaked
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.withdrawUnlockedSca(this.data.vescaKey, input.account.address);
   }
 

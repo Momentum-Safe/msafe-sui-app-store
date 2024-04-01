@@ -7,21 +7,23 @@ import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../models/scallopClient';
-import { SupportBorrowIncentiveCoins } from '../types';
 import { TransactionSubType } from '../types/utils';
 
-export interface ClaimBorrowRewardIntentionData {
-  coinName: SupportBorrowIncentiveCoins;
-  obligationId: string;
-  obligationKeyId: string;
+export interface ExtendStakePeriodIntentionData {
+  isObligationLocked: boolean;
+  isOldBorrowIncentive: boolean;
+  obligationId: string | undefined;
+  obligationKey: string | undefined;
+  lockPeriodInDays: number | undefined;
+  vescaKey: string | undefined;
 }
 
-export class ClaimBorrowRewardIntention extends CoreBaseIntention<ClaimBorrowRewardIntentionData> {
+export class ExtendStakePeriodIntention extends CoreBaseIntention<ExtendStakePeriodIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.ClaimBorrowReward;
+  txSubType: TransactionSubType.ExtendStakePeriod;
 
-  constructor(public readonly data: ClaimBorrowRewardIntentionData) {
+  constructor(public readonly data: ExtendStakePeriodIntentionData) {
     super(data);
   }
 
@@ -35,16 +37,19 @@ export class ClaimBorrowRewardIntention extends CoreBaseIntention<ClaimBorrowRew
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
-    return scallopClient.claimBorrowIncentive(
-      this.data.coinName,
+    scallopClient.init();
+    return scallopClient.extendStakeScaLockPeriod(
+      this.data.lockPeriodInDays,
+      this.data.vescaKey,
       this.data.obligationId,
-      this.data.obligationKeyId,
+      this.data.obligationKey,
+      this.data.isObligationLocked,
+      this.data.isOldBorrowIncentive,
       input.account.address,
     );
   }
 
-  static fromData(data: ClaimBorrowRewardIntentionData): ClaimBorrowRewardIntention {
-    return new ClaimBorrowRewardIntention(data);
+  static fromData(data: ExtendStakePeriodIntentionData): ExtendStakePeriodIntention {
+    return new ExtendStakePeriodIntention(data);
   }
 }

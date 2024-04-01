@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
@@ -7,18 +8,20 @@ import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../models/scallopClient';
-import { NetworkType } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { NetworkType, SupportAssetCoins, TransactionSubType } from '../types';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface OpenObligationIntentionData {}
+export interface WithdrawAndUnstakeLendingIntentionData {
+  amount: number | undefined;
+  coinName: SupportAssetCoins;
+  stakeAccountId: { id: string; coin: number }[];
+}
 
-export class OpenObligationIntention extends CoreBaseIntention<OpenObligationIntentionData> {
+export class WithdrawAndUnstakeLendingIntention extends CoreBaseIntention<WithdrawAndUnstakeLendingIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.OpenObligation;
+  txSubType: TransactionSubType.WithdrawAndUnstakeLending;
 
-  constructor(public readonly data: OpenObligationIntentionData) {
+  constructor(public readonly data: WithdrawAndUnstakeLendingIntentionData) {
     super(data);
   }
 
@@ -34,10 +37,10 @@ export class OpenObligationIntention extends CoreBaseIntention<OpenObligationInt
       networkType: network,
     });
     scallopClient.init();
-    return scallopClient.openObligation();
+    return scallopClient.unstakeAndWithdraw(this.data.coinName, Number(this.data.amount), this.data.stakeAccountId);
   }
 
-  static fromData(data: OpenObligationIntentionData): OpenObligationIntention {
-    return new OpenObligationIntention(data);
+  static fromData(data: WithdrawAndUnstakeLendingIntentionData): WithdrawAndUnstakeLendingIntention {
+    return new WithdrawAndUnstakeLendingIntention(data);
   }
 }

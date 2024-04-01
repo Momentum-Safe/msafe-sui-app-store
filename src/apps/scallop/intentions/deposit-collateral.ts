@@ -36,7 +36,7 @@ export class DepositCollateralIntention extends CoreBaseIntention<DepositCollate
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.depositCollateral(
       this.data.collateralCoinName,
       Number(this.data.amount),

@@ -72,12 +72,12 @@ export class ScallopBuilder {
    */
   public async init(force = false, address?: ScallopAddress) {
     if (force || !this.address.getAddresses() || !address?.getAddresses()) {
-      await this.address.read();
+      this.address.read();
     } else {
       this.address = address;
     }
-    await this.query.init(force, this.address);
-    await this.utils.init(force, this.address);
+    this.query.init(force, this.address);
+    this.utils.init(force, this.address);
   }
 
   /**

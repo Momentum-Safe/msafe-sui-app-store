@@ -35,7 +35,7 @@ export class SupplyLendingIntention extends CoreBaseIntention<SupplyLendingInten
       walletAddress: input.account.address,
       networkType: network,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.deposit(this.data.coinName, Number(this.data.amount), input.account.address);
   }
 
