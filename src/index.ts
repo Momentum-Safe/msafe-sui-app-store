@@ -13,5 +13,5 @@ export const appHelpers = new MSafeApps([
   new PlainTransactionHelper(),
   new CetusHelper(),
   new TURBOSAppHelper(),
-  //new ScallopAppHelper(),
+  // new ScallopAppHelper(),
 ]);
