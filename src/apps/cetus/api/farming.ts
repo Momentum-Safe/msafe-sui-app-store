@@ -73,6 +73,19 @@ export const getFarmingClaimFeeAndRewardTxb = async (
   return txb;
 };
 
+export const getFarmingHarvest = async (
+  txbParams: any,
+  account: WalletAccount,
+  suiClient?: any,
+): Promise<TransactionBlock> => {
+  console.log('getFarmingHarvest account: ', account);
+  console.log('getFarmingHarvest suiClient: ', suiClient);
+  clmmSdk.senderAddress = account.address;
+  const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
+  const txb: TransactionBlock = await peripherySdk.Farms.harvestPayload(txbParams);
+  return txb;
+};
+
 export const getFarmingBatchHarvest = async (
   txbParams: any,
   account: WalletAccount,
