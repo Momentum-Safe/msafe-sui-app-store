@@ -82,6 +82,7 @@ export const getFarmingHarvest = async (
   console.log('getFarmingHarvest suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
+  console.log('getFarmingHarvest txbParams: ', txbParams);
   const txb: TransactionBlock = await peripherySdk.Farms.harvestPayload(txbParams);
   return txb;
 };
@@ -95,7 +96,9 @@ export const getFarmingBatchHarvest = async (
   console.log('getFarmingBatchHarvest suiClient: ', suiClient);
   clmmSdk.senderAddress = account.address;
   const peripherySdk = new CetusPeripherySDK(peripheryConfig, clmmSdk);
-  const txb: TransactionBlock = await peripherySdk.Farms.batchHarvestPayload(txbParams);
+  const params: any = Object.values(txbParams);
+  console.log('getFarmingBatchHarvest params: ', params);
+  const txb: TransactionBlock = await peripherySdk.Farms.batchHarvestPayload(params);
   return txb;
 };
 

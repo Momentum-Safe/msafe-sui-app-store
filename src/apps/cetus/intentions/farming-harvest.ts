@@ -5,7 +5,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
-import { getFarmingBatchHarvest } from '../api/farming';
+import { getFarmingHarvest } from '../api/farming';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
 export class FarmingHarvestIntention extends CoreBaseIntention<CetusIntentionData> {
@@ -22,9 +22,7 @@ export class FarmingHarvestIntention extends CoreBaseIntention<CetusIntentionDat
     const { txbParams } = this.data;
     console.log('FarmingHarvestIntention this.data: ', this.data);
     console.log('FarmingHarvestIntention txbParams: ', txbParams);
-    const params: any = Object.values(txbParams);
-    console.log('FarmingHarvestIntention params: ', params);
-    const txb = await getFarmingBatchHarvest(params, account, suiClient);
+    const txb = await getFarmingHarvest(txbParams, account, suiClient);
     console.log('FarmingHarvestIntention build txb: ', txb);
     return txb;
   }
