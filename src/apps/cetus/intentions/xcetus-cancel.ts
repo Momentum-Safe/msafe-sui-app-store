@@ -6,7 +6,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 import { getXcetusCancelRedeemTxb } from '../api/xcetus';
-import { CetusIntentionData, TransactionSubType } from '../types';
+import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
 
 export class XcetusCancelIntention extends CoreBaseIntention<CetusIntentionData> {
   txType = TransactionType.Other;
@@ -17,13 +17,14 @@ export class XcetusCancelIntention extends CoreBaseIntention<CetusIntentionData>
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    const { account, suiClient } = input;
+  async build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<TransactionBlock> {
+    const { account, network } = input;
     const { txbParams } = this.data;
-    console.log('XcetusCancelIntention this.data: ', this.data);
-    console.log('XcetusCancelIntention txbParams: ', txbParams);
-    const txb = await getXcetusCancelRedeemTxb(txbParams, account, suiClient);
-    console.log('XcetusCancelIntention build txb: ', txb);
+    const txb = await getXcetusCancelRedeemTxb(txbParams, account, network);
     return txb;
   }
 

@@ -6,7 +6,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 import { getSwapRouterTxb } from '../api/swap';
-import { CetusIntentionData, TransactionSubType } from '../types';
+import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
 
 export class SwapIntention extends CoreBaseIntention<CetusIntentionData> {
   txType = TransactionType.Other;
@@ -17,17 +17,14 @@ export class SwapIntention extends CoreBaseIntention<CetusIntentionData> {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    const { account, suiClient } = input;
+  async build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<TransactionBlock> {
+    const { account, network } = input;
     const { txbParams } = this.data;
-    const txb = await getSwapRouterTxb(
-      txbParams?.createTxParams,
-      txbParams?.slippage,
-      txbParams?.account,
-      account,
-      suiClient,
-    );
-    console.log('Swap intention build txb: ', txb);
+    const txb = await getSwapRouterTxb(txbParams?.createTxParams, txbParams?.slippage, account, network);
     return txb;
   }
 

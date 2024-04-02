@@ -6,7 +6,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 import { getFarmingStake } from '../api/farming';
-import { CetusIntentionData, TransactionSubType } from '../types';
+import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
 
 export class FarmingStakeIntention extends CoreBaseIntention<CetusIntentionData> {
   txType = TransactionType.Other;
@@ -17,13 +17,14 @@ export class FarmingStakeIntention extends CoreBaseIntention<CetusIntentionData>
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    const { account, suiClient } = input;
+  async build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<TransactionBlock> {
+    const { account, network } = input;
     const { txbParams } = this.data;
-    console.log('FarmingStakeIntention this.data: ', this.data);
-    console.log('FarmingStakeIntention txbParams: ', txbParams);
-    const txb = await getFarmingStake(txbParams, account, suiClient);
-    console.log('FarmingStakeIntention build txb: ', txb);
+    const txb = await getFarmingStake(txbParams, account, network);
     return txb;
   }
 
