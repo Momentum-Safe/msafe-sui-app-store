@@ -50,3 +50,8 @@ export type GenerateSpoolQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
 }) => SpoolQuickMethods;
+
+export type SpoolIncentiveParams = {
+  stakeMarketCoinName: SupportStakeMarketCoins;
+  stakeAccountId: string;
+};

@@ -7,24 +7,13 @@ import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../models/scallopClient';
-import { SupportBorrowIncentiveRewardCoins, SupportStakeMarketCoins } from '../types';
+import { BorrowIncentiveParams, SpoolIncentiveParams } from '../types';
 import { TransactionSubType } from '../types/utils';
 
 export interface ClaimIncentiveRewardIntentionData {
-  lendingIncentive: {
-    stakeMarketCoinName: SupportStakeMarketCoins;
-    stakeAccountId: string;
-  }[];
-  borrowIncentiveV2: {
-    obligationId: string;
-    obligationKey: string;
-    rewardCoinName: SupportBorrowIncentiveRewardCoins;
-  }[];
-  borrowIncentive: {
-    obligationId: string;
-    obligationKey: string;
-    rewardCoinName: SupportBorrowIncentiveRewardCoins;
-  }[];
+  lendingIncentive: SpoolIncentiveParams[];
+  borrowIncentiveV2: BorrowIncentiveParams[];
+  borrowIncentive: BorrowIncentiveParams[];
 }
 
 export class ClaimIncentiveRewardIntention extends CoreBaseIntention<ClaimIncentiveRewardIntentionData> {
