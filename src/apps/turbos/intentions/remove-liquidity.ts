@@ -35,6 +35,7 @@ export class RemoveLiquidityIntention extends CoreBaseIntention<RemoveLiquidityI
       collectAmountA,
       collectAmountB,
       rewardAmounts,
+      deadline,
       txb,
     } = this.data;
 
@@ -49,6 +50,7 @@ export class RemoveLiquidityIntention extends CoreBaseIntention<RemoveLiquidityI
       collectAmountA,
       collectAmountB,
       rewardAmounts,
+      deadline,
       txb,
     });
   }

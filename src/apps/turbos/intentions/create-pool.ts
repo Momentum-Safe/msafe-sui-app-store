@@ -24,8 +24,20 @@ export class CreatePoolIntention extends CoreBaseIntention<CreatePoolIntentionDa
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
-    const { fee, address, tickLower, tickUpper, sqrtPrice, slippage, coinTypeA, coinTypeB, amountA, amountB, txb } =
-      this.data;
+    const {
+      fee,
+      address,
+      tickLower,
+      tickUpper,
+      sqrtPrice,
+      slippage,
+      coinTypeA,
+      coinTypeB,
+      amountA,
+      amountB,
+      deadline,
+      txb,
+    } = this.data;
 
     return turbosSdk.pool.createPool({
       fee,
@@ -38,6 +50,7 @@ export class CreatePoolIntention extends CoreBaseIntention<CreatePoolIntentionDa
       slippage,
       coinTypeA,
       coinTypeB,
+      deadline,
       txb,
     });
   }
