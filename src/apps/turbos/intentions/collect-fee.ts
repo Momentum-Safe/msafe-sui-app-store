@@ -25,7 +25,7 @@ export class CollectFeeIntention extends CoreBaseIntention<CollectFeeIntentionDa
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
-    const { pool, address, nft, collectAmountA, collectAmountB, txb } = this.data;
+    const { pool, address, nft, collectAmountA, collectAmountB, deadline, txb } = this.data;
 
     return turbosSdk.pool.collectFee({
       pool,
@@ -33,6 +33,7 @@ export class CollectFeeIntention extends CoreBaseIntention<CollectFeeIntentionDa
       collectAmountA,
       collectAmountB,
       nft,
+      deadline,
       txb,
     });
   }

@@ -24,7 +24,7 @@ export class IncreaseLiquidityIntention extends CoreBaseIntention<IncreaseLiquid
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
-    const { pool, address, amountA, amountB, slippage, nft, txb } = this.data;
+    const { pool, address, amountA, amountB, slippage, nft, deadline, txb } = this.data;
 
     return turbosSdk.pool.increaseLiquidity({
       pool,
@@ -33,6 +33,7 @@ export class IncreaseLiquidityIntention extends CoreBaseIntention<IncreaseLiquid
       amountA,
       amountB,
       nft,
+      deadline,
       txb,
     });
   }

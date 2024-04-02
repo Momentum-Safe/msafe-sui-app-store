@@ -4660,10 +4660,10 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-turbos-clmm-sdk@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/turbos-clmm-sdk/-/turbos-clmm-sdk-2.2.0.tgz#a34dea49b964c79270b8aeb5b96568b9828a2b06"
-  integrity sha512-RQUTBCh+skOMKIQgTnarNy1cNGXzkXG0w/0P8A6cGKov+NwyX/hriNoBwGQUrfITQKiiuqd8u5XqseHeRBKwvQ==
+turbos-clmm-sdk@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/turbos-clmm-sdk/-/turbos-clmm-sdk-2.2.1.tgz#1131ea777887d6a05fecbe0ae6e2ed6e61c0259a"
+  integrity sha512-/foUSLhWrEaHdyb8Ac7rlhxxqW42PtonL/AEs4O9o0emt+aFaZDD+fFEyGBceCrM7aNDJ2dkKVk12JFAeAOMLQ==
   dependencies:
     "@scure/bip39" "^1.2.1"
     "@types/bn.js" "^5.1.1"

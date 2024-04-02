@@ -54,7 +54,7 @@
     "luxon": "^3.4.4",
     "nanoid": "3",
     "sort-keys-recursive": "^2.1.10",
-    "turbos-clmm-sdk": "^2.2.0"
+    "turbos-clmm-sdk": "^2.2.1"
   },
   "devDependencies": {
     "@msafe/sui3-utils": "^3.1.53",
