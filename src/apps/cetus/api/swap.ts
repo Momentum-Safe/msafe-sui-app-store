@@ -1,21 +1,19 @@
-import { CetusClmmSDK, TransactionUtil } from '@cetusprotocol/cetus-sui-clmm-sdk';
+import { TransactionUtil } from '@cetusprotocol/cetus-sui-clmm-sdk';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { clmmConfig } from './config';
+import { SuiNetworks } from '@/types';
 
-const clmmSdk = new CetusClmmSDK(clmmConfig);
+import { getClmmSdk } from './config';
 
 export const getSwapRouterTxb = async (
   createTxParams: any,
   slippage: number,
-  account: string,
-  account2?: any,
-  suiClient?: any,
+  account: WalletAccount,
+  network: SuiNetworks,
 ): Promise<TransactionBlock> => {
-  console.log('getSwapRouterTxb account2: ', account2);
-  console.log('getSwapRouterTxb suiClient: ', suiClient);
-  clmmSdk.senderAddress = account;
-  const allCoinAsset = await clmmSdk.getOwnerCoinAssets(account);
+  const clmmSdk = getClmmSdk(network, account);
+  const allCoinAsset = await clmmSdk.getOwnerCoinAssets(account.address);
   const txb: TransactionBlock = await TransactionUtil.buildAggregatorSwapTransaction(
     clmmSdk,
     createTxParams,

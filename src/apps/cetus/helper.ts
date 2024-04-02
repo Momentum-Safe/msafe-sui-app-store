@@ -75,8 +75,9 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
     txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
+    network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
+    const { suiClient, account, network } = input;
     console.log('helper build input: ', input);
     console.log('helper build input.intentionData: ', input.intentionData);
     console.log('helper build input.intentionData JSON: ', JSON.stringify(input.intentionData));
@@ -143,6 +144,8 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
         throw new Error('not implemented');
     }
     console.log('helper build intention: ', intention);
-    return intention.build({ suiClient, account });
+    console.log('helper build account: ', account);
+    console.log('helper build network: ', network);
+    return intention.build({ suiClient, account, network });
   }
 }
