@@ -18,7 +18,8 @@ import type {
   SupportPoolCoins,
   SupportCollateralCoins,
   SupportStakeMarketCoins,
-  SupportBorrowIncentiveRewardCoins,
+  BorrowIncentiveParams,
+  SpoolIncentiveParams,
 } from '../types';
 
 /**
@@ -577,20 +578,9 @@ export class ScallopClient {
    * @return Transaction block response or transaction block.
    */
   public async claim(
-    lendingIncentive: {
-      stakeMarketCoinName: SupportStakeMarketCoins;
-      stakeAccountId: string;
-    }[],
-    borrowIncentiveV2: {
-      obligationId: string;
-      obligationKey: string;
-      rewardCoinName: SupportBorrowIncentiveRewardCoins;
-    }[],
-    borrowIncentive: {
-      obligationId: string;
-      obligationKey: string;
-      rewardCoinName: SupportBorrowIncentiveRewardCoins;
-    }[],
+    lendingIncentive: SpoolIncentiveParams[],
+    borrowIncentiveV2: BorrowIncentiveParams[],
+    borrowIncentive: BorrowIncentiveParams[],
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();

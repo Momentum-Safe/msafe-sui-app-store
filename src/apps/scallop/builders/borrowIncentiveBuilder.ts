@@ -56,7 +56,7 @@ export const requireVeSca = async (
  * @returns
  */
 export const getBindedObligationId = async (builder: ScallopBuilder, veScaKey: string) => {
-  const borrowIncentivePkgId = builder.address.get('borrowIncentive.id');
+  const borrowIncentiveObjId = builder.address.get('borrowIncentive.object');
   const incentivePoolsId = builder.address.get('borrowIncentive.incentivePools');
   const veScaPkgId = builder.address.get('vesca.id');
 
@@ -77,7 +77,7 @@ export const getBindedObligationId = async (builder: ScallopBuilder, veScaKey: s
   const veScaBindTableId = incentivePoolFields.ve_sca_bind.fields.id.id as string;
 
   // check if veSca is inside the bind table
-  const keyType = `${borrowIncentivePkgId}::typed_id::TypedID<${veScaPkgId}::ve_sca::VeScaKey>`;
+  const keyType = `${borrowIncentiveObjId}::typed_id::TypedID<${veScaPkgId}::ve_sca::VeScaKey>`;
   const veScaBindTableResponse = await client.getDynamicFieldObject({
     parentId: veScaBindTableId,
     name: {

@@ -59,3 +59,9 @@ export type GenerateBorrowIncentiveQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
 }) => BorrowIncentiveQuickMethods;
+
+export type BorrowIncentiveParams = {
+  obligationId: string;
+  obligationKey: string;
+  rewardCoinName: SupportBorrowIncentiveRewardCoins;
+};

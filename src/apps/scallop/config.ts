@@ -279,9 +279,9 @@ export const config = {
       versionCap: '',
     },
     borrowIncentive: {
-      id: '0x002875153e09f8145ab63527bc85c00f2bd102e12f9573c47f8cdf1a1cb62934',
+      id: '0x874f1d43d81e2256e120bab2485938fe07ba0cc21d87129a99a1db11cacb382d',
       adminCap: '0xc486afa253646f4d381e81d7f1df8aa4723b845a6bb356f69bad635ffefffe2c',
-      object: '0x41c0788f4ab64cf36dc882174f467634c033bf68c3c1b5ef9819507825eb510b',
+      object: '0x002875153e09f8145ab63527bc85c00f2bd102e12f9573c47f8cdf1a1cb62934',
       query: '0x529edc54a3dce2207703ceebbccb0ac14133f7825c1f528775ba0d85a4063489',
       incentivePools: '0x6547e143d406b5ccd5f46aae482497de279cc1a68c406f701df70a05f9212ab4',
       incentiveAccounts: '0xc4701fdbc1c92f9a636d334d66012b3027659e9fb8aff27279a82edfb6b77d02',
