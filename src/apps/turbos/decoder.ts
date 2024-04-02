@@ -33,16 +33,16 @@ export class Decoder {
       return this.decodeDecreaseLiquidity(address);
     }
 
-    if (this.isCollectFeeLiquidityTransaction()) {
-      return this.decodeCollectFeeLiquidity();
+    if (this.isCollectFeeTransaction()) {
+      return this.decodeCollectFee();
     }
 
-    if (this.isCollectRewardLTransaction()) {
-      return this.decodeCollectRewardLiquidity();
+    if (this.isCollectRewardTransaction()) {
+      return this.decodeCollectReward();
     }
 
     if (this.isBurnTransaction()) {
-      return this.decodeBurnLiquidity();
+      return this.decodeBurn();
     }
 
     throw new Error(`Unknown transaction type`);
@@ -64,11 +64,11 @@ export class Decoder {
     return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::decrease_liquidity`);
   }
 
-  private isCollectFeeLiquidityTransaction() {
+  private isCollectFeeTransaction() {
     return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::collect`);
   }
 
-  private isCollectRewardLTransaction() {
+  private isCollectRewardTransaction() {
     return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::collect_reward`);
   }
 
@@ -88,6 +88,8 @@ export class Decoder {
     const tickUpper = this.helper.decodeInputU32(6);
     const tickUpperIsNeg = this.helper.decodeInputBool(7);
 
+    const deadline = this.helper.decodeInputU64(13);
+
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.AddLiquidity,
@@ -99,6 +101,7 @@ export class Decoder {
         amountB,
         tickLower: tickLowerIsNeg ? -tickLower : tickLower,
         tickUpper: tickUpperIsNeg ? -tickUpper : tickUpper,
+        deadline,
       },
     };
   }
@@ -145,7 +148,7 @@ export class Decoder {
     };
   }
 
-  private decodeCollectFeeLiquidity(): DecodeResult {
+  private decodeCollectFee(): DecodeResult {
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const address = this.helper.decodeInputAddress(5);
@@ -165,7 +168,7 @@ export class Decoder {
     };
   }
 
-  private decodeCollectRewardLiquidity(): DecodeResult {
+  private decodeCollectReward(): DecodeResult {
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const address = this.helper.decodeInputAddress(5);
@@ -183,7 +186,7 @@ export class Decoder {
     };
   }
 
-  private decodeBurnLiquidity(): DecodeResult {
+  private decodeBurn(): DecodeResult {
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
 
