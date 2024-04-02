@@ -13,6 +13,14 @@ type DecodeResult = {
   intentionData: TURBOSIntentionData;
 };
 
+const swap1Layer = [`${config.PackageId}::swap_router::swap_a_b`, `${config.PackageId}::swap_router::swap_b_a`];
+const swap2Layer = [
+  `${config.PackageId}::swap_router::swap_a_b_b_c`,
+  `${config.PackageId}::swap_router::swap_a_b_c_b`,
+  `${config.PackageId}::swap_router::swap_b_a_b_c`,
+  `${config.PackageId}::swap_router::swap_b_a_c_b`,
+];
+
 export class Decoder {
   constructor(public readonly txb: TransactionBlock) {}
 
@@ -21,12 +29,20 @@ export class Decoder {
   }
 
   decode(address: string) {
+    if (this.isSwapTransaction()) {
+      return this.decodeSwap();
+    }
+
     if (this.isAddLiquidityTransaction()) {
       return this.decodeAddLiquidity();
     }
 
     if (this.isIncreaseLiquidityTransaction()) {
       return this.decodeIncreaseLiquidity(address);
+    }
+
+    if (this.isRemoveLiquidityTransaction()) {
+      return this.decodeRemoveLiquidity(address);
     }
 
     if (this.isDecreaseLiquidityTransaction()) {
@@ -52,6 +68,20 @@ export class Decoder {
     return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
   }
 
+  private getMoveCallsTransaction(targets: string[]) {
+    return targets.every((target) => {
+      return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
+    });
+  }
+
+  private getSwapMoveCallTransaction(targets: string[]) {
+    return this.transactions.find((trans) => trans.kind === 'MoveCall' && targets.includes(trans.target));
+  }
+
+  private isSwapTransaction() {
+    return !!this.getSwapMoveCallTransaction([...swap1Layer, ...swap2Layer]);
+  }
+
   private isAddLiquidityTransaction() {
     return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::mint`);
   }
@@ -74,6 +104,48 @@ export class Decoder {
 
   private isBurnTransaction() {
     return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::burn`);
+  }
+
+  private isRemoveLiquidityTransaction() {
+    return !!this.getMoveCallsTransaction([
+      `${config.PackageId}::position_manager::decrease_liquidity`,
+      `${config.PackageId}::position_manager::burn`,
+    ]);
+  }
+
+  private decodeSwap(): DecodeResult {
+    const moveCall = this.transactions.find(
+      (trans) => trans.kind === 'MoveCall' && trans.target !== '0x2::coin::zero',
+    ) as MoveCallTransaction;
+    
+    console.log(moveCall, 'decodeSwap');
+
+    let layer = 0;
+    if (swap2Layer.includes(moveCall.target)) {
+      layer = 1;
+    }
+
+    const address = this.helper.decodeInputAddress(6 + 2 * layer);
+    const deadline = this.helper.decodeInputU64(7 + 2 * layer);
+    const amountSpecifiedIsInput = this.helper.decodeInputBool(5 + 2 * layer);
+    const amountA = this.helper.decodeInputU64(2 + layer);
+    const amountB = this.helper.decodeInputU64(3 + layer);
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.Swap,
+      intentionData: {
+        routes: [],
+        coinTypeA: '',
+        coinTypeB: '',
+        address,
+        amountA: amountSpecifiedIsInput ? amountA : amountB,
+        amountB: amountSpecifiedIsInput ? amountB : amountA,
+        amountSpecifiedIsInput,
+        slippage: '0',
+        deadline,
+      },
+    };
   }
 
   private decodeAddLiquidity(): DecodeResult {
@@ -208,6 +280,35 @@ export class Decoder {
       intentionData: {
         pool,
         nft,
+      },
+    };
+  }
+
+  private decodeRemoveLiquidity(address: string): DecodeResult {
+    const pool = this.helper.decodeSharedObjectId(0);
+    const nft = this.helper.decodeSharedObjectId(2);
+    const decreaseLiquidity = this.helper.decodeInputU64(3);
+    const amountA = this.helper.decodeInputU64(4);
+    const amountB = this.helper.decodeInputU64(5);
+
+    const deadline = this.helper.decodeInputU64(6);
+    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.RemoveLiquidity,
+      intentionData: {
+        pool,
+        decreaseLiquidity,
+        nft,
+        amountA,
+        amountB,
+        slippage: 3,
+        address,
+        collectAmountA: 0,
+        collectAmountB: 0,
+        rewardAmounts,
+        deadline,
       },
     };
   }
