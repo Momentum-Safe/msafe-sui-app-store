@@ -55,10 +55,10 @@
     "luxon": "^3.4.4",
     "nanoid": "3",
     "sort-keys-recursive": "^2.1.10",
-    "turbos-clmm-sdk": "^2.2.1"
+    "turbos-clmm-sdk": "^2.2.2"
   },
   "devDependencies": {
-    "@msafe/sui3-utils": "^3.1.53",
+    "@msafe/sui3-utils": "^3.1.59",
     "@mysten/wallet-standard": "^0.10.1",
     "@types/jest": "^29.2.1",
     "@types/luxon": "^3.4.2",
