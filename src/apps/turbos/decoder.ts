@@ -4,7 +4,7 @@ import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
 import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 import { config } from './config';
-import { TURBOSIntentionData } from './helper';
+import { RemoveLiquidityIntentionDataCache, TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
 
 type DecodeResult = {
@@ -12,6 +12,8 @@ type DecodeResult = {
   type: TransactionSubType;
   intentionData: TURBOSIntentionData;
 };
+
+type DecodeData = RemoveLiquidityIntentionDataCache;
 
 const swap1Layer = [`${config.PackageId}::swap_router::swap_a_b`, `${config.PackageId}::swap_router::swap_b_a`];
 const swap2Layer = [
@@ -28,7 +30,7 @@ export class Decoder {
     return this.txb.blockData.transactions;
   }
 
-  decode(address: string) {
+  decode(address: string, data?: DecodeData) {
     if (this.isSwapTransaction()) {
       return this.decodeSwap();
     }
@@ -42,7 +44,7 @@ export class Decoder {
     }
 
     if (this.isRemoveLiquidityTransaction()) {
-      return this.decodeRemoveLiquidity(address);
+      return this.decodeRemoveLiquidity(address, data);
     }
 
     if (this.isDecreaseLiquidityTransaction()) {
@@ -117,7 +119,7 @@ export class Decoder {
     const moveCall = this.transactions.find(
       (trans) => trans.kind === 'MoveCall' && trans.target !== '0x2::coin::zero',
     ) as MoveCallTransaction;
-    
+
     console.log(moveCall, 'decodeSwap');
 
     let layer = 0;
@@ -284,7 +286,7 @@ export class Decoder {
     };
   }
 
-  private decodeRemoveLiquidity(address: string): DecodeResult {
+  private decodeRemoveLiquidity(address: string, data: RemoveLiquidityIntentionDataCache): DecodeResult {
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const decreaseLiquidity = this.helper.decodeInputU64(3);
@@ -303,10 +305,10 @@ export class Decoder {
         nft,
         amountA,
         amountB,
-        slippage: 3,
+        slippage: data.slippage,
         address,
-        collectAmountA: 0,
-        collectAmountB: 0,
+        collectAmountA: data.collectAmountA,
+        collectAmountB: data.collectAmountB,
         rewardAmounts,
         deadline,
       },
