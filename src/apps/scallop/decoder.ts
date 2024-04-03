@@ -53,6 +53,9 @@ export class Decoder {
     if (this.isSupplyLendingTransaction()) {
       return this.decodeSupplyLending();
     }
+    if (this.isBorrowWithBoostTransaction()) {
+      return this.decodeBorrowWithBoost();
+    }
     if (this.isBorrowTransaction()) {
       return this.decodeBorrow();
     }
@@ -139,6 +142,12 @@ export class Decoder {
 
   private isBorrowTransaction() {
     return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow`);
+  }
+
+  private isBorrowWithBoostTransaction() {
+    const borrowMoveCall = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow`);
+    const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    return !!borrowMoveCall && !!stakeMoveCall;
   }
 
   private isRepayTransaction() {
@@ -530,6 +539,25 @@ export class Decoder {
         coinName,
         obligationKey,
         obligationId,
+      },
+    };
+  }
+
+  private decodeBorrowWithBoost(): DecodeResult {
+    const coinName = this._builder.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
+    const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    const amount = this.helperBorrow.decodeInputU64(5);
+    const obligationId = this.helperBorrow.decodeSharedObjectId(1);
+    const obligationKey = this.helperBorrow.decodeOwnedObjectId(2);
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.BorrowWithBoost,
+      intentionData: {
+        amount,
+        coinName,
+        obligationKey,
+        obligationId,
+        veScaKey,
       },
     };
   }

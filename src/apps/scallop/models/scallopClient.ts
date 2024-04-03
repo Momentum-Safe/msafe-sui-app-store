@@ -350,7 +350,7 @@ export class ScallopClient {
    * @param sign - Decide to directly sign the transaction or return the transaction block.
    * @param obligationId - The obligation object.
    * @param obligationKey - The obligation key object to verifying obligation authority.
-   * @param vescaKey - The vesca key object to verifying sca staker.
+   * @param veScaKey - The vesca key object to verifying sca staker.
    * @param walletAddress - The wallet address of the owner.
    * @return Transaction block response or transaction block.
    */
@@ -359,7 +359,7 @@ export class ScallopClient {
     amount: number,
     obligationId: string,
     obligationKey: string,
-    vescaKey: string,
+    veScaKey: string,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
@@ -378,7 +378,7 @@ export class ScallopClient {
     const coin = await quickMethod.borrowQuick(amount, poolCoinName, obligationId, obligationKey);
     txBlock.transferObjects([coin], sender);
     if (availableStake) {
-      await borrowIncentiveQuickMethod.stakeObligationWithVeScaQuick(obligationId, obligationKey, vescaKey);
+      await borrowIncentiveQuickMethod.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
     }
     return txBlock;
   }

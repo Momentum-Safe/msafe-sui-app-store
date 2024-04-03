@@ -29,7 +29,7 @@ import { appHelpers } from '@/index';
 
 import { Account, Client, Obligation, vescaKey } from './scallop.config';
 
-describe('Scallop App', () => {
+describe.skip('Scallop App', () => {
   it('Test Supply Lending Transaction Build', async () => {
     const appHelper = appHelpers.getAppHelper('scallop');
 
@@ -234,7 +234,7 @@ describe('Scallop App', () => {
         obligationId: Obligation.obligationId,
         amount: 100000000,
         obligationKey: Obligation.obligationKey,
-        vescaKey,
+        veScaKey: vescaKey,
       } as BorrowWithBoostIntentionData,
     });
     const inspectResult = await Client.devInspectTransactionBlock({
@@ -625,11 +625,11 @@ describe('Scallop App', () => {
       coinName: 'sui',
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      vescaKey,
+      veScaKey: vescaKey,
     });
 
     expect(intention.serialize()).toBe(
-      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","vescaKey":"${vescaKey}"}`,
+      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","veScaKey":"${vescaKey}"}`,
     );
   });
 

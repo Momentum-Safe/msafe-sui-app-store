@@ -15,7 +15,7 @@ export interface BorrowWithBoostIntentionData {
   amount: number | string;
   obligationId: string;
   obligationKey: string;
-  vescaKey: string;
+  veScaKey: string;
 }
 
 export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostIntentionData> {
@@ -43,7 +43,7 @@ export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostI
       Number(this.data.amount),
       this.data.obligationId,
       this.data.obligationKey,
-      this.data.vescaKey,
+      this.data.veScaKey,
       input.account.address,
     );
   }

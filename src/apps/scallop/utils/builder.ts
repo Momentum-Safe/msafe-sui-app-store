@@ -83,7 +83,7 @@ export const checkExtendLockPeriod = (
   }
 
   if (prevUnlockAtInSecondTimestamp) {
-    const totalLockDuration = newUnlockAtInSecondTimestamp - prevUnlockAtInSecondTimestamp ?? 0;
+    const totalLockDuration = newUnlockAtInSecondTimestamp - (prevUnlockAtInSecondTimestamp ?? 0);
     if (totalLockDuration > MAX_LOCK_DURATION - UNLOCK_ROUND_DURATION) {
       throw new Error(`Maximum lock period is ~4 years (${MAX_LOCK_ROUNDS - 1} days)`);
     }
