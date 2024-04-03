@@ -5,7 +5,7 @@ import { TransactionSubType } from '../types';
 import { SuiNetworks } from '@/types';
 import { SuiClient } from '@mysten/sui.js/client';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { KriyaSDK } from 'kriya-sdk'
+import { KriyaSDK } from 'kriya-dex-sdk'
 
 export interface StakeLiquidityIntentionData {
     lpObject: any,
