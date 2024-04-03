@@ -1,12 +1,23 @@
 import type { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { SuiPythClient, SuiPriceServiceConnection } from '@pythnetwork/pyth-sui-js';
+import axios from 'axios';
 
 import { SUPPORT_COLLATERALS, SUPPORT_POOLS } from '../constants';
 import { PYTH_ENDPOINTS } from '../constants/pyth';
 import type { ScallopBuilder } from '../models';
+import { PythClient } from '../models/pythClient';
 import type { SupportAssetCoins, SupportOracleType } from '../types';
+
+export const getLatestVaas = async (endpoint: string, priceIds: string[]) => {
+  const response = await axios.get(`${endpoint}/api/latest_vaas`, {
+    params: {
+      ids: priceIds,
+    },
+  });
+  const latestVaas = response.data;
+  return latestVaas.map((vaa: string) => Buffer.from(vaa, 'base64'));
+};
 
 /**
  * Update the price of the oracle for multiple coin.
@@ -23,7 +34,7 @@ export const updateOracles = async (
   const coinNames = assetCoinNames ?? [...new Set([...SUPPORT_POOLS, ...SUPPORT_COLLATERALS])];
   const rules: SupportOracleType[] = builder.isTestnet ? ['pyth'] : ['pyth'];
   if (rules.includes('pyth')) {
-    const pythClient = new SuiPythClient(
+    const pythClient = new PythClient(
       builder.client as any,
       builder.address.get('core.oracles.pyth.state'),
       builder.address.get('core.oracles.pyth.wormholeState'),
@@ -34,16 +45,11 @@ export const updateOracles = async (
 
     // iterate through the endpoints
     const endpoints = builder.params.pythEndpoints ?? PYTH_ENDPOINTS[builder.isTestnet ? 'testnet' : 'mainnet'];
-    for (let i = 0; i < endpoints.length; i++) {
-      try {
-        const pythConnection = new SuiPriceServiceConnection(endpoints[i]);
-        const priceUpdateData = await pythConnection.getPriceFeedsUpdateData(priceIds);
-        await pythClient.updatePriceFeeds(txBlock as any, priceUpdateData, priceIds);
-
-        break;
-      } catch (e) {
-        console.warn(`Failed to update price feeds with endpoint ${endpoints[i]}: ${e}`);
-      }
+    try {
+      const priceUpdateData = await getLatestVaas(endpoints[0], priceIds);
+      await pythClient.updatePriceFeeds(txBlock as any, priceUpdateData, priceIds);
+    } catch (e) {
+      console.warn(`Failed to update price feeds with endpoint ${endpoints[0]}: ${e}`);
     }
   }
 
