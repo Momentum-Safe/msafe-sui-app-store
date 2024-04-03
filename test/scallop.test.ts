@@ -213,7 +213,6 @@ describe.skip('Scallop App', () => {
       transactionBlock: res,
       sender: Account.address,
     });
-    console.log(inspectResult.error);
     expect(inspectResult.effects.status.status).toBe('success');
     expect(res.blockData.version).toBe(1);
     expect(res.blockData.sender).toBe('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b');
