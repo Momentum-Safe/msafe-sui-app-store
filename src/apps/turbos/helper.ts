@@ -36,15 +36,8 @@ export type TURBOSIntentionData =
   | BurnIntentionData
   | SwapIntentionData;
 
-export type RemoveLiquidityIntentionDataCache = {
-  slippage: number | string;
-  collectAmountA: string | number;
-  collectAmountB: string | number;
-};
-
 export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   application = 'turbos';
-  removeLiquidityIntentionDataCache: RemoveLiquidityIntentionDataCache;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
@@ -53,8 +46,8 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
     txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
-    const { transactionBlock, account } = input;
-    const decoder = new Decoder(transactionBlock);
+    const { transactionBlock, account, suiClient } = input;
+    const decoder = new Decoder(transactionBlock, suiClient);
     const result = decoder.decode(account.address);
     return {
       txType: TransactionType.Other,
@@ -87,13 +80,7 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
         intention = DecreaseLiquidityIntention.fromData(input.intentionData as DecreaseLiquidityIntentionData);
         break;
       case TransactionSubType.RemoveLiquidity:
-        const intentionData = input.intentionData as RemoveLiquidityIntentionData;
-        intention = RemoveLiquidityIntention.fromData(intentionData);
-        this.removeLiquidityIntentionDataCache = {
-          slippage: intentionData.slippage,
-          collectAmountA: intentionData.collectAmountA,
-          collectAmountB: intentionData.collectAmountB,
-        };
+        intention = RemoveLiquidityIntention.fromData(input.intentionData as RemoveLiquidityIntentionData);
         break;
       case TransactionSubType.CollectFee:
         intention = CollectFeeIntention.fromData(input.intentionData as CollectFeeIntentionData);

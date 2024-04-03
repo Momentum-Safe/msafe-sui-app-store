@@ -4,16 +4,15 @@ import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
 import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 import { config } from './config';
-import { RemoveLiquidityIntentionDataCache, TURBOSIntentionData } from './helper';
+import { TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
+import { SuiClient } from '@mysten/sui.js/client';
 
 type DecodeResult = {
   txType: TransactionType;
   type: TransactionSubType;
   intentionData: TURBOSIntentionData;
 };
-
-type DecodeData = RemoveLiquidityIntentionDataCache;
 
 const swap1Layer = [`${config.PackageId}::swap_router::swap_a_b`, `${config.PackageId}::swap_router::swap_b_a`];
 const swap2Layer = [
@@ -23,14 +22,44 @@ const swap2Layer = [
   `${config.PackageId}::swap_router::swap_b_a_c_b`,
 ];
 
+const getAtoB = (layer: 0 | 1, target: string): boolean[] => {
+  if (layer === 1) {
+    const index = swap2Layer.findIndex((item) => item === target);
+    switch (index) {
+      case 0:
+        return [true, true];
+      case 1:
+        return [true, false];
+      case 2:
+        return [false, true];
+      case 4:
+        return [false, false];
+      default:
+        throw new Error(`not target: ${target}`);
+    }
+  }
+  const index = swap1Layer.findIndex((item) => item === target);
+  switch (index) {
+    case 0:
+      return [true];
+    case 1:
+      return [false];
+    default:
+      throw new Error(`not target: ${target}`);
+  }
+};
+
 export class Decoder {
-  constructor(public readonly txb: TransactionBlock) {}
+  constructor(
+    public readonly txb: TransactionBlock,
+    public readonly client: SuiClient,
+  ) {}
 
   private get transactions() {
     return this.txb.blockData.transactions;
   }
 
-  decode(address: string, data?: DecodeData) {
+  decode(address: string) {
     if (this.isSwapTransaction()) {
       return this.decodeSwap();
     }
@@ -44,7 +73,7 @@ export class Decoder {
     }
 
     if (this.isRemoveLiquidityTransaction()) {
-      return this.decodeRemoveLiquidity(address, data);
+      return this.decodeRemoveLiquidity(address);
     }
 
     if (this.isDecreaseLiquidityTransaction()) {
@@ -116,16 +145,28 @@ export class Decoder {
   }
 
   private decodeSwap(): DecodeResult {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target !== '0x2::coin::zero',
-    ) as MoveCallTransaction;
-
+    const moveCall = this.transactions.find((trans) => trans.kind === 'MoveCall') as MoveCallTransaction;
     console.log(moveCall, 'decodeSwap');
-
-    let layer = 0;
+    let layer: 0 | 1 = 0;
     if (swap2Layer.includes(moveCall.target)) {
       layer = 1;
     }
+
+    const atob = getAtoB(layer, moveCall.target);
+
+    const routes = atob.map((item, index) => {
+      const pool = this.helper.decodeSharedObjectId(index);
+      const nextTickIndex = this.helper.decodeInputU128(4 + index + layer);
+      return {
+        pool,
+        a2b: item,
+        nextTickIndex: nextTickIndex,
+      };
+    });
+
+    const coinTypeA = atob[0] ? moveCall.typeArguments[0] : moveCall.typeArguments[1];
+    const coinTypeB =
+      layer === 1 ? moveCall.typeArguments[4] : atob[0] ? moveCall.typeArguments[1] : moveCall.typeArguments[0];
 
     const address = this.helper.decodeInputAddress(6 + 2 * layer);
     const deadline = this.helper.decodeInputU64(7 + 2 * layer);
@@ -137,14 +178,14 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.Swap,
       intentionData: {
-        routes: [],
-        coinTypeA: '',
-        coinTypeB: '',
+        routes: routes,
+        coinTypeA,
+        coinTypeB,
         address,
         amountA: amountSpecifiedIsInput ? amountA : amountB,
         amountB: amountSpecifiedIsInput ? amountB : amountA,
         amountSpecifiedIsInput,
-        slippage: '0',
+        slippage: '0.1',
         deadline,
       },
     };
@@ -286,7 +327,7 @@ export class Decoder {
     };
   }
 
-  private decodeRemoveLiquidity(address: string, data: RemoveLiquidityIntentionDataCache): DecodeResult {
+  private decodeRemoveLiquidity(address: string): DecodeResult {
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const decreaseLiquidity = this.helper.decodeInputU64(3);
@@ -295,6 +336,9 @@ export class Decoder {
 
     const deadline = this.helper.decodeInputU64(6);
     const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
+
+    const collectAmountA = this.collectFeeHelper.decodeInputU64(3) || 0;
+    const collectAmountB = this.collectFeeHelper.decodeInputU64(4) || 0;
 
     return {
       txType: TransactionType.Other,
@@ -305,10 +349,10 @@ export class Decoder {
         nft,
         amountA,
         amountB,
-        slippage: data.slippage,
+        slippage: 3,
         address,
-        collectAmountA: data.collectAmountA,
-        collectAmountB: data.collectAmountB,
+        collectAmountA,
+        collectAmountB,
         rewardAmounts,
         deadline,
       },
@@ -331,6 +375,13 @@ export class Decoder {
     ) as MoveCallTransaction[];
     console.log(moveCalls, this.txb, 'this.txb');
     return moveCalls.map((moveCall) => new MoveCallHelper(moveCall, this.txb));
+  }
+
+  private get collectFeeHelper() {
+    const moveCall = this.transactions.find(
+      (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::collect`,
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
   }
 }
 
