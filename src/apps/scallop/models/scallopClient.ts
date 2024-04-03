@@ -20,6 +20,7 @@ import type {
   SupportStakeMarketCoins,
   BorrowIncentiveParams,
   SpoolIncentiveParams,
+  SupportBorrowIncentiveRewardCoins,
 } from '../types';
 
 /**
@@ -884,6 +885,27 @@ export class ScallopClient {
     txBlock.setSender(sender);
 
     await vescaQuickMethod.redeemScaQuick(veScaKey);
+    return txBlock;
+  }
+
+  public async migrateAndClaim(
+    veScaKey: string,
+    obligationKey: string,
+    obligationId: string,
+    rewardCoinName: SupportBorrowIncentiveRewardCoins,
+  ) {
+    const txBlock = new TransactionBlock();
+    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = this.walletAddress;
+    txBlock.setSender(sender);
+
+    const rewardCoin = borrowIncentive.normalMethod.oldClaimBorrowIncentive(
+      obligationId,
+      obligationKey,
+      rewardCoinName,
+    );
+    txBlock.transferObjects([rewardCoin], sender);
+    borrowIncentive.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
     return txBlock;
   }
 

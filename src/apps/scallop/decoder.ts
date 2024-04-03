@@ -80,6 +80,9 @@ export class Decoder {
     if (this.isRedeemSca()) {
       return this.decodeRedeemSca();
     }
+    if (this.isMigrateAndClaim()) {
+      return this.decodeMigrateAndClaim();
+    }
     throw new Error(`Unknown transaction type`);
   }
 
@@ -196,6 +199,31 @@ export class Decoder {
 
   private isOpenObligationTransaction() {
     return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::open_obligation::open_obligation_entry`);
+  }
+
+  private isMigrateAndClaim() {
+    const oldBorrowIncentive = this.getMoveCallTransaction(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`);
+    const stakeWithVeSca = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    return !!oldBorrowIncentive && !!stakeWithVeSca;
+  }
+
+  private decodeMigrateAndClaim(): DecodeResult {
+    const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    const obligationKey = this.helperClaimBorrowReward[0].decodeSharedObjectId(2);
+    const obligationId = this.helperClaimBorrowReward[0].decodeOwnedObjectId(3);
+    const rewardCoinName = this._builder.utils.parseCoinNameFromType(
+      this.helperClaimBorrowReward[0].typeArg(0),
+    ) as SupportBorrowIncentiveRewardCoins;
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.MigrateAndClaim,
+      intentionData: {
+        veScaKey,
+        obligationKey,
+        obligationId,
+        rewardCoinName,
+      },
+    };
   }
 
   private decodeOpenObligation(): DecodeResult {

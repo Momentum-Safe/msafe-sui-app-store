@@ -13,6 +13,7 @@ import {
   ExtendPeriodAndStakeMoreIntentionData,
 } from './intentions/extend-period-and-stake-more';
 import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/extend-stake-period';
+import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/migrate-and-claim';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/open-obligation';
 import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/redeem-sca';
 import { RenewExpStakePeriodIntention, RenewExpStakePeriodIntentionData } from './intentions/renew-exp-stake-period';
@@ -56,7 +57,8 @@ export type ScallopIntention =
   | WithdrawStakedScaIntention
   | SupplyAndStakeLendingIntention
   | WithdrawAndUnstakeLendingIntention
-  | RedeemScaIntention;
+  | RedeemScaIntention
+  | MigrateAndClaimIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -77,7 +79,8 @@ export type ScallopIntentionData =
   | WithdrawStakedScaIntentionData
   | SupplyAndStakeLendingIntentionData
   | WithdrawAndUnstakeLendingIntentionData
-  | RedeemScaIntentionData;
+  | RedeemScaIntentionData
+  | MigrateAndClaimIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -176,6 +179,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.RedeemSca:
         intention = RedeemScaIntention.fromData(input.intentionData as RedeemScaIntentionData);
+        break;
+      case TransactionSubType.MigrateAndClaim:
+        intention = MigrateAndClaimIntention.fromData(input.intentionData as MigrateAndClaimIntentionData);
         break;
       default:
         throw new Error('not implemented');
