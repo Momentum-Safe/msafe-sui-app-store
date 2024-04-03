@@ -6,6 +6,8 @@ import { PlainTransactionHelper } from '@/apps/plain-transaction/helper';
 import { MSafeApps } from '@/apps/registry';
 import { TURBOSAppHelper } from '@/apps/turbos/helper';
 
+import { ScallopAppHelper } from './apps/scallop/helper';
+
 export const appHelpers = new MSafeApps([
   new CoreHelper(),
   new NAVIAppHelper(),
@@ -13,5 +15,5 @@ export const appHelpers = new MSafeApps([
   new PlainTransactionHelper(),
   new CetusHelper(),
   new TURBOSAppHelper(),
-  // new ScallopAppHelper(),
+  new ScallopAppHelper(),
 ]);

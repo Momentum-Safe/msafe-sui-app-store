@@ -26,6 +26,9 @@ export class Decoder {
   }
 
   decode() {
+    if (this.isStakeScaFirsTime() || this.isStakeMoreSca()) {
+      return this.decodeStakeSca();
+    }
     if (this.isSupplyWithStakeSpoolTransaction()) {
       return this.decodeSupplyWithStakeSpool();
     }
@@ -62,9 +65,6 @@ export class Decoder {
     if (this.isClaimRewardTransaction()) {
       return this.decodeClaimReward();
     }
-    if (this.isStakeScaFirsTime() || this.isStakeMoreSca()) {
-      return this.decodeStakeSca();
-    }
     if (this.isRenewExpiredVeSca()) {
       return this.decodeRenewExpiredVeSca();
     }
@@ -73,6 +73,9 @@ export class Decoder {
     }
     if (this.isOpenObligationTransaction()) {
       return this.decodeOpenObligation();
+    }
+    if (this.isRedeemSca()) {
+      return this.decodeRedeemSca();
     }
     throw new Error(`Unknown transaction type`);
   }
@@ -166,6 +169,10 @@ export class Decoder {
     return !!extendPeriod && !!stakeMoreSca;
   }
 
+  private isRedeemSca() {
+    return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::redeem`);
+  }
+
   private isStakeMoreSca() {
     return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::lock_more_sca`);
   }
@@ -187,6 +194,17 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.OpenObligation,
       intentionData: {},
+    };
+  }
+
+  private decodeRedeemSca(): DecodeResult {
+    const veScaKey = this.helperRedeemSca.decodeOwnedObjectId(1);
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.RedeemSca,
+      intentionData: {
+        veScaKey,
+      },
     };
   }
 
@@ -372,7 +390,7 @@ export class Decoder {
   private decodeStakeSca(): DecodeResult {
     let lockSca;
     let unlockTime;
-    if (this.helperStake.moveCall) {
+    if (this.helperStakeSca.moveCall && this.helperStakeMoreSca.moveCall === undefined) {
       lockSca = this.helperStakeSca.getNestedInputParam<SplitCoinsTransaction>(3);
       unlockTime = this.helperStakeSca.decodeInputU64(4);
     } else {
@@ -748,13 +766,6 @@ export class Decoder {
       (trans) =>
         trans.kind === 'MoveCall' &&
         trans.target.startsWith(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
-  }
-
-  private get helperRedeemVeSca() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.veScaPkgId}::ve_sca::redeem`),
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }

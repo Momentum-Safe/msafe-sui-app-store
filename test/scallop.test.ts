@@ -29,7 +29,7 @@ import { appHelpers } from '@/index';
 
 import { Account, Client, Obligation, vescaKey } from './scallop.config';
 
-describe.skip('Scallop App', () => {
+describe('Scallop App', () => {
   it('Test Supply Lending Transaction Build', async () => {
     const appHelper = appHelpers.getAppHelper('scallop');
 
@@ -42,7 +42,7 @@ describe.skip('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        amount: 10000000,
+        amount: 1e9,
         coinName: 'sui',
       } as SupplyLendingIntentionData,
     });
@@ -416,7 +416,7 @@ describe.skip('Scallop App', () => {
         // lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
         obligationId: Obligation.obligationId,
         obligationKey: Obligation.obligationKey,
-        vescaKey,
+        veScaKey: vescaKey,
         isObligationLocked: true,
         isOldBorrowIncentive: false,
       } as StakeScaIntentionData,
@@ -586,7 +586,6 @@ describe.skip('Scallop App', () => {
       amount: 1000,
       collateralCoinName: 'sui',
       obligationId: Obligation.obligationId,
-      obligationKey: Obligation.obligationKey,
     });
 
     expect(intention.serialize()).toBe(

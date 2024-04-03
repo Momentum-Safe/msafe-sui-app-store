@@ -877,6 +877,16 @@ export class ScallopClient {
     return txBlock;
   }
 
+  public async redeemSca(veScaKey: string): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = this.walletAddress;
+    txBlock.setSender(sender);
+
+    await vescaQuickMethod.redeemScaQuick(veScaKey);
+    return txBlock;
+  }
+
   /**
    * Withdraw unlocked SCA.
    *
