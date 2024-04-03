@@ -269,7 +269,6 @@ export class ScallopClient {
       txBlock,
     });
     const sender = walletAddress || this.walletAddress;
-    txBlock.splitCoins(txBlock.gas, [amount]);
     txBlock.setSender(sender);
 
     const marketCoin = await quickMethod.depositQuick(amount, poolCoinName, walletAddress);
@@ -414,7 +413,7 @@ export class ScallopClient {
     if (availableStake) {
       await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKey);
     }
-    await quickMethod.repayQuick(amount, poolCoinName, obligationId);
+    await quickMethod.repayQuick(amount, poolCoinName, obligationId, sender);
     if (availableStake) {
       await borrowIncentiveQuickMethod.stakeObligationQuick(obligationId, obligationKey);
     }
@@ -457,7 +456,6 @@ export class ScallopClient {
     });
     const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
-    txBlock.splitCoins(txBlock.gas, [amount]);
     txBlock.setSender(sender);
 
     const marketCoin = await quickMethod.depositQuick(amount, poolCoinName, walletAddress);

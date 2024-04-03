@@ -477,7 +477,7 @@ export class Decoder {
       intentionData: {
         amount: amountFromSplitCoin,
         obligationId,
-        coinName,
+        collateralCoinName: coinName,
       },
     };
   }
@@ -492,7 +492,7 @@ export class Decoder {
       type: TransactionSubType.WithdrawCollateral,
       intentionData: {
         amount,
-        coinName,
+        collateralCoinName: coinName,
         obligationKey,
         obligationId,
       },
@@ -559,7 +559,7 @@ export class Decoder {
     const coinName = this._builder.utils.parseCoinNameFromType(coinType);
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.StakeSpool,
+      type: TransactionSubType.UnstakeSpool,
       intentionData: {
         amount,
         marketCoinName: coinName,
@@ -581,7 +581,7 @@ export class Decoder {
       type: TransactionSubType.SupplyAndStakeLending,
       intentionData: {
         amount: amountFromSplitCoin,
-        coinType: coinName,
+        coinName,
         stakeAccountId: stakeSpoolAccount,
       },
     };
@@ -639,8 +639,8 @@ export class Decoder {
     });
 
     this.helperClaimBorrowV2Reward.forEach((tx) => {
-      const obligationId = tx.decodeSharedObjectId(3);
-      const obligationKey = tx.decodeOwnedObjectId(4);
+      const obligationKey = tx.decodeSharedObjectId(3);
+      const obligationId = tx.decodeOwnedObjectId(4);
       const rewardCoinName = this._builder.utils.parseCoinNameFromType(
         tx.typeArg(0),
       ) as SupportBorrowIncentiveRewardCoins;
@@ -648,8 +648,8 @@ export class Decoder {
     });
 
     this.helperClaimBorrowReward.forEach((tx) => {
-      const obligationId = tx.decodeSharedObjectId(2);
-      const obligationKey = tx.decodeOwnedObjectId(3);
+      const obligationKey = tx.decodeSharedObjectId(2);
+      const obligationId = tx.decodeOwnedObjectId(3);
       const rewardCoinName = this._builder.utils.parseCoinNameFromType(
         tx.typeArg(0),
       ) as SupportBorrowIncentiveRewardCoins;

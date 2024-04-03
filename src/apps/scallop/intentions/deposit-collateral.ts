@@ -14,7 +14,6 @@ export interface DepositCollateralIntentionData {
   collateralCoinName: SupportCollateralCoins;
   amount: number | string;
   obligationId: string;
-  obligationKey: string;
 }
 
 export class DepositCollateralIntention extends CoreBaseIntention<DepositCollateralIntentionData> {
