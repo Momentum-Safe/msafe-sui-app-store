@@ -13,7 +13,9 @@ import {
   ExtendPeriodAndStakeMoreIntentionData,
 } from './intentions/extend-period-and-stake-more';
 import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/extend-stake-period';
+import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/migrate-and-claim';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/open-obligation';
+import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/redeem-sca';
 import { RenewExpStakePeriodIntention, RenewExpStakePeriodIntentionData } from './intentions/renew-exp-stake-period';
 import { RepayIntention, RepayIntentionData } from './intentions/repay';
 import { StakeScaIntention, StakeScaIntentionData } from './intentions/stake-sca';
@@ -54,7 +56,9 @@ export type ScallopIntention =
   | RenewExpStakePeriodIntention
   | WithdrawStakedScaIntention
   | SupplyAndStakeLendingIntention
-  | WithdrawAndUnstakeLendingIntention;
+  | WithdrawAndUnstakeLendingIntention
+  | RedeemScaIntention
+  | MigrateAndClaimIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -74,7 +78,9 @@ export type ScallopIntentionData =
   | RenewExpStakePeriodIntentionData
   | WithdrawStakedScaIntentionData
   | SupplyAndStakeLendingIntentionData
-  | WithdrawAndUnstakeLendingIntentionData;
+  | WithdrawAndUnstakeLendingIntentionData
+  | RedeemScaIntentionData
+  | MigrateAndClaimIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -170,6 +176,12 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         intention = WithdrawAndUnstakeLendingIntention.fromData(
           input.intentionData as WithdrawAndUnstakeLendingIntentionData,
         );
+        break;
+      case TransactionSubType.RedeemSca:
+        intention = RedeemScaIntention.fromData(input.intentionData as RedeemScaIntentionData);
+        break;
+      case TransactionSubType.MigrateAndClaim:
+        intention = MigrateAndClaimIntention.fromData(input.intentionData as MigrateAndClaimIntentionData);
         break;
       default:
         throw new Error('not implemented');

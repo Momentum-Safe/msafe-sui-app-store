@@ -7,6 +7,8 @@ import { MSafeApps } from '@/apps/registry';
 import { ScallopAppHelper } from '@/apps/scallop/helper';
 import { TURBOSAppHelper } from '@/apps/turbos/helper';
 
+import { ScallopAppHelper } from './apps/scallop/helper';
+
 export const appHelpers = new MSafeApps([
   new CoreHelper(),
   new NAVIAppHelper(),

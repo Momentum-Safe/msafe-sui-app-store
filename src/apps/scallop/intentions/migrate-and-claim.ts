@@ -7,23 +7,21 @@ import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../models/scallopClient';
-import { SupportPoolCoins } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { SupportBorrowIncentiveRewardCoins, TransactionSubType } from '../types';
 
-export interface BorrowWithBoostIntentionData {
-  coinName: SupportPoolCoins;
-  amount: number | string;
-  obligationId: string;
-  obligationKey: string;
+export interface MigrateAndClaimIntentionData {
   veScaKey: string;
+  obligationKey: string;
+  obligationId: string;
+  rewardCoinName: SupportBorrowIncentiveRewardCoins;
 }
 
-export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostIntentionData> {
+export class MigrateAndClaimIntention extends CoreBaseIntention<MigrateAndClaimIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.Borrow;
+  txSubType: TransactionSubType.MigrateAndClaim;
 
-  constructor(public readonly data: BorrowWithBoostIntentionData) {
+  constructor(public readonly data: MigrateAndClaimIntentionData) {
     super(data);
   }
 
@@ -38,17 +36,15 @@ export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostI
       networkType: input.network.split(':')[1] as any,
     });
     await scallopClient.init();
-    return scallopClient.borrowWithBoost(
-      this.data.coinName,
-      Number(this.data.amount),
-      this.data.obligationId,
-      this.data.obligationKey,
+    return scallopClient.migrateAndClaim(
       this.data.veScaKey,
-      input.account.address,
+      this.data.obligationKey,
+      this.data.obligationId,
+      this.data.rewardCoinName,
     );
   }
 
-  static fromData(data: BorrowWithBoostIntentionData): BorrowWithBoostIntention {
-    return new BorrowWithBoostIntention(data);
+  static fromData(data: MigrateAndClaimIntentionData): MigrateAndClaimIntention {
+    return new MigrateAndClaimIntention(data);
   }
 }

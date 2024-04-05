@@ -42,7 +42,7 @@ describe.skip('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        amount: 10000000,
+        amount: 1e9,
         coinName: 'sui',
       } as SupplyLendingIntentionData,
     });
@@ -234,7 +234,7 @@ describe.skip('Scallop App', () => {
         obligationId: Obligation.obligationId,
         amount: 100000000,
         obligationKey: Obligation.obligationKey,
-        vescaKey,
+        veScaKey: vescaKey,
       } as BorrowWithBoostIntentionData,
     });
     const inspectResult = await Client.devInspectTransactionBlock({
@@ -416,7 +416,7 @@ describe.skip('Scallop App', () => {
         // lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
         obligationId: Obligation.obligationId,
         obligationKey: Obligation.obligationKey,
-        vescaKey,
+        veScaKey: vescaKey,
         isObligationLocked: true,
         isOldBorrowIncentive: false,
       } as StakeScaIntentionData,
@@ -586,7 +586,6 @@ describe.skip('Scallop App', () => {
       amount: 1000,
       collateralCoinName: 'sui',
       obligationId: Obligation.obligationId,
-      obligationKey: Obligation.obligationKey,
     });
 
     expect(intention.serialize()).toBe(
@@ -626,11 +625,11 @@ describe.skip('Scallop App', () => {
       coinName: 'sui',
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      vescaKey,
+      veScaKey: vescaKey,
     });
 
     expect(intention.serialize()).toBe(
-      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","vescaKey":"${vescaKey}"}`,
+      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","veScaKey":"${vescaKey}"}`,
     );
   });
 

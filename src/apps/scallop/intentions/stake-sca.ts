@@ -16,7 +16,7 @@ export interface StakeScaIntentionData {
   obligationId: string | undefined;
   obligationKey: string | undefined;
   lockPeriodInDays: number | undefined;
-  vescaKey: string | undefined;
+  veScaKey: string | undefined;
 }
 
 export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> {
@@ -46,7 +46,7 @@ export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> 
       this.data.obligationId,
       this.data.obligationKey,
       this.data.lockPeriodInDays,
-      this.data.vescaKey,
+      this.data.veScaKey,
       input.account.address,
     );
   }
