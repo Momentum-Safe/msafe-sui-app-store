@@ -15,7 +15,7 @@ export interface ExtendStakePeriodIntentionData {
   obligationId: string | undefined;
   obligationKey: string | undefined;
   lockPeriodInDays: number | undefined;
-  vescaKey: string | undefined;
+  veScaKey: string | undefined;
 }
 
 export class ExtendStakePeriodIntention extends CoreBaseIntention<ExtendStakePeriodIntentionData> {
@@ -40,7 +40,7 @@ export class ExtendStakePeriodIntention extends CoreBaseIntention<ExtendStakePer
     scallopClient.init();
     return scallopClient.extendStakeScaLockPeriod(
       this.data.lockPeriodInDays,
-      this.data.vescaKey,
+      this.data.veScaKey,
       this.data.obligationId,
       this.data.obligationKey,
       this.data.isObligationLocked,
