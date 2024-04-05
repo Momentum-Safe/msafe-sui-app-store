@@ -56,14 +56,14 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
       txbParams?: any;
     },
   ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
-    console.log('Helper deserialize input: ', input);
+    console.log('Cetus helper deserialize input: ', input);
     const { txbParams, action } = input;
 
     return {
       txType: TransactionType.Other,
       txSubType: action,
       intentionData: {
-        txbParams,
+        txbParams: { ...txbParams },
         action,
       },
     };
@@ -75,8 +75,12 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
     txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
+    network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
+    const { suiClient, account, network } = input;
+    console.log('helper build input: ', input);
+    console.log('helper build input.intentionData: ', input.intentionData);
+    console.log('helper build input.intentionData JSON: ', JSON.stringify(input.intentionData));
     let intention: CetusIntention;
     switch (input.txSubType) {
       case TransactionSubType.OpenAndAddLiquidity:
@@ -139,6 +143,9 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account });
+    console.log('helper build intention: ', intention);
+    console.log('helper build account: ', account);
+    console.log('helper build network: ', network);
+    return intention.build({ suiClient, account, network });
   }
 }

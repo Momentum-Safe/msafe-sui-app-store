@@ -12,6 +12,7 @@ import { CreatePoolIntention, CreatePoolIntentionData } from './intentions/creat
 import { DecreaseLiquidityIntention, DecreaseLiquidityIntentionData } from './intentions/decrease-liquidity';
 import { IncreaseLiquidityIntention, IncreaseLiquidityIntentionData } from './intentions/increase-liquidity';
 import { RemoveLiquidityIntention, RemoveLiquidityIntentionData } from './intentions/remove-liquidity';
+import { SwapIntention, SwapIntentionData } from './intentions/swap';
 import { SuiNetworks, TransactionSubType } from './types';
 
 export type TURBOSIntention =
@@ -22,7 +23,8 @@ export type TURBOSIntention =
   | CollectFeeIntention
   | CollectRewardIntention
   | RemoveLiquidityIntention
-  | BurnIntention;
+  | BurnIntention
+  | SwapIntention;
 export type TURBOSIntentionData =
   | CreatePoolIntentionData
   | AddLiquidityIntentionData
@@ -31,7 +33,8 @@ export type TURBOSIntentionData =
   | CollectFeeIntentionData
   | CollectRewardIntentionData
   | RemoveLiquidityIntentionData
-  | BurnIntentionData;
+  | BurnIntentionData
+  | SwapIntentionData;
 
 export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   application = 'turbos';
@@ -43,9 +46,9 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
     txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
-    const { transactionBlock, suiClient } = input;
-    const decoder = new Decoder(transactionBlock);
-    const result = decoder.decode();
+    const { transactionBlock, account, suiClient } = input;
+    const decoder = new Decoder(transactionBlock, suiClient);
+    const result = decoder.decode(account.address);
     return {
       txType: TransactionType.Other,
       txSubType: result.type,
@@ -87,6 +90,9 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
         break;
       case TransactionSubType.Burn:
         intention = BurnIntention.fromData(input.intentionData as BurnIntentionData);
+        break;
+      case TransactionSubType.Swap:
+        intention = SwapIntention.fromData(input.intentionData as SwapIntentionData);
         break;
       default:
         throw new Error('not implemented');
