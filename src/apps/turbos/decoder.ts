@@ -146,7 +146,6 @@ export class Decoder {
 
   private decodeSwap(): DecodeResult {
     const moveCall = this.transactions.find((trans) => trans.kind === 'MoveCall') as MoveCallTransaction;
-    console.log(moveCall, 'decodeSwap');
     let layer: 0 | 1 = 0;
     if (swap2Layer.includes(moveCall.target)) {
       layer = 1;
@@ -194,7 +193,6 @@ export class Decoder {
   }
 
   private decodeAddLiquidity(): DecodeResult {
-    console.log(this.helper, 'this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
     const address = this.helper.decodeInputAddress(12);
 
@@ -362,20 +360,16 @@ export class Decoder {
   }
 
   private get helper() {
-    console.log(this.transactions, 'this.transactions');
     const moveCall = this.transactions.find(
       (trans) => trans.kind === 'MoveCall' && trans.target !== '0x2::coin::zero',
     ) as MoveCallTransaction;
-    console.log(moveCall, this.txb, 'this.txb');
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get collectRewardHelper() {
-    console.log(this.transactions, 'this.transactions');
     const moveCalls = this.transactions.filter(
       (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::collect_reward`,
     ) as MoveCallTransaction[];
-    console.log(moveCalls, this.txb, 'this.txb');
     return moveCalls.map((moveCall) => new MoveCallHelper(moveCall, this.txb));
   }
 

@@ -50,7 +50,6 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
     txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
-    console.log('helper deserialize input: ', input);
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { transactionBlock, account } = input;
     const decoder = new Decoder(transactionBlock, turbosSdk);
