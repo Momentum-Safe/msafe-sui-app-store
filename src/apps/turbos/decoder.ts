@@ -157,8 +157,8 @@ export class Decoder {
     const routes = atob.map((item, index) => {
       const pool = this.helper.decodeSharedObjectId(index);
       const sqrtPrice = this.helper.decodeInputU128(4 + index + layer);
-      const nextTickIndex = this.turbosSdk.math.sqrtPriceX64ToTickIndex(new BN(sqrtPrice));
-      
+      const nextTickIndex = this.turbosSdk.math.sqrtPriceX64ToTickIndex(new BN(sqrtPrice.toString()));
+
       return {
         pool,
         a2b: item,
