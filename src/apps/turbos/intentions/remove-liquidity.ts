@@ -24,50 +24,12 @@ export class RemoveLiquidityIntention extends CoreBaseIntention<RemoveLiquidityI
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
-    const {
-      pool,
-      address,
-      amountA,
-      amountB,
-      slippage,
-      nft,
-      decreaseLiquidity,
-      collectAmountA,
-      collectAmountB,
-      rewardAmounts,
-      deadline,
-    } = this.data;
-    const txb = new TransactionBlock();
-    console.log(
-      await turbosSdk.pool.removeLiquidity({
-        pool,
-        decreaseLiquidity,
-        nft,
-        amountA,
-        amountB,
-        slippage,
-        address,
-        collectAmountA,
-        collectAmountB,
-        rewardAmounts,
-        deadline,
-      }),
-      'removeLiquidity txb',
-    );
-    return turbosSdk.pool.removeLiquidity({
-      pool,
-      decreaseLiquidity,
-      nft,
-      amountA,
-      amountB,
-      slippage,
-      address,
-      collectAmountA,
-      collectAmountB,
-      rewardAmounts,
-      deadline,
-      txb,
-    });
+    let txb = new TransactionBlock();
+    txb = await turbosSdk.pool.collectFee({ txb, ...this.data });
+    txb = await turbosSdk.pool.collectReward({ txb, ...this.data });
+    txb = await turbosSdk.pool.decreaseLiquidity({ txb, ...this.data });
+    txb = await turbosSdk.nft.burn({ txb, nft: this.data.nft, pool: this.data.pool });
+    return txb;
   }
 
   static fromData(data: RemoveLiquidityIntentionData) {
