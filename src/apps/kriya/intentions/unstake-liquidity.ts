@@ -1,7 +1,7 @@
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { TransactionType } from '@msafe/sui3-utils';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { TransactionSubType } from '../types';
+import { Rpc, TransactionSubType } from '../types';
 import { SuiNetworks } from '@/types';
 import { SuiClient } from '@mysten/sui.js/client';
 import { WalletAccount } from '@mysten/wallet-standard';
@@ -27,17 +27,18 @@ export class UnstakeLiquidityIntention extends CoreBaseIntention<UnstakeLiquidit
         const { suiClient, account } = input;
         const address = account.address;
         const isMainnet: boolean = input.network === 'sui:mainnet';
-        const farmSdk = new KriyaSDK.StakingFarm(suiClient, isMainnet);
+        const farmSdk = new KriyaSDK.StakingFarm(Rpc, isMainnet);
         const { objectId, tokenXType, tokenYType, positionObjectId } = this.data;
         const farm = { objectId, tokenXType, tokenYType }
         const txb = new TransactionBlock();
 
-        farmSdk.withdrawTx({
+        farmSdk.withdrawTx(
+            // @ts-ignore
             txb,
             farm,
             positionObjectId,
             address
-        });
+        );
 
         return txb;
     }
