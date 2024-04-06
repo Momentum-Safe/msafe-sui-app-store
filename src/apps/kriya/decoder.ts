@@ -80,8 +80,8 @@ export class Decoder {
         const amountY = this.helperLiquidityDex.decodeInputU64String(3);
         const minAddAmountX = this.helperLiquidityDex.decodeInputU64String(6);
         const minAddAmountY = this.helperLiquidityDex.decodeInputU64String(5);
-        const coinX = this.helperLiquidityDex.getInputParam(2);
-        const coinY = this.helperLiquidityDex.getInputParam(1);
+        const coinX = this.helperLiquidityDex.getInputParam(2).value as string;
+        const coinY = this.helperLiquidityDex.getInputParam(1).value as string;
 
         return {
             txType: TransactionType.Other,
