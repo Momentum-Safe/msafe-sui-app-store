@@ -10,4 +10,5 @@ export enum TransactionSubType {
   CollectReward = 'CollectReward',
   Burn = 'Burn',
   Swap = 'Swap',
+  ClaimAll = 'ClaimAll',
 }
