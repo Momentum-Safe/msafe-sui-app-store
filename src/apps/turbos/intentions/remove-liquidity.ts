@@ -39,6 +39,23 @@ export class RemoveLiquidityIntention extends CoreBaseIntention<RemoveLiquidityI
       txb,
     } = this.data;
 
+    console.log(
+      await turbosSdk.pool.removeLiquidity({
+        pool,
+        decreaseLiquidity,
+        nft,
+        amountA,
+        amountB,
+        slippage,
+        address,
+        collectAmountA,
+        collectAmountB,
+        rewardAmounts,
+        deadline,
+        txb,
+      }),
+      'removeLiquidity txb',
+    );
     return turbosSdk.pool.removeLiquidity({
       pool,
       decreaseLiquidity,

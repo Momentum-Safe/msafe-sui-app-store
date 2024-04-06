@@ -328,13 +328,13 @@ export class Decoder {
   }
 
   private decodeRemoveLiquidity(address: string): DecodeResult {
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
-    const decreaseLiquidity = this.helper.decodeInputU64(3);
-    const amountA = this.helper.decodeInputU64(4);
-    const amountB = this.helper.decodeInputU64(5);
+    const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(0);
+    const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(2);
+    const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(3);
+    const amountA = this.decreaseLiquidityHelper.decodeInputU64(4);
+    const amountB = this.decreaseLiquidityHelper.decodeInputU64(5);
 
-    const deadline = this.helper.decodeInputU64(6);
+    const deadline = this.decreaseLiquidityHelper.decodeInputU64(6);
     const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
 
     const collectAmountA = this.collectFeeHelper.decodeInputU64(3) || 0;
@@ -380,6 +380,13 @@ export class Decoder {
   private get collectFeeHelper() {
     const moveCall = this.transactions.find(
       (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::collect`,
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
+  }
+
+  private get decreaseLiquidityHelper() {
+    const moveCall = this.transactions.find(
+      (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::decrease_liquidity`,
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }
