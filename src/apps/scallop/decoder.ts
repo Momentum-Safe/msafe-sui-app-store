@@ -26,14 +26,14 @@ export class Decoder {
   }
 
   decode() {
+    if (this.isExtendPeriodAndStakeMoreSca()) {
+      return this.decodePeriodAndStakeMoreSca();
+    }
     if (this.isStakeScaFirsTime() || this.isStakeMoreSca()) {
       return this.decodeStakeSca();
     }
     if (this.isSupplyWithStakeSpoolTransaction()) {
       return this.decodeSupplyWithStakeSpool();
-    }
-    if (this.isExtendPeriodAndStakeMoreSca()) {
-      return this.decodePeriodAndStakeMoreSca();
     }
     if (this.isUnstakeAndWithdrawTransaction()) {
       return this.decodeUnstakeAndWithdraw();
@@ -168,7 +168,7 @@ export class Decoder {
   private isClaimRewardTransaction() {
     const lendingIncentive = this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::redeem_rewards`);
     const borrowIncentiveV2 = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::redeem_rewards`);
-    return !!lendingIncentive && !!borrowIncentiveV2;
+    return !!lendingIncentive || !!borrowIncentiveV2;
   }
 
   private isStakeScaFirsTime() {
@@ -414,12 +414,12 @@ export class Decoder {
       type: TransactionSubType.ExtendPeriodAndStakeMore,
       intentionData: {
         amount: amountFromSplitCoin,
+        veScaKey,
         lockPeriodInDays: unlockTime,
         obligationId,
         obligationKey,
-        veScaKey,
-        isObligationLocked,
         isOldBorrowIncentive,
+        isObligationLocked,
       },
     };
   }

@@ -7,8 +7,14 @@ import {
   DepositCollateralIntention,
   DepositCollateralIntentionData,
 } from '@/apps/scallop/intentions/deposit-collateral';
-import { ExtendPeriodAndStakeMoreIntentionData } from '@/apps/scallop/intentions/extend-period-and-stake-more';
-import { ExtendStakePeriodIntentionData } from '@/apps/scallop/intentions/extend-stake-period';
+import {
+  ExtendPeriodAndStakeMoreIntention,
+  ExtendPeriodAndStakeMoreIntentionData,
+} from '@/apps/scallop/intentions/extend-period-and-stake-more';
+import {
+  ExtendStakePeriodIntention,
+  ExtendStakePeriodIntentionData,
+} from '@/apps/scallop/intentions/extend-stake-period';
 import { OpenObligationIntention } from '@/apps/scallop/intentions/open-obligation';
 import { RenewExpStakePeriodIntentionData } from '@/apps/scallop/intentions/renew-exp-stake-period';
 import { RepayIntention, RepayIntentionData } from '@/apps/scallop/intentions/repay';
@@ -449,9 +455,9 @@ describe.skip('Scallop App', () => {
       intentionData: {
         amount: 2e9,
         lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
-        obligation: Obligation.obligationId,
+        obligationId: Obligation.obligationId,
         obligationKey: Obligation.obligationKey,
-        vescaKey,
+        veScaKey: vescaKey,
         isObligationLocked: true,
         isOldBorrowIncentive: false,
       } as ExtendPeriodAndStakeMoreIntentionData,
@@ -517,7 +523,7 @@ describe.skip('Scallop App', () => {
       network: 'sui:mainnet',
       intentionData: {
         lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
-        vescaKey,
+        veScaKey: vescaKey,
         isHaveRedeem: true,
         obligationId: Obligation.obligationId,
         obligationKey: Obligation.obligationKey,
@@ -674,5 +680,46 @@ describe.skip('Scallop App', () => {
     const intention = WithdrawStakedScaIntention.fromData({});
 
     expect(intention.serialize()).toBe('{}');
+  });
+
+  it('Test extend lock period intention serialization', () => {
+    const build = new ScallopBuilder({
+      client: Client,
+      walletAddress: Account.address,
+      networkType: 'mainnet',
+    });
+    build.init();
+    const intention = ExtendStakePeriodIntention.fromData({
+      lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
+      veScaKey: vescaKey,
+      obligationId: Obligation.obligationId,
+      obligationKey: Obligation.obligationKey,
+      isObligationLocked: true,
+      isOldBorrowIncentive: false,
+    });
+    expect(intention.serialize()).toBe(
+      '{"isObligationLocked":true,"isOldBorrowIncentive":false,"lockPeriodInDays":1836259200,"obligationId":"0x56574789e0e6bb0837ba090e85757e046390cab25cace7f09838314207a2ce74","obligationKey":"0x10873534fbdf2f844bae0878a5b660fcc95cdf4838f23bcf0890b0d73b8f170b","veScaKey":"0x5e2c54651ca4e2352475e8419e3419cfcfe424af272ca59ae053e3c248c13c16"}',
+    );
+  });
+
+  it('Test extend stake and lock period intention serialization', () => {
+    const build = new ScallopBuilder({
+      client: Client,
+      walletAddress: Account.address,
+      networkType: 'mainnet',
+    });
+    build.init();
+    const intention = ExtendPeriodAndStakeMoreIntention.fromData({
+      amount: 2e9,
+      lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
+      obligationId: Obligation.obligationId,
+      obligationKey: Obligation.obligationKey,
+      veScaKey: vescaKey,
+      isObligationLocked: true,
+      isOldBorrowIncentive: false,
+    });
+    expect(intention.serialize()).toBe(
+      '{"amount":2000000000,"isObligationLocked":true,"isOldBorrowIncentive":false,"lockPeriodInDays":1836259200,"obligationId":"0x56574789e0e6bb0837ba090e85757e046390cab25cace7f09838314207a2ce74","obligationKey":"0x10873534fbdf2f844bae0878a5b660fcc95cdf4838f23bcf0890b0d73b8f170b","veScaKey":"0x5e2c54651ca4e2352475e8419e3419cfcfe424af272ca59ae053e3c248c13c16"}',
+    );
   });
 });

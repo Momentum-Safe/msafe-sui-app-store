@@ -11,9 +11,9 @@ import { TransactionSubType } from '../types/utils';
 
 export interface ExtendPeriodAndStakeMoreIntentionData {
   amount: number;
-  vescaKey: string;
+  veScaKey: string;
   lockPeriodInDays: number;
-  obligation: string | undefined;
+  obligationId: string | undefined;
   obligationKey: string | undefined;
   isOldBorrowIncentive: boolean;
   isObligationLocked: boolean;
@@ -41,9 +41,9 @@ export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendP
     scallopClient.init();
     return scallopClient.extendPeriodAndStakeMoreSca(
       this.data.amount,
-      this.data.vescaKey,
+      this.data.veScaKey,
       this.data.lockPeriodInDays,
-      this.data.obligation,
+      this.data.obligationId,
       this.data.obligationKey,
       this.data.isObligationLocked,
       this.data.isOldBorrowIncentive,
