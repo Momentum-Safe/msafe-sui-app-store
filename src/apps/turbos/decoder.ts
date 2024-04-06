@@ -6,7 +6,7 @@ import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 import { config } from './config';
 import { TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
-import { SuiClient } from '@mysten/sui.js/client';
+import { BN, TurbosSdk } from 'turbos-clmm-sdk';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -52,7 +52,7 @@ const getAtoB = (layer: 0 | 1, target: string): boolean[] => {
 export class Decoder {
   constructor(
     public readonly txb: TransactionBlock,
-    public readonly client: SuiClient,
+    public readonly turbosSdk: TurbosSdk,
   ) {}
 
   private get transactions() {
@@ -156,7 +156,9 @@ export class Decoder {
 
     const routes = atob.map((item, index) => {
       const pool = this.helper.decodeSharedObjectId(index);
-      const nextTickIndex = this.helper.decodeInputU128(4 + index + layer);
+      const sqrtPrice = this.helper.decodeInputU128(4 + index + layer);
+      const nextTickIndex = this.turbosSdk.math.sqrtPriceX64ToTickIndex(new BN(sqrtPrice));
+      
       return {
         pool,
         a2b: item,
@@ -386,7 +388,8 @@ export class Decoder {
 
   private get decreaseLiquidityHelper() {
     const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::decrease_liquidity`,
+      (trans) =>
+        trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::decrease_liquidity`,
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }
