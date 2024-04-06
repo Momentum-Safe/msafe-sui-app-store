@@ -36,9 +36,8 @@ export class RemoveLiquidityIntention extends CoreBaseIntention<RemoveLiquidityI
       collectAmountB,
       rewardAmounts,
       deadline,
-      txb,
     } = this.data;
-
+    const txb = new TransactionBlock();
     console.log(
       await turbosSdk.pool.removeLiquidity({
         pool,
@@ -52,7 +51,6 @@ export class RemoveLiquidityIntention extends CoreBaseIntention<RemoveLiquidityI
         collectAmountB,
         rewardAmounts,
         deadline,
-        txb,
       }),
       'removeLiquidity txb',
     );
