@@ -40,12 +40,17 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   application = 'turbos';
 
   async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {
+      action?: string;
+      txbParams?: any;
+    },
   ): Promise<{
     txType: TransactionType;
     txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
+    console.log('helper deserialize input: ', input);
+
     const { transactionBlock, account, suiClient } = input;
     const decoder = new Decoder(transactionBlock, suiClient);
     const result = decoder.decode(account.address);
