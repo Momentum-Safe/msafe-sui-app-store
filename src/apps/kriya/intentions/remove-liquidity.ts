@@ -11,7 +11,7 @@ export interface RemoveLiquidityIntentionData {
     objectId: string,
     tokenXType: string,
     tokenYType: string,
-    amount: bigint,
+    amount: string,
     kriyaLpToken: string,
 }
 
@@ -41,7 +41,7 @@ export class RemoveLiquidityIntention extends CoreBaseIntention<RemoveLiquidityI
         const pool = { objectId, tokenXType, tokenYType, isStable}
         dexSdk.removeLiquidity(
             pool,
-            amount,
+            BigInt(amount),
             kriyaLpToken,
             // @ts-ignore
             txb,
