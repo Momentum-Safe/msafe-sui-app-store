@@ -210,7 +210,7 @@ export class Decoder {
       type: TransactionSubType.AddLiquidity,
       intentionData: {
         pool,
-        slippage: 5,
+        slippage: 10,
         address,
         amountA,
         amountB,
@@ -234,7 +234,7 @@ export class Decoder {
       type: TransactionSubType.IncreaseLiquidity,
       intentionData: {
         pool,
-        slippage: 5,
+        slippage: 10,
         address,
         amountA,
         amountB,
@@ -262,7 +262,7 @@ export class Decoder {
         nft,
         amountA,
         amountB,
-        slippage: 3, // DO NOT use slippage by user setting for now.
+        slippage: 10, // DO NOT use slippage by user setting for now.
         address,
         deadline,
       },
@@ -349,7 +349,7 @@ export class Decoder {
         nft,
         amountA,
         amountB,
-        slippage: 3,
+        slippage: 10,
         address,
         collectAmountA,
         collectAmountB,

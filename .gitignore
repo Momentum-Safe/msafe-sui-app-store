@@ -5,3 +5,4 @@ coverage
 .idea
 .yalc/
 yalc.lock
+.DS_Store
