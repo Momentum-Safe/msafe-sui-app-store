@@ -6,22 +6,25 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 import { getClaimFeeAndMiningTxb } from '../api/position';
-import { CetusIntentionData, TransactionSubType } from '../types';
+import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
 
 export class ClaimFeeAndMiningIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.ClaimFeeAndMining;
+  txSubType = TransactionSubType.ClaimFeeAndMining;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    const { account, suiClient } = input;
+  async build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<TransactionBlock> {
+    const { account, network } = input;
     const { txbParams } = this.data;
-    const txb = await getClaimFeeAndMiningTxb(txbParams, account, suiClient);
-    console.log('ClaimFeeAndMiningIntention build txb: ', txb);
+    const txb = await getClaimFeeAndMiningTxb(txbParams, account, network);
     return txb;
   }
 

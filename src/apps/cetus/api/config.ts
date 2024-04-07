@@ -1,7 +1,8 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { SdkOptions as PeripherySdkOptions } from '@cetusprotocol/cetus-periphery-sdk';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { SdkOptions } from '@cetusprotocol/cetus-sui-clmm-sdk';
+import { CetusPeripherySDK, SdkOptions as PeripherySdkOptions } from '@cetusprotocol/cetus-periphery-sdk';
+import { CetusClmmSDK, SdkOptions } from '@cetusprotocol/cetus-sui-clmm-sdk';
+import { WalletAccount } from '@mysten/wallet-standard';
+
+import { SuiNetworks } from '../types';
 
 export const clmmConfig: SdkOptions = {
   fullRpcUrl: 'https://fullnode.mainnet.sui.io/',
@@ -184,4 +185,196 @@ export const peripheryConfig: PeripherySdkOptions = {
       ],
     },
   },
+};
+
+export const clmmConfigTestnet: SdkOptions = {
+  fullRpcUrl: 'https://fullnode.testnet.sui.io/',
+  simulationAccount: {
+    address: '0xcd0247d0b67e53dde69b285e7a748e3dc390e8a5244eb9dd9c5c53d95e4cf0aa',
+  },
+  cetus_config: {
+    package_id: '0xf5ff7d5ba73b581bca6b4b9fa0049cd320360abd154b809f8700a8fd3cfaf7ca',
+    published_at: '0xf5ff7d5ba73b581bca6b4b9fa0049cd320360abd154b809f8700a8fd3cfaf7ca',
+    config: {
+      coin_list_id: '0x257eb2ba592a5480bba0a97d05338fab17cc3283f8df6998a0e12e4ab9b84478',
+      launchpad_pools_id: '0xdc3a7bd66a6dcff73c77c866e87d73826e446e9171f34e1c1b656377314f94da',
+      clmm_pools_id: '0x26c85500f5dd2983bf35123918a144de24e18936d0b234ef2b49fbb2d3d6307d',
+      admin_cap_id: '0x1a496f6c67668eb2c27c99e07e1d61754715c1acf86dac45020c886ac601edb8',
+      global_config_id: '0xe1f3db327e75f7ec30585fa52241edf66f7e359ef550b533f89aa1528dd1be52',
+      coin_list_handle: '0x3204350fc603609c91675e07b8f9ac0999b9607d83845086321fca7f469de235',
+      launchpad_pools_handle: '0xae67ff87c34aceea4d28107f9c6c62e297a111e9f8e70b9abbc2f4c9f5ec20fd',
+      clmm_pools_handle: '0xd28736923703342b4752f5ed8c2f2a5c0cb2336c30e1fed42b387234ce8408ec',
+    },
+  },
+  clmm_pool: {
+    package_id: '0x0868b71c0cba55bf0faf6c40df8c179c67a4d0ba0e79965b68b3d72d7dfbf666',
+    published_at: '0x1c29d658882c40eeb39a8bb8fe58f71a216a918acb3e3eb3b47d24efd07257f2',
+    config: {
+      pools_id: '0xc090b101978bd6370def2666b7a31d7d07704f84e833e108a969eda86150e8cf',
+      global_config_id: '0x6f4149091a5aea0e818e7243a13adcfb403842d670b9a2089de058512620687a',
+      global_vault_id: '0xf3114a74d54cbe56b3e68f9306661c043ede8c6615f0351b0c3a93ce895e1699',
+      admin_cap_id: '',
+    },
+  },
+  integrate: {
+    package_id: '0x8627c5cdcd8b63bc3daa09a6ab7ed81a829a90cafce6003ae13372d611fbb1a9',
+    published_at: '0xf1a5d0c5b0593e41d13f9684ca91365bdfe54a98836c1d33c90e361a031fac74',
+    version: 6,
+  },
+  deepbook: {
+    package_id: '0x000000000000000000000000000000000000000000000000000000000000dee9',
+    published_at: '0x000000000000000000000000000000000000000000000000000000000000dee9',
+  },
+  deepbook_endpoint_v2: {
+    package_id: '0xa34ffca2c6540e1ca9e53963ab43e7b1eed7b82e37696c743bb7c6179c15dfa6',
+    published_at: '0xa34ffca2c6540e1ca9e53963ab43e7b1eed7b82e37696c743bb7c6179c15dfa6',
+  },
+  aggregatorUrl: 'https://api-sui.devcetus.com/router',
+  swapCountUrl: 'https://api-sui.devcetus.com/v2/sui/swap/count',
+};
+
+export const peripheryConfigTestnet: PeripherySdkOptions = {
+  launchpad: {
+    package_id: '0x3beee8416089a5cbff9cfd5c0a2ce2937b0452dc7e2a3ab4dc431c7be05c2335',
+    published_at: '0x3beee8416089a5cbff9cfd5c0a2ce2937b0452dc7e2a3ab4dc431c7be05c2335',
+    config: {
+      pools_id: '0xccc10403ab3da4ae943847908e0e674fe1fdab81c6383e4c6dcd0eea0edade3d',
+      admin_cap_id: '0x8a72713049dbcfc40902ff209dc5e6066fe455d152baa235957c84d7a3b875ed',
+      config_cap_id: '0x16492b4252b01debb60f8a825334020d7fdb9d895b52f8139c98618de30817fc',
+    },
+  },
+  ido: {
+    package_id: '0x1352bf18ef20458f7cc773852d4a90b240015a6a54479dda3a1debfc500bf044',
+    published_at: '0xbd09a0889ea9970b821512428bab3e2fd01e16809a90a325cd3b3d3573eab6a4',
+    config: {
+      pools_id: '0x346bee25ab4d15bcfa9484ef5ebd4d7c94eb665ebaa745ff4094936a7f59a8b1',
+      admin_cap_id: '0xc1bb19a24d3bb65dfd4f3835637b63347c223c67cde4b0888f1a857974f33cbb',
+      package_version_id: '0x3ccf1b38e3259e638b980d4e6b49eac8c5aa94d3cb2ace5e75f0a551c8e67e5e',
+    },
+  },
+  xcetus: {
+    package_id: '0xdebaab6b851fd3414c0a62dbdf8eb752d6b0d31f5cfce5e38541bc6c6daa8966',
+    published_at: '0xdebaab6b851fd3414c0a62dbdf8eb752d6b0d31f5cfce5e38541bc6c6daa8966',
+    config: {
+      xcetus_manager_id: '0x3be34cbad122c8b100ed7157d762b9610e68b3c65734e08bc3c3baf857da807d',
+      lock_manager_id: '0x7c67e805182e3fecd098bd68a6b06c317f28f8c6249bd771e07904a10b424e60',
+      lock_handle_id: '0xc5f3bbfefe9a45c13da7a34bc72cac122ee45d633690476a8ac56bd2c4e78c86',
+    },
+  },
+  xcetus_dividends: {
+    package_id: '0x20d948d640edd0c749f533d41efc5f843f212d441220324ad7959c6e1d281828',
+    published_at: '0x20d948d640edd0c749f533d41efc5f843f212d441220324ad7959c6e1d281828',
+    config: {
+      dividend_manager_id: '0x13b7facb704fae1d199ff0038b8acabc253415a77d142b39189dee97d457e442',
+      dividend_admin_id: '0x5eb78463007422d4130b21f61c180bcd190819b7792f56e00a61df3b8fb928ef',
+      dividend_settle_id: '0x495095e13a170ff494d242ae44ac2c7453011ca6c33cff27498010105e10e4b4',
+    },
+  },
+  cetus_faucet: {
+    package_id: '0x1a69aee6be709054750949959a67aedbb4200583b39586d5e3eabe57f40012c7',
+    published_at: '0x1a69aee6be709054750949959a67aedbb4200583b39586d5e3eabe57f40012c7',
+  },
+  xtoken: {
+    package_id: '',
+    published_at: '',
+    config: {
+      xtoken_manager_id: '',
+      lock_manager_id: '',
+      lock_handle_id: '',
+    },
+  },
+  xtoken_dividends: {
+    package_id: '',
+    published_at: '',
+    config: {
+      dividend_manager_id: '',
+      dividend_admin_id: '',
+      dividend_settle_id: '',
+    },
+  },
+  token_faucet: {
+    package_id: '',
+    published_at: '',
+  },
+  booster: {
+    package_id: '',
+    published_at: '',
+    config: {
+      booster_config_id: '',
+      booster_pool_handle: '',
+    },
+  },
+  maker_bonus: {
+    package_id: '',
+    published_at: '',
+    config: {
+      maker_config_id: '',
+      maker_pool_handle: '',
+    },
+  },
+  liquidity_stratefy: {
+    package_id: '',
+    published_at: '',
+    version: undefined,
+    config: undefined,
+  },
+  vaults: {
+    package_id: '0x25cff94bdb454bae6a5565d09047bfe2b230025ef3bd2199622ec48d854b86b9',
+    published_at: '0x25cff94bdb454bae6a5565d09047bfe2b230025ef3bd2199622ec48d854b86b9',
+    config: {
+      admin_cap_id: '0x9b2d6f5be2650d16d27cd630c4539a76d7793970343ed3cbb023e13f1637c07c',
+      vaults_manager_id: '0xc0a1a937df08880e395d85014ff40c74f13abe7a53abdbffea36f51adaaaf79e',
+      vaults_pool_handle: '0x3ab02203de753de9c8198cc0ce7594dc960878f2c34c5c5a4b7742082241860a',
+    },
+  },
+  limit_order: {
+    package_id: '',
+    published_at: '',
+    version: 1,
+    config: {
+      rate_orders_indexer_id: '',
+      rate_orders_indexer_handle: '',
+      global_config_id: '',
+      token_list_handle: '',
+      user_orders_indexer_id: '',
+      user_orders_indexer_handle: '',
+    },
+  },
+  frams: {
+    package_id: '0xfa0d98e99c1dbdbea1b0fe089fa93ebab40a7719ae4160c42cc78ebfe029fda0',
+    published_at: '0xfa0d98e99c1dbdbea1b0fe089fa93ebab40a7719ae4160c42cc78ebfe029fda0',
+    config: {
+      global_config_id: '0x5082c7a5ee9a758025d7b0a5e8aa08b56625c7cd535b8909d2b7993991e229cc',
+      rewarder_manager_id: '0xe789e092dbd9dceadbe89350c4761a6f2e11647aab97f09746a01b151926cc0e',
+      rewarder_manager_handle: '0x7e7dd42392b5d82564dc9ad5093a111c5f0598cc9f806cff257d7dacb71f7837',
+      admin_cap_id: '0x4ec248bca2d1fc05f39fd7491ab490464a46d128624caa4d3c2a66d957ef40b0',
+    },
+  },
+  haedal: {
+    package_id: '0xac2afb455cbcdc2ff1a2e9bbb8aa4ccb4506a544b08c740886892a5cdf92f472',
+    published_at: '0x9dac9c5770e5f930d2223ff68782958701acfaee9337e8d8363978ce7670dffb',
+    config: {
+      support_stakings: [
+        {
+          staking_id: '0x6e384d2da5b040b27f973155e25bbe4beb0ad5ca8ee0a36e20dff356094c9fc0',
+          from_coin_type: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
+          to_coin_type: '0xac2afb455cbcdc2ff1a2e9bbb8aa4ccb4506a544b08c740886892a5cdf92f472::hasui::HASUI',
+        },
+      ],
+    },
+  },
+};
+
+export const getClmmSdk = (network: SuiNetworks, account: WalletAccount) => {
+  const config = network === 'sui:mainnet' ? clmmConfig : clmmConfigTestnet;
+  const clmmSdk = new CetusClmmSDK(config);
+  clmmSdk.senderAddress = account.address;
+  return clmmSdk;
+};
+
+export const getPeripherySdk = (network: SuiNetworks, account: WalletAccount) => {
+  const clmmSdk = getClmmSdk(network, account);
+  const config = network === 'sui:mainnet' ? peripheryConfig : peripheryConfigTestnet;
+  const peripherySdk = new CetusPeripherySDK(config, clmmSdk);
+  return peripherySdk;
 };

@@ -2,6 +2,7 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
+import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 import { MSafeAppHelper } from '../interface';
 import { Decoder } from './decoder';
 import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
@@ -12,6 +13,7 @@ import { CreatePoolIntention, CreatePoolIntentionData } from './intentions/creat
 import { DecreaseLiquidityIntention, DecreaseLiquidityIntentionData } from './intentions/decrease-liquidity';
 import { IncreaseLiquidityIntention, IncreaseLiquidityIntentionData } from './intentions/increase-liquidity';
 import { RemoveLiquidityIntention, RemoveLiquidityIntentionData } from './intentions/remove-liquidity';
+import { SwapIntention, SwapIntentionData } from './intentions/swap';
 import { SuiNetworks, TransactionSubType } from './types';
 
 export type TURBOSIntention =
@@ -22,7 +24,8 @@ export type TURBOSIntention =
   | CollectFeeIntention
   | CollectRewardIntention
   | RemoveLiquidityIntention
-  | BurnIntention;
+  | BurnIntention
+  | SwapIntention;
 export type TURBOSIntentionData =
   | CreatePoolIntentionData
   | AddLiquidityIntentionData
@@ -31,21 +34,26 @@ export type TURBOSIntentionData =
   | CollectFeeIntentionData
   | CollectRewardIntentionData
   | RemoveLiquidityIntentionData
-  | BurnIntentionData;
+  | BurnIntentionData
+  | SwapIntentionData;
 
 export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   application = 'turbos';
 
   async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {
+      action?: string;
+      txbParams?: any;
+    },
   ): Promise<{
     txType: TransactionType;
     txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
-    const { transactionBlock, suiClient } = input;
-    const decoder = new Decoder(transactionBlock);
-    const result = decoder.decode();
+    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
+    const { transactionBlock, account } = input;
+    const decoder = new Decoder(transactionBlock, turbosSdk);
+    const result = decoder.decode(account.address);
     return {
       txType: TransactionType.Other,
       txSubType: result.type,
@@ -87,6 +95,9 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
         break;
       case TransactionSubType.Burn:
         intention = BurnIntention.fromData(input.intentionData as BurnIntentionData);
+        break;
+      case TransactionSubType.Swap:
+        intention = SwapIntention.fromData(input.intentionData as SwapIntentionData);
         break;
       default:
         throw new Error('not implemented');
