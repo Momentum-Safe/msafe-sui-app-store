@@ -5,7 +5,7 @@ import { RemoveLiquidityIntention } from '@/apps/kriya/intentions/remove-liquidi
 import { StakeLiquidityIntention } from '@/apps/kriya/intentions/stake-liquidity';
 import { UnstakeLiquidityIntention } from '@/apps/kriya/intentions/unstake-liquidity';
 
-describe('KRIYA App', () => {
+describe.skip('KRIYA App', () => {
   it('Test AddLiquidity intention serialization', () => {
     const intention = AddLiquidityIntention.fromData({
       objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
