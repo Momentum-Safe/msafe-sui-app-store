@@ -76,12 +76,12 @@ export class Decoder {
         const objectId = this.helperLiquidityDex.getInputParam(0).value as string;
         const tokenXType = this.helperLiquidityDex.typeArg(0);
         const tokenYType = this.helperLiquidityDex.typeArg(1);
-        const amountX = this.helperLiquidityDex.decodeInputU64(4);
-        const amountY = this.helperLiquidityDex.decodeInputU64(3);
-        const minAddAmountX = this.helperLiquidityDex.decodeInputU64(6);
-        const minAddAmountY = this.helperLiquidityDex.decodeInputU64(5);
-        const coinX = this.helperLiquidityDex.getInputParam(2);
-        const coinY = this.helperLiquidityDex.getInputParam(1);
+        const amountX = this.helperLiquidityDex.decodeInputU64String(4);
+        const amountY = this.helperLiquidityDex.decodeInputU64String(3);
+        const minAddAmountX = this.helperLiquidityDex.decodeInputU64String(6);
+        const minAddAmountY = this.helperLiquidityDex.decodeInputU64String(5);
+        const coinX = this.helperLiquidityDex.getInputParam(2).value as string;
+        const coinY = this.helperLiquidityDex.getInputParam(1).value as string;
 
         return {
             txType: TransactionType.Other,
@@ -105,7 +105,7 @@ export class Decoder {
         const tokenXType = this.helperLiquidityDex.typeArg(0);
         const tokenYType = this.helperLiquidityDex.typeArg(1);
         const inputCoinType = this.helperSwapDex.moveCall.target === `${config.packageId}::spot_dex::${config.functions.swapX}` ? tokenXType : tokenYType;
-        const inputCoinAmount = this.helperSwapDex.decodeInputU64(2);
+        const inputCoinAmount = this.helperSwapDex.decodeInputU64String(2);
         const inputCoin = this.helperSwapDex.getInputParam(1).value as string;
 
         return {
@@ -126,7 +126,7 @@ export class Decoder {
         const objectId = this.helperDex.getInputParam(0).value as string;
         const tokenXType = this.helperDex.typeArg(0);
         const tokenYType = this.helperDex.typeArg(1);
-        const amount = this.helperDex.decodeInputU64(2);
+        const amount = this.helperDex.decodeInputU64String(2);
         const kriyaLpToken = this.helperDex.getInputParam(1).value as string;
 
         return {
@@ -165,7 +165,7 @@ export class Decoder {
         const tokenXType = this.helperFarm.typeArg(0);
         const tokenYType = this.helperFarm.typeArg(1);
         const lpObject = this.helperFarm.getInputParam(2).value as string;
-        const lockTime = this.helperFarm.decodeInputU64(3);
+        const lockTime = this.helperFarm.decodeInputU64String(3);
 
         return {
             txType: TransactionType.Other,
@@ -257,6 +257,11 @@ export class MoveCallHelper {
     decodeInputU64(argIndex: number) {
         const strVal = this.decodePureArg<string>(argIndex, 'u64');
         return Number(strVal);
+    }
+
+    decodeInputU64String(argIndex: number) {
+        const strVal = this.decodePureArg<string>(argIndex, 'u64');
+        return strVal;
     }
 
     decodeInputU8(argIndex: number) {

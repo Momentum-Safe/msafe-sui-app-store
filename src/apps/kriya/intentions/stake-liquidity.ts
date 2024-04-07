@@ -9,7 +9,7 @@ import { KriyaSDK } from 'kriya-dex-sdk'
 
 export interface StakeLiquidityIntentionData {
     lpObject: any,
-    lockTime: number,
+    lockTime: string,
     objectId: string,
     tokenXType: string,
     tokenYType: string

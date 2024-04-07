@@ -13,7 +13,7 @@ export interface AddLiquiditySingleSidedIntentionData {
     tokenXType: string,
     tokenYType: string
     inputCoinType: string,
-    inputCoinAmount: bigint,
+    inputCoinAmount: string,
     inputCoin: string,
 }
 
@@ -47,7 +47,7 @@ export class AddLiquiditySingleSideIntention extends CoreBaseIntention<AddLiquid
             isStable
         },
             inputCoinType,
-            inputCoinAmount,
+            BigInt(inputCoinAmount),
             inputCoin,
             1,
             // @ts-ignore
