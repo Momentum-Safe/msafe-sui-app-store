@@ -32,7 +32,7 @@ const getAtoB = (layer: 0 | 1, target: string): boolean[] => {
         return [true, false];
       case 2:
         return [false, true];
-      case 4:
+      case 3:
         return [false, false];
       default:
         throw new Error(`not target: ${target}`);
@@ -165,7 +165,11 @@ export class Decoder {
       };
     });
 
-    const coinTypeA = atob[0] ? moveCall.typeArguments[0] : moveCall.typeArguments[1];
+    const coinTypeA = atob[0]
+      ? moveCall.typeArguments[0]
+      : layer === 1
+        ? moveCall.typeArguments[0]
+        : moveCall.typeArguments[1];
     const coinTypeB =
       layer === 1 ? moveCall.typeArguments[4] : atob[0] ? moveCall.typeArguments[1] : moveCall.typeArguments[0];
 
