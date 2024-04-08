@@ -62,7 +62,7 @@ export class Decoder {
   }
 
   private decodeStake(): DecodeResult {
-    const amount = (this.transactions[0] as any).amounts[0].value.div(1e9).toNumber() as number;
+    const amount = (this.transactions[0] as any).amounts[0].value.toNumber() as number;
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.Stake,
@@ -74,7 +74,7 @@ export class Decoder {
 
   private decodeUnStake(): DecodeResult {
     const splitCoinTrans = this.transactions.find((trans) => trans.kind === 'SplitCoins') as any;
-    const amount = splitCoinTrans.amounts[0].value.div(1e9).toNumber() as number;
+    const amount = splitCoinTrans.amounts[0].value.toNumber() as number;
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.UnStake,

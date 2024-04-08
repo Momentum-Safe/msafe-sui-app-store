@@ -9,7 +9,7 @@ import { SuiNetworks } from '@/types';
 import { Decoder } from './decoder';
 import { ClaimTicketIntention, ClaimTicketIntentionData } from './intentions/claimTicket';
 import { StakeIntention, StakeIntentionData } from './intentions/stake';
-import { UnStakeIntention, UnStakeIntentionData } from './intentions/unstake';
+import { UnStakeIntention, UnStakeIntentionData } from './intentions/unStake';
 import { TransactionSubType } from './types';
 
 export type VoloIntention = StakeIntention | UnStakeIntention | ClaimTicketIntention;
