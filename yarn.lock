@@ -860,22 +860,6 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@^0.40.0":
-  version "0.40.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.40.0.tgz#43fb37a3a292458c6969943a0afed1ceba82fbb3"
-  integrity sha512-PEGdMe+QgpIdDIpyO4/yb+CK4x3Hki+kYPbQ5n3DVsWyb2ztFwB+5oYdc7qG3QkniO1lnCrlSHqZ5mN+x3RzrQ==
-  dependencies:
-    "@mysten/bcs" "0.7.3"
-    "@noble/curves" "^1.1.0"
-    "@noble/hashes" "^1.3.1"
-    "@open-rpc/client-js" "^1.8.1"
-    "@scure/bip32" "^1.3.1"
-    "@scure/bip39" "^1.2.1"
-    "@suchipi/femver" "^1.0.0"
-    events "^3.3.0"
-    superstruct "^1.0.3"
-    tweetnacl "^1.0.3"
-
 "@mysten/wallet-standard@^0.10.1":
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/@mysten/wallet-standard/-/wallet-standard-0.10.3.tgz#915a0c2822527562be288fc1f784c0411db27b43"
@@ -3598,12 +3582,12 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kriya-dex-sdk@1.1.50:
-  version "1.1.50"
-  resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-1.1.50.tgz#fb9bbb3c59008f306b136f019f1a82937aaaa7fa"
-  integrity sha512-ogDVgRgX9AttuBt7LBOtuSoMx+qwpCzdfpPicBreowRpPrzoPptSHpg9OgEBKgUQp73Yj2/JaepdvH88AAi54g==
+kriya-dex-sdk@^1.1.53:
+  version "1.1.53"
+  resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-1.1.53.tgz#9f365b68c32e963b3f25a3f7ae0736358e13d374"
+  integrity sha512-50WT/q4uMAnql6Q2fweUG0L+nXtzkTvzGgpGbIK/u8cvMqQPoDQIqvnz91t7DjEAKZZyCwczD9OaDNxFAKbkaQ==
   dependencies:
-    "@mysten/sui.js" "^0.40.0"
+    "@mysten/sui.js" "^0.50.1"
     "@pythnetwork/pyth-sui-js" "^1.2.2"
     axios "^1.4.0"
 
