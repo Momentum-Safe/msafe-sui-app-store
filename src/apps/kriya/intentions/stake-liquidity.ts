@@ -37,7 +37,7 @@ export class StakeLiquidityIntention extends CoreBaseIntention<StakeLiquidityInt
             // @ts-ignore
             txb,
             lpObject,
-            lockTime,
+            Number(lockTime),
             farm,
             address
         );
