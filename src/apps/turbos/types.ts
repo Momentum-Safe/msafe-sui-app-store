@@ -11,4 +11,6 @@ export enum TransactionSubType {
   Burn = 'Burn',
   Swap = 'Swap',
   ClaimAll = 'ClaimAll',
+  PrixJoin = 'PrixJoin',
+  PrixClaim = 'PrixClaim',
 }

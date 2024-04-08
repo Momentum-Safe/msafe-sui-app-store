@@ -12,6 +12,8 @@ import { CollectRewardIntention, CollectRewardIntentionData } from './intentions
 import { CreatePoolIntention, CreatePoolIntentionData } from './intentions/create-pool';
 import { DecreaseLiquidityIntention, DecreaseLiquidityIntentionData } from './intentions/decrease-liquidity';
 import { IncreaseLiquidityIntention, IncreaseLiquidityIntentionData } from './intentions/increase-liquidity';
+import { PrixClaimIntention, PrixClaimIntentionData } from './intentions/prix-claim';
+import { PrixJoinIntention, PrixJoinIntentionData } from './intentions/prix-join';
 import { RemoveLiquidityIntention, RemoveLiquidityIntentionData } from './intentions/remove-liquidity';
 import { SwapIntention, SwapIntentionData } from './intentions/swap';
 import { SuiNetworks, TransactionSubType } from './types';
@@ -25,7 +27,10 @@ export type TURBOSIntention =
   | CollectRewardIntention
   | RemoveLiquidityIntention
   | BurnIntention
-  | SwapIntention;
+  | SwapIntention
+  | PrixClaimIntention
+  | PrixJoinIntention;
+
 export type TURBOSIntentionData =
   | CreatePoolIntentionData
   | AddLiquidityIntentionData
@@ -35,7 +40,9 @@ export type TURBOSIntentionData =
   | CollectRewardIntentionData
   | RemoveLiquidityIntentionData
   | BurnIntentionData
-  | SwapIntentionData;
+  | SwapIntentionData
+  | PrixJoinIntentionData
+  | PrixClaimIntentionData;
 
 export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   application = 'turbos';
@@ -98,6 +105,12 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
         break;
       case TransactionSubType.Swap:
         intention = SwapIntention.fromData(input.intentionData as SwapIntentionData);
+        break;
+      case TransactionSubType.PrixJoin:
+        intention = PrixJoinIntention.fromData(input.intentionData as PrixJoinIntentionData);
+        break;
+      case TransactionSubType.PrixClaim:
+        intention = PrixClaimIntention.fromData(input.intentionData as PrixClaimIntentionData);
         break;
       default:
         throw new Error('not implemented');

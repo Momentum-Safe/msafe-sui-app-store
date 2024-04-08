@@ -3,7 +3,7 @@ import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
 import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
-import { config } from './config';
+import { config, prixConfig } from './config';
 import { TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
 import { BN, TurbosSdk } from 'turbos-clmm-sdk';
@@ -92,6 +92,14 @@ export class Decoder {
       return this.decodeBurn();
     }
 
+    if (this.isPrixClaimTransaction()) {
+      return this.decodePrixClaim();
+    }
+
+    if (this.isPrixJoinTransaction()) {
+      return this.decodePrixJoin();
+    }
+
     throw new Error(`Unknown transaction type`);
   }
 
@@ -135,6 +143,14 @@ export class Decoder {
 
   private isBurnTransaction() {
     return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::burn`);
+  }
+
+  private isPrixJoinTransaction() {
+    return !!this.getMoveCallTransaction(`${prixConfig.PackageId}::claim::join`);
+  }
+
+  private isPrixClaimTransaction() {
+    return !!this.getMoveCallTransaction(`${prixConfig.PackageId}::claim::claim`);
   }
 
   private isRemoveLiquidityTransaction() {
@@ -360,6 +376,20 @@ export class Decoder {
         rewardAmounts,
         deadline,
       },
+    };
+  }
+  private decodePrixClaim(): DecodeResult {
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.PrixClaim,
+      intentionData: {},
+    };
+  }
+  private decodePrixJoin(): DecodeResult {
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.PrixJoin,
+      intentionData: {},
     };
   }
 
