@@ -31,7 +31,9 @@ export class UnStakeIntention extends CoreBaseIntention<UnStakeIntentionData> {
         limit: 100,
       })
     ).data;
-    const [primaryCoin, ...mergeCoins] = coins.filter((coin) => coin.coinType.split('::')[0] === config.certType);
+    const [primaryCoin, ...mergeCoins] = coins.filter(
+      (coin) => coin.coinType.split('::')[0] === config.certType.split('::')[0],
+    );
 
     const primaryCoinInput = tx.object(primaryCoin.coinObjectId);
     if (mergeCoins.length) {
