@@ -3,7 +3,7 @@ import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
 import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
-import { prixConfig } from './config';
+import { deepbookConfig, prixConfig } from './config';
 import { TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
 import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
@@ -106,6 +106,14 @@ export class Decoder {
       return this.decodePrixJoin();
     }
 
+    if (this.isSwapExactBaseForQuoteTransaction()) {
+      return this.decodeSwapExactBaseForQuote();
+    }
+
+    if (this.isSwapExactQuoteForBaseTransaction()) {
+      return this.decodeSwapExactQuoteForBase();
+    }
+
     throw new Error(`Unknown transaction type`);
   }
 
@@ -164,6 +172,14 @@ export class Decoder {
       `${this.config.PackageId}::position_manager::decrease_liquidity`,
       `${this.config.PackageId}::position_manager::burn`,
     ]);
+  }
+
+  private isSwapExactBaseForQuoteTransaction() {
+    return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`);
+  }
+
+  private isSwapExactQuoteForBaseTransaction() {
+    return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`);
   }
 
   private decodeSwap(): DecodeResult {
@@ -399,6 +415,41 @@ export class Decoder {
     };
   }
 
+  private decodeSwapExactBaseForQuote(): DecodeResult {
+    const poolId = this.swapExactBaseForQuoteHelper.decodeSharedObjectId(0);
+    const amountIn = this.swapExactBaseForQuoteHelper.decodeInputU64(3);
+    const token1 = this.swapExactBaseForQuoteHelper.txArg(0);
+    const token2 = this.swapExactBaseForQuoteHelper.txArg(2);
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.SwapExactBaseForQuote,
+      intentionData: {
+        poolId,
+        amountIn,
+        token1,
+        token2,
+      },
+    };
+  }
+
+  private decodeSwapExactQuoteForBase(): DecodeResult {
+    const poolId = this.swapExactQuoteForBaseHelper.decodeSharedObjectId(0);
+    const amountIn = this.swapExactQuoteForBaseHelper.decodeInputU64(3);
+    const token1 = this.swapExactQuoteForBaseHelper.txArg(0);
+    const token2 = this.swapExactQuoteForBaseHelper.txArg(2);
+    
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.SwapExactQuoteForBase,
+      intentionData: {
+        poolId,
+        amountIn,
+        token1,
+        token2,
+      },
+    };
+  }
+
   private get helper() {
     const moveCall = this.transactions.find(
       (trans) => trans.kind === 'MoveCall' && trans.target !== '0x2::coin::zero',
@@ -425,6 +476,22 @@ export class Decoder {
     const moveCall = this.transactions.find(
       (trans) =>
         trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::decrease_liquidity`,
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
+  }
+
+  private get swapExactBaseForQuoteHelper() {
+    const moveCall = this.transactions.find(
+      (trans) =>
+        trans.kind === 'MoveCall' && trans.target === `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`,
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
+  }
+
+  private get swapExactQuoteForBaseHelper() {
+    const moveCall = this.transactions.find(
+      (trans) =>
+        trans.kind === 'MoveCall' && trans.target === `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`,
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }

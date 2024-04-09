@@ -16,6 +16,14 @@ import { PrixClaimIntention, PrixClaimIntentionData } from './intentions/prix-cl
 import { PrixJoinIntention, PrixJoinIntentionData } from './intentions/prix-join';
 import { RemoveLiquidityIntention, RemoveLiquidityIntentionData } from './intentions/remove-liquidity';
 import { SwapIntention, SwapIntentionData } from './intentions/swap';
+import {
+  SwapExactBaseForQuoteIntention,
+  SwapExactBaseForQuoteIntentionData,
+} from './intentions/swap-exact-base-for-quote';
+import {
+  SwapExactQuoteForBaseIntention,
+  SwapExactQuoteForBaseIntentionData,
+} from './intentions/swap-exact-quote-for-base';
 import { SuiNetworks, TransactionSubType } from './types';
 
 export type TURBOSIntention =
@@ -29,7 +37,9 @@ export type TURBOSIntention =
   | BurnIntention
   | SwapIntention
   | PrixClaimIntention
-  | PrixJoinIntention;
+  | PrixJoinIntention
+  | SwapExactQuoteForBaseIntention
+  | SwapExactBaseForQuoteIntention;
 
 export type TURBOSIntentionData =
   | CreatePoolIntentionData
@@ -42,7 +52,9 @@ export type TURBOSIntentionData =
   | BurnIntentionData
   | SwapIntentionData
   | PrixJoinIntentionData
-  | PrixClaimIntentionData;
+  | PrixClaimIntentionData
+  | SwapExactQuoteForBaseIntentionData
+  | SwapExactBaseForQuoteIntentionData;
 
 export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   application = 'turbos';
@@ -112,6 +124,12 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
         break;
       case TransactionSubType.PrixClaim:
         intention = PrixClaimIntention.fromData(input.intentionData as PrixClaimIntentionData);
+        break;
+      case TransactionSubType.SwapExactBaseForQuote:
+        intention = SwapExactBaseForQuoteIntention.fromData(input.intentionData as SwapExactBaseForQuoteIntentionData);
+        break;
+      case TransactionSubType.SwapExactQuoteForBase:
+        intention = SwapExactQuoteForBaseIntention.fromData(input.intentionData as SwapExactQuoteForBaseIntentionData);
         break;
       default:
         throw new Error('not implemented');
