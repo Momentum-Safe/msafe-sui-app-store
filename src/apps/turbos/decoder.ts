@@ -418,8 +418,8 @@ export class Decoder {
   private decodeSwapExactBaseForQuote(): DecodeResult {
     const poolId = this.swapExactBaseForQuoteHelper.decodeSharedObjectId(0);
     const amountIn = this.swapExactBaseForQuoteHelper.decodeInputU64(3);
-    const token1 = this.swapExactBaseForQuoteHelper.typeArg(0);
-    const token2 = this.swapExactBaseForQuoteHelper.typeArg(1);
+    const token1 = this.swapExactBaseForQuoteHelper.shortTypeArg(0);
+    const token2 = this.swapExactBaseForQuoteHelper.shortTypeArg(1);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.SwapExactBaseForQuote,
@@ -435,9 +435,9 @@ export class Decoder {
   private decodeSwapExactQuoteForBase(): DecodeResult {
     const poolId = this.swapExactQuoteForBaseHelper.decodeSharedObjectId(0);
     const amountIn = this.swapExactQuoteForBaseHelper.decodeInputU64(3);
-    const token1 = this.swapExactQuoteForBaseHelper.typeArg(0);
-    const token2 = this.swapExactQuoteForBaseHelper.typeArg(1);
-    
+    const token1 = this.swapExactQuoteForBaseHelper.shortTypeArg(0);
+    const token2 = this.swapExactQuoteForBaseHelper.shortTypeArg(1);
+
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.SwapExactQuoteForBase,
@@ -612,6 +612,10 @@ export class MoveCallHelper {
 
   typeArg(index: number) {
     return normalizeStructTag(this.moveCall.typeArguments[index]);
+  }
+
+  shortTypeArg(index: number) {
+    return this.moveCall.typeArguments[index];
   }
 
   txArg(index: number) {
