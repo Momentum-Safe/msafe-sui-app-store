@@ -803,15 +803,13 @@
     mysql2 "^3.6.3"
     reflect-metadata "^0.1.13"
 
-"@msafe/sui3-utils@^3.1.53":
-  version "3.1.53"
-  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.53.tgz#25e6f14c2fbf7a7aa2ab01fadcc7cfbaf1c4cfba"
-  integrity sha512-7Ym5h7oYm+oaG/gMoCaCmxIhEQ0+7A2d+Got1MUZegBUxi/9sipGlat5u42GgwIHyHS3ZgXmFxRuOCTNL4EbXw==
+"@msafe/sui3-utils@^3.1.59":
+  version "3.1.59"
+  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.59.tgz#a8bd505b0546669c3075a83c437a3d428c06ef72"
+  integrity sha512-IM+Cp4Z/5paW5k+CTQNjFlilTbKw/6m/zGOG4Ueo87Z/IqILn+tVO+/Z8CWEA64ilbd7HRyABeM996Za0K+Gug==
   dependencies:
     "@msafe/sui3-model" "^1.0.29"
     "@noble/hashes" "^1.3.3"
-    "@types/crypto-js" "^4.2.2"
-    crypto-js "^4.2.0"
     sort-keys-recursive "^2.1.10"
 
 "@mysten/bcs@0.11.1", "@mysten/bcs@^0.11.1":
@@ -843,38 +841,6 @@
     bech32 "^2.0.0"
     gql.tada "^1.2.0"
     graphql "^16.8.1"
-    superstruct "^1.0.3"
-    tweetnacl "^1.0.3"
-
-"@mysten/sui.js@^0.37.1":
-  version "0.37.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.37.1.tgz#b6a0c7312d979bec6903683d7db07fc33ff7d9ea"
-  integrity sha512-nEOqnjUqb/VJcVk23LgZOX1FmBib/mBCwAWaJhtsCHLwv2jIAfCPY/fpB9lJ62QHrM8UFclpWxsLkqcUkKyPgA==
-  dependencies:
-    "@mysten/bcs" "0.7.3"
-    "@noble/curves" "^1.0.0"
-    "@noble/hashes" "^1.3.0"
-    "@open-rpc/client-js" "^1.8.1"
-    "@scure/bip32" "^1.3.0"
-    "@scure/bip39" "^1.2.0"
-    "@suchipi/femver" "^1.0.0"
-    events "^3.3.0"
-    superstruct "^1.0.3"
-    tweetnacl "^1.0.3"
-
-"@mysten/sui.js@^0.40.0":
-  version "0.40.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.40.0.tgz#43fb37a3a292458c6969943a0afed1ceba82fbb3"
-  integrity sha512-PEGdMe+QgpIdDIpyO4/yb+CK4x3Hki+kYPbQ5n3DVsWyb2ztFwB+5oYdc7qG3QkniO1lnCrlSHqZ5mN+x3RzrQ==
-  dependencies:
-    "@mysten/bcs" "0.7.3"
-    "@noble/curves" "^1.1.0"
-    "@noble/hashes" "^1.3.1"
-    "@open-rpc/client-js" "^1.8.1"
-    "@scure/bip32" "^1.3.1"
-    "@scure/bip39" "^1.2.1"
-    "@suchipi/femver" "^1.0.0"
-    events "^3.3.0"
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
@@ -1178,11 +1144,6 @@
   integrity sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==
   dependencies:
     "@types/node" "*"
-
-"@types/crypto-js@^4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@types/crypto-js/-/crypto-js-4.2.2.tgz#771c4a768d94eb5922cc202a3009558204df0cea"
-  integrity sha512-sDOLlVbHhXpAUAL0YHDUUwDZf3iN4Bwi4W6a0W0b+QcAezUbRtH4FVb+9J4h+XFPW7l/gQ9F8qC7P+Ec4k8QVQ==
 
 "@types/estree@1.0.5":
   version "1.0.5"
@@ -1696,6 +1657,11 @@ bech32@^2.0.0:
   resolved "https://registry.yarnpkg.com/bech32/-/bech32-2.0.0.tgz#078d3686535075c8c79709f054b1b226a133b355"
   integrity sha512-LcknSilhIGatDAsY1ak2I8VtGaHNhgMSYVxFrGLXv+xLHytaKZKcaUJJUE7qmBr7h33o5YQwP55pMI0xmkpJwg==
 
+bignumber.js@^9.1.2:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
+  integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
+
 binary-extensions@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
@@ -1965,11 +1931,6 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
-
-crypto-js@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
-  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
 
 debug@^3.2.7:
   version "3.2.7"
@@ -3605,12 +3566,12 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kriya-dex-sdk@1.1.50:
-  version "1.1.50"
-  resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-1.1.50.tgz#fb9bbb3c59008f306b136f019f1a82937aaaa7fa"
-  integrity sha512-ogDVgRgX9AttuBt7LBOtuSoMx+qwpCzdfpPicBreowRpPrzoPptSHpg9OgEBKgUQp73Yj2/JaepdvH88AAi54g==
+kriya-dex-sdk@^1.1.53:
+  version "1.1.53"
+  resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-1.1.53.tgz#9f365b68c32e963b3f25a3f7ae0736358e13d374"
+  integrity sha512-50WT/q4uMAnql6Q2fweUG0L+nXtzkTvzGgpGbIK/u8cvMqQPoDQIqvnz91t7DjEAKZZyCwczD9OaDNxFAKbkaQ==
   dependencies:
-    "@mysten/sui.js" "^0.40.0"
+    "@mysten/sui.js" "^0.50.1"
     "@pythnetwork/pyth-sui-js" "^1.2.2"
     axios "^1.4.0"
 
@@ -4741,10 +4702,10 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-turbos-clmm-sdk@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/turbos-clmm-sdk/-/turbos-clmm-sdk-2.2.0.tgz#a34dea49b964c79270b8aeb5b96568b9828a2b06"
-  integrity sha512-RQUTBCh+skOMKIQgTnarNy1cNGXzkXG0w/0P8A6cGKov+NwyX/hriNoBwGQUrfITQKiiuqd8u5XqseHeRBKwvQ==
+turbos-clmm-sdk@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/turbos-clmm-sdk/-/turbos-clmm-sdk-2.2.2.tgz#0c25fcefecbe449872bf1a23663137dd310a3eba"
+  integrity sha512-EAZAXJzhkw5AITNj6qAiD10rO3qhst/Wp8Audm2MrbvXh0QmrAszX7na338dxbYlFRF42xClBLudkzdUtWK2bg==
   dependencies:
     "@scure/bip39" "^1.2.1"
     "@types/bn.js" "^5.1.1"

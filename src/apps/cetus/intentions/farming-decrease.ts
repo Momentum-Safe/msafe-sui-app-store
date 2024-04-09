@@ -6,22 +6,25 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 import { getFarmingDecreaseLiquidityTxb } from '../api/farming';
-import { CetusIntentionData, TransactionSubType } from '../types';
+import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
 
 export class FarmingDecreaseLiquidityIntention extends CoreBaseIntention<CetusIntentionData> {
-  txType: TransactionType.Other;
+  txType = TransactionType.Other;
 
-  txSubType: TransactionSubType.FarmingDecreaseLiquidity;
+  txSubType = TransactionSubType.FarmingDecreaseLiquidity;
 
-  constructor(public override readonly data: CetusIntentionData) {
+  constructor(public readonly data: CetusIntentionData) {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    const { account, suiClient } = input;
+  async build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<TransactionBlock> {
+    const { account, network } = input;
     const { txbParams } = this.data;
-    const txb = await getFarmingDecreaseLiquidityTxb(txbParams, account, suiClient);
-    console.log('FarmingDecreaseLiquidityIntention build txb: ', txb);
+    const txb = await getFarmingDecreaseLiquidityTxb(txbParams, account, network);
     return txb;
   }
 

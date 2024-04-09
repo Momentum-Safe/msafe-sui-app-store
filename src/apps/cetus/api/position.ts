@@ -1,18 +1,16 @@
-import { CetusClmmSDK } from '@cetusprotocol/cetus-sui-clmm-sdk';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { clmmConfig } from './config';
+import { SuiNetworks } from '@/types';
 
-const clmmSdk = new CetusClmmSDK(clmmConfig);
+import { getClmmSdk } from './config';
 
 export const getAddLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
-  suiClient?: any,
+  network: SuiNetworks,
 ): Promise<TransactionBlock> => {
-  console.log('getAddLiquidityTxb suiClient: ', suiClient);
-  clmmSdk.senderAddress = account.address;
+  const clmmSdk = getClmmSdk(network, account);
   const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
@@ -23,10 +21,9 @@ export const getAddLiquidityTxb = async (
 export const getIncreaseLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
-  suiClient?: any,
+  network: SuiNetworks,
 ): Promise<TransactionBlock> => {
-  console.log('getIncreaseLiquidityTxb suiClient: ', suiClient);
-  clmmSdk.senderAddress = account.address;
+  const clmmSdk = getClmmSdk(network, account);
   const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
@@ -37,32 +34,29 @@ export const getIncreaseLiquidityTxb = async (
 export const getRemoveLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
-  suiClient?: any,
+  network: SuiNetworks,
 ): Promise<TransactionBlock> => {
-  console.log('getRemoveLiquidityTxb suiClient: ', suiClient);
-  clmmSdk.senderAddress = account.address;
-  const txb: TransactionBlock = await clmmSdk.Position.closePositionTransactionPayload(txbParams?.parameter);
+  const clmmSdk = getClmmSdk(network, account);
+  const txb: TransactionBlock = await clmmSdk.Position.closePositionTransactionPayload(txbParams);
   return txb;
 };
 
 export const getDecreaseLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
-  suiClient?: any,
+  network: SuiNetworks,
 ): Promise<TransactionBlock> => {
-  console.log('getDecreaseLiquidityTxb suiClient: ', suiClient);
-  clmmSdk.senderAddress = account.address;
-  const txb: TransactionBlock = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams?.parameter);
+  const clmmSdk = getClmmSdk(network, account);
+  const txb: TransactionBlock = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams);
   return txb;
 };
 
 export const getClaimFeeAndMiningTxb = async (
   txbParams: any,
   account: WalletAccount,
-  suiClient?: any,
+  network: SuiNetworks,
 ): Promise<TransactionBlock> => {
-  console.log('getClaimFeeAndMiningTxb suiClient: ', suiClient);
-  clmmSdk.senderAddress = account.address;
-  const txb: TransactionBlock = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams?.parameter);
+  const clmmSdk = getClmmSdk(network, account);
+  const txb: TransactionBlock = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams);
   return txb;
 };

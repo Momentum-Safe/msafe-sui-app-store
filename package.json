@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.54",
+  "version": "0.0.98",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -45,17 +45,19 @@
   "dependencies": {
     "@cetusprotocol/cetus-periphery-sdk": "0.0.0-experimental-20240328223108",
     "@cetusprotocol/cetus-sui-clmm-sdk": "0.0.0-experimental-20240328222824",
+    "@mysten/bcs": "^0.11.1",
     "@mysten/sui.js": "^0.50.1",
     "axios": "^1.6.7",
+    "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",
-    "kriya-dex-sdk": "1.1.50",
+    "kriya-dex-sdk": "^1.1.53",
     "luxon": "^3.4.4",
     "nanoid": "3",
     "sort-keys-recursive": "^2.1.10",
-    "turbos-clmm-sdk": "^2.2.0"
+    "turbos-clmm-sdk": "^2.2.2"
   },
   "devDependencies": {
-    "@msafe/sui3-utils": "^3.1.53",
+    "@msafe/sui3-utils": "^3.1.59",
     "@mysten/wallet-standard": "^0.10.1",
     "@types/jest": "^29.2.1",
     "@types/luxon": "^3.4.2",

@@ -9,4 +9,8 @@ export enum TransactionSubType {
   CollectFee = 'CollectFee',
   CollectReward = 'CollectReward',
   Burn = 'Burn',
+  Swap = 'Swap',
+  ClaimAll = 'ClaimAll',
+  PrixJoin = 'PrixJoin',
+  PrixClaim = 'PrixClaim',
 }
