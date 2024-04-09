@@ -175,11 +175,11 @@ export class Decoder {
   }
 
   private isSwapExactBaseForQuoteTransaction() {
-    return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`);
+    return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`);
   }
 
   private isSwapExactQuoteForBaseTransaction() {
-    return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`);
+    return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`);
   }
 
   private decodeSwap(): DecodeResult {
