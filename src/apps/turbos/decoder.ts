@@ -3,10 +3,10 @@ import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
 import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
-import { config, prixConfig } from './config';
+import { prixConfig } from './config';
 import { TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
-import { BN, TurbosSdk } from 'turbos-clmm-sdk';
+import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -14,15 +14,7 @@ type DecodeResult = {
   intentionData: TURBOSIntentionData;
 };
 
-const swap1Layer = [`${config.PackageId}::swap_router::swap_a_b`, `${config.PackageId}::swap_router::swap_b_a`];
-const swap2Layer = [
-  `${config.PackageId}::swap_router::swap_a_b_b_c`,
-  `${config.PackageId}::swap_router::swap_a_b_c_b`,
-  `${config.PackageId}::swap_router::swap_b_a_b_c`,
-  `${config.PackageId}::swap_router::swap_b_a_c_b`,
-];
-
-const getAtoB = (layer: 0 | 1, target: string): boolean[] => {
+const getAtoB = (layer: 0 | 1, target: string, swap1Layer: string[], swap2Layer: string[]): boolean[] => {
   if (layer === 1) {
     const index = swap2Layer.findIndex((item) => item === target);
     switch (index) {
@@ -53,10 +45,24 @@ export class Decoder {
   constructor(
     public readonly txb: TransactionBlock,
     public readonly turbosSdk: TurbosSdk,
+    public readonly config: Contract.Config,
   ) {}
 
   private get transactions() {
     return this.txb.blockData.transactions;
+  }
+
+  private get swap1Layer() {
+    return [`${this.config.PackageId}::swap_router::swap_a_b`, `${this.config.PackageId}::swap_router::swap_b_a`];
+  }
+
+  private get swap2Layer() {
+    return [
+      `${this.config.PackageId}::swap_router::swap_a_b_b_c`,
+      `${this.config.PackageId}::swap_router::swap_a_b_c_b`,
+      `${this.config.PackageId}::swap_router::swap_b_a_b_c`,
+      `${this.config.PackageId}::swap_router::swap_b_a_c_b`,
+    ];
   }
 
   decode(address: string) {
@@ -118,31 +124,31 @@ export class Decoder {
   }
 
   private isSwapTransaction() {
-    return !!this.getSwapMoveCallTransaction([...swap1Layer, ...swap2Layer]);
+    return !!this.getSwapMoveCallTransaction([...this.swap1Layer, ...this.swap2Layer]);
   }
 
   private isAddLiquidityTransaction() {
-    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::mint`);
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::mint`);
   }
 
   private isIncreaseLiquidityTransaction() {
-    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::increase_liquidity`);
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::increase_liquidity`);
   }
 
   private isDecreaseLiquidityTransaction() {
-    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::decrease_liquidity`);
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::decrease_liquidity`);
   }
 
   private isCollectFeeTransaction() {
-    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::collect`);
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::collect`);
   }
 
   private isCollectRewardTransaction() {
-    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::collect_reward`);
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::collect_reward`);
   }
 
   private isBurnTransaction() {
-    return !!this.getMoveCallTransaction(`${config.PackageId}::position_manager::burn`);
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::burn`);
   }
 
   private isPrixJoinTransaction() {
@@ -155,19 +161,19 @@ export class Decoder {
 
   private isRemoveLiquidityTransaction() {
     return !!this.getMoveCallsTransaction([
-      `${config.PackageId}::position_manager::decrease_liquidity`,
-      `${config.PackageId}::position_manager::burn`,
+      `${this.config.PackageId}::position_manager::decrease_liquidity`,
+      `${this.config.PackageId}::position_manager::burn`,
     ]);
   }
 
   private decodeSwap(): DecodeResult {
     const moveCall = this.transactions.find((trans) => trans.kind === 'MoveCall') as MoveCallTransaction;
     let layer: 0 | 1 = 0;
-    if (swap2Layer.includes(moveCall.target)) {
+    if (this.swap2Layer.includes(moveCall.target)) {
       layer = 1;
     }
 
-    const atob = getAtoB(layer, moveCall.target);
+    const atob = getAtoB(layer, moveCall.target, this.swap1Layer, this.swap2Layer);
 
     const routes = atob.map((item, index) => {
       const pool = this.helper.decodeSharedObjectId(index);
@@ -402,14 +408,15 @@ export class Decoder {
 
   private get collectRewardHelper() {
     const moveCalls = this.transactions.filter(
-      (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::collect_reward`,
+      (trans) =>
+        trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::collect_reward`,
     ) as MoveCallTransaction[];
     return moveCalls.map((moveCall) => new MoveCallHelper(moveCall, this.txb));
   }
 
   private get collectFeeHelper() {
     const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::collect`,
+      (trans) => trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::collect`,
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }
@@ -417,7 +424,7 @@ export class Decoder {
   private get decreaseLiquidityHelper() {
     const moveCall = this.transactions.find(
       (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${config.PackageId}::position_manager::decrease_liquidity`,
+        trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::decrease_liquidity`,
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }

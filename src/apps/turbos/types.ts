@@ -13,4 +13,6 @@ export enum TransactionSubType {
   ClaimAll = 'ClaimAll',
   PrixJoin = 'PrixJoin',
   PrixClaim = 'PrixClaim',
+  SwapExactBaseForQuote = 'swapExactBaseForQuote',
+  SwapExactQuoteForBase = 'SwapExactQuoteForBase',
 }
