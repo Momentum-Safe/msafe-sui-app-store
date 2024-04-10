@@ -17,7 +17,7 @@ export interface SwapExactBaseForQuoteIntentionData {
 export class SwapExactBaseForQuoteIntention extends CoreBaseIntention<SwapExactBaseForQuoteIntentionData> {
   txType!: TransactionType.Other;
 
-  txSubType!: TransactionSubType.AddLiquidity;
+  txSubType!: TransactionSubType.SwapExactBaseForQuote;
 
   constructor(public override readonly data: SwapExactBaseForQuoteIntentionData) {
     super(data);
