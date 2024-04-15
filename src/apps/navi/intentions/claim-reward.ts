@@ -4,6 +4,7 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
 import { claimReward } from '../api/incentiveV2';
+import config from '../config';
 import { CoinType, TransactionSubType, OptionType } from '../types';
 
 export interface ClaimRewardIntentionData {
@@ -34,6 +35,8 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
 
       claimReward(tx, assetId, poolId, option, typeArguments);
     });
+
+    tx.setGasBudget(config.gasBudget);
 
     return tx;
   }

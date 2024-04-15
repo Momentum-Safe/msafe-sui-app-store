@@ -35,6 +35,7 @@ export class StakeIntention extends CoreBaseIntention<StakeIntentionData> {
         coin,
       ],
     });
+    tx.setGasBudget(config.gasBudget);
     return tx;
   }
 

@@ -25,6 +25,7 @@ export class EntryWithdrawIntention extends CoreBaseIntention<EntryWithdrawInten
     const { coinType, amount } = this.data;
     const tx = new TransactionBlock();
     console.log('build', this.data);
+    tx.setGasBudget(config.gasBudget);
 
     const pool = config.pool[coinType];
 
