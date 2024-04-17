@@ -1,5 +1,7 @@
 import { CoinType, type Pool } from './types';
 
+let updated = false;
+
 const config = {
   ProtocolPackage: '0xc6374c7da60746002bfee93014aeb607e023b2d6b25c9e55a152b826dbc8c1ce',
   StorageId: '0xbb4e2f4b6205c2e2a2db47aeb4f830796ec7c005f88537ee775986639bc442fe',
@@ -95,5 +97,19 @@ const config = {
     },
   } as Pool,
 };
+
+export async function updatePackageId() {
+  if (updated) {
+    return;
+  }
+  try {
+    const data = await fetch('https://open-api.naviprotocol.io/api/package').then((res) => res.json());
+    const { packageId } = data;
+    config.ProtocolPackage = packageId;
+    updated = true;
+  } catch (e: any) {
+    console.error(e.message);
+  }
+}
 
 export default config;
