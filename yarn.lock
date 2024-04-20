@@ -3446,10 +3446,10 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kriya-dex-sdk@^1.1.59:
-  version "1.1.59"
-  resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-1.1.59.tgz#0dcfb3fca0055e586a940f7c015201109262cbf8"
-  integrity sha512-VBCWqlZ7tPbrSXqgwcsjlZwpA4FTT9OhH5mwRhdNYtKwVnKE30HrmDavoeUzMopIKlmLM5NyPux7mHHAAXiMvg==
+kriya-dex-sdk@^1.1.61:
+  version "1.1.61"
+  resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-1.1.61.tgz#ed887a1df2e470562ef542316f9bd13d3b8a1fd1"
+  integrity sha512-VkKYFHOC2JX0WPzVciKo+AELVXm0DPjMkkWB7aS1Z20Xlakg1CG1aMolSF/tT1UMVSmxO6YttGid7ihn1qu4Hg==
   dependencies:
     "@mysten/sui.js" "^0.50.1"
     axios "^1.4.0"
