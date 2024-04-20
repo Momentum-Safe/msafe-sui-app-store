@@ -53,6 +53,7 @@ export class UnStakeIntention extends CoreBaseIntention<UnStakeIntentionData> {
         coin,
       ],
     });
+    tx.setGasBudget(config.gasBudget);
     return tx;
   }
 
