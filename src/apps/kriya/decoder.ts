@@ -123,11 +123,11 @@ export class Decoder {
     }
 
     private decodeRemoveLiquidity(): DecodeResult {
-        const objectId = this.helperDex.getInputParam(0).value as string;
-        const tokenXType = this.helperDex.typeArg(0);
-        const tokenYType = this.helperDex.typeArg(1);
-        const amount = this.helperDex.decodeInputU64String(2);
-        const kriyaLpToken = this.helperDex.getInputParam(1).value as string;
+        const objectId = this.helperRemoveLiqDex.getInputParam(0).value as string;
+        const tokenXType = this.helperRemoveLiqDex.typeArg(0);
+        const tokenYType = this.helperRemoveLiqDex.typeArg(1);
+        const amount = this.helperRemoveLiqDex.decodeInputU64String(2);
+        const kriyaLpToken = this.helperRemoveLiqDex.getInputParam(1).value as string;
 
         return {
             txType: TransactionType.Other,
@@ -143,10 +143,10 @@ export class Decoder {
     }
 
     private decodeClaimRewards(): DecodeResult {
-        const objectId = this.helperFarm.getInputParam(1).value as string;
-        const positionObjectId = this.helperFarm.getInputParam(2).value as string;
-        const tokenXType = this.helperFarm.typeArg(0);
-        const tokenYType = this.helperFarm.typeArg(1);
+        const objectId = this.helperFarmClaim.getInputParam(1).value as string;
+        const positionObjectId = this.helperFarmClaim.getInputParam(2).value as string;
+        const tokenXType = this.helperFarmClaim.typeArg(0);
+        const tokenYType = this.helperFarmClaim.typeArg(1);
 
         return {
             txType: TransactionType.Other,
@@ -161,11 +161,11 @@ export class Decoder {
     }
 
     private decodeStakeLiquidity(): DecodeResult {
-        const objectId = this.helperFarm.getInputParam(1).value as string;
-        const tokenXType = this.helperFarm.typeArg(0);
-        const tokenYType = this.helperFarm.typeArg(1);
-        const lpObject = this.helperFarm.getInputParam(2).value as string;
-        const lockTime = this.helperFarm.decodeInputU64String(3);
+        const objectId = this.helperFarmStake.getInputParam(1).value as string;
+        const tokenXType = this.helperFarmStake.typeArg(0);
+        const tokenYType = this.helperFarmStake.typeArg(1);
+        const lpObject = this.helperFarmStake.getInputParam(2).value as string;
+        const lockTime = this.helperFarmStake.decodeInputU64String(3);
 
         return {
             txType: TransactionType.Other,
@@ -181,10 +181,10 @@ export class Decoder {
     }
 
     private decodeUnstakeLiquidity(): DecodeResult {
-        const objectId = this.helperFarm.getInputParam(1).value as string;
-        const positionObjectId = this.helperFarm.getInputParam(2).value as string;
-        const tokenXType = this.helperFarm.typeArg(0);
-        const tokenYType = this.helperFarm.typeArg(1);
+        const objectId = this.helperFarmUnstake.getInputParam(1).value as string;
+        const positionObjectId = this.helperFarmUnstake.getInputParam(2).value as string;
+        const tokenXType = this.helperFarmUnstake.typeArg(0);
+        const tokenYType = this.helperFarmUnstake.typeArg(1);
 
         return {
             txType: TransactionType.Other,
@@ -206,9 +206,9 @@ export class Decoder {
         return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
     }
 
-    private get helperDex() {
+    private get helperRemoveLiqDex() {
         const moveCall = this.transactions.find(
-            (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(config.packageId),
+            (trans) => trans.kind === 'MoveCall' && trans.target === `${config.packageId}::spot_dex::remove_liquidity`,
         ) as MoveCallTransaction;
         return new MoveCallHelper(moveCall, this.txb);
     }
@@ -228,9 +228,21 @@ export class Decoder {
         return new MoveCallHelper(moveCall, this.txb);
     }
 
-    private get helperFarm() {
+    private get helperFarmClaim() {
         const moveCall = this.transactions.find(
-            (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(config.farmPackageId),
+            (trans) => trans.kind === 'MoveCall' && trans.target === `${config.farmPackageId}::farm::claim`,
+        ) as MoveCallTransaction;
+        return new MoveCallHelper(moveCall, this.txb);
+    }
+    private get helperFarmStake() {
+        const moveCall = this.transactions.find(
+            (trans) => trans.kind === 'MoveCall' && trans.target === `${config.farmPackageId}::farm::stake`,
+        ) as MoveCallTransaction;
+        return new MoveCallHelper(moveCall, this.txb);
+    }
+    private get helperFarmUnstake() {
+        const moveCall = this.transactions.find(
+            (trans) => trans.kind === 'MoveCall' && trans.target === `${config.farmPackageId}::farm::unstake`,
         ) as MoveCallTransaction;
         return new MoveCallHelper(moveCall, this.txb);
     }
