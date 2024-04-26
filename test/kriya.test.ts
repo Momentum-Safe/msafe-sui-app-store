@@ -5,7 +5,7 @@ import { RemoveLiquidityIntention } from '@/apps/kriya/intentions/remove-liquidi
 import { StakeLiquidityIntention } from '@/apps/kriya/intentions/stake-liquidity';
 import { UnstakeLiquidityIntention } from '@/apps/kriya/intentions/unstake-liquidity';
 
-describe.skip('KRIYA App', () => {
+describe('KRIYA App', () => {
   it('Test AddLiquidity intention serialization', () => {
     const intention = AddLiquidityIntention.fromData({
       objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
@@ -20,7 +20,7 @@ describe.skip('KRIYA App', () => {
     });
 
     expect(intention.serialize()).toBe(
-      '{"objectId": "0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType": "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","amountX": "1000","amountY": "500","minAddAmountX": "100","minAddAmountY": "100","coinX": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","coinY": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
+      '{"amountX":"1000","amountY":"500","coinX":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","coinY":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","minAddAmountX":"100","minAddAmountY":"100","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
     );
   });
 
@@ -35,7 +35,7 @@ describe.skip('KRIYA App', () => {
     });
 
     expect(intention.serialize()).toBe(
-      '{"objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","inputCoinType":"sui","inputCoinAmount":"500","inputCoin":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
+      '{"inputCoin":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","inputCoinAmount":"500","inputCoinType":"sui","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
     );
   });
 
@@ -48,7 +48,7 @@ describe.skip('KRIYA App', () => {
     });
 
     expect(intention.serialize()).toBe(
-      '{"objectId": "0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType": "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","positionObjectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305"}',
+      '{"objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","positionObjectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
     );
   });
 
@@ -62,7 +62,7 @@ describe.skip('KRIYA App', () => {
     });
 
     expect(intention.serialize()).toBe(
-      '{"objectId": "0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType": "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","amount": "500","kriyaLpToken":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305"}',
+      '{"amount":"500","kriyaLpToken":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
     );
   });
 
@@ -76,7 +76,7 @@ describe.skip('KRIYA App', () => {
     });
 
     expect(intention.serialize()).toBe(
-      '{"objectId": "0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType": "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","lpObject":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","lockTime": "1000"}',
+      '{"lockTime":"1000","lpObject":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
     );
   });
 
@@ -89,7 +89,8 @@ describe.skip('KRIYA App', () => {
     });
 
     expect(intention.serialize()).toBe(
-      '{"objectId": "0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType": "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType": "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","positionObjectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305"}',
+      '{"objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","positionObjectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
     );
   });
 });
+
