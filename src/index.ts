@@ -1,4 +1,5 @@
 import { CetusHelper } from '@/apps/cetus/helper';
+import { KRIYAAppHelper } from '@/apps/kriya/helper';
 import { MPayAppHelper } from '@/apps/mpay/helper';
 import { CoreHelper } from '@/apps/msafe-core/helper';
 import { NAVIAppHelper } from '@/apps/navi/helper';
@@ -7,7 +8,6 @@ import { MSafeApps } from '@/apps/registry';
 import { ScallopAppHelper } from '@/apps/scallop/helper';
 import { TURBOSAppHelper } from '@/apps/turbos/helper';
 import { VoloAppHelper } from '@/apps/volo/helper';
-import { KRIYAAppHelper } from './apps/kriya/helper';
 
 export const appHelpers = new MSafeApps([
   new CoreHelper(),
