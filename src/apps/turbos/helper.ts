@@ -72,6 +72,7 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const contract = await turbosSdk.contract.getConfig();
     const { transactionBlock, account } = input;
+    console.log(input, 'input');
     const decoder = new Decoder(transactionBlock, turbosSdk, contract);
     const result = decoder.decode(account.address);
     return {
@@ -91,6 +92,7 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
   }): Promise<TransactionBlock> {
     const { suiClient, account, network } = input;
     let intention: TURBOSIntention;
+    console.log(input.intentionData, 'intentionData');
     switch (input.txSubType) {
       case TransactionSubType.CreatePool:
         intention = CreatePoolIntention.fromData(input.intentionData as CreatePoolIntentionData);
