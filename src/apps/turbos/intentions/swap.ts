@@ -23,10 +23,10 @@ export class SwapIntention extends CoreBaseIntention<SwapIntentionData> {
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
+    console.log(this.data, 'this.data');
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { routes, coinTypeA, coinTypeB, address, amountA, amountB, slippage, amountSpecifiedIsInput, deadline, txb } =
       this.data;
-
     return turbosSdk.trade.swap({
       routes,
       coinTypeA,
