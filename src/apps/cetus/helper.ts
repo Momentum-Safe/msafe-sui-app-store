@@ -19,6 +19,7 @@ import { FarmingStakeIntention } from './intentions/farming-stake';
 import { FarmingUnstakeIntention } from './intentions/farming-unstake';
 import { IncreaseLiquidityIntention } from './intentions/increase-liquidity';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
+import { VestingRedeemIntention } from './intentions/vesting-redeem';
 import { XcetusCancelIntention } from './intentions/xcetus-cancel';
 import { XcetusClaimingStakeRewardsIntention } from './intentions/xcetus-claim';
 import { XcetusConvertIntention } from './intentions/xcetus-convert';
@@ -45,7 +46,8 @@ export type CetusIntention =
   | XcetusRedeemLockIntention
   | XcetusClaimingStakeRewardsIntention
   | XcetusCancelIntention
-  | XcetusRedeemIntention;
+  | XcetusRedeemIntention
+  | VestingRedeemIntention;
 
 export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
   application = 'cetus';
@@ -139,6 +141,9 @@ export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
         break;
       case TransactionSubType.xCETUSRedeem:
         intention = XcetusRedeemIntention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.VestingRedeem:
+        intention = VestingRedeemIntention.fromData(input.intentionData);
         break;
       default:
         throw new Error('not implemented');
