@@ -1,12 +1,13 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
-import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
+import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
+import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
+
 import { deepbookConfig, prixConfig } from './config';
 import { TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
-import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -122,9 +123,9 @@ export class Decoder {
   }
 
   private getMoveCallsTransaction(targets: string[]) {
-    return targets.every((target) => {
-      return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
-    });
+    return targets.every((target) =>
+      this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target),
+    );
   }
 
   private getSwapMoveCallTransaction(targets: string[]) {
@@ -199,7 +200,7 @@ export class Decoder {
       return {
         pool,
         a2b: item,
-        nextTickIndex: nextTickIndex,
+        nextTickIndex,
       };
     });
 
@@ -221,7 +222,7 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.Swap,
       intentionData: {
-        routes: routes,
+        routes,
         coinTypeA,
         coinTypeB,
         address,
@@ -400,6 +401,7 @@ export class Decoder {
       },
     };
   }
+
   private decodePrixClaim(): DecodeResult {
     return {
       txType: TransactionType.Other,
@@ -407,6 +409,7 @@ export class Decoder {
       intentionData: {},
     };
   }
+
   private decodePrixJoin(): DecodeResult {
     return {
       txType: TransactionType.Other,

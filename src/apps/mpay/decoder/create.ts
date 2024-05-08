@@ -1,7 +1,6 @@
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
+import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
 import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
 
-import { MoveCallHelper } from './moveCall';
 import { CreateStreamHelper } from '../builder/CreateStreamHelper';
 import { Globals } from '../common';
 import { FeeContract } from '../contract/FeeContract';
@@ -12,6 +11,7 @@ import { decodeMetadata } from '../stream/metadata';
 import { isSameTarget } from '../sui/utils';
 import { CreateStreamInfo, RecipientWithAmount } from '../types/client';
 import { DecodedCreateStream, StreamTransactionType } from '../types/decode';
+import { MoveCallHelper } from './moveCall';
 
 export class CreateStreamDecodeHelper {
   constructor(

@@ -1,7 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction, SplitCoinsTransaction } from '@mysten/sui.js/dist/cjs/builder';
-import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
+import { MoveCallTransaction, SplitCoinsTransaction } from '@mysten/sui.js/dist/cjs/transactions';
+import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from './constants';
