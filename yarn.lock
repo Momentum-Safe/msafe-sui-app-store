@@ -1280,13 +1280,13 @@
     mysql2 "^3.6.3"
     reflect-metadata "^0.1.13"
 
-"@msafe/sui3-utils@^3.1.63":
-  version "3.1.63"
-  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.63.tgz#7b5170f631deb0867a4ca1999ba284bed13f1b26"
-  integrity sha512-fxSpCAYG/3yjYIWn/2K8D1QuB0koToqmnIPWDALdw0p9fzd/sZcuQ6htyd043DtTuCSoPYhfPAtqDWeky6ZZAQ==
+"@msafe/sui3-utils@^3.1.66-pre-8a98e1d.0":
+  version "3.1.66-pre-8a98e1d.0"
+  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.66-pre-8a98e1d.0.tgz#abc5fc5c0f7c6855c371e5eb61c48d3589fb4609"
+  integrity sha512-HgaeqVKdG34hL8nqPwpr93yQKqjSwp2p9JxylQARF0Zyo+mLEklR7CzfBeOZvkl/rIqk53SKykqSj8I5d9+/ew==
   dependencies:
     "@msafe/sui3-model" "^1.0.40"
-    "@mysten/sui.js" "^0.53.0"
+    "@mysten/sui.js" "0.51.0"
     "@noble/hashes" "^1.3.3"
     sort-keys-recursive "^2.1.10"
 
@@ -1315,7 +1315,25 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui.js@0.53.0", "@mysten/sui.js@^0.53.0":
+"@mysten/sui.js@0.51.0":
+  version "0.51.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.51.0.tgz#b1716f2cb1e0766f057eefb175caa16fdaec1e27"
+  integrity sha512-/D/JDE+dgL1Nc6/Ju32bIrTr5XYcYdYMHzhgRk+f8nGf3eZRGaWIphN9VEBXjn+4F8M9/t3BKLfITWrQ2o3++w==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@mysten/bcs" "0.11.1"
+    "@noble/curves" "^1.1.0"
+    "@noble/hashes" "^1.3.1"
+    "@scure/bip32" "^1.3.1"
+    "@scure/bip39" "^1.2.1"
+    "@suchipi/femver" "^1.0.0"
+    bech32 "^2.0.0"
+    gql.tada "^1.2.0"
+    graphql "^16.8.1"
+    superstruct "^1.0.3"
+    tweetnacl "^1.0.3"
+
+"@mysten/sui.js@0.53.0":
   version "0.53.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.53.0.tgz#3364341ffc4fe4fd420acc67e5654f1e9939690d"
   integrity sha512-OQ7QdZBS7+JOLEHpzsKQZIOSsqu8EH6qOGw51uIXa6jGA1m58c3dPGLYYfu8xHeRtqzHx19tOnO7WFAVEXyIYg==

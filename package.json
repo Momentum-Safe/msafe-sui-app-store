@@ -45,9 +45,9 @@
   "dependencies": {
     "@cetusprotocol/cetus-periphery-sdk": "0.0.0-experimental-20240328223108",
     "@cetusprotocol/cetus-sui-clmm-sdk": "0.0.0-experimental-20240328222824",
-    "@msafe/sui3-utils": "^3.1.63",
+    "@msafe/sui3-utils": "^3.1.66-pre-8a98e1d.0",
     "@mysten/bcs": "^0.11.1",
-    "@mysten/sui.js": "^0.53.0",
+    "@mysten/sui.js": "0.51.0",
     "@mysten/wallet-standard": "0.11.4",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
