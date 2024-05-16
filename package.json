@@ -45,9 +45,8 @@
   "dependencies": {
     "@cetusprotocol/cetus-periphery-sdk": "0.0.0-experimental-20240328223108",
     "@cetusprotocol/cetus-sui-clmm-sdk": "0.0.0-experimental-20240328222824",
-    "@msafe/sui3-utils": "^3.1.66-pre-8a98e1d.0",
+    "@msafe/sui3-utils": "^3.1.66-pre-87fbadf.0",
     "@mysten/bcs": "^0.11.1",
-    "@mysten/sui.js": "0.51.0",
     "@mysten/wallet-standard": "0.11.4",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
@@ -59,6 +58,7 @@
     "turbos-clmm-sdk": "^2.2.2"
   },
   "devDependencies": {
+    "@mysten/sui.js": "^0.54.1",
     "@types/jest": "^29.2.1",
     "@types/luxon": "^3.4.2",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
@@ -78,5 +78,8 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "@mysten/sui.js": ">0.50.0"
   }
 }
