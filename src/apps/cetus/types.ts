@@ -26,4 +26,5 @@ export enum TransactionSubType {
   xCETUSClaimStakingRwewards = 'xCETUSClaimStakingRwewards',
   xCETUSCancelRedeem = 'xCETUSCancelRedeem',
   xCETUSRedeem = 'xCETUSRedeem',
+  VestingRedeem = 'VestingRedeem',
 }
