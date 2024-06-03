@@ -32,6 +32,9 @@ export class Decoder {
     if (this.isEntryBorrowTransaction()) {
       return this.decodeEntryBorrow();
     }
+    if (this.isEntryBorrowWithFeeTransaction()) {
+      return this.decodeEntryBorrow();
+    }
     if (this.isEntryDepositTransaction()) {
       return this.decodeEntryDeposit();
     }
@@ -58,6 +61,10 @@ export class Decoder {
 
   private isEntryBorrowTransaction() {
     return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_borrow`);
+  }
+
+  private isEntryBorrowWithFeeTransaction() {
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::borrow`);
   }
 
   private isEntryDepositTransaction() {
