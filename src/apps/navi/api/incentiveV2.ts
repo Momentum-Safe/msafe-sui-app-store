@@ -59,9 +59,14 @@ export function borrowToken(tx: TransactionBlock, pool: PoolConfig, amount: numb
     typeArguments: [pool.type],
     arguments: [borrowBalance],
   });
-  const [borrowFeeCoin] = tx.splitCoins(borrowCoin, [tx.pure(Math.floor(amount * config.borrowFee))]);
-  tx.transferObjects([borrowCoin], tx.pure(userAddress));
-  tx.transferObjects([borrowFeeCoin], tx.pure(config.borrowFeeAddress));
+  if (config.borrowFee > 0) {
+    const [borrowFeeCoin] = tx.splitCoins(borrowCoin, [tx.pure(Math.floor(amount * config.borrowFee))]);
+    tx.transferObjects([borrowCoin], tx.pure(userAddress));
+    tx.transferObjects([borrowFeeCoin], tx.pure(config.borrowFeeAddress));
+  } else {
+    tx.transferObjects([borrowCoin], tx.pure(userAddress));
+  }
+
   return tx;
 }
 
