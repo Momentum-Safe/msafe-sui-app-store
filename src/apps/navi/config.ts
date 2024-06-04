@@ -96,6 +96,8 @@ const config = {
       supplyBalanceParentId: '0x59dedca8dc44e8df50b190f8b5fe673098c1273ac6168c0a4addf3613afcdee5',
     },
   } as Pool,
+  borrowFee: 0.003,
+  borrowFeeAddress: '0x70b9b10704263cf53392849e33b1f5fd16005869b4198ed5524836bad1234ea2',
 };
 
 export async function updatePackageId() {
@@ -103,9 +105,17 @@ export async function updatePackageId() {
     return;
   }
   try {
-    const data = await fetch('https://open-api.naviprotocol.io/api/package').then((res) => res.json());
-    const { packageId } = data;
-    config.ProtocolPackage = packageId;
+    const data = await fetch('https://open-api.naviprotocol.io/api/msafe').then((res) => res.json());
+    const { packageId, borrowFee, borrowFeeAddress } = data;
+    if (packageId) {
+      config.ProtocolPackage = packageId;
+    }
+    if (borrowFee) {
+      config.borrowFee = borrowFee;
+    }
+    if (borrowFeeAddress) {
+      config.borrowFeeAddress = borrowFeeAddress;
+    }
     updated = true;
   } catch (e: any) {
     console.error(e.message);

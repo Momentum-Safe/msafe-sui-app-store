@@ -1,5 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
@@ -21,7 +22,7 @@ export class EntryBorrowIntention extends CoreBaseIntention<EntryBorrowIntention
     super(data);
   }
 
-  async build(): Promise<TransactionBlock> {
+  async build(input: { account: WalletAccount }): Promise<TransactionBlock> {
     const { coinType, amount } = this.data;
     const tx = new TransactionBlock();
     tx.setGasBudget(config.gasBudget);
@@ -33,7 +34,7 @@ export class EntryBorrowIntention extends CoreBaseIntention<EntryBorrowIntention
       throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
     }
 
-    return borrowToken(tx, pool, amount);
+    return borrowToken(tx, pool, amount, input.account.address);
   }
 
   static fromData(data: EntryBorrowIntentionData) {
