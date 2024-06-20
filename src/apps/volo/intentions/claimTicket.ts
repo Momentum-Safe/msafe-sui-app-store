@@ -29,7 +29,6 @@ export class ClaimTicketIntention extends CoreBaseIntention<ClaimTicketIntention
       target: `${config.packageId}::native_pool::burn_ticket`,
       arguments: [tx.object(config.poolObjectId), tx.object(config.systemStateObjectId), tx.object(ticketId)],
     });
-    tx.setGasBudget(config.gasBudget);
     return tx;
   }
 
