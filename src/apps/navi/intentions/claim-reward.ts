@@ -36,8 +36,6 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
       claimReward(tx, assetId, poolId, option, typeArguments);
     });
 
-    tx.setGasBudget(config.gasBudget);
-
     return tx;
   }
 

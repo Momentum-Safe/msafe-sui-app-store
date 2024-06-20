@@ -28,7 +28,6 @@ export class EntryRepayIntention extends CoreBaseIntention<EntryRepayIntentionDa
     const { suiClient, account } = input;
     const { coinType, amount } = this.data;
     const tx = new TransactionBlock();
-    tx.setGasBudget(config.gasBudget);
     console.log('build', this.data);
 
     if (coinType === 'sui') {
