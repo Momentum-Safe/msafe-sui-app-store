@@ -139,7 +139,7 @@ export class ScallopBuilder {
    */
   public async selectSCoin(txBlock: TransactionBlock, sCoinName: SupportSCoin, amount: number, sender: string) {
     const sCoinType = this.utils.parseSCoinType(sCoinName);
-    const coins = await this.utils.selectCoin(amount, sCoinType, sender);
+    const coins = await this.utils.selectCoins(amount, sCoinType, sender);
     const coinIds = coins.map((coin) => coin.objectId);
     const totalAmount = coins.reduce((prev, coin) => prev + Number(coin.balance), 0);
     const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coinIds, Math.min(totalAmount, amount));

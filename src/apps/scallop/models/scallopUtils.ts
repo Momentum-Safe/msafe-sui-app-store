@@ -290,7 +290,7 @@ export class ScallopUtils {
    * @param coinType - The coin type, default is 0x2::SUI::SUI.
    * @return The selected transaction coin arguments.
    */
-  public async selectCoin(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
+  public async selectCoins(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
     const address = ownerAddress;
 
     const selectedCoins: {
@@ -333,7 +333,7 @@ export class ScallopUtils {
   }
 
   public async selectCoinIds(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
-    const selectedCoins = await this.selectCoin(amount, coinType, ownerAddress);
+    const selectedCoins = await this.selectCoins(amount, coinType, ownerAddress);
     return selectedCoins.map((coin) => coin.objectId);
   }
 
