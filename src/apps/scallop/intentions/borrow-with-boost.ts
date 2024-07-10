@@ -37,7 +37,7 @@ export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostI
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.borrowWithBoost(
       this.data.coinName,
       Number(this.data.amount),

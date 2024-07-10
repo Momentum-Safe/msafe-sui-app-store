@@ -12,6 +12,7 @@ import type {
   ScallopTxBlock,
   SupportMarketCoins,
   SupportAssetCoins,
+  SupportSCoin,
 } from '../types';
 
 /**
@@ -125,5 +126,27 @@ export class ScallopBuilder {
     const coins = await this.utils.selectCoinIds(amount, marketCoinType, sender);
     const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coins, amount);
     return { takeCoin, leftCoin };
+  }
+
+  /**
+   * Specifying the sender's amount of sCoins to get coins args from transaction result.
+   *
+   * @param txBlock - Scallop txBlock or txBlock created by SuiKit .
+   * @param marketCoinName - Specific support sCoin name.
+   * @param amount - Amount of coins to be selected.
+   * @param sender - Sender address.
+   * @return Take coin and left coin.
+   */
+  public async selectSCoin(txBlock: TransactionBlock, sCoinName: SupportSCoin, amount: number, sender: string) {
+    const sCoinType = this.utils.parseSCoinType(sCoinName);
+    const coins = await this.utils.selectCoin(amount, sCoinType, sender);
+    const coinIds = coins.map((coin) => coin.objectId);
+    const totalAmount = coins.reduce((prev, coin) => prev + Number(coin.balance), 0);
+    const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coinIds, Math.min(totalAmount, amount));
+    return {
+      takeCoin,
+      leftCoin,
+      totalAmount,
+    };
   }
 }

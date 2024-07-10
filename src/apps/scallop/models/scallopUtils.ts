@@ -14,6 +14,7 @@ import {
   coinIds,
   UNLOCK_ROUND_DURATION,
   MAX_LOCK_DURATION,
+  sCoinIds,
 } from '../constants';
 import type {
   ScallopUtilsParams,
@@ -26,6 +27,7 @@ import type {
   CoinWrappedType,
   SupportPoolCoins,
   SuiTxArg,
+  SupportSCoin,
 } from '../types';
 import { findClosestUnlockRound, isMarketCoin, parseAssetSymbol } from '../utils';
 
@@ -253,6 +255,34 @@ export class ScallopUtils {
   }
 
   /**
+   * Convert sCoin name into sCoin type
+   * @param sCoinName
+   * @returns sCoin type
+   */
+  public parseSCoinType(sCoinName: SupportSCoin) {
+    return sCoinIds[sCoinName];
+  }
+
+  /**
+   * Convert sCoin name into its underlying coin type
+   * @param sCoinName
+   * @returns coin type
+   */
+  public parseUnderlyingSCoinType(sCoinName: SupportSCoin) {
+    const coinName = this.parseCoinName(sCoinName);
+    return this.parseCoinType(coinName);
+  }
+
+  /**
+   * Get sCoin treasury id from sCoin name
+   * @param sCoinName
+   * @returns sCoin treasury id
+   */
+  public getSCoinTreasury(sCoinName: SupportSCoin) {
+    return this._address.get(`scoin.coins.${sCoinName}.treasury`);
+  }
+
+  /**
    * Select coin id  that add up to the given amount as transaction arguments.
    *
    * @param ownerAddress - The address of the owner.
@@ -260,13 +290,14 @@ export class ScallopUtils {
    * @param coinType - The coin type, default is 0x2::SUI::SUI.
    * @return The selected transaction coin arguments.
    */
-  public async selectCoinIds(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
+  public async selectCoin(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
     const address = ownerAddress;
 
     const selectedCoins: {
       objectId: string;
       digest: string;
       version: string;
+      balance: string;
     }[] = [];
     let totalAmount = 0;
     let hasNext = true;
@@ -284,6 +315,7 @@ export class ScallopUtils {
           objectId: coins.data[i].coinObjectId,
           digest: coins.data[i].digest,
           version: coins.data[i].version,
+          balance: coins.data[i].balance,
         });
         totalAmount += parseInt(coins.data[i].balance, 10);
         if (totalAmount >= amount) {
@@ -297,6 +329,11 @@ export class ScallopUtils {
     if (!selectedCoins.length) {
       throw new Error('No valid coins found for the transaction.');
     }
+    return selectedCoins;
+  }
+
+  public async selectCoinIds(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
+    const selectedCoins = await this.selectCoin(amount, coinType, ownerAddress);
     return selectedCoins.map((coin) => coin.objectId);
   }
 

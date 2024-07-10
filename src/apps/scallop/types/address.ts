@@ -1,4 +1,10 @@
-import type { SupportAssetCoins, SupportOracleType, SupportPackageType, SupportStakeMarketCoins } from './constant';
+import type {
+  SupportAssetCoins,
+  SupportOracleType,
+  SupportPackageType,
+  SupportSCoin,
+  SupportStakeMarketCoins,
+} from './constant';
 import { SUPPORT_ORACLES } from '../constants';
 
 export interface AddressesInterface {
@@ -68,6 +74,7 @@ export interface AddressesInterface {
     id: string;
     adminCap: string;
     object: string;
+    config: string;
     pools: Partial<
       Record<
         SupportStakeMarketCoins,
@@ -83,17 +90,49 @@ export interface AddressesInterface {
     adminCap: string;
     object: string;
     query: string;
+    config: string;
     incentivePools: string;
     incentiveAccounts: string;
-    config: string;
   };
   vesca: {
     id: string;
+    object: string;
     adminCap: string;
     tableId: string;
     table: string;
     treasury: string;
     config: string;
+  };
+  referral: {
+    id: string;
+    version: string;
+    object: string;
+    adminCap: string;
+    referralBindings: string;
+    bindingTableId: string;
+    referralRevenuePool: string;
+    revenueTableId: string;
+    referralTiers: string;
+    tiersTableId: string;
+    authorizedWitnessList: string;
+  };
+  loyaltyProgram: {
+    id: string;
+    object: string;
+    rewardPool: string;
+    userRewardTableId: string;
+  };
+  scoin: {
+    id: string;
+    coins: Partial<
+      Record<
+        SupportSCoin,
+        {
+          coinType: string;
+          treasury: string;
+        }
+      >
+    >;
   };
 }
 

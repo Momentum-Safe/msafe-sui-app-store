@@ -6,6 +6,7 @@ import {
   SupportStakeRewardCoins,
   SupportBorrowIncentiveCoins,
   SupportBorrowIncentiveRewardCoins,
+  SupportSCoin,
 } from './common';
 
 export type Coins = {
@@ -44,4 +45,8 @@ export type WormholeCoinIds = {
 
 export type VoloCoinIds = {
   [key in PickFromUnion<SupportAssetCoins, 'vsui'>]: string;
+};
+
+export type SCoinIds = {
+  [key in SupportSCoin]: string;
 };

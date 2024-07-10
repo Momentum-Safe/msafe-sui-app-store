@@ -204,7 +204,7 @@ export const config = {
           upgradeCap: '0x3f203f6fff6a69d151e4f1cd931f22b68c489ef2759765662fc7baf673943c9e',
         },
         protocol: {
-          id: '0x38fe42a5a69f7eb3635404389e8003be9457b1a5c873f133184648c7e9bd47b7',
+          id: '0x6e641f0dca8aedab3101d047e96439178f16301bf0b57fe8745086ff1195eb3e',
           upgradeCap: '0x38527d154618d1fd5a644b90717fe07cf0e9f26b46b63e9568e611a3f86d5c1a',
         },
         protocolWhitelist: {
@@ -238,7 +238,7 @@ export const config = {
       },
     },
     spool: {
-      id: '0xec1ac7f4d01c5bf178ff4e62e523e7df7721453d81d4904a42a0ffc2686c843d',
+      id: '0x7c4fdabe81c31b19a45d1e572a52a539997a90903fbb5bfab71480abe0fa62c3',
       adminCap: '0xdd8a047cbbf802bfcde5288b8ef1910965d789cc614da11d39af05fca0bd020a',
       object: '0xe87f1b2d498106a2c61421cec75b7b5c5e348512b0dc263949a0e7a3c256571a',
       pools: {
@@ -277,9 +277,10 @@ export const config = {
       },
       version: '',
       versionCap: '',
+      config: '',
     },
     borrowIncentive: {
-      id: '0x874f1d43d81e2256e120bab2485938fe07ba0cc21d87129a99a1db11cacb382d',
+      id: '0x6152f696fc3a658f33c4b891764731a59153125ffedfa8bff7167c42823f58a9',
       adminCap: '0xc486afa253646f4d381e81d7f1df8aa4723b845a6bb356f69bad635ffefffe2c',
       object: '0x002875153e09f8145ab63527bc85c00f2bd102e12f9573c47f8cdf1a1cb62934',
       query: '0x529edc54a3dce2207703ceebbccb0ac14133f7825c1f528775ba0d85a4063489',
@@ -290,12 +291,83 @@ export const config = {
       versionCap: '',
     },
     vesca: {
-      id: '0xcfe2d87aa5712b67cad2732edb6a2201bfdf592377e5c0968b7cb02099bd8e21',
+      id: '0x1158813b32962c2d22888fae257d5f2365b03631f0cd5d5b912ccdf51ff4e2f2',
+      object: '0xcfe2d87aa5712b67cad2732edb6a2201bfdf592377e5c0968b7cb02099bd8e21',
       adminCap: '0x4d105b16467acca81d18c132cdd1a3cee159920a86c1ef4bdbf2e8d7878500c5',
       tableId: '0x0a0b7f749baeb61e3dfee2b42245e32d0e6b484063f0a536b33e771d573d7246',
       table: '0xd3a4632b1080f7d96e1c2487d4dabf2c1196916937c505a69954ac9f393be8d0',
       treasury: '0xafa4b6231e49c15a22d641ce33fda761baaf650fa21899dfa2eb1716146e7306',
       config: '0x7cbcb0a342179577a117dfdff974cf1ab765d3b571067bf22ddf5f9e3a667922',
     },
+    referral: {
+      id: '0xa3654ebb63eb06c0f4ff52f8aa6512df9f164f7772bdf15dac3709bd3798dda9',
+      object: '0x5658d4bf5ddcba27e4337b4262108b3ad1716643cac8c2054ac341538adc72ec',
+      adminCap: '0xc5dc06b9074291259f2cac460c940012c781c4430e42125c541cc43101c3bcbd',
+      referralBindings: '0xf63299d58789d99de94092b9011323466e55ca0c1ea1a7a3786a589af46e1c09',
+      bindingTableId: '0x1c8202b17267ec8d6cf97ca013615354181a04f179570e42601ff2dae19294b1',
+      referralRevenuePool: '0x6abd852caf90769c1b185cdf636d841673fa95528f0550f018b8a138bd283c07',
+      revenueTableId: '0x595baa3654c297bff84ab7786a2d250f019cefc66e8df8e89fd9d41e02bd30dd',
+      referralTiers: '0x962cb903d8d7346190c5204785ccbb91b61086aa764f674c8145df82335cf83e',
+      tiersTableId: '0xeac755a7a8b7798530905ac79e8c114f19d0f130f6eab012954f08faac29c75d',
+      authorizedWitnessList: '0xf21b0ed043c9bb70842c0129159f4943dbcc3c9ef2f2f808af65f8be25cfd20e',
+      version: '0x1bd4b7285f72e11c316b828c7c47b3f4da18dcec9f9b3dba6d8629cbb6f93e5e',
+    },
+    loyaltyProgram: {
+      id: '0xab7c4e6d53ef862a1115d0c381fd33e05f9c206b79f322a54990b1e8c2fe3446',
+      object: '0xab7c4e6d53ef862a1115d0c381fd33e05f9c206b79f322a54990b1e8c2fe3446',
+      rewardPool: '0x215e1022037052407e69a5c5938f888078013c924cae97132492719ac2c53ec6',
+      userRewardTableId: '0x574a11f8a0fbaa05b8f559cb65634e8eb20f26b1ec29e7d58de9167f3cedd0f7',
+    },
+    scoin: {
+      id: '0x80ca577876dec91ae6d22090e56c39bc60dce9086ab0729930c6900bc4162b4c',
+      coins: {
+        ssui: {
+          coinType: '0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b::scallop_sui::SCALLOP_SUI',
+          treasury: '0x5c1678c8261ac9eec024d4d630006a9f55c80dc0b1aa38a003fcb1d425818c6b',
+        },
+        scetus: {
+          coinType: '0xea346ce428f91ab007210443efcea5f5cdbbb3aae7e9affc0ca93f9203c31f0c::scallop_cetus::SCALLOP_CETUS',
+          treasury: '0xa283c63488773c916cb3d6c64109536160d5eb496caddc721eb39aad2977d735',
+        },
+        ssca: {
+          coinType: '0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e::scallop_sca::SCALLOP_SCA',
+          treasury: '0xe04bfc95e00252bd654ee13c08edef9ac5e4b6ae4074e8390db39e9a0109c529',
+        },
+        susdc: {
+          coinType:
+            '0xad4d71551d31092230db1fd482008ea42867dbf27b286e9c70a79d2a6191d58d::scallop_wormhole_usdc::SCALLOP_WORMHOLE_USDC',
+          treasury: '0x50c5cfcbcca3aaacab0984e4d7ad9a6ad034265bebb440f0d1cd688ec20b2548',
+        },
+        susdt: {
+          coinType:
+            '0xe6e5a012ec20a49a3d1d57bd2b67140b96cd4d3400b9d79e541f7bdbab661f95::scallop_wormhole_usdt::SCALLOP_WORMHOLE_USDT',
+          treasury: '0x1f02e2fed702b477732d4ad6044aaed04f2e8e586a169153694861a901379df0',
+        },
+        seth: {
+          coinType:
+            '0x67540ceb850d418679e69f1fb6b2093d6df78a2a699ffc733f7646096d552e9b::scallop_wormhole_eth::SCALLOP_WORMHOLE_ETH',
+          treasury: '0x4b7f5da0e306c9d52490a0c1d4091e653d6b89778b9b4f23c877e534e4d9cd21',
+        },
+        safsui: {
+          coinType:
+            '0x00671b1fa2a124f5be8bdae8b91ee711462c5d9e31bda232e70fd9607b523c88::scallop_af_sui::SCALLOP_AF_SUI',
+          treasury: '0x55f4dfe9e40bc4cc11c70fcb1f3daefa2bdc330567c58d4f0792fbd9f9175a62',
+        },
+        shasui: {
+          coinType:
+            '0x9a2376943f7d22f88087c259c5889925f332ca4347e669dc37d54c2bf651af3c::scallop_ha_sui::SCALLOP_HA_SUI',
+          treasury: '0x404ccc1404d74a90eb6f9c9d4b6cda6d417fb03189f80d9070a35e5dab1df0f5',
+        },
+        svsui: {
+          coinType: '0xe1a1cc6bcf0001a015eab84bcc6713393ce20535f55b8b6f35c142e057a25fbe::scallop_v_sui::SCALLOP_V_SUI',
+          treasury: '0xc06688ee1af25abc286ffb1d18ce273d1d5907cd1064c25f4e8ca61ea989c1d1',
+        },
+      },
+    },
   },
+  memo: 'latest contract(new borrow incentive) on app.scallop.io 22/05/2024',
+  createdAt: 'Wed May 22 2024 14:15:09 GMT+0000 (Coordinated Universal Time)',
+  updatedAt: 'Fri Jul 05 2024 14:00:38 GMT+0000 (Coordinated Universal Time)',
+  version: 0,
+  id: '664dfe22898c36c159e28bc8',
 };
