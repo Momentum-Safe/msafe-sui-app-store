@@ -15,6 +15,7 @@ import {
   UNLOCK_ROUND_DURATION,
   MAX_LOCK_DURATION,
   sCoinIds,
+  SUPPORT_SCOIN,
 } from '../constants';
 import type {
   ScallopUtilsParams,
@@ -401,5 +402,23 @@ export class ScallopUtils {
       newUnlockAtInSecondTimestamp = now + lockPeriod;
     }
     return findClosestUnlockRound(newUnlockAtInSecondTimestamp);
+  }
+
+  /**
+   * Convert coin name to sCoin name.
+   *
+   * @param coinName - Specific support coin name.
+   * @return sCoin name.
+   */
+  public parseSCoinName<T extends SupportSCoin>(coinName: SupportCoins | SupportMarketCoins) {
+    // need more check because sbtc, ssol and sapt has no sCoin type
+    if (isMarketCoin(coinName) && SUPPORT_SCOIN.includes(coinName as SupportSCoin)) {
+      return coinName as T;
+    }
+    const marketCoinName = `s${coinName}`;
+    if (SUPPORT_SCOIN.includes(marketCoinName as SupportSCoin)) {
+      return marketCoinName as T;
+    }
+    return undefined;
   }
 }

@@ -10,6 +10,7 @@ import { ScallopUtils } from './scallopUtils';
 import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveBuilder';
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateReferralNormalMethod } from '../builders/referralBuilder';
+import { generateSCoinNormalMethod } from '../builders/sCoinBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
 import { ADDRESSES_ID, SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SPOOLS } from '../constants';
@@ -22,6 +23,7 @@ import type {
   BorrowIncentiveParams,
   SpoolIncentiveParams,
   SupportBorrowIncentiveRewardCoins,
+  SupportSCoin,
 } from '../types';
 
 /**
@@ -270,11 +272,14 @@ export class ScallopClient {
       builder: this.builder,
       txBlock,
     });
+    const scoinMethod = generateSCoinNormalMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.walletAddress;
     txBlock.setSender(sender);
 
     const marketCoin = await quickMethod.depositQuick(amount, poolCoinName, walletAddress);
-    txBlock.transferObjects([marketCoin], sender);
+    const parseScoin = this.utils.parseMarketCoinName(poolCoinName);
+    const scoin = scoinMethod.mintSCoin(parseScoin as SupportSCoin, marketCoin);
+    txBlock.transferObjects([scoin], sender);
     return txBlock;
   }
 

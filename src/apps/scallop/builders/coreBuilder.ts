@@ -2,6 +2,7 @@ import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactio
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { updateOracles } from './oracle';
+import { generateSCoinNormalMethod } from './sCoinBuilder';
 import type { ScallopBuilder } from '../models';
 import { getObligations } from '../queries';
 import type {
@@ -278,6 +279,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
  */
 export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBlock }) => {
   const normalMethod = generateCoreNormalMethod({ builder, txBlock });
+  const scoinNormalMethod = generateSCoinNormalMethod({ builder, txBlock });
   return {
     normalMethod,
     addCollateralQuick: async (amount, collateralCoinName, obligationId) => {
@@ -326,9 +328,46 @@ export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBl
     withdrawQuick: async (amount, poolCoinName) => {
       const sender = requireSender(txBlock);
       const marketCoinName = builder.utils.parseMarketCoinName(poolCoinName);
-      const { leftCoin, takeCoin } = await builder.selectMarketCoin(txBlock, marketCoinName, amount, sender);
-      txBlock.transferObjects([leftCoin], sender);
-      return normalMethod.withdraw(takeCoin, poolCoinName);
+      // check if user has sCoin instead of marketCoin
+      try {
+        const sCoinName = builder.utils.parseSCoinName(poolCoinName);
+        if (!sCoinName) {
+          throw new Error(`No sCoin for ${poolCoinName}`);
+        }
+        const {
+          leftCoin,
+          takeCoin,
+          totalAmount: sCoinAmount,
+        } = await builder.selectSCoin(txBlock, sCoinName, amount, sender);
+        txBlock.transferObjects([leftCoin], sender);
+        const marketCoin = scoinNormalMethod.burnSCoin(sCoinName, takeCoin);
+
+        const txResult = normalMethod.withdraw(marketCoin, poolCoinName);
+
+        // check amount
+        const amountLeft = amount - sCoinAmount;
+        try {
+          if (amount > 0) {
+            // sCoin is not enough, try market coin
+            const { leftCoin: leftMarketCoin, takeCoin: takeMarketCoin } = await builder.selectMarketCoin(
+              txBlock,
+              marketCoinName,
+              amountLeft,
+              sender,
+            );
+            txBlock.transferObjects([leftMarketCoin], sender);
+            txBlock.mergeCoins(txResult, [normalMethod.withdraw(takeMarketCoin, poolCoinName)]);
+          }
+        } catch (e) {
+          // ignore
+        }
+        return txResult;
+      } catch (e) {
+        // no sCoin found
+        const { leftCoin, takeCoin } = await builder.selectMarketCoin(txBlock, marketCoinName, amount, sender);
+        txBlock.transferObjects([leftCoin], sender);
+        return normalMethod.withdraw(takeCoin, poolCoinName);
+      }
     },
     borrowQuick: async (amount, poolCoinName, obligationId, obligationKey) => {
       const obligationInfo = await requireObligationInfo(txBlock, builder, obligationId, obligationKey);
