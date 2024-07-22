@@ -1,3 +1,5 @@
+import { TransactionArgument } from '@mysten/sui.js/transactions';
+
 import { GenerateSCoinNormalMethod, GenerateSCoinQuickMethod, SCoinPkgIds } from '../types';
 
 export const generateSCoinNormalMethod: GenerateSCoinNormalMethod = ({ builder, txBlock }) => {
@@ -9,7 +11,10 @@ export const generateSCoinNormalMethod: GenerateSCoinNormalMethod = ({ builder, 
     mintSCoin: (marketCoinName, marketCoin) =>
       txBlock.moveCall({
         target: `${sCoinPkgIds.pkgId}::s_coin_converter::mint_s_coin`,
-        arguments: [builder.utils.getSCoinTreasury(marketCoinName), marketCoin],
+        arguments: [
+          txBlock.object(builder.utils.getSCoinTreasury(marketCoinName)),
+          typeof marketCoin !== 'string' ? (marketCoin as TransactionArgument) : txBlock.pure(marketCoin),
+        ],
         typeArguments: [
           builder.utils.parseSCoinType(marketCoinName),
           builder.utils.parseUnderlyingSCoinType(marketCoinName),
@@ -18,7 +23,10 @@ export const generateSCoinNormalMethod: GenerateSCoinNormalMethod = ({ builder, 
     burnSCoin: (sCoinName, sCoin) =>
       txBlock.moveCall({
         target: `${sCoinPkgIds.pkgId}::s_coin_converter::burn_s_coin`,
-        arguments: [builder.utils.getSCoinTreasury(sCoinName), sCoin],
+        arguments: [
+          txBlock.object(builder.utils.getSCoinTreasury(sCoinName)),
+          typeof sCoin !== 'string' ? (sCoin as TransactionArgument) : txBlock.pure(sCoin),
+        ],
         typeArguments: [builder.utils.parseSCoinType(sCoinName), builder.utils.parseUnderlyingSCoinType(sCoinName)],
       }),
   };

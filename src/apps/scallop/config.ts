@@ -204,7 +204,7 @@ export const config = {
           upgradeCap: '0x3f203f6fff6a69d151e4f1cd931f22b68c489ef2759765662fc7baf673943c9e',
         },
         protocol: {
-          id: '0x6e641f0dca8aedab3101d047e96439178f16301bf0b57fe8745086ff1195eb3e',
+          id: '0xc2596018248934aa86b3065390bf69ba5f7007e34df7e4032b736eb256f82f1c',
           upgradeCap: '0x38527d154618d1fd5a644b90717fe07cf0e9f26b46b63e9568e611a3f86d5c1a',
         },
         protocolWhitelist: {
@@ -280,7 +280,7 @@ export const config = {
       config: '',
     },
     borrowIncentive: {
-      id: '0x6152f696fc3a658f33c4b891764731a59153125ffedfa8bff7167c42823f58a9',
+      id: '0xf8365ce9fc69231ed36c2e6e114bea942e15b69d3e2b62e5e5bbf3d96ac6d34e',
       adminCap: '0xc486afa253646f4d381e81d7f1df8aa4723b845a6bb356f69bad635ffefffe2c',
       object: '0x002875153e09f8145ab63527bc85c00f2bd102e12f9573c47f8cdf1a1cb62934',
       query: '0x529edc54a3dce2207703ceebbccb0ac14133f7825c1f528775ba0d85a4063489',
@@ -300,7 +300,7 @@ export const config = {
       config: '0x7cbcb0a342179577a117dfdff974cf1ab765d3b571067bf22ddf5f9e3a667922',
     },
     referral: {
-      id: '0xa3654ebb63eb06c0f4ff52f8aa6512df9f164f7772bdf15dac3709bd3798dda9',
+      id: '0x732b314bd2e632b1e294d50c777bb6f076055979affbcf046ab4a8d0d8b43bfc',
       object: '0x5658d4bf5ddcba27e4337b4262108b3ad1716643cac8c2054ac341538adc72ec',
       adminCap: '0xc5dc06b9074291259f2cac460c940012c781c4430e42125c541cc43101c3bcbd',
       referralBindings: '0xf63299d58789d99de94092b9011323466e55ca0c1ea1a7a3786a589af46e1c09',

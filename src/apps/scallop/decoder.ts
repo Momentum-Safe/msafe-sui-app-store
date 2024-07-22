@@ -47,6 +47,9 @@ export class Decoder {
     if (this.isWithdrawCollateralTransaction()) {
       return this.decodeWithdrawCollateral();
     }
+    if (this.isWithdrawLendingScoinTransaction()) {
+      return this.decodeWithdrawLendingScoin();
+    }
     if (this.isWithdrawLendingTransaction()) {
       return this.decodeWithdrawLending();
     }
@@ -99,6 +102,7 @@ export class Decoder {
       spoolPkg: this._builder.address.get('spool.id'),
       borrowIncentivePkg: this._builder.address.get('borrowIncentive.id'),
       veScaPkgId: this._builder.address.get('vesca.id'),
+      scoin: this._builder.address.get('scoin.id'),
     };
   }
 
@@ -136,6 +140,12 @@ export class Decoder {
 
   private isWithdrawLendingTransaction() {
     return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::redeem::redeem`);
+  }
+
+  private isWithdrawLendingScoinTransaction() {
+    const redeem = !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::redeem::redeem`);
+    const burnScoin = !!this.getMoveCallTransaction(`${this.coreId.scoin}::s_coin_converter::burn_s_coin`);
+    return !!redeem && !!burnScoin;
   }
 
   private isDepositCollateralTransaction() {
@@ -441,7 +451,6 @@ export class Decoder {
       unlockTime = this.helperStakeSca.decodeInputU64(4);
     } else {
       lockSca = this.helperStakeMoreSca.getNestedInputParam<SplitCoinsTransaction>(4);
-      console.log(lockSca);
     }
     const amountFromSplitCoin = new SplitCoinHelper(lockSca, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     let oldUnstakeObligation: string[] = [];
@@ -519,6 +528,20 @@ export class Decoder {
   private decodeWithdrawLending(): DecodeResult {
     const coinName = this._builder.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
     const amount = this.helperRedeem.getNestedInputParam<SplitCoinsTransaction>(2);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.WithdrawLending,
+      intentionData: {
+        amount: amountFromSplitCoin,
+        coinName,
+      },
+    };
+  }
+
+  private decodeWithdrawLendingScoin(): DecodeResult {
+    const coinName = this._builder.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
+    const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     return {
       txType: TransactionType.Other,
@@ -891,6 +914,14 @@ export class Decoder {
   private get helperRedeem() {
     const moveCall = this.transactions.find(
       (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::redeem::redeem`),
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
+  }
+
+  private get helperBurnScoin() {
+    const moveCall = this.transactions.find(
+      (trans) =>
+        trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.scoin}::s_coin_converter::burn_s_coin`),
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }

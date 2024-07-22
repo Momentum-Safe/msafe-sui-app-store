@@ -347,7 +347,7 @@ export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBl
         // check amount
         const amountLeft = amount - sCoinAmount;
         try {
-          if (amount > 0) {
+          if (amountLeft > 0) {
             // sCoin is not enough, try market coin
             const { leftCoin: leftMarketCoin, takeCoin: takeMarketCoin } = await builder.selectMarketCoin(
               txBlock,
