@@ -53,6 +53,9 @@ export class Decoder {
     if (this.isSupplyLendingTransaction()) {
       return this.decodeSupplyLending();
     }
+    if (this.isBorrowWithReferralTransaction()) {
+      return this.decodeBorrowWithReferral();
+    }
     if (this.isBorrowWithBoostTransaction()) {
       return this.decodeBorrowWithBoost();
     }
@@ -151,6 +154,12 @@ export class Decoder {
     const borrowMoveCall = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow`);
     const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
     return !!borrowMoveCall && !!stakeMoveCall;
+  }
+
+  private isBorrowWithReferralTransaction() {
+    const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    const borrowWithReferral = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow_with_referral`);
+    return !!borrowWithReferral && !!stakeMoveCall;
   }
 
   private isRepayTransaction() {
@@ -590,6 +599,25 @@ export class Decoder {
     };
   }
 
+  private decodeBorrowWithReferral(): DecodeResult {
+    const coinName = this._builder.utils.parseCoinNameFromType(this.helperBorrowWithReferral.typeArg(0));
+    const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    const amount = this.helperBorrowWithReferral.decodeInputU64(5);
+    const obligationId = this.helperBorrowWithReferral.decodeSharedObjectId(1);
+    const obligationKey = this.helperBorrowWithReferral.decodeOwnedObjectId(2);
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.BorrowWithReferral,
+      intentionData: {
+        amount,
+        coinName,
+        obligationKey,
+        obligationId,
+        veScaKey,
+      },
+    };
+  }
+
   private decodeRepay(): DecodeResult {
     const coinName = this._builder.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
     const amount = this.helperRepay.getNestedInputParam<SplitCoinsTransaction>(3);
@@ -902,6 +930,15 @@ export class Decoder {
   private get helperBorrow() {
     const moveCall = this.transactions.find(
       (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::borrow::borrow`),
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
+  }
+
+  private get helperBorrowWithReferral() {
+    const moveCall = this.transactions.find(
+      (trans) =>
+        trans.kind === 'MoveCall' &&
+        trans.target.startsWith(`${this.coreId.protocolPkg}::borrow::borrow_with_referral`),
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }

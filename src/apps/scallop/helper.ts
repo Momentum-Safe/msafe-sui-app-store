@@ -7,6 +7,10 @@ import { Decoder } from './decoder';
 import { BorrowIntention, BorrowIntentionData } from './intentions/lending/borrow';
 import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/lending/borrow-with-boost';
 import {
+  BorrowWithReferralIntention,
+  BorrowWithReferralIntentionData,
+} from './intentions/lending/borrow-with-referral';
+import {
   ClaimIncentiveRewardIntention,
   ClaimIncentiveRewardIntentionData,
 } from './intentions/lending/claim-incentive-reward';
@@ -188,6 +192,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.MigrateAndClaim:
         intention = MigrateAndClaimIntention.fromData(input.intentionData as MigrateAndClaimIntentionData);
+        break;
+      case TransactionSubType.BorrowWithReferral:
+        intention = BorrowWithReferralIntention.fromData(input.intentionData as BorrowWithReferralIntentionData);
         break;
       default:
         throw new Error('not implemented');

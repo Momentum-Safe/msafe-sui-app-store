@@ -54,4 +54,5 @@ export enum TransactionSubType {
   ExtendStakePeriod = 'ExtendStakePeriod',
   RedeemSca = 'RedeemSca',
   MigrateAndClaim = 'MigrateAndClaim',
+  BorrowWithReferral = 'BorrowWithReferral',
 }

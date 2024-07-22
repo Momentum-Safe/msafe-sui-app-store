@@ -9,6 +9,7 @@ import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
 import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveBuilder';
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
+import { generateReferralNormalMethod } from '../builders/referralBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
 import { ADDRESSES_ID, SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SPOOLS } from '../constants';
@@ -377,6 +378,56 @@ export class ScallopClient {
       await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKey);
     }
     const coin = await quickMethod.borrowQuick(amount, poolCoinName, obligationId, obligationKey);
+    txBlock.transferObjects([coin], sender);
+    if (availableStake) {
+      await borrowIncentiveQuickMethod.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    }
+    return txBlock;
+  }
+
+  /**
+   * Borrow asset from the specific pool with boost from SCA stake.
+   *
+   * @param poolCoinName - Specific support pool coin name.
+   * @param amount - The amount of coins would borrow.
+   * @param sign - Decide to directly sign the transaction or return the transaction block.
+   * @param obligationId - The obligation object.
+   * @param obligationKey - The obligation key object to verifying obligation authority.
+   * @param veScaKey - The vesca key object to verifying sca staker.
+   * @param walletAddress - The wallet address of the owner.
+   * @return Transaction block response or transaction block.
+   */
+  public async borrowWithReferral(
+    poolCoinName: SupportPoolCoins,
+    amount: number,
+    obligationId: string,
+    obligationKey: string,
+    veScaKey: string,
+    walletAddress?: string,
+  ): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
+    const referralMethod = generateReferralNormalMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.walletAddress;
+    txBlock.setSender(sender);
+
+    const availableStake = (SUPPORT_BORROW_INCENTIVE_POOLS as readonly SupportPoolCoins[]).includes(poolCoinName);
+    if (availableStake) {
+      await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKey);
+    }
+    const borrowReferral = referralMethod.claimReferralTicket(poolCoinName);
+    const coin = await quickMethod.borrowWithReferralQuick(
+      amount,
+      poolCoinName,
+      borrowReferral,
+      obligationId,
+      obligationKey,
+    );
+    referralMethod.burnReferralTicket(borrowReferral, poolCoinName);
     txBlock.transferObjects([coin], sender);
     if (availableStake) {
       await borrowIncentiveQuickMethod.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);

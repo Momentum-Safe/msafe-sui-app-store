@@ -39,6 +39,13 @@ export type CoreNormalMethods = {
     amount: SuiTxArg,
     poolCoinName: SupportPoolCoins,
   ) => void;
+  borrowWithReferral: (
+    obligation: SuiAddressArg,
+    obligationKey: SuiAddressArg,
+    borrowReferral: SuiObjectArg,
+    amount: SuiTxArg,
+    poolCoinName: SupportPoolCoins,
+  ) => TransactionResult;
   repay: (obligation: SuiAddressArg, coin: SuiObjectArg, poolCoinName: SupportPoolCoins) => void;
   borrowFlashLoan: (amount: SuiTxArg, poolCoinName: SupportPoolCoins) => TransactionResult;
   repayFlashLoan: (coin: SuiObjectArg, loan: SuiAddressArg, poolCoinName: SupportPoolCoins) => void;
@@ -65,6 +72,13 @@ export type CoreQuickMethods = {
     obligationId?: SuiAddressArg,
     obligationKey?: SuiAddressArg,
     walletAddress?: SuiAddressArg,
+  ) => Promise<TransactionResult>;
+  borrowWithReferralQuick: (
+    amount: number,
+    poolCoinName: SupportPoolCoins,
+    borrowReferral: SuiObjectArg,
+    obligationId?: SuiAddressArg,
+    obligationKey?: SuiAddressArg,
   ) => Promise<TransactionResult>;
   depositQuick: (
     amount: number,

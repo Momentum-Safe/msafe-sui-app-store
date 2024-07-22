@@ -365,9 +365,4 @@ export const config = {
       },
     },
   },
-  memo: 'latest contract(new borrow incentive) on app.scallop.io 22/05/2024',
-  createdAt: 'Wed May 22 2024 14:15:09 GMT+0000 (Coordinated Universal Time)',
-  updatedAt: 'Fri Jul 05 2024 14:00:38 GMT+0000 (Coordinated Universal Time)',
-  version: 0,
-  id: '664dfe22898c36c159e28bc8',
 };
