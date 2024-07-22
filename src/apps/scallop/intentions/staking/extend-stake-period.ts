@@ -6,8 +6,8 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { TransactionSubType } from '../../types/utils';
 
 export interface ExtendStakePeriodIntentionData {
   isObligationLocked: boolean;

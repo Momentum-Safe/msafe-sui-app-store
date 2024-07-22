@@ -6,25 +6,26 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { TransactionSubType } from '../../types/utils';
 
-export interface ExtendPeriodAndStakeMoreIntentionData {
+export interface RenewExpStakePeriodIntentionData {
   amount: number;
-  veScaKey: string;
   lockPeriodInDays: number;
-  obligationId: string | undefined;
-  obligationKey: string | undefined;
-  isOldBorrowIncentive: boolean;
+  vescaKey: string;
+  isHaveRedeem: boolean;
+  obligation?: string;
+  obligationKey?: string;
   isObligationLocked: boolean;
+  isOldBorrowIncentive: boolean;
 }
 
-export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendPeriodAndStakeMoreIntentionData> {
+export class RenewExpStakePeriodIntention extends CoreBaseIntention<RenewExpStakePeriodIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.ExtendPeriodAndStakeMore;
+  txSubType: TransactionSubType.RenewExpStakePeriod;
 
-  constructor(public readonly data: ExtendPeriodAndStakeMoreIntentionData) {
+  constructor(public readonly data: RenewExpStakePeriodIntentionData) {
     super(data);
   }
 
@@ -39,11 +40,12 @@ export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendP
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.extendPeriodAndStakeMoreSca(
+    return scallopClient.renewExpiredStakeSca(
       this.data.amount,
-      this.data.veScaKey,
       this.data.lockPeriodInDays,
-      this.data.obligationId,
+      this.data.vescaKey,
+      this.data.isHaveRedeem,
+      this.data.obligation,
       this.data.obligationKey,
       this.data.isObligationLocked,
       this.data.isOldBorrowIncentive,
@@ -51,7 +53,7 @@ export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendP
     );
   }
 
-  static fromData(data: ExtendPeriodAndStakeMoreIntentionData): ExtendPeriodAndStakeMoreIntention {
-    return new ExtendPeriodAndStakeMoreIntention(data);
+  static fromData(data: RenewExpStakePeriodIntentionData): RenewExpStakePeriodIntention {
+    return new RenewExpStakePeriodIntention(data);
   }
 }

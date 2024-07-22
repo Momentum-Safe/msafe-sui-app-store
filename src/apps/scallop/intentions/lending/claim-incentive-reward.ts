@@ -6,9 +6,9 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { BorrowIncentiveParams, SpoolIncentiveParams } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { BorrowIncentiveParams, SpoolIncentiveParams } from '../../types';
+import { TransactionSubType } from '../../types/utils';
 
 export interface ClaimIncentiveRewardIntentionData {
   lendingIncentive: SpoolIncentiveParams[];

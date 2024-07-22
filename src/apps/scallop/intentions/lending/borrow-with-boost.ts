@@ -6,23 +6,24 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { SupportPoolCoins } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { SupportPoolCoins } from '../../types';
+import { TransactionSubType } from '../../types/utils';
 
-export interface BorrowIntentionData {
+export interface BorrowWithBoostIntentionData {
   coinName: SupportPoolCoins;
   amount: number | string;
   obligationId: string;
   obligationKey: string;
+  veScaKey: string;
 }
 
-export class BorrowIntention extends CoreBaseIntention<BorrowIntentionData> {
+export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.Borrow;
 
-  constructor(public readonly data: BorrowIntentionData) {
+  constructor(public readonly data: BorrowWithBoostIntentionData) {
     super(data);
   }
 
@@ -37,16 +38,17 @@ export class BorrowIntention extends CoreBaseIntention<BorrowIntentionData> {
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.borrow(
+    return scallopClient.borrowWithBoost(
       this.data.coinName,
       Number(this.data.amount),
       this.data.obligationId,
       this.data.obligationKey,
+      this.data.veScaKey,
       input.account.address,
     );
   }
 
-  static fromData(data: BorrowIntentionData): BorrowIntention {
-    return new BorrowIntention(data);
+  static fromData(data: BorrowWithBoostIntentionData): BorrowWithBoostIntention {
+    return new BorrowWithBoostIntention(data);
   }
 }

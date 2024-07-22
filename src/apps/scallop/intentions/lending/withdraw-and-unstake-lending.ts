@@ -7,8 +7,8 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { NetworkType, SupportAssetCoins, TransactionSubType } from '../types';
+import { ScallopClient } from '../../models/scallopClient';
+import { NetworkType, SupportAssetCoins, TransactionSubType } from '../../types';
 
 export interface WithdrawAndUnstakeLendingIntentionData {
   amount: number | undefined;

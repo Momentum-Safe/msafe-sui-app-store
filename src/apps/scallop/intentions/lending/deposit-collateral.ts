@@ -6,23 +6,22 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { SupportCollateralCoins } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { SupportCollateralCoins } from '../../types';
+import { TransactionSubType } from '../../types/utils';
 
-export interface WithdrawCollateralIntentionData {
+export interface DepositCollateralIntentionData {
   collateralCoinName: SupportCollateralCoins;
   amount: number | string;
   obligationId: string;
-  obligationKey: string;
 }
 
-export class WithdrawCollateralIntention extends CoreBaseIntention<WithdrawCollateralIntentionData> {
+export class DepositCollateralIntention extends CoreBaseIntention<DepositCollateralIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.WithdrawCollateral;
+  txSubType: TransactionSubType.DepositCollateral;
 
-  constructor(public readonly data: WithdrawCollateralIntentionData) {
+  constructor(public readonly data: DepositCollateralIntentionData) {
     super(data);
   }
 
@@ -37,16 +36,15 @@ export class WithdrawCollateralIntention extends CoreBaseIntention<WithdrawColla
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.withdrawCollateral(
+    return scallopClient.depositCollateral(
       this.data.collateralCoinName,
       Number(this.data.amount),
       this.data.obligationId,
-      this.data.obligationKey,
       input.account.address,
     );
   }
 
-  static fromData(data: WithdrawCollateralIntentionData): WithdrawCollateralIntention {
-    return new WithdrawCollateralIntention(data);
+  static fromData(data: DepositCollateralIntentionData): DepositCollateralIntention {
+    return new DepositCollateralIntention(data);
   }
 }

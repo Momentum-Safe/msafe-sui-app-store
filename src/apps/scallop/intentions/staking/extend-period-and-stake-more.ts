@@ -6,25 +6,25 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { TransactionSubType } from '../../types/utils';
 
-export interface StakeScaIntentionData {
+export interface ExtendPeriodAndStakeMoreIntentionData {
   amount: number;
-  isObligationLocked: boolean;
-  isOldBorrowIncentive: boolean;
+  veScaKey: string;
+  lockPeriodInDays: number;
   obligationId: string | undefined;
   obligationKey: string | undefined;
-  lockPeriodInDays: number | undefined;
-  veScaKey: string | undefined;
+  isOldBorrowIncentive: boolean;
+  isObligationLocked: boolean;
 }
 
-export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> {
+export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendPeriodAndStakeMoreIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.StakeSca;
+  txSubType: TransactionSubType.ExtendPeriodAndStakeMore;
 
-  constructor(public readonly data: StakeScaIntentionData) {
+  constructor(public readonly data: ExtendPeriodAndStakeMoreIntentionData) {
     super(data);
   }
 
@@ -39,19 +39,19 @@ export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> 
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.stakeSca(
+    return scallopClient.extendPeriodAndStakeMoreSca(
       this.data.amount,
-      this.data.isObligationLocked,
-      this.data.isOldBorrowIncentive,
+      this.data.veScaKey,
+      this.data.lockPeriodInDays,
       this.data.obligationId,
       this.data.obligationKey,
-      this.data.lockPeriodInDays,
-      this.data.veScaKey,
+      this.data.isObligationLocked,
+      this.data.isOldBorrowIncentive,
       input.account.address,
     );
   }
 
-  static fromData(data: StakeScaIntentionData): StakeScaIntention {
-    return new StakeScaIntention(data);
+  static fromData(data: ExtendPeriodAndStakeMoreIntentionData): ExtendPeriodAndStakeMoreIntention {
+    return new ExtendPeriodAndStakeMoreIntention(data);
   }
 }

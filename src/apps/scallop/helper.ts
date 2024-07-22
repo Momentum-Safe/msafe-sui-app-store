@@ -4,35 +4,41 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
 import { Decoder } from './decoder';
-import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
-import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/borrow-with-boost';
-import { ClaimIncentiveRewardIntention, ClaimIncentiveRewardIntentionData } from './intentions/claim-incentive-reward';
-import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/deposit-collateral';
+import { BorrowIntention, BorrowIntentionData } from './intentions/lending/borrow';
+import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/lending/borrow-with-boost';
 import {
-  ExtendPeriodAndStakeMoreIntention,
-  ExtendPeriodAndStakeMoreIntentionData,
-} from './intentions/extend-period-and-stake-more';
-import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/extend-stake-period';
-import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/migrate-and-claim';
-import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/open-obligation';
-import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/redeem-sca';
-import { RenewExpStakePeriodIntention, RenewExpStakePeriodIntentionData } from './intentions/renew-exp-stake-period';
-import { RepayIntention, RepayIntentionData } from './intentions/repay';
-import { StakeScaIntention, StakeScaIntentionData } from './intentions/stake-sca';
-import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/stake-spool';
-import {
-  SupplyAndStakeLendingIntention,
-  SupplyAndStakeLendingIntentionData,
-} from './intentions/supply-and-stake-lending';
-import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/supply-lending';
-import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/unstake-spool';
+  ClaimIncentiveRewardIntention,
+  ClaimIncentiveRewardIntentionData,
+} from './intentions/lending/claim-incentive-reward';
+import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/lending/deposit-collateral';
+import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/lending/migrate-and-claim';
+import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/lending/open-obligation';
+import { RepayIntention, RepayIntentionData } from './intentions/lending/repay';
+import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/lending/stake-spool';
+import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/lending/supply-lending';
+import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/lending/unstake-spool';
 import {
   WithdrawAndUnstakeLendingIntention,
   WithdrawAndUnstakeLendingIntentionData,
-} from './intentions/withdraw-and-unstake-lending';
-import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/withdraw-collateral';
-import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/withdraw-lending';
-import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/withdraw-staked-sca';
+} from './intentions/lending/withdraw-and-unstake-lending';
+import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/lending/withdraw-collateral';
+import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/lending/withdraw-lending';
+import {
+  ExtendPeriodAndStakeMoreIntention,
+  ExtendPeriodAndStakeMoreIntentionData,
+} from './intentions/staking/extend-period-and-stake-more';
+import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/staking/extend-stake-period';
+import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/staking/redeem-sca';
+import {
+  RenewExpStakePeriodIntention,
+  RenewExpStakePeriodIntentionData,
+} from './intentions/staking/renew-exp-stake-period';
+import { StakeScaIntention, StakeScaIntentionData } from './intentions/staking/stake-sca';
+import {
+  SupplyAndStakeLendingIntention,
+  SupplyAndStakeLendingIntentionData,
+} from './intentions/staking/supply-and-stake-lending';
+import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/staking/withdraw-staked-sca';
 import { ScallopBuilder } from './models';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';

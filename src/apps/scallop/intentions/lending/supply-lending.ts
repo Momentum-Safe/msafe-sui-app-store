@@ -1,25 +1,26 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { NetworkType, SupportAssetCoins } from '../types';
-import { SuiNetworks, TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { NetworkType, SupportAssetCoins, TransactionSubType } from '../../types';
 
-export interface WithdrawLendingIntentionData {
-  amount: string | number;
+export interface SupplyLendingIntentionData {
+  amount: number | string;
   coinName: SupportAssetCoins;
 }
 
-export class WithdrawLendingIntention extends CoreBaseIntention<WithdrawLendingIntentionData> {
+export class SupplyLendingIntention extends CoreBaseIntention<SupplyLendingIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.WithdrawLending;
+  txSubType: TransactionSubType.SupplyLending;
 
-  constructor(public readonly data: WithdrawLendingIntentionData) {
+  constructor(public readonly data: SupplyLendingIntentionData) {
     super(data);
   }
 
@@ -35,10 +36,10 @@ export class WithdrawLendingIntention extends CoreBaseIntention<WithdrawLendingI
       networkType: network,
     });
     scallopClient.init();
-    return scallopClient.withdraw(this.data.coinName, Number(this.data.amount), input.account.address);
+    return scallopClient.deposit(this.data.coinName, Number(this.data.amount), input.account.address);
   }
 
-  static fromData(data: WithdrawLendingIntentionData): WithdrawLendingIntention {
-    return new WithdrawLendingIntention(data);
+  static fromData(data: SupplyLendingIntentionData): SupplyLendingIntention {
+    return new SupplyLendingIntention(data);
   }
 }

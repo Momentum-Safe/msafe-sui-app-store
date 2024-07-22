@@ -7,20 +7,21 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { NetworkType, SupportAssetCoins, TransactionSubType } from '../types';
+import { ScallopClient } from '../../models/scallopClient';
+import { NetworkType, SupportAssetCoins, TransactionSubType } from '../../types';
 
-export interface SupplyLendingIntentionData {
+export interface SupplyAndStakeLendingIntentionData {
   amount: number | string;
   coinName: SupportAssetCoins;
+  stakeAccountId?: string | null;
 }
 
-export class SupplyLendingIntention extends CoreBaseIntention<SupplyLendingIntentionData> {
+export class SupplyAndStakeLendingIntention extends CoreBaseIntention<SupplyAndStakeLendingIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.SupplyLending;
+  txSubType: TransactionSubType.SupplyAndStakeLending;
 
-  constructor(public readonly data: SupplyLendingIntentionData) {
+  constructor(public readonly data: SupplyAndStakeLendingIntentionData) {
     super(data);
   }
 
@@ -36,10 +37,15 @@ export class SupplyLendingIntention extends CoreBaseIntention<SupplyLendingInten
       networkType: network,
     });
     scallopClient.init();
-    return scallopClient.deposit(this.data.coinName, Number(this.data.amount), input.account.address);
+    return scallopClient.supplyAndStake(
+      this.data.coinName,
+      Number(this.data.amount),
+      this.data.stakeAccountId,
+      input.account.address,
+    );
   }
 
-  static fromData(data: SupplyLendingIntentionData): SupplyLendingIntention {
-    return new SupplyLendingIntention(data);
+  static fromData(data: SupplyAndStakeLendingIntentionData): SupplyAndStakeLendingIntention {
+    return new SupplyAndStakeLendingIntention(data);
   }
 }

@@ -6,26 +6,25 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { TransactionSubType } from '../../types/utils';
 
-export interface RenewExpStakePeriodIntentionData {
+export interface StakeScaIntentionData {
   amount: number;
-  lockPeriodInDays: number;
-  vescaKey: string;
-  isHaveRedeem: boolean;
-  obligation?: string;
-  obligationKey?: string;
   isObligationLocked: boolean;
   isOldBorrowIncentive: boolean;
+  obligationId: string | undefined;
+  obligationKey: string | undefined;
+  lockPeriodInDays: number | undefined;
+  veScaKey: string | undefined;
 }
 
-export class RenewExpStakePeriodIntention extends CoreBaseIntention<RenewExpStakePeriodIntentionData> {
+export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.RenewExpStakePeriod;
+  txSubType: TransactionSubType.StakeSca;
 
-  constructor(public readonly data: RenewExpStakePeriodIntentionData) {
+  constructor(public readonly data: StakeScaIntentionData) {
     super(data);
   }
 
@@ -40,20 +39,19 @@ export class RenewExpStakePeriodIntention extends CoreBaseIntention<RenewExpStak
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.renewExpiredStakeSca(
+    return scallopClient.stakeSca(
       this.data.amount,
-      this.data.lockPeriodInDays,
-      this.data.vescaKey,
-      this.data.isHaveRedeem,
-      this.data.obligation,
-      this.data.obligationKey,
       this.data.isObligationLocked,
       this.data.isOldBorrowIncentive,
+      this.data.obligationId,
+      this.data.obligationKey,
+      this.data.lockPeriodInDays,
+      this.data.veScaKey,
       input.account.address,
     );
   }
 
-  static fromData(data: RenewExpStakePeriodIntentionData): RenewExpStakePeriodIntention {
-    return new RenewExpStakePeriodIntention(data);
+  static fromData(data: StakeScaIntentionData): StakeScaIntention {
+    return new StakeScaIntention(data);
   }
 }

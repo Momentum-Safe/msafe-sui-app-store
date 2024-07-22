@@ -6,24 +6,23 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { SupportPoolCoins } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { SupportCollateralCoins } from '../../types';
+import { TransactionSubType } from '../../types/utils';
 
-export interface BorrowWithBoostIntentionData {
-  coinName: SupportPoolCoins;
+export interface WithdrawCollateralIntentionData {
+  collateralCoinName: SupportCollateralCoins;
   amount: number | string;
   obligationId: string;
   obligationKey: string;
-  veScaKey: string;
 }
 
-export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostIntentionData> {
+export class WithdrawCollateralIntention extends CoreBaseIntention<WithdrawCollateralIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.Borrow;
+  txSubType: TransactionSubType.WithdrawCollateral;
 
-  constructor(public readonly data: BorrowWithBoostIntentionData) {
+  constructor(public readonly data: WithdrawCollateralIntentionData) {
     super(data);
   }
 
@@ -38,17 +37,16 @@ export class BorrowWithBoostIntention extends CoreBaseIntention<BorrowWithBoostI
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.borrowWithBoost(
-      this.data.coinName,
+    return scallopClient.withdrawCollateral(
+      this.data.collateralCoinName,
       Number(this.data.amount),
       this.data.obligationId,
       this.data.obligationKey,
-      this.data.veScaKey,
       input.account.address,
     );
   }
 
-  static fromData(data: BorrowWithBoostIntentionData): BorrowWithBoostIntention {
-    return new BorrowWithBoostIntention(data);
+  static fromData(data: WithdrawCollateralIntentionData): WithdrawCollateralIntention {
+    return new WithdrawCollateralIntention(data);
   }
 }

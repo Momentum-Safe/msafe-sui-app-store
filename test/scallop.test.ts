@@ -1,35 +1,38 @@
 import { TransactionType } from '@msafe/sui3-utils';
 
-import { BorrowIntention, BorrowIntentionData } from '@/apps/scallop/intentions/borrow';
-import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from '@/apps/scallop/intentions/borrow-with-boost';
-import { ClaimIncentiveRewardIntentionData } from '@/apps/scallop/intentions/claim-incentive-reward';
+import { BorrowIntention, BorrowIntentionData } from '@/apps/scallop/intentions/lending/borrow';
+import {
+  BorrowWithBoostIntention,
+  BorrowWithBoostIntentionData,
+} from '@/apps/scallop/intentions/lending/borrow-with-boost';
+import { ClaimIncentiveRewardIntentionData } from '@/apps/scallop/intentions/lending/claim-incentive-reward';
 import {
   DepositCollateralIntention,
   DepositCollateralIntentionData,
-} from '@/apps/scallop/intentions/deposit-collateral';
-import {
-  ExtendPeriodAndStakeMoreIntention,
-  ExtendPeriodAndStakeMoreIntentionData,
-} from '@/apps/scallop/intentions/extend-period-and-stake-more';
-import {
-  ExtendStakePeriodIntention,
-  ExtendStakePeriodIntentionData,
-} from '@/apps/scallop/intentions/extend-stake-period';
-import { OpenObligationIntention } from '@/apps/scallop/intentions/open-obligation';
-import { RenewExpStakePeriodIntentionData } from '@/apps/scallop/intentions/renew-exp-stake-period';
-import { RepayIntention, RepayIntentionData } from '@/apps/scallop/intentions/repay';
-import { StakeScaIntentionData } from '@/apps/scallop/intentions/stake-sca';
-import { StakeSpoolIntention, StakeSpoolIntentionData } from '@/apps/scallop/intentions/stake-spool';
-import { SupplyAndStakeLendingIntentionData } from '@/apps/scallop/intentions/supply-and-stake-lending';
-import { SupplyLendingIntention, SupplyLendingIntentionData } from '@/apps/scallop/intentions/supply-lending';
-import { UnstakeSpoolIntentionData } from '@/apps/scallop/intentions/unstake-spool';
-import { WithdrawAndUnstakeLendingIntentionData } from '@/apps/scallop/intentions/withdraw-and-unstake-lending';
+} from '@/apps/scallop/intentions/lending/deposit-collateral';
+import { OpenObligationIntention } from '@/apps/scallop/intentions/lending/open-obligation';
+import { RepayIntention, RepayIntentionData } from '@/apps/scallop/intentions/lending/repay';
+import { StakeSpoolIntention, StakeSpoolIntentionData } from '@/apps/scallop/intentions/lending/stake-spool';
+import { SupplyLendingIntention, SupplyLendingIntentionData } from '@/apps/scallop/intentions/lending/supply-lending';
+import { UnstakeSpoolIntentionData } from '@/apps/scallop/intentions/lending/unstake-spool';
+import { WithdrawAndUnstakeLendingIntentionData } from '@/apps/scallop/intentions/lending/withdraw-and-unstake-lending';
 import {
   WithdrawCollateralIntention,
   WithdrawCollateralIntentionData,
-} from '@/apps/scallop/intentions/withdraw-collateral';
-import { WithdrawLendingIntentionData } from '@/apps/scallop/intentions/withdraw-lending';
-import { WithdrawStakedScaIntention } from '@/apps/scallop/intentions/withdraw-staked-sca';
+} from '@/apps/scallop/intentions/lending/withdraw-collateral';
+import { WithdrawLendingIntentionData } from '@/apps/scallop/intentions/lending/withdraw-lending';
+import {
+  ExtendPeriodAndStakeMoreIntention,
+  ExtendPeriodAndStakeMoreIntentionData,
+} from '@/apps/scallop/intentions/staking/extend-period-and-stake-more';
+import {
+  ExtendStakePeriodIntention,
+  ExtendStakePeriodIntentionData,
+} from '@/apps/scallop/intentions/staking/extend-stake-period';
+import { RenewExpStakePeriodIntentionData } from '@/apps/scallop/intentions/staking/renew-exp-stake-period';
+import { StakeScaIntentionData } from '@/apps/scallop/intentions/staking/stake-sca';
+import { SupplyAndStakeLendingIntentionData } from '@/apps/scallop/intentions/staking/supply-and-stake-lending';
+import { WithdrawStakedScaIntention } from '@/apps/scallop/intentions/staking/withdraw-staked-sca';
 import { ScallopBuilder } from '@/apps/scallop/models';
 import { appHelpers } from '@/index';
 

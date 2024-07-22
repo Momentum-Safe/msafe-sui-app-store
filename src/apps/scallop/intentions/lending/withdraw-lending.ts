@@ -4,21 +4,22 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
-import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { NetworkType } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { ScallopClient } from '../../models/scallopClient';
+import { NetworkType, SupportAssetCoins } from '../../types';
+import { SuiNetworks, TransactionSubType } from '../../types/utils';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface OpenObligationIntentionData {}
+export interface WithdrawLendingIntentionData {
+  amount: string | number;
+  coinName: SupportAssetCoins;
+}
 
-export class OpenObligationIntention extends CoreBaseIntention<OpenObligationIntentionData> {
+export class WithdrawLendingIntention extends CoreBaseIntention<WithdrawLendingIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.OpenObligation;
+  txSubType: TransactionSubType.WithdrawLending;
 
-  constructor(public readonly data: OpenObligationIntentionData) {
+  constructor(public readonly data: WithdrawLendingIntentionData) {
     super(data);
   }
 
@@ -34,10 +35,10 @@ export class OpenObligationIntention extends CoreBaseIntention<OpenObligationInt
       networkType: network,
     });
     scallopClient.init();
-    return scallopClient.openObligation();
+    return scallopClient.withdraw(this.data.coinName, Number(this.data.amount), input.account.address);
   }
 
-  static fromData(data: OpenObligationIntentionData): OpenObligationIntention {
-    return new OpenObligationIntention(data);
+  static fromData(data: WithdrawLendingIntentionData): WithdrawLendingIntention {
+    return new WithdrawLendingIntention(data);
   }
 }
