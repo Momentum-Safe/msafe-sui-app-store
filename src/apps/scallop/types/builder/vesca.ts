@@ -16,6 +16,7 @@ export type VeScaNormalMethods = {
   extendLockAmount: (veScaKey: SuiAddressArg, scaCoin: SuiObjectArg) => void;
   renewExpiredVeSca: (veScaKey: SuiAddressArg, scaCoin: SuiObjectArg, newUnlockAtInSecondTimestamp: SuiTxArg) => void;
   redeemSca: (veScaKey: SuiAddressArg) => TransactionResult;
+  mintEmptyVeSca: () => TransactionResult;
 };
 
 export type VeScaQuickMethods = {

@@ -3,7 +3,9 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { Decoder } from './decoder';
+import { DecoderLending } from './decoders/decoderLending';
+import { DecoderReferral } from './decoders/decoderReferral';
+import { DecoderVesca } from './decoders/decoderVesca';
 import { BorrowIntention, BorrowIntentionData } from './intentions/lending/borrow';
 import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/lending/borrow-with-boost';
 import {
@@ -27,6 +29,10 @@ import {
 } from './intentions/lending/withdraw-and-unstake-lending';
 import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/lending/withdraw-collateral';
 import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/lending/withdraw-lending';
+import {
+  CreateReferralLinkIntention,
+  CreateReferralLinkIntentionData,
+} from './intentions/referral/create-referral-link';
 import {
   ExtendPeriodAndStakeMoreIntention,
   ExtendPeriodAndStakeMoreIntentionData,
@@ -69,7 +75,8 @@ export type ScallopIntention =
   | WithdrawAndUnstakeLendingIntention
   | RedeemScaIntention
   | MigrateAndClaimIntention
-  | BorrowWithReferralIntention;
+  | BorrowWithReferralIntention
+  | CreateReferralLinkIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -92,7 +99,8 @@ export type ScallopIntentionData =
   | WithdrawAndUnstakeLendingIntentionData
   | RedeemScaIntentionData
   | MigrateAndClaimIntentionData
-  | BorrowWithReferralIntentionData;
+  | BorrowWithReferralIntentionData
+  | CreateReferralLinkIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -111,8 +119,13 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
     });
     await builder.init();
     const { transactionBlock } = input;
-    const decoder = new Decoder(transactionBlock, builder);
-    const result = decoder.decode();
+    const decoderLending = new DecoderLending(transactionBlock, builder);
+    const decoderReferral = new DecoderReferral(transactionBlock, builder);
+    const decoderVesca = new DecoderVesca(transactionBlock, builder);
+    const result = decoderLending.decode() || decoderReferral.decode() || decoderVesca.decode();
+    if (!result) {
+      throw new Error('Unknown transaction type');
+    }
     return {
       txType: TransactionType.Other,
       txSubType: result.type,
@@ -197,6 +210,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.BorrowWithReferral:
         intention = BorrowWithReferralIntention.fromData(input.intentionData as BorrowWithReferralIntentionData);
+        break;
+      case TransactionSubType.CreateReferralLink:
+        intention = CreateReferralLinkIntention.fromData(input.intentionData as CreateReferralLinkIntentionData);
         break;
       default:
         throw new Error('not implemented');

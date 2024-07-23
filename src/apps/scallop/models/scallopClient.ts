@@ -993,4 +993,20 @@ export class ScallopClient {
       .plus(accountPoint.points)
       .shiftedBy(-1 * poolPoint.coinDecimal);
   }
+
+  /**
+   * Create Referral Link
+   *
+   * @returns Transaction block response or transaction block.
+   */
+  public async createReferralLink(): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = this.walletAddress;
+    txBlock.setSender(sender);
+
+    const referralTicket = vescaMethod.normalMethod.mintEmptyVeSca();
+    txBlock.transferObjects([referralTicket], sender);
+    return txBlock;
+  }
 }

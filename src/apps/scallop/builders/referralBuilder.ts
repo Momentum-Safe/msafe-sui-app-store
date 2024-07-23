@@ -27,7 +27,12 @@ export const generateReferralNormalMethod: GenerateReferralNormalMethod = ({ bui
     bindToReferral: (veScaKeyId: string) =>
       txBlock.moveCall({
         target: `${referralIds.referralPgkId}::referral_bindings::bind_ve_sca_referrer`,
-        arguments: [referralIds.referralBindings, txBlock.pure(veScaKeyId), veScaTable, SUI_CLOCK_OBJECT_ID],
+        arguments: [
+          txBlock.object(referralIds.referralBindings),
+          txBlock.object(veScaKeyId),
+          txBlock.object(veScaTable),
+          txBlock.object(SUI_CLOCK_OBJECT_ID),
+        ],
         typeArguments: [],
       }),
     claimReferralTicket: (poolCoinName: SupportCoins) => {
@@ -103,7 +108,7 @@ export const generateReferralQuickMethod: GenerateReferralQuickMethod = ({ build
       }
     }
     if (objToTransfer.length > 0) {
-      txBlock.transferObjects(objToTransfer as (string | TransactionObjectArgument)[], walletAddress);
+      txBlock.transferObjects(objToTransfer as (string | TransactionObjectArgument)[], txBlock.pure(walletAddress));
     }
   },
 });

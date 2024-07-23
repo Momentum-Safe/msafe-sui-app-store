@@ -20,7 +20,7 @@ import {
  * @param txBlock - TxBlock created by SuiKit .
  * @return veSCA normal methods.
  */
-const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock }) => {
+export const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock }) => {
   const veScaIds: VescaIds = {
     pkgId: builder.address.get('vesca.id'),
     table: builder.address.get('vesca.table'),
@@ -91,6 +91,12 @@ const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock
           txBlock.object(veScaIds.treasury),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
+      }),
+    mintEmptyVeSca: () =>
+      txBlock.moveCall({
+        target: `${veScaIds.pkgId}::ve_sca::mint_ve_sca_placeholder_key`,
+        arguments: [txBlock.object(veScaIds.config), txBlock.object(veScaIds.table)],
+        typeArguments: [],
       }),
   };
 };
