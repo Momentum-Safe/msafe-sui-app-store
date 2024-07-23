@@ -68,7 +68,8 @@ export type ScallopIntention =
   | SupplyAndStakeLendingIntention
   | WithdrawAndUnstakeLendingIntention
   | RedeemScaIntention
-  | MigrateAndClaimIntention;
+  | MigrateAndClaimIntention
+  | BorrowWithReferralIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -90,7 +91,8 @@ export type ScallopIntentionData =
   | SupplyAndStakeLendingIntentionData
   | WithdrawAndUnstakeLendingIntentionData
   | RedeemScaIntentionData
-  | MigrateAndClaimIntentionData;
+  | MigrateAndClaimIntentionData
+  | BorrowWithReferralIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';

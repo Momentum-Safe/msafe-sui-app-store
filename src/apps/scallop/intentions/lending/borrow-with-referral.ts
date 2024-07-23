@@ -21,7 +21,7 @@ export interface BorrowWithReferralIntentionData {
 export class BorrowWithReferralIntention extends CoreBaseIntention<BorrowWithReferralIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.Borrow;
+  txSubType: TransactionSubType.BorrowWithReferral;
 
   constructor(public readonly data: BorrowWithReferralIntentionData) {
     super(data);

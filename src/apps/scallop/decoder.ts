@@ -625,7 +625,7 @@ export class Decoder {
   private decodeBorrowWithReferral(): DecodeResult {
     const coinName = this._builder.utils.parseCoinNameFromType(this.helperBorrowWithReferral.typeArg(0));
     const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
-    const amount = this.helperBorrowWithReferral.decodeInputU64(5);
+    const amount = this.helperBorrowWithReferral.decodeInputU64(6);
     const obligationId = this.helperBorrowWithReferral.decodeSharedObjectId(1);
     const obligationKey = this.helperBorrowWithReferral.decodeOwnedObjectId(2);
     return {
