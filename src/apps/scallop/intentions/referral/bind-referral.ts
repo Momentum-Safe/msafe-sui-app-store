@@ -9,17 +9,16 @@ import { SuiNetworks } from '@/types';
 import { ScallopClient } from '../../models/scallopClient';
 import { TransactionSubType } from '../../types/utils';
 
-export interface ClaimRevenueReferralIntentionData {
+export interface BindReferralIntentionData {
   veScaKey: string;
-  coins: string[];
 }
 
-export class ClaimRevenueReferralIntention extends CoreBaseIntention<ClaimRevenueReferralIntentionData> {
+export class BindReferralIntention extends CoreBaseIntention<BindReferralIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.ClaimRevenueReferral;
+  txSubType: TransactionSubType.BindReferral;
 
-  constructor(public readonly data: ClaimRevenueReferralIntentionData) {
+  constructor(public readonly data: BindReferralIntentionData) {
     super(data);
   }
 
@@ -34,10 +33,10 @@ export class ClaimRevenueReferralIntention extends CoreBaseIntention<ClaimRevenu
       networkType: input.network.split(':')[1] as any,
     });
     scallopClient.init();
-    return scallopClient.claimRevenuReferral(this.data.veScaKey, this.data.coins);
+    return scallopClient.bindReferral(this.data.veScaKey);
   }
 
-  static fromData(data: ClaimRevenueReferralIntentionData): ClaimRevenueReferralIntention {
-    return new ClaimRevenueReferralIntention(data);
+  static fromData(data: BindReferralIntentionData): BindReferralIntention {
+    return new BindReferralIntention(data);
   }
 }

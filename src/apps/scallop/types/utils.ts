@@ -58,6 +58,7 @@ export enum TransactionSubType {
   BorrowWithReferral = 'BorrowWithReferral',
   CreateReferralLink = 'CreateReferralLink',
   ClaimRevenueReferral = 'ClaimRevenueReferral',
+  BindReferral = 'BindReferral',
 }
 
 export type DecodeResult = {

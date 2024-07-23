@@ -1011,7 +1011,9 @@ export class ScallopClient {
   }
 
   /**
-   * Create Referral Link
+   * Claim Referral Revenue
+   * @param veScaKey - The vesca key object.
+   * @param coins - The coins would claim.
    *
    * @returns Transaction block response or transaction block.
    */
@@ -1023,6 +1025,22 @@ export class ScallopClient {
     const coinsName = coins.map((coin) => this.utils.parseCoinNameFromType(coin) as SupportPoolCoins);
 
     await referral.claimReferralRevenueQuick(veScaKey, sender, coinsName);
+    return txBlock;
+  }
+
+  /**
+   * Bind Referral
+   * @param veScaKey - The vesca key object.
+   *
+   *
+   * @returns Transaction block response or transaction block.
+   */
+  public async bindReferral(veScaKey: string): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const referral = generateReferralNormalMethod({ builder: this.builder, txBlock });
+    const sender = this.walletAddress;
+    txBlock.setSender(sender);
+    referral.bindToReferral(veScaKey);
     return txBlock;
   }
 }

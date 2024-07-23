@@ -14,6 +14,9 @@ export class DecoderReferral extends Decoder {
     if (this.isClaimRevenueReferral()) {
       return this.decodeClaimRevenueReferral();
     }
+    if (this.isBindReferral()) {
+      return this.decodeBindReferral();
+    }
     return undefined;
   }
 
@@ -27,6 +30,10 @@ export class DecoderReferral extends Decoder {
     return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::mint_ve_sca_placeholder_key`);
   }
 
+  private isBindReferral() {
+    return !!this.getMoveCallTransaction(`${this.coreId.referral}::referral_bindings::bind_ve_sca_referrer`);
+  }
+
   private get helperClaimRevenueReferral() {
     const moveCalls = this.transactions
       .filter(
@@ -36,6 +43,15 @@ export class DecoderReferral extends Decoder {
       )
       .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
     return moveCalls;
+  }
+
+  private get helperBindReferral() {
+    const moveCall = this.transactions.find(
+      (trans) =>
+        trans.kind === 'MoveCall' &&
+        trans.target.startsWith(`${this.coreId.referral}::referral_bindings::bind_ve_sca_referrer`),
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
   }
 
   private decodeCreateReferralLink(): DecodeResult {
@@ -56,6 +72,17 @@ export class DecoderReferral extends Decoder {
       intentionData: {
         veScaKey,
         coins,
+      },
+    };
+  }
+
+  private decodeBindReferral(): DecodeResult {
+    const veScaKey = this.helperBindReferral.decodePureArg(1, 'address');
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.BindReferral,
+      intentionData: {
+        veScaKey,
       },
     };
   }

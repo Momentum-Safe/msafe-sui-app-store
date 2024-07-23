@@ -29,6 +29,7 @@ import {
 } from './intentions/lending/withdraw-and-unstake-lending';
 import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/lending/withdraw-collateral';
 import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/lending/withdraw-lending';
+import { BindReferralIntention, BindReferralIntentionData } from './intentions/referral/bind-referral';
 import {
   ClaimRevenueReferralIntention,
   ClaimRevenueReferralIntentionData,
@@ -81,7 +82,8 @@ export type ScallopIntention =
   | MigrateAndClaimIntention
   | BorrowWithReferralIntention
   | CreateReferralLinkIntention
-  | ClaimRevenueReferralIntention;
+  | ClaimRevenueReferralIntention
+  | BindReferralIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -106,7 +108,8 @@ export type ScallopIntentionData =
   | MigrateAndClaimIntentionData
   | BorrowWithReferralIntentionData
   | CreateReferralLinkIntentionData
-  | ClaimRevenueReferralIntentionData;
+  | ClaimRevenueReferralIntentionData
+  | BindReferralIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -222,6 +225,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.ClaimRevenueReferral:
         intention = ClaimRevenueReferralIntention.fromData(input.intentionData as ClaimRevenueReferralIntentionData);
+        break;
+      case TransactionSubType.BindReferral:
+        intention = BindReferralIntention.fromData(input.intentionData as BindReferralIntentionData);
         break;
       default:
         throw new Error('not implemented');
