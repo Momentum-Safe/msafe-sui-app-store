@@ -79,36 +79,39 @@ export const generateReferralNormalMethod: GenerateReferralNormalMethod = ({ bui
   };
 };
 
-export const generateReferralQuickMethod: GenerateReferralQuickMethod = ({ builder, txBlock }) => ({
-  claimReferralRevenueQuick: async (
-    veScaKey: SuiObjectArg,
-    walletAddress: string,
-    coinNames: SupportPoolCoins[] = [...SUPPORT_POOLS],
-  ) => {
-    const objToTransfer: SuiObjectArg[] = [];
-    for (let i = 0; i < coinNames.length; i++) {
-      if (coinNames[i] === 'sui') {
-        const rewardCoin = txBlock.claimReferralRevenue(veScaKey, coinNames[i]);
-        objToTransfer.push(rewardCoin);
-      } else {
-        const rewardCoin = txBlock.claimReferralRevenue(veScaKey, coinNames[i]);
-        try {
-          // get the matching user coin if exists
-          const coins = await builder.utils.selectCoinIds(
-            Infinity,
-            builder.utils.parseCoinType(coinNames[i]),
-            walletAddress,
-          );
-          txBlock.mergeCoins(rewardCoin, coins.slice(0, 500));
-        } catch (e) {
-          // ignore
-        } finally {
+export const generateReferralQuickMethod: GenerateReferralQuickMethod = ({ builder, txBlock }) => {
+  const normalMethod = generateReferralNormalMethod({ builder, txBlock });
+  return {
+    claimReferralRevenueQuick: async (
+      veScaKey: SuiObjectArg,
+      walletAddress: string,
+      coinNames: SupportPoolCoins[] = [...SUPPORT_POOLS],
+    ) => {
+      const objToTransfer: SuiObjectArg[] = [];
+      for (let i = 0; i < coinNames.length; i++) {
+        if (coinNames[i] === 'sui') {
+          const rewardCoin = normalMethod.claimReferralRevenue(veScaKey, coinNames[i]);
           objToTransfer.push(rewardCoin);
+        } else {
+          const rewardCoin = normalMethod.claimReferralRevenue(veScaKey, coinNames[i]);
+          try {
+            // get the matching user coin if exists
+            const coins = await builder.utils.selectCoinIds(
+              Infinity,
+              builder.utils.parseCoinType(coinNames[i]),
+              walletAddress,
+            );
+            txBlock.mergeCoins(rewardCoin, coins.slice(0, 500));
+          } catch (e) {
+            // ignore
+          } finally {
+            objToTransfer.push(rewardCoin);
+          }
         }
       }
-    }
-    if (objToTransfer.length > 0) {
-      txBlock.transferObjects(objToTransfer as (string | TransactionObjectArgument)[], txBlock.pure(walletAddress));
-    }
-  },
-});
+      if (objToTransfer.length > 0) {
+        txBlock.transferObjects(objToTransfer as (string | TransactionObjectArgument)[], txBlock.pure(walletAddress));
+      }
+    },
+  };
+};

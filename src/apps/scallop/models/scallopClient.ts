@@ -9,7 +9,7 @@ import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
 import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveBuilder';
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
-import { generateReferralNormalMethod } from '../builders/referralBuilder';
+import { generateReferralNormalMethod, generateReferralQuickMethod } from '../builders/referralBuilder';
 import { generateSCoinNormalMethod } from '../builders/sCoinBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
@@ -1007,6 +1007,22 @@ export class ScallopClient {
 
     const referralTicket = vescaMethod.normalMethod.mintEmptyVeSca();
     txBlock.transferObjects([referralTicket], sender);
+    return txBlock;
+  }
+
+  /**
+   * Create Referral Link
+   *
+   * @returns Transaction block response or transaction block.
+   */
+  public async claimRevenuReferral(veScaKey: string, coins: string[]): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const referral = generateReferralQuickMethod({ builder: this.builder, txBlock });
+    const sender = this.walletAddress;
+    txBlock.setSender(sender);
+    const coinsName = coins.map((coin) => this.utils.parseCoinNameFromType(coin) as SupportPoolCoins);
+
+    await referral.claimReferralRevenueQuick(veScaKey, sender, coinsName);
     return txBlock;
   }
 }

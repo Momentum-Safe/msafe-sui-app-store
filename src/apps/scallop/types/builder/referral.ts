@@ -38,5 +38,5 @@ export type GenerateReferralNormalMethod = (params: {
 
 export type GenerateReferralQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: SuiTxBlockWithReferralNormalMethods;
+  txBlock: TransactionBlock;
 }) => ReferralQuickMethods;
