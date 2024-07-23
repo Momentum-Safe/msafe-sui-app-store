@@ -945,10 +945,10 @@ export class ScallopClient {
   }
 
   public async migrateAndClaim(
-    veScaKey: string,
     obligationKey: string,
     obligationId: string,
     rewardCoinName: SupportBorrowIncentiveRewardCoins,
+    veScaKey?: string,
   ) {
     const txBlock = new TransactionBlock();
     const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
@@ -961,7 +961,12 @@ export class ScallopClient {
       rewardCoinName,
     );
     txBlock.transferObjects([rewardCoin], sender);
-    borrowIncentive.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    borrowIncentive.normalMethod.unstakeObligation(obligationId, obligationKey);
+    if (veScaKey) {
+      borrowIncentive.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    } else {
+      borrowIncentive.stakeObligationQuick(obligationId, obligationKey);
+    }
     return txBlock;
   }
 

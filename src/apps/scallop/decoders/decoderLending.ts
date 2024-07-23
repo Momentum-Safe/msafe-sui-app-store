@@ -140,7 +140,8 @@ export class DecoderLending extends Decoder {
   private isMigrateAndClaim() {
     const oldBorrowIncentive = this.getMoveCallTransaction(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`);
     const stakeWithVeSca = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
-    return !!oldBorrowIncentive && !!stakeWithVeSca;
+    const stakeWithoutVesca = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake`);
+    return !!oldBorrowIncentive && (!!stakeWithVeSca || !!stakeWithoutVesca);
   }
 
   private get helperClaimLendingReward() {
@@ -278,7 +279,10 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeMigrateAndClaim(): DecodeResult {
-    const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    let veScaKey;
+    if (this.helperStakeObligationWithVeSca.moveCall) {
+      veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    }
     const obligationKey = this.helperClaimBorrowReward[0].decodeSharedObjectId(2);
     const obligationId = this.helperClaimBorrowReward[0].decodeOwnedObjectId(3);
     const rewardCoinName = this._builder.utils.parseCoinNameFromType(
@@ -288,10 +292,10 @@ export class DecoderLending extends Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.MigrateAndClaim,
       intentionData: {
-        veScaKey,
         obligationKey,
         obligationId,
         rewardCoinName,
+        veScaKey,
       },
     };
   }

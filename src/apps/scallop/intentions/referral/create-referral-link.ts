@@ -26,7 +26,6 @@ export class CreateReferralLinkIntention extends CoreBaseIntention<CreateReferra
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    console.log('Create Referral Link Intentention');
     const scallopClient = new ScallopClient({
       client: input.suiClient,
       walletAddress: input.account.address,

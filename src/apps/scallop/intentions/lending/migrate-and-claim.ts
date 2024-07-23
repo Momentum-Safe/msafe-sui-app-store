@@ -10,10 +10,10 @@ import { ScallopClient } from '../../models/scallopClient';
 import { SupportBorrowIncentiveRewardCoins, TransactionSubType } from '../../types';
 
 export interface MigrateAndClaimIntentionData {
-  veScaKey: string;
   obligationKey: string;
   obligationId: string;
   rewardCoinName: SupportBorrowIncentiveRewardCoins;
+  veScaKey?: string;
 }
 
 export class MigrateAndClaimIntention extends CoreBaseIntention<MigrateAndClaimIntentionData> {
@@ -35,12 +35,12 @@ export class MigrateAndClaimIntention extends CoreBaseIntention<MigrateAndClaimI
       walletAddress: input.account.address,
       networkType: input.network.split(':')[1] as any,
     });
-    await scallopClient.init();
+    scallopClient.init();
     return scallopClient.migrateAndClaim(
-      this.data.veScaKey,
       this.data.obligationKey,
       this.data.obligationId,
       this.data.rewardCoinName,
+      this.data.veScaKey,
     );
   }
 

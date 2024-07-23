@@ -128,6 +128,7 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
     });
     await builder.init();
     const { transactionBlock } = input;
+    console.log('transactionBlock', transactionBlock);
     const decoderLending = new DecoderLending(transactionBlock, builder);
     const decoderReferral = new DecoderReferral(transactionBlock, builder);
     const decoderVesca = new DecoderVesca(transactionBlock, builder);
