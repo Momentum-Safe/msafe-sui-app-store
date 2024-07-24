@@ -1,5 +1,5 @@
 import type { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
+import { TransactionBlock, TransactionObjectArgument, TransactionResult } from '@mysten/sui.js/transactions';
 import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 import BigNumber from 'bignumber.js';
 
@@ -13,7 +13,13 @@ import { generateReferralNormalMethod, generateReferralQuickMethod } from '../bu
 import { generateSCoinNormalMethod } from '../builders/sCoinBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
-import { ADDRESSES_ID, SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SPOOLS } from '../constants';
+import {
+  ADDRESSES_ID,
+  SCA_COIN_TYPE,
+  SUPPORT_BORROW_INCENTIVE_POOLS,
+  SUPPORT_SCOIN,
+  SUPPORT_SPOOLS,
+} from '../constants';
 import type {
   ScallopInstanceParams,
   ScallopClientParams,
@@ -24,6 +30,7 @@ import type {
   SpoolIncentiveParams,
   SupportBorrowIncentiveRewardCoins,
   SupportSCoin,
+  SuiObjectArg,
 } from '../types';
 
 /**
@@ -1046,6 +1053,118 @@ export class ScallopClient {
     const sender = this.walletAddress;
     txBlock.setSender(sender);
     referral.bindToReferral(veScaKey);
+    return txBlock;
+  }
+
+  /* ==================== Migrate market coin to sCoin method ==================== */
+  /**
+   * Function to migrate all market coin in user wallet into sCoin
+   * @returns Transaction response
+   */
+  public async migrateAllMarketCoin(): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const scoinNormalMethod = generateSCoinNormalMethod({ builder: this.builder, txBlock });
+    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    txBlock.setSender(this.walletAddress);
+
+    const toTransfer: SuiObjectArg[] = [];
+    await Promise.all(
+      SUPPORT_SCOIN.map(async (sCoinName) => {
+        /**
+         * First check marketCoin inside mini wallet
+         * Then check stakedMarketCoin inside spool
+         */
+        const sCoins: SuiObjectArg[] = [];
+        let toDestroyMarketCoin: SuiObjectArg | undefined;
+
+        // check market coin in mini wallet
+        try {
+          const marketCoins = await this.utils.selectCoinIds(
+            Number.MAX_SAFE_INTEGER,
+            this.utils.parseMarketCoinType(sCoinName as SupportSCoin),
+            this.walletAddress,
+          ); // throw error no coins found
+
+          const mergedMarketCoin = marketCoins[0];
+          if (marketCoins.length > 1) {
+            txBlock.mergeCoins(mergedMarketCoin, marketCoins.slice(1));
+          }
+
+          toDestroyMarketCoin = mergedMarketCoin;
+        } catch (e: any) {
+          // Ignore
+          const errMsg = e.toString() as string;
+          if (!errMsg.includes('No valid coins found for the transaction')) {
+            throw e;
+          }
+        }
+
+        // if market coin found, mint sCoin
+        if (toDestroyMarketCoin) {
+          // mint new sCoin
+          const sCoin = scoinNormalMethod.mintSCoin(sCoinName as SupportSCoin, toDestroyMarketCoin);
+
+          // check if current sCoin exist
+          try {
+            const existSCoins = await this.utils.selectCoinIds(
+              Number.MAX_SAFE_INTEGER,
+              this.utils.parseSCoinType(sCoinName as SupportSCoin),
+              this.walletAddress,
+            ); // throw error on no coins found
+            const mergedSCoin = existSCoins[0];
+            if (existSCoins.length > 1) {
+              txBlock.mergeCoins(mergedSCoin, existSCoins.slice(1));
+            }
+
+            // merge existing sCoin to new sCoin
+            txBlock.mergeCoins(sCoin, [mergedSCoin]);
+          } catch (e: any) {
+            // ignore
+            const errMsg = e.toString() as string;
+            if (!errMsg.includes('No valid coins found for the transaction')) {
+              throw e;
+            }
+          }
+          sCoins.push(sCoin);
+        }
+
+        // check for staked market coin in spool
+        if (SUPPORT_SPOOLS.includes(sCoinName as SupportStakeMarketCoins)) {
+          try {
+            const sCoin = await spoolQuickMethod.unstakeQuick(
+              Number.MAX_SAFE_INTEGER,
+              sCoinName as SupportStakeMarketCoins,
+            );
+            if (sCoin) {
+              sCoins.push(sCoin);
+            }
+          } catch (e: any) {
+            // ignore
+            const errMsg = e.toString();
+            if (!errMsg.includes('No stake account found')) {
+              throw e;
+            }
+          }
+        }
+
+        if (sCoins.length > 0) {
+          const mergedSCoin = sCoins[0];
+          if (sCoins.length > 1) {
+            txBlock.mergeCoins(
+              mergedSCoin as TransactionObjectArgument,
+              sCoins.slice(1) as TransactionObjectArgument[],
+            );
+          }
+
+          toTransfer.push(mergedSCoin);
+        }
+      }),
+    );
+
+    if (toTransfer.length > 0) {
+      txBlock.transferObjects(toTransfer as TransactionObjectArgument[], this.walletAddress);
+    }
+
     return txBlock;
   }
 }

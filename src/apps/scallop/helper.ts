@@ -18,6 +18,7 @@ import {
 } from './intentions/lending/claim-incentive-reward';
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/lending/deposit-collateral';
 import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/lending/migrate-and-claim';
+import { MigrateScoinIntention, MigrateScoinIntentionData } from './intentions/lending/migrate-scoin';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/lending/open-obligation';
 import { RepayIntention, RepayIntentionData } from './intentions/lending/repay';
 import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/lending/stake-spool';
@@ -83,7 +84,8 @@ export type ScallopIntention =
   | BorrowWithReferralIntention
   | CreateReferralLinkIntention
   | ClaimRevenueReferralIntention
-  | BindReferralIntention;
+  | BindReferralIntention
+  | MigrateScoinIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -109,7 +111,8 @@ export type ScallopIntentionData =
   | BorrowWithReferralIntentionData
   | CreateReferralLinkIntentionData
   | ClaimRevenueReferralIntentionData
-  | BindReferralIntentionData;
+  | BindReferralIntentionData
+  | MigrateScoinIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -229,6 +232,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.BindReferral:
         intention = BindReferralIntention.fromData(input.intentionData as BindReferralIntentionData);
+        break;
+      case TransactionSubType.MigrateScoin:
+        intention = MigrateScoinIntention.fromData(input.intentionData as MigrateScoinIntentionData);
         break;
       default:
         throw new Error('not implemented');

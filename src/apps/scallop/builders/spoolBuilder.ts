@@ -2,6 +2,7 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import type { TransactionArgument, TransactionResult } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
+import { generateSCoinNormalMethod } from './sCoinBuilder';
 import { spoolRewardCoins } from '../constants/enum';
 import type { ScallopBuilder } from '../models';
 import { getStakeAccounts } from '../queries/spoolQuery';
@@ -13,6 +14,34 @@ import type {
   SuiAddressArg,
 } from '../types';
 import { requireSender } from '../utils';
+
+const stakeHelper = async (
+  builder: ScallopBuilder,
+  txBlock: TransactionBlock,
+  stakeAccount: SuiAddressArg,
+  coinType: string,
+  coinName: SupportStakeMarketCoins,
+  amount: number,
+  sender: string,
+  isSCoin = false,
+) => {
+  const scoinNormalMethod = generateSCoinNormalMethod({ builder, txBlock });
+  const spoolNormalMethod = generateSpoolNormalMethod({ builder, txBlock });
+  try {
+    const coins = await builder.utils.selectCoinIds(amount, coinType, sender);
+    const [takeCoin, leftCoin] = builder.utils.takeAmountFromCoins(txBlock, coins, amount);
+    if (isSCoin) {
+      const marketCoin = scoinNormalMethod.burnSCoin(coinName, takeCoin);
+      spoolNormalMethod.stake(stakeAccount, marketCoin, coinName);
+    } else {
+      spoolNormalMethod.stake(stakeAccount, takeCoin, coinName);
+    }
+    txBlock.transferObjects([leftCoin], sender);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
 
 /**
  * Check and get stake account id from transaction block.
@@ -172,32 +201,72 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = ({ builder, tx
       const stakeAccountIds = await requireStakeAccountIds(builder, txBlock, stakeMarketCoinName, stakeAccountId);
 
       const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
+      const sCoinType = builder.utils.parseSCoinType(stakeMarketCoinName);
       if (typeof amountOrMarketCoin === 'number') {
-        const coins = await builder.utils.selectCoinIds(amountOrMarketCoin, marketCoinType, sender);
-        const [takeCoin, leftCoin] = builder.utils.takeAmountFromCoins(txBlock, coins, amountOrMarketCoin);
-        normalMethod.stake(stakeAccountIds[0], takeCoin, stakeMarketCoinName);
-        txBlock.transferObjects([leftCoin], sender);
+        // try stake market coin
+        const stakeMarketCoinRes = await stakeHelper(
+          builder,
+          txBlock,
+          stakeAccountIds[0],
+          marketCoinType,
+          stakeMarketCoinName,
+          amountOrMarketCoin,
+          sender,
+        );
+
+        // no market coin, try sCoin
+        if (!stakeMarketCoinRes) {
+          await stakeHelper(
+            builder,
+            txBlock,
+            stakeAccountIds[0],
+            sCoinType,
+            stakeMarketCoinName,
+            amountOrMarketCoin,
+            sender,
+            true,
+          );
+        }
       } else {
         normalMethod.stake(stakeAccountIds[0], amountOrMarketCoin, stakeMarketCoinName);
       }
     },
     unstakeQuick: async (amount, stakeMarketCoinName, stakeAccountId) => {
-      let remainingAmount = amount;
       const stakeAccounts = await requireStakeAccounts(builder, txBlock, stakeMarketCoinName, stakeAccountId);
-      const stakeMarketCoins: TransactionResult[] = [];
-      for (let i = 0; i < stakeAccounts.length; i++) {
-        if (stakeAccounts[i].staked === 0) {
-          continue;
+      const toTransfer: TransactionResult[] = [];
+      stakeAccounts.forEach((account) => {
+        if (account.staked === 0) {
+          return;
         }
-        const amountToUnstake = Math.min(remainingAmount, stakeAccounts[i].staked);
-        const marketCoin = normalMethod.unstake(stakeAccounts[i].id, amountToUnstake, stakeMarketCoinName);
-        stakeMarketCoins.push(marketCoin);
-        remainingAmount -= amountToUnstake;
-        if (remainingAmount === 0) {
-          break;
+        const amountToUnstake = Math.min(amount, account.staked);
+        const marketCoin = normalMethod.unstake(account.id, amountToUnstake, stakeMarketCoinName);
+        toTransfer.push(marketCoin);
+      });
+
+      if (toTransfer.length > 0) {
+        const mergedCoin = toTransfer[0];
+
+        if (toTransfer.length > 1) {
+          txBlock.mergeCoins(mergedCoin, toTransfer.slice(1));
         }
+
+        // check for existing sCoins
+        try {
+          const existingCoins = await builder.utils.selectCoinIds(
+            Number.MAX_SAFE_INTEGER,
+            builder.utils.parseSCoinType(stakeMarketCoinName),
+            requireSender(txBlock),
+          );
+
+          if (existingCoins.length > 0) {
+            txBlock.mergeCoins(mergedCoin, existingCoins);
+          }
+        } catch (e) {
+          // ignore
+        }
+        return mergedCoin;
       }
-      return stakeMarketCoins;
+      return undefined;
     },
     claimQuick: async (stakeMarketCoinName, stakeAccountId) => {
       const stakeAccountIds = await requireStakeAccountIds(builder, txBlock, stakeMarketCoinName, stakeAccountId);

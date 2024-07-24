@@ -58,7 +58,14 @@ export class DecoderLending extends Decoder {
     if (this.isMigrateAndClaim()) {
       return this.decodeMigrateAndClaim();
     }
+    if (this.isMigrateScoinTransaction()) {
+      return this.decodeMigrateScoin();
+    }
     return undefined;
+  }
+
+  private isMigrateScoinTransaction() {
+    return !!this.getMoveCallTransaction(`${this.coreId.scoin}::s_coin_converter::mint_s_coin`);
   }
 
   private isSupplyLendingTransaction() {
@@ -276,6 +283,14 @@ export class DecoderLending extends Decoder {
       (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::repay::repay`),
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
+  }
+
+  private decodeMigrateScoin(): DecodeResult {
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.MigrateScoin,
+      intentionData: {},
+    };
   }
 
   private decodeMigrateAndClaim(): DecodeResult {
