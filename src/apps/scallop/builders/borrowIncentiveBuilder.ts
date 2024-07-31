@@ -275,8 +275,10 @@ export const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMet
       } = await requireObligationInfo(builder, txBlock, obligation as string, obligationKey as string);
 
       const unstakeObligationBeforeStake = !!txBlock.blockData.transactions.find(
-        async (txn) =>
-          txn.kind === 'MoveCall' && txn.target === `${builder.address.get('borrowIncentive.id')}::user::unstake`,
+        (txn) =>
+          txn.kind === 'MoveCall' &&
+          (txn.target === `${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::unstake` ||
+            txn.target === `${builder.address.get('borrowIncentive.id')}::user::unstake`),
       );
 
       if (!obligationLocked || unstakeObligationBeforeStake) {

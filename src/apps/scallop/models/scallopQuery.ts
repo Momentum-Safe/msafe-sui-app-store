@@ -44,7 +44,9 @@ export class ScallopQuery {
   public readonly params: ScallopQueryParams;
 
   public address: ScallopAddress;
+
   public client: SuiClient;
+
   public utils: ScallopUtils;
 
   public constructor(params: ScallopQueryParams, instance?: Omit<ScallopInstanceParams, 'query' | 'builder'>) {
