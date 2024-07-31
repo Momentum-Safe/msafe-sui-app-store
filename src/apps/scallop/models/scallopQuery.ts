@@ -44,12 +44,8 @@ export class ScallopQuery {
   public readonly params: ScallopQueryParams;
 
   public address: ScallopAddress;
-
   public client: SuiClient;
-
   public utils: ScallopUtils;
-
-  public walletAddress: string;
 
   public constructor(params: ScallopQueryParams, instance?: Omit<ScallopInstanceParams, 'query' | 'builder'>) {
     this.params = params;
@@ -60,16 +56,6 @@ export class ScallopQuery {
     this.utils = utils;
   }
 
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   * @param address - ScallopAddress instance.
-   */
-  public async init(address: ScallopAddress) {
-    this.address = address;
-  }
-
   /* ==================== Core Query Methods ==================== */
   /**
    * Get obligations data.
@@ -77,7 +63,7 @@ export class ScallopQuery {
    * @param ownerAddress - The owner address.
    * @return Obligations data.
    */
-  public async getObligations(ownerAddress?: string) {
+  public async getObligations(ownerAddress: string = this.params.walletAddress) {
     return getObligations(this, ownerAddress);
   }
 
@@ -99,7 +85,7 @@ export class ScallopQuery {
    * @param ownerAddress - The owner address.
    * @return Coin amount.
    */
-  public async getCoinAmount(assetCoinName: SupportAssetCoins, ownerAddress?: string) {
+  public async getCoinAmount(assetCoinName: SupportAssetCoins, ownerAddress: string = this.params.walletAddress) {
     return getCoinAmount(this, assetCoinName, ownerAddress);
   }
 
@@ -121,7 +107,10 @@ export class ScallopQuery {
    * @param ownerAddress - The owner address.
    * @return Market market coin amount.
    */
-  public async getMarketCoinAmount(marketCoinName: SupportMarketCoins, ownerAddress?: string) {
+  public async getMarketCoinAmount(
+    marketCoinName: SupportMarketCoins,
+    ownerAddress: string = this.params.walletAddress,
+  ) {
     return getMarketCoinAmount(this, marketCoinName, ownerAddress);
   }
 
@@ -143,7 +132,7 @@ export class ScallopQuery {
    * @param ownerAddress - The owner address.
    * @return All Stake accounts data.
    */
-  public async getAllStakeAccounts(ownerAddress?: string) {
+  public async getAllStakeAccounts(ownerAddress: string = this.params.walletAddress) {
     return getStakeAccounts(this, ownerAddress);
   }
 
@@ -154,7 +143,10 @@ export class ScallopQuery {
    * @param ownerAddress - The owner address.
    * @return Stake accounts data.
    */
-  public async getStakeAccounts(stakeMarketCoinName: SupportStakeMarketCoins, ownerAddress?: string) {
+  public async getStakeAccounts(
+    stakeMarketCoinName: SupportStakeMarketCoins,
+    ownerAddress: string = this.params.walletAddress,
+  ) {
     const allStakeAccount = await this.getAllStakeAccounts(ownerAddress);
     return allStakeAccount[stakeMarketCoinName] ?? [];
   }
@@ -169,11 +161,10 @@ export class ScallopQuery {
    * @param stakeMarketCoinNames - Specific an array of support stake market coin name.
    * @return Stake pools data.
    */
-  public async getStakePools(stakeMarketCoinNames?: SupportStakeMarketCoins[]) {
-    const marketCoinNames = stakeMarketCoinNames ?? [...SUPPORT_SPOOLS];
+  public async getStakePools(stakeMarketCoinNames: SupportStakeMarketCoins[] = [...SUPPORT_SPOOLS]) {
     const stakePools: StakePools = {};
-    for (let i = 0; i < marketCoinNames.length; i++) {
-      const stakeMarketCoinName = marketCoinNames[i];
+    for (let i = 0; i < stakeMarketCoinNames.length; i++) {
+      const stakeMarketCoinName = stakeMarketCoinNames[i];
       const stakePool = await getStakePool(this, stakeMarketCoinName);
 
       if (stakePool) {
@@ -207,14 +198,13 @@ export class ScallopQuery {
    * @param stakeMarketCoinNames - Specific an array of stake market coin name.
    * @return Stake reward pools data.
    */
-  public async getStakeRewardPools(stakeMarketCoinNames?: SupportStakeMarketCoins[]) {
-    const marketCoinNames = stakeMarketCoinNames ?? [...SUPPORT_SPOOLS];
+  public async getStakeRewardPools(stakeMarketCoinNames: SupportStakeMarketCoins[] = [...SUPPORT_SPOOLS]) {
     const stakeRewardPools: StakeRewardPools = {};
-    for (let i = 0; i < marketCoinNames.length; i++) {
-      const stakeRewardPool = await getStakeRewardPool(this, marketCoinNames[i]);
+    for (let i = 0; i < stakeMarketCoinNames.length; i++) {
+      const stakeRewardPool = await getStakeRewardPool(this, stakeMarketCoinNames[i]);
 
       if (stakeRewardPool) {
-        stakeRewardPools[marketCoinNames[i]] = stakeRewardPool;
+        stakeRewardPools[stakeMarketCoinNames[i]] = stakeRewardPool;
       }
     }
     return stakeRewardPools;
@@ -243,10 +233,10 @@ export class ScallopQuery {
    */
   public async getBorrowIncentiveAccounts(
     obligationId: string,
-    walletAddress: string,
+    walletAddress: string = this.params.walletAddress,
     coinNames?: SupportBorrowIncentiveCoins[],
   ) {
-    return queryBorrowIncentiveAccounts(this, obligationId, walletAddress || this.walletAddress, coinNames);
+    return queryBorrowIncentiveAccounts(this, obligationId, walletAddress, coinNames);
   }
 
   /**

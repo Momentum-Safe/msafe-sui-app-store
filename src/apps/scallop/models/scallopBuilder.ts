@@ -30,14 +30,9 @@ export class ScallopBuilder {
   public readonly isTestnet: boolean;
 
   public address: ScallopAddress;
-
   public query: ScallopQuery;
-
   public utils: ScallopUtils;
-
   public client: SuiClient;
-
-  public walletAddress: string;
 
   public constructor(params: ScallopBuilderParams, instance: Omit<ScallopInstanceParams, 'builder'>) {
     this.params = params;
@@ -69,7 +64,12 @@ export class ScallopBuilder {
    * @param sender - Sender address.
    * @return Take coin and left coin.
    */
-  public async selectCoin(txBlock: ScallopTxBlock, assetCoinName: SupportAssetCoins, amount: number, sender: string) {
+  public async selectCoin(
+    txBlock: ScallopTxBlock,
+    assetCoinName: SupportAssetCoins,
+    amount: number,
+    sender: string = this.params.walletAddress,
+  ) {
     const coinType = this.utils.parseCoinType(assetCoinName);
     const coins = await this.utils.selectCoinIds(amount, coinType, sender);
     const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coins, amount);
@@ -89,7 +89,7 @@ export class ScallopBuilder {
     txBlock: TransactionBlock,
     marketCoinName: SupportMarketCoins,
     amount: number,
-    sender: string,
+    sender: string = this.params.walletAddress,
   ) {
     const marketCoinType = await this.utils.parseMarketCoinType(marketCoinName);
     const coins = await this.utils.selectCoinIds(amount, marketCoinType, sender);
@@ -106,7 +106,12 @@ export class ScallopBuilder {
    * @param sender - Sender address.
    * @return Take coin and left coin.
    */
-  public async selectSCoin(txBlock: TransactionBlock, sCoinName: SupportSCoin, amount: number, sender: string) {
+  public async selectSCoin(
+    txBlock: TransactionBlock,
+    sCoinName: SupportSCoin,
+    amount: number,
+    sender: string = this.params.walletAddress,
+  ) {
     const sCoinType = this.utils.parseSCoinType(sCoinName);
     const coins = await this.utils.selectCoins(amount, sCoinType, sender);
     const coinIds = coins.map((coin) => coin.objectId);

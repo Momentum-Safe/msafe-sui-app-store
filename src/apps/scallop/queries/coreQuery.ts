@@ -162,7 +162,7 @@ export const getCoinAmounts = async (
  * @param ownerAddress - The owner address.
  * @return Owned coin amount.
  */
-export const getCoinAmount = async (query: ScallopQuery, assetCoinName: SupportAssetCoins, ownerAddress?: string) => {
+export const getCoinAmount = async (query: ScallopQuery, assetCoinName: SupportAssetCoins, ownerAddress: string) => {
   const owner = ownerAddress;
   const coinType = query.utils.parseCoinType(assetCoinName);
   const coinObjectsResponse: SuiObjectResponse[] = [];
@@ -336,7 +336,7 @@ export const queryObligation = async (query: ScallopQuery, obligationId: SuiAddr
   });
   const queryResult = await query.client.devInspectTransactionBlock({
     transactionBlock: txBlock,
-    sender: query.walletAddress,
+    sender: query.params.walletAddress,
   });
   return queryResult.events[0].parsedJson as ObligationQueryInterface;
 };

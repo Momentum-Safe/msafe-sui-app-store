@@ -17,10 +17,6 @@ export class ScallopAddress {
 
   private addresses: AddressesInterface;
 
-  public maxRetries = 5;
-
-  public retryDelayInMs = 1000;
-
   public constructor(params: ScallopAddressParams) {
     const { id } = params;
     this.id = id;
