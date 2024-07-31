@@ -4,7 +4,6 @@ import { SUI_TYPE_ARG, normalizeStructTag } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
 import {
-  ADDRESSES_ID,
   PROTOCOL_OBJECT_ID,
   spoolRewardCoins,
   borrowIncentiveRewardCoins,
@@ -58,6 +57,7 @@ export class ScallopUtils {
 
     this._address = address;
   }
+
   /**
    * Convert coin name to symbol.
    *

@@ -1,6 +1,6 @@
 import { TransactionBlock } from '@mysten/sui.js/dist/cjs/transactions';
 
-import { Scallop, ScallopBuilder } from '../models';
+import { Scallop } from '../models';
 
 export class Decoder {
   protected scallop: Scallop;

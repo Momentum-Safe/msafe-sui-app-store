@@ -1,18 +1,18 @@
 import { TransactionArgument } from '@mysten/sui.js/transactions';
 
-import { GenerateSCoinNormalMethod, GenerateSCoinQuickMethod, SCoinPkgIds, sCoinTreasuryIds } from '../types';
 import { SUPPORT_SCOIN } from '../constants';
+import { GenerateSCoinNormalMethod, GenerateSCoinQuickMethod, SCoinPkgIds, sCoinTreasuryIds } from '../types';
 
 export const generateSCoinNormalMethod: GenerateSCoinNormalMethod = async ({ builder, txBlock }) => {
   const sCoinPkgIds: SCoinPkgIds = {
     pkgId: builder.address.get('scoin.id'),
   };
 
-  const sCoinTreasuryIds: sCoinTreasuryIds = {};
+  const treasuryIds: sCoinTreasuryIds = {};
   await Promise.all(
     SUPPORT_SCOIN.map(async (sCoinName) => {
-      const treasuryId = await builder.utils.getSCoinTreasury(sCoinName);
-      sCoinTreasuryIds[sCoinName] = treasuryId;
+      const treasuryId = builder.utils.getSCoinTreasury(sCoinName);
+      treasuryIds[sCoinName] = treasuryId;
     }),
   );
 
@@ -21,7 +21,7 @@ export const generateSCoinNormalMethod: GenerateSCoinNormalMethod = async ({ bui
       txBlock.moveCall({
         target: `${sCoinPkgIds.pkgId}::s_coin_converter::mint_s_coin`,
         arguments: [
-          txBlock.object(sCoinTreasuryIds[marketCoinName]),
+          txBlock.object(treasuryIds[marketCoinName]),
           typeof marketCoin !== 'string' ? (marketCoin as TransactionArgument) : txBlock.pure(marketCoin),
         ],
         typeArguments: [
@@ -33,7 +33,7 @@ export const generateSCoinNormalMethod: GenerateSCoinNormalMethod = async ({ bui
       txBlock.moveCall({
         target: `${sCoinPkgIds.pkgId}::s_coin_converter::burn_s_coin`,
         arguments: [
-          txBlock.object(sCoinTreasuryIds[sCoinName]),
+          txBlock.object(treasuryIds[sCoinName]),
           typeof sCoin !== 'string' ? (sCoin as TransactionArgument) : txBlock.pure(sCoin),
         ],
         typeArguments: [builder.utils.parseSCoinType(sCoinName), builder.utils.parseUnderlyingSCoinType(sCoinName)],

@@ -31,7 +31,12 @@ export class StakeSpoolIntention extends ScallopCoreBaseIntention<StakeSpoolInte
     network: SuiNetworks;
     scallop: Scallop;
   }): Promise<TransactionBlock> {
-    return input.scallop.client.stake(this.data.marketCoinName, Number(this.data.amount), undefined, input.account.address);
+    return input.scallop.client.stake(
+      this.data.marketCoinName,
+      Number(this.data.amount),
+      undefined,
+      input.account.address,
+    );
   }
 
   static fromData(data: StakeSpoolIntentionData): StakeSpoolIntention {

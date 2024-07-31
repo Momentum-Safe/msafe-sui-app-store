@@ -1,6 +1,6 @@
 import { ScallopAddress } from './scallopAddress';
-import { ScallopClient } from './scallopClient';
 import { ScallopBuilder } from './scallopBuilder';
+import { ScallopClient } from './scallopClient';
 import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
 import { ADDRESSES_ID } from '../constants';
@@ -25,10 +25,15 @@ import type { ScallopParams } from '../types';
  */
 export class Scallop {
   public params: ScallopParams;
+
   public client: ScallopClient;
+
   public builder: ScallopBuilder;
+
   public query: ScallopQuery;
+
   public utils: ScallopUtils;
+
   public address: ScallopAddress;
 
   public constructor(params: ScallopParams) {

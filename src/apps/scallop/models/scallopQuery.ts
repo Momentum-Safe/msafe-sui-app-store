@@ -2,7 +2,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopUtils } from './scallopUtils';
-import { ADDRESSES_ID, SUPPORT_SPOOLS } from '../constants';
+import { SUPPORT_SPOOLS } from '../constants';
 import {
   getObligations,
   getStakeAccounts,
@@ -66,9 +66,8 @@ export class ScallopQuery {
    * @param force - Whether to force initialization.
    * @param address - ScallopAddress instance.
    */
-  public async init(force = false, address: ScallopAddress) {
+  public async init(address: ScallopAddress) {
     this.address = address;
-    this.utils.init(true, this.address);
   }
 
   /* ==================== Core Query Methods ==================== */

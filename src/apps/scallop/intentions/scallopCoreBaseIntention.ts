@@ -3,9 +3,11 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
-import { SuiNetworks } from '@/types';
-import { Scallop } from '../models';
+
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { SuiNetworks } from '@/types';
+
+import { Scallop } from '../models';
 
 export abstract class ScallopCoreBaseIntention<D> implements CoreBaseIntention<D> {
   abstract txType: TransactionType;

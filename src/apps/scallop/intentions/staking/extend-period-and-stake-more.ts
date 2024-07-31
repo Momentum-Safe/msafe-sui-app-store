@@ -2,10 +2,12 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
+
 import { SuiNetworks } from '@/types';
-import { TransactionSubType } from '../../types/utils';
+
 import { Scallop } from '../../models';
+import { TransactionSubType } from '../../types/utils';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface ExtendPeriodAndStakeMoreIntentionData {
   amount: number;

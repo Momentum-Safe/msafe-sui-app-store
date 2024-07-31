@@ -3,11 +3,10 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
-
+import { Scallop } from '../../models';
 import { SupportAssetCoins } from '../../types';
 import { SuiNetworks, TransactionSubType } from '../../types/utils';
-import { Scallop } from '../../models';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface WithdrawLendingIntentionData {
   amount: string | number;
