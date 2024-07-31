@@ -76,7 +76,7 @@ export const queryBorrowIncentivePools = async (query: ScallopQuery, coinNames?:
   txBlock.moveCall({ target: queryTarget, arguments: [txBlock.object(incentivePoolsId)] });
   const queryResult = await query.client.devInspectTransactionBlock({
     transactionBlock: txBlock,
-    sender: query.walletAddress,
+    sender: query.params.walletAddress,
   });
   const borrowIncentivePoolsQueryData = queryResult.events[0].parsedJson as BorrowIncentivePoolsQueryInterface;
 
