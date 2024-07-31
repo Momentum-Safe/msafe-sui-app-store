@@ -33,12 +33,17 @@ import { RenewExpStakePeriodIntentionData } from '@/apps/scallop/intentions/stak
 import { StakeScaIntentionData } from '@/apps/scallop/intentions/staking/stake-sca';
 import { SupplyAndStakeLendingIntentionData } from '@/apps/scallop/intentions/staking/supply-and-stake-lending';
 import { WithdrawStakedScaIntention } from '@/apps/scallop/intentions/staking/withdraw-staked-sca';
-import { ScallopBuilder } from '@/apps/scallop/models';
+import { Scallop } from '@/apps/scallop/models';
 import { appHelpers } from '@/index';
 
 import { Account, Client, Obligation, vescaKey } from './scallop.config';
 
-describe.skip('Scallop App', () => {
+describe('Scallop App', async () => {
+  const scallop = new Scallop({
+    client: Client,
+    walletAddress: Account.address,
+  });
+  await scallop.init();
   it('Test Supply Lending Transaction Build', async () => {
     const appHelper = appHelpers.getAppHelper('scallop');
 
@@ -408,12 +413,6 @@ describe.skip('Scallop App', () => {
     const appHelper = appHelpers.getAppHelper('scallop');
 
     expect(appHelper.application).toBe('scallop');
-    const build = new ScallopBuilder({
-      client: Client,
-      walletAddress: Account.address,
-      networkType: 'mainnet',
-    });
-    build.init();
     const res = await appHelper.build({
       txType: TransactionType.Other,
       txSubType: 'StakeSca',
@@ -443,12 +442,6 @@ describe.skip('Scallop App', () => {
     const appHelper = appHelpers.getAppHelper('scallop');
 
     expect(appHelper.application).toBe('scallop');
-    const build = new ScallopBuilder({
-      client: Client,
-      walletAddress: Account.address,
-      networkType: 'mainnet',
-    });
-    build.init();
     const res = await appHelper.build({
       txType: TransactionType.Other,
       txSubType: 'ExtendPeriodAndStakeMore',
@@ -457,7 +450,7 @@ describe.skip('Scallop App', () => {
       network: 'sui:mainnet',
       intentionData: {
         amount: 2e9,
-        lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
+        lockPeriodInDays: scallop.utils.getUnlockAt(1, 1836111600),
         obligationId: Obligation.obligationId,
         obligationKey: Obligation.obligationKey,
         veScaKey: vescaKey,
@@ -476,13 +469,6 @@ describe.skip('Scallop App', () => {
 
   it('Test Renew Stake Lock Period and Amount SCA Transaction Build', async () => {
     const appHelper = appHelpers.getAppHelper('scallop');
-    const build = new ScallopBuilder({
-      client: Client,
-      walletAddress: Account.address,
-      networkType: 'mainnet',
-    });
-    build.init();
-
     expect(appHelper.application).toBe('scallop');
 
     const res = await appHelper.build({
@@ -493,7 +479,7 @@ describe.skip('Scallop App', () => {
       network: 'sui:mainnet',
       intentionData: {
         amount: 10e9,
-        lockPeriodInDays: build.utils.getUnlockAt(1),
+        lockPeriodInDays: scallop.utils.getUnlockAt(1),
         vescaKey,
         isHaveRedeem: true,
         obligation: Obligation.obligationId,
@@ -509,13 +495,6 @@ describe.skip('Scallop App', () => {
 
   it('Test Extend Stake Lock Period', async () => {
     const appHelper = appHelpers.getAppHelper('scallop');
-    const build = new ScallopBuilder({
-      client: Client,
-      walletAddress: Account.address,
-      networkType: 'mainnet',
-    });
-    build.init();
-
     expect(appHelper.application).toBe('scallop');
 
     const res = await appHelper.build({
@@ -525,7 +504,7 @@ describe.skip('Scallop App', () => {
       account: Account,
       network: 'sui:mainnet',
       intentionData: {
-        lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
+        lockPeriodInDays: scallop.utils.getUnlockAt(1, 1836111600),
         veScaKey: vescaKey,
         isHaveRedeem: true,
         obligationId: Obligation.obligationId,
@@ -686,14 +665,8 @@ describe.skip('Scallop App', () => {
   });
 
   it('Test extend lock period intention serialization', () => {
-    const build = new ScallopBuilder({
-      client: Client,
-      walletAddress: Account.address,
-      networkType: 'mainnet',
-    });
-    build.init();
     const intention = ExtendStakePeriodIntention.fromData({
-      lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
+      lockPeriodInDays: scallop.utils.getUnlockAt(1, 1836111600),
       veScaKey: vescaKey,
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
@@ -706,15 +679,9 @@ describe.skip('Scallop App', () => {
   });
 
   it('Test extend stake and lock period intention serialization', () => {
-    const build = new ScallopBuilder({
-      client: Client,
-      walletAddress: Account.address,
-      networkType: 'mainnet',
-    });
-    build.init();
     const intention = ExtendPeriodAndStakeMoreIntention.fromData({
       amount: 2e9,
-      lockPeriodInDays: build.utils.getUnlockAt(1, 1836111600),
+      lockPeriodInDays: scallop.utils.getUnlockAt(1, 1836111600),
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
       veScaKey: vescaKey,

@@ -59,20 +59,7 @@ export class ScallopQuery {
     this.address = address;
     this.utils = utils;
   }
-
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   * @param address - ScallopAddress instance.
-   */
-  public async init(force = false, address: ScallopAddress) {
-    this.address = address;
-    this.utils.init(true, this.address);
-  }
-
   /* ==================== Core Query Methods ==================== */
-
   /**
    * Get obligations data.
    *
