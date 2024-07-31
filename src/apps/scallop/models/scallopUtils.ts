@@ -105,30 +105,20 @@ export class ScallopUtils {
    */
   public parseCoinType(coinName: SupportCoins) {
     const validCoinName = isMarketCoin(coinName) ? this.parseCoinName(coinName) : coinName;
-    const coinPackageId =
-      this._address.get(`core.coins.${validCoinName as SupportPoolCoins}.id`) ||
-      coinIds[coinName as SupportPoolCoins] ||
-      undefined;
-    if (!coinPackageId) {
-      throw Error(`Coin ${coinName} is not supported`);
-    }
-    if (coinName === 'sui') {
-      return normalizeStructTag(`${coinPackageId}::sui::SUI`);
-    }
-    const wormHolePckageIds = [
-      this._address.get('core.coins.usdc.id') ?? wormholeCoinIds.usdc,
-      this._address.get('core.coins.usdt.id') ?? wormholeCoinIds.usdt,
-      this._address.get('core.coins.eth.id') ?? wormholeCoinIds.eth,
-      this._address.get('core.coins.btc.id') ?? wormholeCoinIds.btc,
-      this._address.get('core.coins.sol.id') ?? wormholeCoinIds.sol,
-      this._address.get('core.coins.apt.id') ?? wormholeCoinIds.apt,
+    const coinPackageId = coinIds[coinName as SupportPoolCoins];
+    const wormHolePackageIds = [
+      wormholeCoinIds.usdc,
+      wormholeCoinIds.usdt,
+      wormholeCoinIds.eth,
+      wormholeCoinIds.btc,
+      wormholeCoinIds.sol,
+      wormholeCoinIds.apt,
     ];
-    const voloPckageIds = [this._address.get('core.coins.vsui.id') ?? voloCoinIds.vsui];
-    if (wormHolePckageIds.includes(coinPackageId)) {
+    if (wormHolePackageIds.includes(coinPackageId)) {
       return `${coinPackageId}::coin::COIN`;
     }
-    if (voloPckageIds.includes(coinPackageId)) {
-      return `${coinPackageId}::cert::CERT`;
+    if (coinName === 'vsui') {
+      return `${voloCoinIds.vsui}::cert::CERT`;
     }
     return `${coinPackageId}::${validCoinName}::${validCoinName.toUpperCase()}`;
   }
