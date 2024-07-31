@@ -3,12 +3,12 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../../models/scallopClient';
+import { Scallop } from '../../models';
 import { SupportPoolCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface BorrowWithReferralIntentionData {
   coinName: SupportPoolCoins;
@@ -18,7 +18,7 @@ export interface BorrowWithReferralIntentionData {
   veScaKey: string;
 }
 
-export class BorrowWithReferralIntention extends CoreBaseIntention<BorrowWithReferralIntentionData> {
+export class BorrowWithReferralIntention extends ScallopCoreBaseIntention<BorrowWithReferralIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.BorrowWithReferral;
@@ -31,14 +31,9 @@ export class BorrowWithReferralIntention extends CoreBaseIntention<BorrowWithRef
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
-    return scallopClient.borrowWithReferral(
+    return input.scallop.client.borrowWithReferral(
       this.data.coinName,
       Number(this.data.amount),
       this.data.obligationId,

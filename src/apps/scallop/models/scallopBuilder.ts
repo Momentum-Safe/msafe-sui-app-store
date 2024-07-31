@@ -1,11 +1,9 @@
 import type { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
-import { ADDRESSES_ID } from '../constants';
 import type {
   ScallopInstanceParams,
   ScallopBuilderParams,
@@ -32,53 +30,19 @@ export class ScallopBuilder {
   public readonly isTestnet: boolean;
 
   public address: ScallopAddress;
-
   public query: ScallopQuery;
-
   public utils: ScallopUtils;
-
   public client: SuiClient;
 
-  public walletAddress: string;
-
-  public constructor(params: ScallopBuilderParams, instance?: ScallopInstanceParams) {
+  public constructor(params: ScallopBuilderParams, instance: Omit<ScallopInstanceParams, 'builder'>) {
     this.params = params;
-    this.address =
-      instance?.address ??
-      new ScallopAddress({
-        id: params?.addressesId || ADDRESSES_ID,
-        network: params?.networkType,
-      });
-    this.query =
-      instance?.query ??
-      new ScallopQuery(params, {
-        address: this.address,
-      });
-    this.utils =
-      instance?.utils ??
-      new ScallopUtils(this.params, {
-        address: this.address,
-        query: this.query,
-      });
     this.client = params.client;
-    this.walletAddress = normalizeSuiAddress(params.walletAddress);
-    this.isTestnet = params.networkType ? params.networkType === 'testnet' : false;
-  }
 
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   * @param address - ScallopAddress instance.
-   */
-  public async init(force = false, address?: ScallopAddress) {
-    if (force || !this.address.getAddresses() || !address?.getAddresses()) {
-      this.address.read();
-    } else {
-      this.address = address;
-    }
-    this.query.init(force, this.address);
-    this.utils.init(force, this.address);
+    const { address, query, utils } = instance;
+    this.address = address;
+    this.query = query;
+    this.utils = utils;
+    this.isTestnet = params.networkType ? params.networkType === 'testnet' : false;
   }
 
   /**
@@ -100,7 +64,12 @@ export class ScallopBuilder {
    * @param sender - Sender address.
    * @return Take coin and left coin.
    */
-  public async selectCoin(txBlock: ScallopTxBlock, assetCoinName: SupportAssetCoins, amount: number, sender: string) {
+  public async selectCoin(
+    txBlock: ScallopTxBlock,
+    assetCoinName: SupportAssetCoins,
+    amount: number,
+    sender: string = this.params.walletAddress,
+  ) {
     const coinType = this.utils.parseCoinType(assetCoinName);
     const coins = await this.utils.selectCoinIds(amount, coinType, sender);
     const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coins, amount);
@@ -120,9 +89,9 @@ export class ScallopBuilder {
     txBlock: TransactionBlock,
     marketCoinName: SupportMarketCoins,
     amount: number,
-    sender: string,
+    sender: string = this.params.walletAddress,
   ) {
-    const marketCoinType = this.utils.parseMarketCoinType(marketCoinName);
+    const marketCoinType = await this.utils.parseMarketCoinType(marketCoinName);
     const coins = await this.utils.selectCoinIds(amount, marketCoinType, sender);
     const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coins, amount);
     return { takeCoin, leftCoin };
@@ -137,7 +106,12 @@ export class ScallopBuilder {
    * @param sender - Sender address.
    * @return Take coin and left coin.
    */
-  public async selectSCoin(txBlock: TransactionBlock, sCoinName: SupportSCoin, amount: number, sender: string) {
+  public async selectSCoin(
+    txBlock: TransactionBlock,
+    sCoinName: SupportSCoin,
+    amount: number,
+    sender: string = this.params.walletAddress,
+  ) {
     const sCoinType = this.utils.parseSCoinType(sCoinName);
     const coins = await this.utils.selectCoins(amount, sCoinType, sender);
     const coinIds = coins.map((coin) => coin.objectId);

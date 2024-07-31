@@ -3,17 +3,17 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../../models/scallopClient';
+import { Scallop } from '../../models';
 import { TransactionSubType } from '../../types/utils';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface WithdrawStakedScaIntentionData {
   vescaKey?: string;
 }
 
-export class WithdrawStakedScaIntention extends CoreBaseIntention<WithdrawStakedScaIntentionData> {
+export class WithdrawStakedScaIntention extends ScallopCoreBaseIntention<WithdrawStakedScaIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.WithdrawStakedSca;
@@ -26,14 +26,9 @@ export class WithdrawStakedScaIntention extends CoreBaseIntention<WithdrawStaked
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
-    return scallopClient.withdrawUnlockedSca(this.data.vescaKey, input.account.address);
+    return input.scallop.client.withdrawUnlockedSca(this.data.vescaKey, input.account.address);
   }
 
   static fromData(data: WithdrawStakedScaIntentionData): WithdrawStakedScaIntention {

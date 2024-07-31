@@ -1,29 +1,29 @@
 import { TransactionBlock } from '@mysten/sui.js/dist/cjs/transactions';
 
-import { ScallopBuilder } from '../models';
+import { Scallop } from '../models';
 
 export class Decoder {
-  protected _builder: ScallopBuilder;
+  protected scallop: Scallop;
 
   constructor(
     public readonly txb: TransactionBlock,
-    builder: ScallopBuilder,
+    scallop: Scallop,
   ) {
-    this._builder = builder;
+    this.scallop = scallop;
   }
 
   protected get coreId() {
     return {
-      protocolPkg: this._builder.address.get('core.packages.protocol.id'),
-      market: this._builder.address.get('core.market'),
-      version: this._builder.address.get('core.version'),
-      coinDecimalsRegistry: this._builder.address.get('core.coinDecimalsRegistry'),
-      xOracle: this._builder.address.get('core.oracles.xOracle'),
-      spoolPkg: this._builder.address.get('spool.id'),
-      borrowIncentivePkg: this._builder.address.get('borrowIncentive.id'),
-      veScaPkgId: this._builder.address.get('vesca.id'),
-      scoin: this._builder.address.get('scoin.id'),
-      referral: this._builder.address.get('referral.id'),
+      protocolPkg: this.scallop.address.get('core.packages.protocol.id'),
+      market: this.scallop.address.get('core.market'),
+      version: this.scallop.address.get('core.version'),
+      coinDecimalsRegistry: this.scallop.address.get('core.coinDecimalsRegistry'),
+      xOracle: this.scallop.address.get('core.oracles.xOracle'),
+      spoolPkg: this.scallop.address.get('spool.id'),
+      borrowIncentivePkg: this.scallop.address.get('borrowIncentive.id'),
+      veScaPkgId: this.scallop.address.get('vesca.id'),
+      scoin: this.scallop.address.get('scoin.id'),
+      referral: this.scallop.address.get('referral.id'),
     };
   }
 

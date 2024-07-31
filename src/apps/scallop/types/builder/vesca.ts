@@ -40,9 +40,9 @@ export type VeScaTxBlock = SuiTxBlockWithVeScaNormalMethods & VeScaQuickMethods;
 export type GenerateVeScaNormalMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => VeScaNormalMethods;
+}) => Promise<VeScaNormalMethods>;
 
 export type GenerateVeScaQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => VeScaQuickMethods;
+}) => Promise<VeScaQuickMethods>;

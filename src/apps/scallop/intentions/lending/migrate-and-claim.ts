@@ -3,11 +3,11 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../../models/scallopClient';
+import { Scallop } from '../../models';
 import { SupportBorrowIncentiveRewardCoins, TransactionSubType } from '../../types';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface MigrateAndClaimIntentionData {
   obligationKey: string;
@@ -16,7 +16,7 @@ export interface MigrateAndClaimIntentionData {
   veScaKey?: string;
 }
 
-export class MigrateAndClaimIntention extends CoreBaseIntention<MigrateAndClaimIntentionData> {
+export class MigrateAndClaimIntention extends ScallopCoreBaseIntention<MigrateAndClaimIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.MigrateAndClaim;
@@ -29,14 +29,9 @@ export class MigrateAndClaimIntention extends CoreBaseIntention<MigrateAndClaimI
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
-    return scallopClient.migrateAndClaim(
+    return input.scallop.client.migrateAndClaim(
       this.data.obligationKey,
       this.data.obligationId,
       this.data.rewardCoinName,

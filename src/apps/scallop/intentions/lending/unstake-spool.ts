@@ -3,12 +3,12 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../../models/scallopClient';
+import { Scallop } from '../../models';
 import { SupportStakeMarketCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface UnstakeSpoolIntentionData {
   amount: number | string;
@@ -16,7 +16,7 @@ export interface UnstakeSpoolIntentionData {
   stakeAccountId: string | null;
 }
 
-export class UnstakeSpoolIntention extends CoreBaseIntention<UnstakeSpoolIntentionData> {
+export class UnstakeSpoolIntention extends ScallopCoreBaseIntention<UnstakeSpoolIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.UnstakeSpool;
@@ -29,14 +29,14 @@ export class UnstakeSpoolIntention extends CoreBaseIntention<UnstakeSpoolIntenti
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
-    return scallopClient.unstake(this.data.marketCoinName, Number(this.data.amount), undefined, input.account.address);
+    return input.scallop.client.unstake(
+      this.data.marketCoinName,
+      Number(this.data.amount),
+      undefined,
+      input.account.address,
+    );
   }
 
   static fromData(data: UnstakeSpoolIntentionData): UnstakeSpoolIntention {

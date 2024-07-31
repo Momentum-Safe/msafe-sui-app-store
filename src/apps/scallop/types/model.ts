@@ -10,31 +10,26 @@ export type ScallopClientFnReturnType<T extends boolean> = T extends true
   : TransactionBlock;
 
 export type ScallopInstanceParams = {
-  address?: ScallopAddress;
-  query?: ScallopQuery;
-  utils?: ScallopUtils;
-  builder?: ScallopBuilder;
+  address: ScallopAddress;
+  query: ScallopQuery;
+  utils: ScallopUtils;
+  builder: ScallopBuilder;
 };
 
 export type ScallopAddressParams = {
   id: string;
-  auth?: string;
-  network?: NetworkType;
 };
 
 export type ScallopParams = {
-  addressesId?: string;
-  networkType?: NetworkType;
   client: SuiClient;
   walletAddress: string;
+  address?: ScallopAddress;
+  networkType?: NetworkType;
 };
 
-export type ScallopClientParams = ScallopParams & {
-  walletAddress: string;
-};
+export type ScallopClientParams = ScallopParams;
 
 export type ScallopBuilderParams = ScallopParams & {
-  walletAddress: string;
   pythEndpoints?: string[];
 };
 

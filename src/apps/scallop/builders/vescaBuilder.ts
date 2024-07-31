@@ -20,7 +20,7 @@ import {
  * @param txBlock - TxBlock created by SuiKit .
  * @return veSCA normal methods.
  */
-export const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock }) => {
+export const generateNormalVeScaMethod: GenerateVeScaNormalMethod = async ({ builder, txBlock }) => {
   const veScaIds: VescaIds = {
     pkgId: builder.address.get('vesca.id'),
     table: builder.address.get('vesca.table'),
@@ -113,8 +113,8 @@ export const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, 
  * @param txBlock - TxBlock created by SuiKit .
  * @return veSCA quick methods.
  */
-export const generateQuickVeScaMethod: GenerateVeScaQuickMethod = ({ builder, txBlock }) => {
-  const normalMethod = generateNormalVeScaMethod({ builder, txBlock });
+export const generateQuickVeScaMethod: GenerateVeScaQuickMethod = async ({ builder, txBlock }) => {
+  const normalMethod = await generateNormalVeScaMethod({ builder, txBlock });
   return {
     normalMethod,
     lockScaQuick: async (amountOrCoin, lockPeriodInDays, autoCheck = true) => {

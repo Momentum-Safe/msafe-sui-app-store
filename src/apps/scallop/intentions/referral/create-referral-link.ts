@@ -3,16 +3,16 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../../models/scallopClient';
+import { Scallop } from '../../models';
 import { TransactionSubType } from '../../types/utils';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CreateReferralLinkIntentionData {}
 
-export class CreateReferralLinkIntention extends CoreBaseIntention<CreateReferralLinkIntentionData> {
+export class CreateReferralLinkIntention extends ScallopCoreBaseIntention<CreateReferralLinkIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.CreateReferralLink;
@@ -25,14 +25,9 @@ export class CreateReferralLinkIntention extends CoreBaseIntention<CreateReferra
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
-    return scallopClient.createReferralLink();
+    return input.scallop.client.createReferralLink();
   }
 
   static fromData(data: CreateReferralLinkIntentionData): CreateReferralLinkIntention {

@@ -53,12 +53,12 @@ export type BorrowIncentiveTxBlock = SuiTxBlockWithBorrowIncentiveNormalMethods 
 export type GenerateBorrowIncentiveNormalMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => BorrowIncentiveNormalMethods;
+}) => Promise<BorrowIncentiveNormalMethods>;
 
 export type GenerateBorrowIncentiveQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => BorrowIncentiveQuickMethods;
+}) => Promise<BorrowIncentiveQuickMethods>;
 
 export type BorrowIncentiveParams = {
   obligationId: string;

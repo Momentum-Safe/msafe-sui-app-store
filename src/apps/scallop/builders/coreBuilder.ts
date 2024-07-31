@@ -61,7 +61,7 @@ const requireObligationInfo = async (
  * @param txBlock - TxBlock created by SuiKit.
  * @return Core normal methods.
  */
-export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, txBlock }) => {
+export const generateCoreNormalMethod: GenerateCoreNormalMethod = async ({ builder, txBlock }) => {
   const coreIds: CoreIds = {
     protocolPkg: builder.address.get('core.packages.protocol.id'),
     market: builder.address.get('core.market'),
@@ -277,9 +277,9 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
  * @param txBlock - TxBlock created by SuiKit.
  * @return Core quick methods.
  */
-export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBlock }) => {
-  const normalMethod = generateCoreNormalMethod({ builder, txBlock });
-  const scoinNormalMethod = generateSCoinNormalMethod({ builder, txBlock });
+export const generateCoreQuickMethod: GenerateCoreQuickMethod = async ({ builder, txBlock }) => {
+  const normalMethod = await generateCoreNormalMethod({ builder, txBlock });
+  const scoinNormalMethod = await generateSCoinNormalMethod({ builder, txBlock });
   return {
     normalMethod,
     addCollateralQuick: async (amount, collateralCoinName, obligationId) => {

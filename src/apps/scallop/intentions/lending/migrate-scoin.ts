@@ -3,16 +3,16 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../../models/scallopClient';
+import { Scallop } from '../../models';
 import { TransactionSubType } from '../../types';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface MigrateScoinIntentionData {}
 
-export class MigrateScoinIntention extends CoreBaseIntention<MigrateScoinIntentionData> {
+export class MigrateScoinIntention extends ScallopCoreBaseIntention<MigrateScoinIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.MigrateScoin;
@@ -25,14 +25,9 @@ export class MigrateScoinIntention extends CoreBaseIntention<MigrateScoinIntenti
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
-    return scallopClient.migrateAllMarketCoin();
+    return input.scallop.client.migrateAllMarketCoin();
   }
 
   static fromData(data: MigrateScoinIntentionData): MigrateScoinIntention {

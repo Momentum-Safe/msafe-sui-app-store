@@ -11,7 +11,7 @@ import {
   SuiObjectArg,
 } from '../types';
 
-export const generateReferralNormalMethod: GenerateReferralNormalMethod = ({ builder, txBlock }) => {
+export const generateReferralNormalMethod: GenerateReferralNormalMethod = async ({ builder, txBlock }) => {
   const referralIds: ReferralIds = {
     referralPgkId: builder.address.get('referral.id'),
     referralBindings: builder.address.get('referral.referralBindings'),
@@ -79,8 +79,8 @@ export const generateReferralNormalMethod: GenerateReferralNormalMethod = ({ bui
   };
 };
 
-export const generateReferralQuickMethod: GenerateReferralQuickMethod = ({ builder, txBlock }) => {
-  const normalMethod = generateReferralNormalMethod({ builder, txBlock });
+export const generateReferralQuickMethod: GenerateReferralQuickMethod = async ({ builder, txBlock }) => {
+  const normalMethod = await generateReferralNormalMethod({ builder, txBlock });
   return {
     claimReferralRevenueQuick: async (
       veScaKey: SuiObjectArg,
