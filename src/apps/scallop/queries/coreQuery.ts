@@ -24,7 +24,7 @@ import {
  */
 export const getObligations = async (query: ScallopQuery, ownerAddress: string) => {
   const owner = ownerAddress;
-  const protocolObjectId = query.address.get('core.object') || PROTOCOL_OBJECT_ID;
+  const protocolObjectId = await query.address.get('core.object') || PROTOCOL_OBJECT_ID;
   const keyObjectsResponse: SuiObjectResponse[] = [];
   let hasNextPage = false;
   let nextCursor: string | null = null;
@@ -326,7 +326,7 @@ export const getMarketCoinAmount = async (
  * @return Obligation data.
  */
 export const queryObligation = async (query: ScallopQuery, obligationId: SuiAddressArg) => {
-  const packageId = query.address.get('core.packages.query.id');
+  const packageId = await query.address.get('core.packages.query.id');
   const queryTarget = `${packageId}::obligation_query::obligation_data` as `${string}::${string}::${string}`;
   const txBlock = new TransactionBlock();
   txBlock.moveCall({

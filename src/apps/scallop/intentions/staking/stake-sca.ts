@@ -8,6 +8,7 @@ import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../../models/scallopClient';
 import { TransactionSubType } from '../../types/utils';
+import { scallopInstance } from '../../models';
 
 export interface StakeScaIntentionData {
   amount: number;
@@ -33,12 +34,9 @@ export class StakeScaIntention extends CoreBaseIntention<StakeScaIntentionData> 
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
     return scallopClient.stakeSca(
       this.data.amount,
       this.data.isObligationLocked,

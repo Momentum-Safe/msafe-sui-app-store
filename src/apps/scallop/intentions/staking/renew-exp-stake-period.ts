@@ -8,6 +8,7 @@ import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../../models/scallopClient';
 import { TransactionSubType } from '../../types/utils';
+import { scallopInstance } from '../../models';
 
 export interface RenewExpStakePeriodIntentionData {
   amount: number;
@@ -34,12 +35,9 @@ export class RenewExpStakePeriodIntention extends CoreBaseIntention<RenewExpStak
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
     return scallopClient.renewExpiredStakeSca(
       this.data.amount,
       this.data.lockPeriodInDays,

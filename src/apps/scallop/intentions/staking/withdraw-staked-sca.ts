@@ -8,6 +8,7 @@ import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../../models/scallopClient';
 import { TransactionSubType } from '../../types/utils';
+import { scallopInstance } from '../../models';
 
 export interface WithdrawStakedScaIntentionData {
   vescaKey?: string;
@@ -27,12 +28,9 @@ export class WithdrawStakedScaIntention extends CoreBaseIntention<WithdrawStaked
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
     return scallopClient.withdrawUnlockedSca(this.data.vescaKey, input.account.address);
   }
 

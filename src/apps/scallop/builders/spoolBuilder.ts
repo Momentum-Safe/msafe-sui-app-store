@@ -12,8 +12,11 @@ import type {
   GenerateSpoolQuickMethod,
   SupportStakeMarketCoins,
   SuiAddressArg,
+  StakePoolIds,
+  RewardPoolIds,
 } from '../types';
 import { requireSender } from '../utils';
+import { SUPPORT_SPOOLS } from '../constants';
 
 const stakeHelper = async (
   builder: ScallopBuilder,
@@ -25,8 +28,8 @@ const stakeHelper = async (
   sender: string,
   isSCoin = false,
 ) => {
-  const scoinNormalMethod = generateSCoinNormalMethod({ builder, txBlock });
-  const spoolNormalMethod = generateSpoolNormalMethod({ builder, txBlock });
+  const scoinNormalMethod = await generateSCoinNormalMethod({ builder, txBlock });
+  const spoolNormalMethod = await generateSpoolNormalMethod({ builder, txBlock });
   try {
     const coins = await builder.utils.selectCoinIds(amount, coinType, sender);
     const [takeCoin, leftCoin] = builder.utils.takeAmountFromCoins(txBlock, coins, amount);
@@ -118,14 +121,24 @@ const requireStakeAccounts = async (
  * @param txBlock - TxBlock created by SuiKit .
  * @return Spool normal methods.
  */
-export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = ({ builder, txBlock }) => {
+export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ builder, txBlock }) => {
   const spoolIds: SpoolIds = {
-    spoolPkg: builder.address.get('spool.id'),
+    spoolPkg: await builder.address.get('spool.id'),
   };
+  const stakePoolIds: StakePoolIds = {};
+  const rewardPoolIds: RewardPoolIds = {};
+  await Promise.all(
+    SUPPORT_SPOOLS.map(async (stakeMarketCoinName) => {
+      const spoolId = await builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
+      const rewardId = await builder.address.get(`spool.pools.${stakeMarketCoinName}.rewardPoolId`);
+      stakePoolIds[stakeMarketCoinName] = spoolId;
+      rewardPoolIds[stakeMarketCoinName] = rewardId;
+    }),
+  );
   return {
     createStakeAccount: (stakeMarketCoinName) => {
       const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
-      const stakePoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
+      const stakePoolId = stakePoolIds[stakeMarketCoinName];
       return txBlock.moveCall({
         target: `${spoolIds.spoolPkg}::user::new_spool_account`,
         arguments: [txBlock.object(stakePoolId), txBlock.object(SUI_CLOCK_OBJECT_ID)],
@@ -134,7 +147,7 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = ({ builder, 
     },
     stake: (stakeAccount, coin, stakeMarketCoinName) => {
       const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
-      const stakePoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
+      const stakePoolId = stakePoolIds[stakeMarketCoinName];
       txBlock.moveCall({
         target: `${spoolIds.spoolPkg}::user::stake`,
         arguments: [
@@ -148,7 +161,7 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = ({ builder, 
     },
     unstake: (stakeAccount, amount, stakeMarketCoinName) => {
       const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
-      const stakePoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
+      const stakePoolId = stakePoolIds[stakeMarketCoinName];
       return txBlock.moveCall({
         target: `${spoolIds.spoolPkg}::user::unstake`,
         arguments: [
@@ -161,8 +174,8 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = ({ builder, 
       });
     },
     claim: (stakeAccount, stakeMarketCoinName) => {
-      const stakePoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
-      const rewardPoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.rewardPoolId`);
+      const stakePoolId = stakePoolIds[stakeMarketCoinName];
+      const rewardPoolId = rewardPoolIds[stakeMarketCoinName];
       const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
       const rewardCoinName = spoolRewardCoins[stakeMarketCoinName];
       const rewardCoinType = builder.utils.parseCoinType(rewardCoinName);
@@ -192,8 +205,8 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = ({ builder, 
  * @param txBlock - TxBlock created by SuiKit .
  * @return Spool quick methods.
  */
-export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = ({ builder, txBlock }) => {
-  const normalMethod = generateSpoolNormalMethod({ builder, txBlock });
+export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ builder, txBlock }) => {
+  const normalMethod = await generateSpoolNormalMethod({ builder, txBlock });
   return {
     normalMethod,
     stakeQuick: async (amountOrMarketCoin, stakeMarketCoinName, stakeAccountId) => {

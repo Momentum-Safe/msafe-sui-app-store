@@ -8,6 +8,7 @@ import { SuiNetworks } from '@/types';
 
 import { ScallopClient } from '../../models/scallopClient';
 import { NetworkType, TransactionSubType } from '../../types';
+import { scallopInstance } from '../../models';
 
 export interface RedeemScaIntentionData {
   veScaKey: string;
@@ -27,13 +28,10 @@ export class RedeemScaIntention extends CoreBaseIntention<RedeemScaIntentionData
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const network = input.network.split(':')[1] as NetworkType;
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: network,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
+    
     return scallopClient.redeemSca(this.data.veScaKey);
   }
 

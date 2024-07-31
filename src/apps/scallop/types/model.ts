@@ -18,23 +18,20 @@ export type ScallopInstanceParams = {
 
 export type ScallopAddressParams = {
   id: string;
-  auth?: string;
-  network?: NetworkType;
 };
 
 export type ScallopParams = {
   addressesId?: string;
   networkType?: NetworkType;
-  client: SuiClient;
-  walletAddress: string;
+  client?: SuiClient;
 };
 
 export type ScallopClientParams = ScallopParams & {
-  walletAddress: string;
+  walletAddress?: string;
 };
 
 export type ScallopBuilderParams = ScallopParams & {
-  walletAddress: string;
+  walletAddress?: string;
   pythEndpoints?: string[];
 };
 

@@ -7,6 +7,9 @@ import { SuiObjectArg } from '../utils';
 export type SCoinPkgIds = {
   pkgId: string;
 };
+export type sCoinTreasuryIds = {
+  [k in SupportSCoin]?: string;
+};
 
 export type SCoinNormalMethods = {
   /**
@@ -36,9 +39,9 @@ export type SCoinTxBlock = SuiTxBlockWithSCoinNormalMethods & SCoinQuickMethods;
 export type GenerateSCoinNormalMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => SCoinNormalMethods;
+}) => Promise<SCoinNormalMethods>;
 
 export type GenerateSCoinQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: SuiTxBlockWithSCoinNormalMethods;
-}) => SCoinQuickMethods;
+}) => Promise<SCoinQuickMethods>;

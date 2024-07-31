@@ -30,8 +30,8 @@ export const queryBorrowIncentiveAccounts = async (
   borrowIncentiveCoinNames?: SupportBorrowIncentiveCoins[],
 ) => {
   const coinName = borrowIncentiveCoinNames || [...SUPPORT_BORROW_INCENTIVE_POOLS];
-  const queryPkgId = query.address.get('borrowIncentive.query');
-  const incentiveAccountsId = query.address.get('borrowIncentive.incentiveAccounts');
+  const queryPkgId = await query.address.get('borrowIncentive.query');
+  const incentiveAccountsId = await query.address.get('borrowIncentive.incentiveAccounts');
   const queryTarget =
     `${queryPkgId}::incentive_account_query::incentive_account_data` as `${string}::${string}::${string}`;
   const txBlock = new TransactionBlock();
@@ -68,8 +68,8 @@ export const queryBorrowIncentiveAccounts = async (
  */
 export const queryBorrowIncentivePools = async (query: ScallopQuery, coinNames?: SupportBorrowIncentiveCoins[]) => {
   const borrowIncentiveCoinNames = coinNames || [...SUPPORT_BORROW_INCENTIVE_POOLS];
-  const queryPkgId = query.address.get('borrowIncentive.query');
-  const incentivePoolsId = query.address.get('borrowIncentive.incentivePools');
+  const queryPkgId = await query.address.get('borrowIncentive.query');
+  const incentivePoolsId = await query.address.get('borrowIncentive.incentivePools');
 
   const txBlock = new TransactionBlock();
   const queryTarget = `${queryPkgId}::incentive_pools_query::incentive_pools_data` as `${string}::${string}::${string}`;

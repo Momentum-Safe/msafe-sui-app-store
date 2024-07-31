@@ -59,6 +59,7 @@ import { ScallopBuilder } from './models';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
 import { MSafeAppHelper } from '../interface';
+import scallopInstance from './models/scallop';
 
 export type ScallopIntention =
   | SupplyLendingIntention
@@ -124,12 +125,17 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
     txSubType: TransactionSubType;
     intentionData: ScallopIntentionData;
   }> {
-    const builder = new ScallopBuilder({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    await builder.init();
+    const builder = scallopInstance.builder;
+    builder.client = input.suiClient;
+    builder.walletAddress = input.account.address;
+
+    // const builder = new ScallopBuilder({
+    //   client: input.suiClient,
+    //   walletAddress: input.account.address,
+    //   networkType: input.network.split(':')[1] as any,
+    // });
+    // await builder.init();
+
     const { transactionBlock } = input;
     console.log('transactionBlock', transactionBlock);
     const decoderLending = new DecoderLending(transactionBlock, builder);

@@ -8,6 +8,7 @@ import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { ScallopClient } from '../../models/scallopClient';
 import { NetworkType, SupportAssetCoins } from '../../types';
 import { SuiNetworks, TransactionSubType } from '../../types/utils';
+import { scallopInstance } from '../../models';
 
 export interface WithdrawLendingIntentionData {
   amount: string | number;
@@ -28,13 +29,10 @@ export class WithdrawLendingIntention extends CoreBaseIntention<WithdrawLendingI
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const network = input.network.split(':')[1] as NetworkType;
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: network,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
+    
     return scallopClient.withdraw(this.data.coinName, Number(this.data.amount), input.account.address);
   }
 

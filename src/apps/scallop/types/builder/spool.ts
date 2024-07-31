@@ -1,12 +1,19 @@
 import type { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
 
 import type { ScallopBuilder } from '../../models';
-import type { SupportStakeMarketCoins } from '../constant';
+import type { SupportStakeCoins, SupportStakeMarketCoins } from '../constant';
 import { SuiAddressArg, SuiObjectArg, SuiTxArg } from '../utils';
 
 export type SpoolIds = {
   spoolPkg: string;
 };
+
+export type StakePoolIds = {
+  [k in SupportStakeMarketCoins]?: string;
+}
+export type RewardPoolIds = {
+  [k in SupportStakeMarketCoins]?: string;
+}
 
 export type SpoolNormalMethods = {
   createStakeAccount: (stakeMarketCoinName: SupportStakeMarketCoins) => TransactionResult;
@@ -44,12 +51,12 @@ export type SpoolTxBlock = SuiTxBlockWithSpoolNormalMethods & SpoolQuickMethods;
 export type GenerateSpoolNormalMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => SpoolNormalMethods;
+}) => Promise<SpoolNormalMethods>;
 
 export type GenerateSpoolQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => SpoolQuickMethods;
+}) => Promise<SpoolQuickMethods>;
 
 export type SpoolIncentiveParams = {
   stakeMarketCoinName: SupportStakeMarketCoins;

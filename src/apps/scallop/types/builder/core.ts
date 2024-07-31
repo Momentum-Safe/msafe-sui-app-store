@@ -106,9 +106,9 @@ export type CoreTxBlock = SuiTxBlockWithCoreNormalMethods & CoreQuickMethods;
 export type GenerateCoreNormalMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => CoreNormalMethods;
+}) => Promise<CoreNormalMethods>;
 
 export type GenerateCoreQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => CoreQuickMethods;
+}) => Promise<CoreQuickMethods>;

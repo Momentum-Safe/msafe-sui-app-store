@@ -57,11 +57,9 @@ export class ScallopQuery {
       instance?.address ??
       new ScallopAddress({
         id: params?.addressesId || ADDRESSES_ID,
-        network: params?.networkType,
       });
     this.client = params.client;
     this.utils = instance?.utils ?? new ScallopUtils(this.params, { address: this.address });
-    this.walletAddress = params.walletAddress;
   }
 
   /**
@@ -70,9 +68,9 @@ export class ScallopQuery {
    * @param force - Whether to force initialization.
    * @param address - ScallopAddress instance.
    */
-  public init(force = false, address?: ScallopAddress) {
+  public async init(force = false, address?: ScallopAddress) {
     if (force || !this.address.getAddresses() || !address?.getAddresses()) {
-      this.address.read();
+      await this.address.read();
     } else {
       this.address = address;
     }

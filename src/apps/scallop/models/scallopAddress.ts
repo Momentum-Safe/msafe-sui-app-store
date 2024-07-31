@@ -1,4 +1,5 @@
 import { config } from '../config';
+import { API_BASE_URL } from '../constants';
 import type { ScallopAddressParams, AddressesInterface, AddressStringPath, NetworkType } from '../types';
 
 /**
@@ -13,25 +14,13 @@ import type { ScallopAddressParams, AddressesInterface, AddressStringPath, Netwo
  * ```
  */
 export class ScallopAddress {
-  private readonly _auth?: string;
-
-  private _id?: string;
-
-  private _network: NetworkType;
-
-  private _currentAddresses?: AddressesInterface;
-
-  private _addressesMap: Map<NetworkType, AddressesInterface>;
-
+  private id: string;
+  private addresses: AddressesInterface | undefined = undefined;
+  public maxRetries = 5;
+  public retryDelayInMs = 1000;
   public constructor(params: ScallopAddressParams) {
-    const { id, auth, network } = params;
-
-    if (auth) {
-      this._auth = auth;
-    }
-    this._id = id;
-    this._network = network || 'mainnet';
-    this._addressesMap = new Map();
+    const { id } = params;
+    this.id = id;
   }
 
   /**
@@ -40,63 +29,7 @@ export class ScallopAddress {
    * @return The addresses API id.
    */
   public getId() {
-    return this._id || undefined;
-  }
-
-  /**
-   * Get the address at the provided path.
-   *
-   * @param path - The path of the address to get.
-   * @return The address at the provided path.
-   */
-  public get(path: AddressStringPath) {
-    if (this._currentAddresses) {
-      const value = path
-        .split('.')
-        .reduce(
-          (nestedAddressObj: any, key: string) =>
-            typeof nestedAddressObj === 'object' ? nestedAddressObj[key] : nestedAddressObj,
-          this._currentAddresses,
-        );
-      return value || undefined;
-    }
-    return undefined;
-  }
-
-  /**
-   * Sets the address for the specified path, it does not interact with the API.
-   *
-   * @param path - The path of the address to set.
-   * @param address - The address be setted to the tartget path.
-   * @return The addresses.
-   */
-  public set(path: AddressStringPath, address: string) {
-    if (this._currentAddresses) {
-      const keys = path.split('.');
-      keys.reduce((nestedAddressObj: any, key: string, index) => {
-        if (index === keys.length - 1) {
-          const updatedAddressObj = nestedAddressObj;
-          updatedAddressObj[key] = address;
-        }
-        return nestedAddressObj[key];
-      }, this._currentAddresses);
-    }
-    return this._currentAddresses;
-  }
-
-  /**
-   * Synchronize the specified network addresses from the addresses map to the
-   * current addresses and change the default network to specified network.
-   *
-   * @param network - Specifies which network's addresses you want to get.
-   * @return Current addresses.
-   */
-  public switchCurrentAddresses(network: NetworkType) {
-    if (this._addressesMap.has(network)) {
-      this._currentAddresses = this._addressesMap.get(network);
-      this._network = network;
-    }
-    return this._currentAddresses;
+    return this.id;
   }
 
   /**
@@ -105,47 +38,69 @@ export class ScallopAddress {
    *
    * @param network - Specifies which network's addresses you want to get.
    */
-  public getAddresses(network?: NetworkType) {
-    if (network) {
-      return this._addressesMap.get(network);
-    }
-    return this._currentAddresses ?? this._addressesMap.get(this._network);
+  public getAddresses() {
+    return this.addresses;
   }
 
   /**
-   * Set the addresses into addresses map. If the specified network is the same
-   * as the current network, the current addresses will be updated at the same time.
+   * Get the address at the provided path.
    *
-   * @param addresses - The addresses be setted to the tartget network.
-   * @param network - Specifies which network's addresses you want to set.
-   * @return The addresses.
+   * @param path - The path of the address to get.
+   * @return The address at the provided path.
    */
-  public setAddresses(addresses: AddressesInterface, network?: NetworkType) {
-    const targetNetwork = network || this._network;
-    if (targetNetwork === this._network) {
-      this._currentAddresses = addresses;
-    }
-    this._addressesMap.set(targetNetwork, addresses);
-  }
-
-  /**
-   * Get all addresses.
-   *
-   * @return All addresses.
-   */
-  public getAllAddresses() {
-    return Object.fromEntries(this._addressesMap);
-  }
-
-  public read() {
-    Object.entries<AddressesInterface>(config).forEach(([network, addresses]) => {
-      if (['localnet', 'devnet', 'testnet', 'mainnet'].includes(network)) {
-        if (network === this._network) {
-          this._currentAddresses = addresses;
+  public async get(path: AddressStringPath): Promise<string> {
+    let retries = 0;
+    const fetchAddressRequest = async (): Promise<AddressesInterface> => {
+      if (this.addresses) {
+        return this.addresses;
+      } else if (retries < this.maxRetries) {
+        retries++;
+        // Use a Promise to correctly handle the async operation with setTimeout
+        await new Promise((resolve) => setTimeout(resolve, this.retryDelayInMs));
+        if (!this.addresses) {
+          await this.read();
         }
-        this._addressesMap.set(network as NetworkType, addresses);
+        return fetchAddressRequest();
+      } else {
+        // Optionally, handle the case where the maximum number of retries is reached
+        console.error('Maximum retries reached');
+        return null;
       }
-    });
-    return this.getAllAddresses();
+    };
+
+    const addresses = await fetchAddressRequest();
+    if (addresses) throw new Error(`Failed to fetch address ${this.id}`);
+    const value = path
+      .split('.')
+      .reduce(
+        (nestedAddressObj: any, key: string) =>
+          typeof nestedAddressObj === 'object' ? nestedAddressObj[key] : nestedAddressObj,
+        addresses,
+      );
+    return value;
+  }
+
+  /**
+   * Fetch addresses from server
+   */
+  private async fetchAddresses(): Promise<AddressesInterface> {
+    const options = {
+      method: 'GET',
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    } as const;
+
+    const response = await fetch(`${API_BASE_URL}/addresses/${this.id}`, options);
+    if (response.status === 200) {
+      const responseData = await response.json();
+      if ('mainnet' in responseData) {
+        return responseData;
+      }
+      throw new Error('Mainnet key is not in address!');
+    }
+    throw new Error(`Failed to fetch address with id ${this.id}`);
+  }
+
+  public async read() {
+    this.addresses = await this.fetchAddresses();
   }
 }

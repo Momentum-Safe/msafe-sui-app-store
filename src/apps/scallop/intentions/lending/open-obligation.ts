@@ -9,6 +9,7 @@ import { SuiNetworks } from '@/types';
 import { ScallopClient } from '../../models/scallopClient';
 import { NetworkType } from '../../types';
 import { TransactionSubType } from '../../types/utils';
+import { scallopInstance } from '../../models';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface OpenObligationIntentionData {}
@@ -27,13 +28,10 @@ export class OpenObligationIntention extends CoreBaseIntention<OpenObligationInt
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const network = input.network.split(':')[1] as NetworkType;
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: network,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
+    
     return scallopClient.openObligation();
   }
 

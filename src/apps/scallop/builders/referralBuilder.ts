@@ -11,17 +11,17 @@ import {
   SuiObjectArg,
 } from '../types';
 
-export const generateReferralNormalMethod: GenerateReferralNormalMethod = ({ builder, txBlock }) => {
+export const generateReferralNormalMethod: GenerateReferralNormalMethod = async ({ builder, txBlock }) => {
   const referralIds: ReferralIds = {
-    referralPgkId: builder.address.get('referral.id'),
-    referralBindings: builder.address.get('referral.referralBindings'),
-    referralRevenuePool: builder.address.get('referral.referralRevenuePool'),
-    authorizedWitnessList: builder.address.get('referral.authorizedWitnessList'),
-    referralTiers: builder.address.get('referral.referralTiers'),
-    version: builder.address.get('referral.version'),
+    referralPgkId: await builder.address.get('referral.id'),
+    referralBindings: await builder.address.get('referral.referralBindings'),
+    referralRevenuePool: await builder.address.get('referral.referralRevenuePool'),
+    authorizedWitnessList: await builder.address.get('referral.authorizedWitnessList'),
+    referralTiers: await builder.address.get('referral.referralTiers'),
+    version: await builder.address.get('referral.version'),
   };
 
-  const veScaTable = builder.address.get('vesca.table');
+  const veScaTable = await builder.address.get('vesca.table');
 
   return {
     bindToReferral: (veScaKeyId: string) =>
@@ -79,8 +79,8 @@ export const generateReferralNormalMethod: GenerateReferralNormalMethod = ({ bui
   };
 };
 
-export const generateReferralQuickMethod: GenerateReferralQuickMethod = ({ builder, txBlock }) => {
-  const normalMethod = generateReferralNormalMethod({ builder, txBlock });
+export const generateReferralQuickMethod: GenerateReferralQuickMethod = async ({ builder, txBlock }) => {
+  const normalMethod = await generateReferralNormalMethod({ builder, txBlock });
   return {
     claimReferralRevenueQuick: async (
       veScaKey: SuiObjectArg,

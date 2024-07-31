@@ -9,6 +9,7 @@ import { SuiNetworks } from '@/types';
 import { ScallopClient } from '../../models/scallopClient';
 import { SupportCollateralCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
+import { scallopInstance } from '../../models';
 
 export interface DepositCollateralIntentionData {
   collateralCoinName: SupportCollateralCoins;
@@ -30,12 +31,15 @@ export class DepositCollateralIntention extends CoreBaseIntention<DepositCollate
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
+    // const scallopClient = new ScallopClient({
+    //   client: input.suiClient,
+    //   walletAddress: input.account.address,
+    //   networkType: input.network.split(':')[1] as any,
+    // });
+    // 
     return scallopClient.depositCollateral(
       this.data.collateralCoinName,
       Number(this.data.amount),

@@ -9,6 +9,7 @@ import { SuiNetworks } from '@/types';
 import { ScallopClient } from '../../models/scallopClient';
 import { SupportStakeMarketCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
+import { scallopInstance } from '../../models';
 
 export interface StakeSpoolIntentionData {
   amount: number | string;
@@ -30,12 +31,9 @@ export class StakeSpoolIntention extends CoreBaseIntention<StakeSpoolIntentionDa
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    scallopClient.init();
+    const scallopClient = scallopInstance.client;
+    scallopClient.client = input.suiClient;
+    scallopClient.walletAddress = input.account.address;
     return scallopClient.stake(this.data.marketCoinName, Number(this.data.amount), undefined, input.account.address);
   }
 

@@ -47,7 +47,6 @@ export class ScallopBuilder {
       instance?.address ??
       new ScallopAddress({
         id: params?.addressesId || ADDRESSES_ID,
-        network: params?.networkType,
       });
     this.query =
       instance?.query ??
@@ -73,12 +72,12 @@ export class ScallopBuilder {
    */
   public async init(force = false, address?: ScallopAddress) {
     if (force || !this.address.getAddresses() || !address?.getAddresses()) {
-      this.address.read();
+      await this.address.read();
     } else {
       this.address = address;
     }
-    this.query.init(force, this.address);
-    this.utils.init(force, this.address);
+    await this.query.init(force, this.address);
+    await this.utils.init(force, this.address);
   }
 
   /**
