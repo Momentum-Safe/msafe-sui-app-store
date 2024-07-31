@@ -161,12 +161,12 @@ export class ScallopUtils {
     type = coinTypeMatch?.[1] || coinType;
 
     const wormHoleCoinTypeMap: Record<string, SupportAssetCoins> = {
-      [`${this._address.get('core.coins.usdc.id') ?? wormholeCoinIds.usdc}::coin::COIN`]: 'usdc',
-      [`${this._address.get('core.coins.usdt.id') ?? wormholeCoinIds.usdt}::coin::COIN`]: 'usdt',
-      [`${this._address.get('core.coins.eth.id') ?? wormholeCoinIds.eth}::coin::COIN`]: 'eth',
-      [`${this._address.get('core.coins.btc.id') ?? wormholeCoinIds.btc}::coin::COIN`]: 'btc',
-      [`${this._address.get('core.coins.sol.id') ?? wormholeCoinIds.sol}::coin::COIN`]: 'sol',
-      [`${this._address.get('core.coins.apt.id') ?? wormholeCoinIds.apt}::coin::COIN`]: 'apt',
+      [`${wormholeCoinIds.usdc}::coin::COIN`]: 'usdc',
+      [`${wormholeCoinIds.usdt}::coin::COIN`]: 'usdt',
+      [`${wormholeCoinIds.eth}::coin::COIN`]: 'eth',
+      [`${wormholeCoinIds.btc}::coin::COIN`]: 'btc',
+      [`${wormholeCoinIds.sol}::coin::COIN`]: 'sol',
+      [`${wormholeCoinIds.apt}::coin::COIN`]: 'apt',
     };
     const voloCoinTypeMap: Record<string, SupportAssetCoins> = {
       [`${this._address.get('core.coins.vsui.id') ?? voloCoinIds.vsui}::cert::CERT`]: 'vsui',

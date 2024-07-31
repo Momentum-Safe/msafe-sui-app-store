@@ -185,7 +185,7 @@ export const getStakeAccounts = async (query: ScallopQuery, ownerAddress: string
  * @return Stake pool data.
  */
 export const getStakePool = async (query: ScallopQuery, marketCoinName: SupportStakeMarketCoins) => {
-  const poolId = query.address.get(`spool.pools.${marketCoinName}.id`);
+  const poolId = await query.address.get(`spool.pools.${marketCoinName}.id`);
   let stakePool: StakePool | undefined;
   const stakePoolObjectResponse = await query.client.getObject({
     id: poolId,
@@ -241,7 +241,7 @@ export const getStakePool = async (query: ScallopQuery, marketCoinName: SupportS
  * @return Stake reward pool.
  */
 export const getStakeRewardPool = async (query: ScallopQuery, marketCoinName: SupportStakeMarketCoins) => {
-  const poolId = query.address.get(`spool.pools.${marketCoinName}.rewardPoolId`);
+  const poolId = await query.address.get(`spool.pools.${marketCoinName}.rewardPoolId`);
   let stakeRewardPool: StakeRewardPool | undefined;
   const stakeRewardPoolObjectResponse = await query.client.getObject({
     id: poolId,

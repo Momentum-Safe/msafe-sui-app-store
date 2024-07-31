@@ -159,6 +159,8 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
     treasury: await builder.address.get('vesca.treasury'),
     config: await builder.address.get('vesca.config'),
   };
+
+  console.log(borrowIncentiveIds);
   return {
     stakeObligation: (obligationId, obligationKey) => {
       txBlock.moveCall({

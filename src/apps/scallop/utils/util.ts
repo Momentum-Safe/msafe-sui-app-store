@@ -24,30 +24,6 @@ export const parseAssetSymbol = (coinName: SupportAssetCoins): string => {
 };
 
 /**
- * Parse price from pyth price feed.
- *
- * @param feed  - Price feed object from pyth.
- * @param address - Scallop address instance.
- * @return Price Data inclue coin name, price, and publish time.
- */
-export const parseDataFromPythPriceFeed = (feed: any, address: ScallopAddress) => {
-  const assetCoinNames = [...new Set([...SUPPORT_POOLS, ...SUPPORT_COLLATERALS])] as SupportAssetCoins[];
-  const listAssetCoinName = assetCoinNames.find(
-    (assetCoinName) => address.get(`core.coins.${assetCoinName}.oracle.pyth.feed`) === feed.id,
-  );
-  if (listAssetCoinName) {
-    const price = feed.price.price * 10 ** feed.price.expo;
-
-    return {
-      coinName: listAssetCoinName,
-      price,
-      publishTime: Number(feed.price.publishTime) * 10 ** 3,
-    };
-  }
-  throw new Error('Invalid feed id');
-};
-
-/**
  * Find the closest unlock round timestamp (12AM) to the given unlock at timestamp in seconds.
  *
  * @param unlockAtInSecondTimestamp - Unlock at in seconds timestamp to find the closest round.
