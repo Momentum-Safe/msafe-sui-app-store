@@ -1,11 +1,9 @@
 import type { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
-import { ADDRESSES_ID } from '../constants';
 import type {
   ScallopInstanceParams,
   ScallopBuilderParams,

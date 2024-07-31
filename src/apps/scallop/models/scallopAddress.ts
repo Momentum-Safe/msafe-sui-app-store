@@ -1,6 +1,5 @@
-import { config } from '../config';
 import { API_BASE_URL } from '../constants';
-import type { ScallopAddressParams, AddressesInterface, AddressStringPath, NetworkType } from '../types';
+import type { ScallopAddressParams, AddressesInterface, AddressStringPath } from '../types';
 
 /**
  * @description
@@ -15,9 +14,13 @@ import type { ScallopAddressParams, AddressesInterface, AddressStringPath, Netwo
  */
 export class ScallopAddress {
   private id: string;
+
   private addresses: AddressesInterface;
+
   public maxRetries = 5;
+
   public retryDelayInMs = 1000;
+
   public constructor(params: ScallopAddressParams) {
     const { id } = params;
     this.id = id;
@@ -49,7 +52,9 @@ export class ScallopAddress {
    * @return The address at the provided path.
    */
   public get(path: AddressStringPath): string {
-    if (!this.addresses) throw new Error(`Failed to fetch address ${this.id}`);
+    if (!this.addresses) {
+      throw new Error(`Failed to fetch address ${this.id}`);
+    }
     const value = path
       .split('.')
       .reduce(

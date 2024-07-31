@@ -2,12 +2,13 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
+
 import { SuiNetworks } from '@/types';
 
+import { Scallop } from '../../models';
 import { SupportPoolCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
-import { Scallop } from '../../models';
 
 export interface BorrowWithBoostIntentionData {
   coinName: SupportPoolCoins;

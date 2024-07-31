@@ -55,10 +55,10 @@ import {
   SupplyAndStakeLendingIntentionData,
 } from './intentions/staking/supply-and-stake-lending';
 import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/staking/withdraw-staked-sca';
+import { Scallop } from './models/scallop';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
 import { MSafeAppHelper } from '../interface';
-import { Scallop } from './models/scallop';
 
 export type ScallopIntention =
   | SupplyLendingIntention
@@ -116,6 +116,7 @@ export type ScallopIntentionData =
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
+
   private scallop: Scallop | undefined;
 
   async deserialize(

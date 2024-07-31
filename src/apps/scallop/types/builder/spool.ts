@@ -10,13 +10,13 @@ export type SpoolIds = {
 
 export type StakePoolIds = {
   [k in SupportStakeMarketCoins]?: string;
-}
+};
 export type RewardPoolIds = {
   [k in SupportStakeMarketCoins]?: string;
-}
+};
 export type StakeMarketCoinTypes = {
   [k in SupportStakeMarketCoins]?: string;
-}
+};
 
 export type SpoolNormalMethods = {
   createStakeAccount: (stakeMarketCoinName: SupportStakeMarketCoins) => TransactionResult;

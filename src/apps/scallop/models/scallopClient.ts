@@ -1,6 +1,5 @@
 import type { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock, TransactionObjectArgument, TransactionResult } from '@mysten/sui.js/transactions';
-import { normalizeSuiAddress } from '@mysten/sui.js/utils';
 import BigNumber from 'bignumber.js';
 
 import { ScallopAddress } from './scallopAddress';
@@ -13,15 +12,8 @@ import { generateReferralNormalMethod, generateReferralQuickMethod } from '../bu
 import { generateSCoinNormalMethod } from '../builders/sCoinBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
-import {
-  ADDRESSES_ID,
-  SCA_COIN_TYPE,
-  SUPPORT_BORROW_INCENTIVE_POOLS,
-  SUPPORT_SCOIN,
-  SUPPORT_SPOOLS,
-} from '../constants';
+import { SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SCOIN, SUPPORT_SPOOLS } from '../constants';
 import type {
-  ScallopInstanceParams,
   ScallopClientParams,
   SupportPoolCoins,
   SupportCollateralCoins,
