@@ -51,15 +51,13 @@ export class ScallopQuery {
 
   public walletAddress: string;
 
-  public constructor(params: ScallopQueryParams, instance?: ScallopInstanceParams) {
+  public constructor(params: ScallopQueryParams, instance?: Omit<ScallopInstanceParams, 'query' | 'builder'>) {
     this.params = params;
-    this.address =
-      instance?.address ??
-      new ScallopAddress({
-        id: params?.addressesId || ADDRESSES_ID,
-      });
     this.client = params.client;
-    this.utils = instance?.utils ?? new ScallopUtils(this.params, { address: this.address });
+
+    const { address, utils } = instance;
+    this.address = address;
+    this.utils = utils;
   }
 
   /**
@@ -68,12 +66,9 @@ export class ScallopQuery {
    * @param force - Whether to force initialization.
    * @param address - ScallopAddress instance.
    */
-  public async init(force = false, address?: ScallopAddress) {
-    if (force || !this.address.getAddresses() || !address?.getAddresses()) {
-      await this.address.read();
-    } else {
-      this.address = address;
-    }
+  public async init(force = false, address: ScallopAddress) {
+    this.address = address;
+    this.utils.init(true, this.address);
   }
 
   /* ==================== Core Query Methods ==================== */

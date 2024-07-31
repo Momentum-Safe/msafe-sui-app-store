@@ -22,10 +22,10 @@ import {
  */
 export const generateNormalVeScaMethod: GenerateVeScaNormalMethod = async ({ builder, txBlock }) => {
   const veScaIds: VescaIds = {
-    pkgId: await builder.address.get('vesca.id'),
-    table: await builder.address.get('vesca.table'),
-    treasury: await builder.address.get('vesca.treasury'),
-    config: await builder.address.get('vesca.config'),
+    pkgId: builder.address.get('vesca.id'),
+    table: builder.address.get('vesca.table'),
+    treasury: builder.address.get('vesca.treasury'),
+    config: builder.address.get('vesca.config'),
   };
 
   return {

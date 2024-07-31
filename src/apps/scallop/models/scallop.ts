@@ -4,7 +4,7 @@ import { ScallopBuilder } from './scallopBuilder';
 import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
 import { ADDRESSES_ID } from '../constants';
-import type { ScallopParams } from '../types/';
+import type { ScallopParams } from '../types';
 
 /**
  * @argument params - The parameters for the Scallop instance.
@@ -29,29 +29,25 @@ export class Scallop {
   public builder: ScallopBuilder;
   public query: ScallopQuery;
   public utils: ScallopUtils;
-  private address: ScallopAddress;
+  public address: ScallopAddress;
 
   public constructor(params: ScallopParams) {
     this.params = params;
-    this.address = new ScallopAddress({
-      id: params?.addressesId || ADDRESSES_ID,
-    });
+    this.address = params.address;
   }
 
   public async init() {
+    if (!this.address) {
+      this.address = new ScallopAddress({
+        id: ADDRESSES_ID,
+      });
+    }
     await this.address.read();
-    this.client = new ScallopClient(this.params, { address: this.address });
-    await this.client.init();
+    this.client = new ScallopClient(this.params, this.address);
 
-    const { builder, query, utils} = this.client;
+    const { builder, query, utils } = this.client;
     this.builder = builder;
     this.query = query;
     this.utils = utils;
   }
 }
-
-// create scallop class
-const scallopInstance = new Scallop({});
-scallopInstance.init();
-
-export default scallopInstance;

@@ -3,13 +3,12 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../../models/scallopClient';
 import { SupportCollateralCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
-import { scallopInstance } from '../../models';
+import { Scallop } from '../../models';
 
 export interface WithdrawCollateralIntentionData {
   collateralCoinName: SupportCollateralCoins;
@@ -18,7 +17,7 @@ export interface WithdrawCollateralIntentionData {
   obligationKey: string;
 }
 
-export class WithdrawCollateralIntention extends CoreBaseIntention<WithdrawCollateralIntentionData> {
+export class WithdrawCollateralIntention extends ScallopCoreBaseIntention<WithdrawCollateralIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.WithdrawCollateral;
@@ -31,11 +30,9 @@ export class WithdrawCollateralIntention extends CoreBaseIntention<WithdrawColla
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = scallopInstance.client;
-    scallopClient.client = input.suiClient;
-    scallopClient.walletAddress = input.account.address;
-    return scallopClient.withdrawCollateral(
+    return input.scallop.client.withdrawCollateral(
       this.data.collateralCoinName,
       Number(this.data.amount),
       this.data.obligationId,

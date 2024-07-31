@@ -9,7 +9,7 @@ import type { SupportAssetCoins } from '../types';
  * @return Asset coin price.
  */
 export const getPythPrice = async (query: ScallopQuery, assetCoinName: SupportAssetCoins) => {
-  const pythFeedObjectId = await query.address.get(`core.coins.${assetCoinName}.oracle.pyth.feedObject`);
+  const pythFeedObjectId = query.address.get(`core.coins.${assetCoinName}.oracle.pyth.feedObject`);
   const priceFeedObjectResponse = await query.client.getObject({
     id: pythFeedObjectId,
     options: {

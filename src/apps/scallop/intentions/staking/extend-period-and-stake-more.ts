@@ -2,13 +2,10 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 import { SuiNetworks } from '@/types';
-
-import { ScallopClient } from '../../models/scallopClient';
 import { TransactionSubType } from '../../types/utils';
-import { scallopInstance } from '../../models';
+import { Scallop } from '../../models';
 
 export interface ExtendPeriodAndStakeMoreIntentionData {
   amount: number;
@@ -20,7 +17,7 @@ export interface ExtendPeriodAndStakeMoreIntentionData {
   isObligationLocked: boolean;
 }
 
-export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendPeriodAndStakeMoreIntentionData> {
+export class ExtendPeriodAndStakeMoreIntention extends ScallopCoreBaseIntention<ExtendPeriodAndStakeMoreIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.ExtendPeriodAndStakeMore;
@@ -33,11 +30,9 @@ export class ExtendPeriodAndStakeMoreIntention extends CoreBaseIntention<ExtendP
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = scallopInstance.client;
-    scallopClient.client = input.suiClient;
-    scallopClient.walletAddress = input.account.address;
-    return scallopClient.extendPeriodAndStakeMoreSca(
+    return input.scallop.client.extendPeriodAndStakeMoreSca(
       this.data.amount,
       this.data.veScaKey,
       this.data.lockPeriodInDays,

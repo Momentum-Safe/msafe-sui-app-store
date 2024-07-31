@@ -60,48 +60,22 @@ export class ScallopClient {
 
   public walletAddress: string;
 
-  public constructor(params: ScallopClientParams, instance?: ScallopInstanceParams) {
+  public constructor(params: ScallopClientParams, address: ScallopAddress) {
     this.params = params;
     this.client = params.client;
-    this.address =
-      instance?.address ??
-      new ScallopAddress({
-        id: params?.addressesId || ADDRESSES_ID,
-      });
-    this.query =
-      instance?.query ??
-      new ScallopQuery(params, {
-        address: this.address,
-      });
-    this.utils =
-      instance?.utils ??
-      new ScallopUtils(params, {
-        address: this.address,
-        query: this.query,
-      });
-    this.builder =
-      instance?.builder ??
-      new ScallopBuilder(params, {
-        address: this.address,
-        query: this.query,
-        utils: this.utils,
-      });
-    this.walletAddress = normalizeSuiAddress(params.walletAddress);
-  }
 
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   */
-  public async init(force = false) {
-    if (force || !this.address.getAddresses()) {
-      await this.address.read();
-    }
+    this.address = address;
+    this.utils = new ScallopUtils(params, this.address);
 
-    await this.builder.init(force, this.address);
-    await this.query.init(force, this.address);
-    await this.utils.init(force, this.address);
+    this.query = new ScallopQuery(params, {
+      address: this.address,
+      utils: this.utils,
+    });
+    this.builder = new ScallopBuilder(params, {
+      address: this.address,
+      query: this.query,
+      utils: this.utils,
+    });
   }
 
   /* ==================== Query Method ==================== */
@@ -1080,7 +1054,7 @@ export class ScallopClient {
         try {
           const marketCoins = await this.utils.selectCoinIds(
             Number.MAX_SAFE_INTEGER,
-            this.utils.parseMarketCoinType(sCoinName as SupportSCoin),
+            await this.utils.parseMarketCoinType(sCoinName as SupportSCoin),
             this.walletAddress,
           ); // throw error no coins found
 

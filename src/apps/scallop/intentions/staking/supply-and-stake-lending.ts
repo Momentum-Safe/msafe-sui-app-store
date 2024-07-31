@@ -3,13 +3,10 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 import { SuiNetworks } from '@/types';
-
-import { ScallopClient } from '../../models/scallopClient';
-import { NetworkType, SupportAssetCoins, TransactionSubType } from '../../types';
-import { scallopInstance } from '../../models';
+import { SupportAssetCoins, TransactionSubType } from '../../types';
+import { Scallop } from '../../models';
 
 export interface SupplyAndStakeLendingIntentionData {
   amount: number | string;
@@ -17,7 +14,7 @@ export interface SupplyAndStakeLendingIntentionData {
   stakeAccountId?: string | null;
 }
 
-export class SupplyAndStakeLendingIntention extends CoreBaseIntention<SupplyAndStakeLendingIntentionData> {
+export class SupplyAndStakeLendingIntention extends ScallopCoreBaseIntention<SupplyAndStakeLendingIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.SupplyAndStakeLending;
@@ -30,12 +27,9 @@ export class SupplyAndStakeLendingIntention extends CoreBaseIntention<SupplyAndS
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = scallopInstance.client;
-    scallopClient.client = input.suiClient;
-    scallopClient.walletAddress = input.account.address;
-    
-    return scallopClient.supplyAndStake(
+    return input.scallop.client.supplyAndStake(
       this.data.coinName,
       Number(this.data.amount),
       this.data.stakeAccountId,

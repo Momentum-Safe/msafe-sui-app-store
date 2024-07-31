@@ -13,15 +13,15 @@ import {
 
 export const generateReferralNormalMethod: GenerateReferralNormalMethod = async ({ builder, txBlock }) => {
   const referralIds: ReferralIds = {
-    referralPgkId: await builder.address.get('referral.id'),
-    referralBindings: await builder.address.get('referral.referralBindings'),
-    referralRevenuePool: await builder.address.get('referral.referralRevenuePool'),
-    authorizedWitnessList: await builder.address.get('referral.authorizedWitnessList'),
-    referralTiers: await builder.address.get('referral.referralTiers'),
-    version: await builder.address.get('referral.version'),
+    referralPgkId: builder.address.get('referral.id'),
+    referralBindings: builder.address.get('referral.referralBindings'),
+    referralRevenuePool: builder.address.get('referral.referralRevenuePool'),
+    authorizedWitnessList: builder.address.get('referral.authorizedWitnessList'),
+    referralTiers: builder.address.get('referral.referralTiers'),
+    version: builder.address.get('referral.version'),
   };
 
-  const veScaTable = await builder.address.get('vesca.table');
+  const veScaTable = builder.address.get('vesca.table');
 
   return {
     bindToReferral: (veScaKeyId: string) =>

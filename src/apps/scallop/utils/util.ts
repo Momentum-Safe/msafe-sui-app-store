@@ -1,5 +1,4 @@
 import { SUPPORT_POOLS, SUPPORT_COLLATERALS, SUPPORT_SPOOLS_REWARDS, MAX_LOCK_DURATION } from '../constants';
-import type { ScallopAddress } from '../models';
 import type { SupportAssetCoins, SupportCoins, SupportMarketCoins } from '../types';
 
 export const isMarketCoin = (coinName: SupportCoins): coinName is SupportMarketCoins => {

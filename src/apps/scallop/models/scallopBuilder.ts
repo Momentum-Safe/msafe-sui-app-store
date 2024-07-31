@@ -41,43 +41,15 @@ export class ScallopBuilder {
 
   public walletAddress: string;
 
-  public constructor(params: ScallopBuilderParams, instance?: ScallopInstanceParams) {
+  public constructor(params: ScallopBuilderParams, instance: Omit<ScallopInstanceParams, 'builder'>) {
     this.params = params;
-    this.address =
-      instance?.address ??
-      new ScallopAddress({
-        id: params?.addressesId || ADDRESSES_ID,
-      });
-    this.query =
-      instance?.query ??
-      new ScallopQuery(params, {
-        address: this.address,
-      });
-    this.utils =
-      instance?.utils ??
-      new ScallopUtils(this.params, {
-        address: this.address,
-        query: this.query,
-      });
     this.client = params.client;
-    this.walletAddress = normalizeSuiAddress(params.walletAddress);
-    this.isTestnet = params.networkType ? params.networkType === 'testnet' : false;
-  }
 
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   * @param address - ScallopAddress instance.
-   */
-  public async init(force = false, address?: ScallopAddress) {
-    if (force || !this.address.getAddresses() || !address?.getAddresses()) {
-      await this.address.read();
-    } else {
-      this.address = address;
-    }
-    await this.query.init(force, this.address);
-    await this.utils.init(force, this.address);
+    const { address, query, utils } = instance;
+    this.address = address;
+    this.query = query;
+    this.utils = utils;
+    this.isTestnet = params.networkType ? params.networkType === 'testnet' : false;
   }
 
   /**
@@ -121,7 +93,7 @@ export class ScallopBuilder {
     amount: number,
     sender: string,
   ) {
-    const marketCoinType = this.utils.parseMarketCoinType(marketCoinName);
+    const marketCoinType = await this.utils.parseMarketCoinType(marketCoinName);
     const coins = await this.utils.selectCoinIds(amount, marketCoinType, sender);
     const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coins, amount);
     return { takeCoin, leftCoin };

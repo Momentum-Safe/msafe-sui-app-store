@@ -2,19 +2,16 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 import { SuiNetworks } from '@/types';
-
-import { ScallopClient } from '../../models/scallopClient';
 import { TransactionSubType } from '../../types/utils';
-import { scallopInstance } from '../../models';
+import { Scallop } from '../../models';
 
 export interface BindReferralIntentionData {
   veScaKey: string;
 }
 
-export class BindReferralIntention extends CoreBaseIntention<BindReferralIntentionData> {
+export class BindReferralIntention extends ScallopCoreBaseIntention<BindReferralIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.BindReferral;
@@ -27,11 +24,9 @@ export class BindReferralIntention extends CoreBaseIntention<BindReferralIntenti
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const scallopClient = scallopInstance.client;
-    scallopClient.client = input.suiClient;
-    scallopClient.walletAddress = input.account.address;
-    return scallopClient.bindReferral(this.data.veScaKey);
+    return input.scallop.client.bindReferral(this.data.veScaKey);
   }
 
   static fromData(data: BindReferralIntentionData): BindReferralIntention {

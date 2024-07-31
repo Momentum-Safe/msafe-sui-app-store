@@ -5,7 +5,7 @@ import { SUPPORT_SCOIN } from '../constants';
 
 export const generateSCoinNormalMethod: GenerateSCoinNormalMethod = async ({ builder, txBlock }) => {
   const sCoinPkgIds: SCoinPkgIds = {
-    pkgId: await builder.address.get('scoin.id'),
+    pkgId: builder.address.get('scoin.id'),
   };
 
   const sCoinTreasuryIds: sCoinTreasuryIds = {};

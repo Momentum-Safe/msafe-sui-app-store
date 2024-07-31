@@ -36,13 +36,13 @@ export const updateOracles = async (
   if (rules.includes('pyth')) {
     const pythClient = new PythClient(
       builder.client as any,
-      await builder.address.get('core.oracles.pyth.state'),
-      await builder.address.get('core.oracles.pyth.wormholeState'),
+      builder.address.get('core.oracles.pyth.state'),
+      builder.address.get('core.oracles.pyth.wormholeState'),
     );
     const priceIds: string[] = [];
     await Promise.all(
       coinNames.map(async (assetCoinName) =>
-        priceIds.push(await builder.address.get(`core.coins.${assetCoinName}.oracle.pyth.feed`)),
+        priceIds.push(builder.address.get(`core.coins.${assetCoinName}.oracle.pyth.feed`)),
       ),
     );
 
@@ -81,18 +81,18 @@ const updateOracle = async (
   updatePrice(
     txBlock,
     rules,
-    await builder.address.get('core.packages.xOracle.id'),
-    await builder.address.get('core.oracles.xOracle'),
-    await builder.address.get('core.packages.pyth.id'),
-    await builder.address.get('core.oracles.pyth.registry'),
-    await builder.address.get('core.oracles.pyth.state'),
-    await builder.address.get(`core.coins.${assetCoinName}.oracle.pyth.feedObject`),
-    await builder.address.get('core.packages.switchboard.id'),
-    await builder.address.get('core.oracles.switchboard.registry'),
-    await builder.address.get(`core.coins.${assetCoinName}.oracle.switchboard`),
-    await builder.address.get('core.packages.supra.id'),
-    await builder.address.get('core.oracles.supra.registry'),
-    await builder.address.get(`core.oracles.supra.holder`),
+    builder.address.get('core.packages.xOracle.id'),
+    builder.address.get('core.oracles.xOracle'),
+    builder.address.get('core.packages.pyth.id'),
+    builder.address.get('core.oracles.pyth.registry'),
+    builder.address.get('core.oracles.pyth.state'),
+    builder.address.get(`core.coins.${assetCoinName}.oracle.pyth.feedObject`),
+    builder.address.get('core.packages.switchboard.id'),
+    builder.address.get('core.oracles.switchboard.registry'),
+    builder.address.get(`core.coins.${assetCoinName}.oracle.switchboard`),
+    builder.address.get('core.packages.supra.id'),
+    builder.address.get('core.oracles.supra.registry'),
+    builder.address.get(`core.oracles.supra.holder`),
     coinType,
   );
 };

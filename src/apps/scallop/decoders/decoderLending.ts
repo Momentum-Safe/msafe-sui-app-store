@@ -300,7 +300,7 @@ export class DecoderLending extends Decoder {
     }
     const obligationKey = this.helperClaimBorrowReward[0].decodeSharedObjectId(2);
     const obligationId = this.helperClaimBorrowReward[0].decodeOwnedObjectId(3);
-    const rewardCoinName = this._builder.utils.parseCoinNameFromType(
+    const rewardCoinName = this.scallop.utils.parseCoinNameFromType(
       this.helperClaimBorrowReward[0].typeArg(0),
     ) as SupportBorrowIncentiveRewardCoins;
     return {
@@ -324,7 +324,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeSupplyLending(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
     const amount = this.helperMint.getNestedInputParam<SplitCoinsTransaction>(2);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     return {
@@ -338,7 +338,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeWithdrawLending(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
     const amount = this.helperRedeem.getNestedInputParam<SplitCoinsTransaction>(2);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     return {
@@ -352,7 +352,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeWithdrawLendingScoin(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
     const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     return {
@@ -366,7 +366,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeDepositCollateral(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperDepositCollateral.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperDepositCollateral.typeArg(0));
     const amount = this.helperDepositCollateral.getNestedInputParam<SplitCoinsTransaction>(3);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     const obligationId = this.helperDepositCollateral.decodeSharedObjectId(1);
@@ -382,7 +382,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeWithdrawCollateral(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperWithdrawCollateral.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperWithdrawCollateral.typeArg(0));
     const amount = this.helperWithdrawCollateral.decodeInputU64(5);
     const obligationId = this.helperWithdrawCollateral.decodeSharedObjectId(1);
     const obligationKey = this.helperWithdrawCollateral.decodeOwnedObjectId(2);
@@ -399,7 +399,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeBorrow(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
     const amount = this.helperBorrow.decodeInputU64(5);
     const obligationId = this.helperBorrow.decodeSharedObjectId(1);
     const obligationKey = this.helperBorrow.decodeOwnedObjectId(2);
@@ -416,7 +416,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeBorrowWithBoost(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
     const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
     const amount = this.helperBorrow.decodeInputU64(5);
     const obligationId = this.helperBorrow.decodeSharedObjectId(1);
@@ -435,7 +435,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeBorrowWithReferral(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperBorrowWithReferral.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperBorrowWithReferral.typeArg(0));
     const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
     const amount = this.helperBorrowWithReferral.decodeInputU64(6);
     const obligationId = this.helperBorrowWithReferral.decodeSharedObjectId(1);
@@ -454,7 +454,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeRepay(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
     const amount = this.helperRepay.getNestedInputParam<SplitCoinsTransaction>(3);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     const obligationId = this.helperRepay.decodeSharedObjectId(1);
@@ -477,7 +477,7 @@ export class DecoderLending extends Decoder {
     const amount = this.helperStake.getNestedInputParam<SplitCoinsTransaction>(2);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     const coinType = this.helperStake.typeArg(0);
-    const coinName = this._builder.utils.parseCoinNameFromType(coinType);
+    const coinName = this.scallop.utils.parseCoinNameFromType(coinType);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.StakeSpool,
@@ -493,7 +493,7 @@ export class DecoderLending extends Decoder {
     const stakeSpoolAccount = this.helperUnstake.decodeOwnedObjectId(1);
     const amount = this.helperUnstake.decodeInputU64(2);
     const coinType = this.helperUnstake.typeArg(0);
-    const coinName = this._builder.utils.parseCoinNameFromType(coinType);
+    const coinName = this.scallop.utils.parseCoinNameFromType(coinType);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.UnstakeSpool,
@@ -506,7 +506,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeSupplyWithStakeSpool(): DecodeResult {
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
     const amount = this.helperMint.getNestedInputParam<SplitCoinsTransaction>(2);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     let stakeSpoolAccount;
@@ -531,7 +531,7 @@ export class DecoderLending extends Decoder {
       const amount = tx.decodeInputU64(2);
       stakeAccountWithAmount.push({ id: stakeAccountId, coin: amount });
     });
-    const coinName = this._builder.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
     const findWithdrawWithNested = this.helperRedeems.find((tx) => tx.isHaveNestedInput(2));
     let amount;
     if (findWithdrawWithNested) {
@@ -571,14 +571,14 @@ export class DecoderLending extends Decoder {
     this.helperClaimLendingReward.forEach((tx) => {
       const stakeAccountId = tx.decodeOwnedObjectId(2);
       const stakeMarketCoinName = tx.typeArg(0);
-      const coinName = this._builder.utils.parseCoinNameFromType(stakeMarketCoinName);
+      const coinName = this.scallop.utils.parseCoinNameFromType(stakeMarketCoinName);
       lendingReward.push({ stakeMarketCoinName: coinName as SupportStakeMarketCoins, stakeAccountId });
     });
 
     this.helperClaimBorrowV2Reward.forEach((tx) => {
       const obligationKey = tx.decodeSharedObjectId(3);
       const obligationId = tx.decodeOwnedObjectId(4);
-      const rewardCoinName = this._builder.utils.parseCoinNameFromType(
+      const rewardCoinName = this.scallop.utils.parseCoinNameFromType(
         tx.typeArg(0),
       ) as SupportBorrowIncentiveRewardCoins;
       borrowRewardV2.push({ obligationId, obligationKey, rewardCoinName });
@@ -587,7 +587,7 @@ export class DecoderLending extends Decoder {
     this.helperClaimBorrowReward.forEach((tx) => {
       const obligationKey = tx.decodeSharedObjectId(2);
       const obligationId = tx.decodeOwnedObjectId(3);
-      const rewardCoinName = this._builder.utils.parseCoinNameFromType(
+      const rewardCoinName = this.scallop.utils.parseCoinNameFromType(
         tx.typeArg(0),
       ) as SupportBorrowIncentiveRewardCoins;
       borrowReward.push({ obligationId, obligationKey, rewardCoinName });

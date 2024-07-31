@@ -13,7 +13,7 @@ import { Vesca } from '../types';
  */
 export const getVescaKeys = async (query: ScallopQuery, ownerAddress?: string) => {
   const owner = ownerAddress;
-  const veScaPkgId = await query.address.get('vesca.id');
+  const veScaPkgId = query.address.get('vesca.id');
   const veScaKeyType = `${veScaPkgId}::ve_sca::VeScaKey`;
   const keyObjectsResponse: SuiObjectResponse[] = [];
   let hasNextPage = false;
@@ -71,7 +71,7 @@ export const getVeScas = async (query: ScallopQuery, ownerAddress?: string) => {
  * @returns Vesca data.
  */
 export const getVeSca = async (query: ScallopQuery, veScaKeyId?: string, ownerAddress?: string) => {
-  const tableId = await query.address.get(`vesca.tableId`);
+  const tableId = query.address.get(`vesca.tableId`);
   const veScaKeyIdValue = veScaKeyId || (await getVescaKeys(query, ownerAddress))[0].objectId;
 
   let vesca: Vesca | undefined;

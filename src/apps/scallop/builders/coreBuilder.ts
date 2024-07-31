@@ -63,14 +63,14 @@ const requireObligationInfo = async (
  */
 export const generateCoreNormalMethod: GenerateCoreNormalMethod = async ({ builder, txBlock }) => {
   const coreIds: CoreIds = {
-    protocolPkg: await builder.address.get('core.packages.protocol.id'),
-    market: await builder.address.get('core.market'),
-    version: await builder.address.get('core.version'),
-    coinDecimalsRegistry: await builder.address.get('core.coinDecimalsRegistry'),
-    xOracle: await builder.address.get('core.oracles.xOracle'),
+    protocolPkg: builder.address.get('core.packages.protocol.id'),
+    market: builder.address.get('core.market'),
+    version: builder.address.get('core.version'),
+    coinDecimalsRegistry: builder.address.get('core.coinDecimalsRegistry'),
+    xOracle: builder.address.get('core.oracles.xOracle'),
   };
 
-  const referralPkgId = await builder.address.get('referral.id');
+  const referralPkgId = builder.address.get('referral.id');
   const referralWitnessType = `${referralPkgId}::scallop_referral_program::REFERRAL_WITNESS`;
 
   return {

@@ -14,6 +14,7 @@ import type {
   SuiAddressArg,
   StakePoolIds,
   RewardPoolIds,
+  StakeMarketCoinTypes,
 } from '../types';
 import { requireSender } from '../utils';
 import { SUPPORT_SPOOLS } from '../constants';
@@ -123,21 +124,24 @@ const requireStakeAccounts = async (
  */
 export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ builder, txBlock }) => {
   const spoolIds: SpoolIds = {
-    spoolPkg: await builder.address.get('spool.id'),
+    spoolPkg: builder.address.get('spool.id'),
   };
   const stakePoolIds: StakePoolIds = {};
   const rewardPoolIds: RewardPoolIds = {};
+  const stakeMarketCoinTypes: StakeMarketCoinTypes = {};
   await Promise.all(
     SUPPORT_SPOOLS.map(async (stakeMarketCoinName) => {
-      const spoolId = await builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
-      const rewardId = await builder.address.get(`spool.pools.${stakeMarketCoinName}.rewardPoolId`);
+      const spoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
+      const rewardId = builder.address.get(`spool.pools.${stakeMarketCoinName}.rewardPoolId`);
+      const marketCoinType = await builder.utils.parseMarketCoinType(stakeMarketCoinName);
       stakePoolIds[stakeMarketCoinName] = spoolId;
       rewardPoolIds[stakeMarketCoinName] = rewardId;
+      stakeMarketCoinTypes[stakeMarketCoinName] = marketCoinType;
     }),
   );
   return {
     createStakeAccount: (stakeMarketCoinName) => {
-      const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
+      const marketCoinType = stakeMarketCoinTypes[stakeMarketCoinName];
       const stakePoolId = stakePoolIds[stakeMarketCoinName];
       return txBlock.moveCall({
         target: `${spoolIds.spoolPkg}::user::new_spool_account`,
@@ -146,7 +150,7 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ bui
       });
     },
     stake: (stakeAccount, coin, stakeMarketCoinName) => {
-      const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
+      const marketCoinType = stakeMarketCoinTypes[stakeMarketCoinName];
       const stakePoolId = stakePoolIds[stakeMarketCoinName];
       txBlock.moveCall({
         target: `${spoolIds.spoolPkg}::user::stake`,
@@ -160,7 +164,7 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ bui
       });
     },
     unstake: (stakeAccount, amount, stakeMarketCoinName) => {
-      const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
+      const marketCoinType = stakeMarketCoinTypes[stakeMarketCoinName];
       const stakePoolId = stakePoolIds[stakeMarketCoinName];
       return txBlock.moveCall({
         target: `${spoolIds.spoolPkg}::user::unstake`,
@@ -176,7 +180,7 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ bui
     claim: (stakeAccount, stakeMarketCoinName) => {
       const stakePoolId = stakePoolIds[stakeMarketCoinName];
       const rewardPoolId = rewardPoolIds[stakeMarketCoinName];
-      const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
+      const marketCoinType = stakeMarketCoinTypes[stakeMarketCoinName];
       const rewardCoinName = spoolRewardCoins[stakeMarketCoinName];
       const rewardCoinType = builder.utils.parseCoinType(rewardCoinName);
       return txBlock.moveCall({
@@ -213,7 +217,7 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ build
       const sender = requireSender(txBlock);
       const stakeAccountIds = await requireStakeAccountIds(builder, txBlock, stakeMarketCoinName, stakeAccountId);
 
-      const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
+      const marketCoinType = await builder.utils.parseMarketCoinType(stakeMarketCoinName);
       const sCoinType = builder.utils.parseSCoinType(stakeMarketCoinName);
       if (typeof amountOrMarketCoin === 'number') {
         // try stake market coin

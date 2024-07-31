@@ -19,7 +19,6 @@ import {
 } from '../constants';
 import type {
   ScallopUtilsParams,
-  ScallopInstanceParams,
   SupportCoins,
   SupportAssetCoins,
   SupportMarketCoins,
@@ -53,31 +52,12 @@ export class ScallopUtils {
 
   public client: SuiClient;
 
-  public constructor(params: ScallopUtilsParams, instance?: ScallopInstanceParams) {
+  public constructor(params: ScallopUtilsParams, address: ScallopAddress) {
     this.params = params;
-    this._address =
-      instance?.address ??
-      new ScallopAddress({
-        id: params?.addressesId || ADDRESSES_ID,
-      });
-    this.isTestnet = params.networkType ? params.networkType === 'testnet' : false;
     this.client = params.client;
-  }
 
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   * @param address - ScallopAddress instance.
-   */
-  public async init(force = false, address?: ScallopAddress) {
-    if (force || !this._address.getAddresses() || !address?.getAddresses()) {
-      await this._address.read();
-    } else {
-      this._address = address;
-    }
+    this._address = address;
   }
-
   /**
    * Convert coin name to symbol.
    *
@@ -169,7 +149,7 @@ export class ScallopUtils {
       [`${wormholeCoinIds.apt}::coin::COIN`]: 'apt',
     };
     const voloCoinTypeMap: Record<string, SupportAssetCoins> = {
-      [`${this._address.get('core.coins.vsui.id') ?? voloCoinIds.vsui}::cert::CERT`]: 'vsui',
+      [`${voloCoinIds.vsui}::cert::CERT`]: 'vsui',
     };
 
     const assetCoinName =

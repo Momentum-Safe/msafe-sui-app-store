@@ -56,9 +56,9 @@ export const requireVeSca = async (
  * @returns
  */
 export const getBindedObligationId = async (builder: ScallopBuilder, veScaKey: string) => {
-  const borrowIncentiveObjId = await builder.address.get('borrowIncentive.object');
-  const incentivePoolsId = await builder.address.get('borrowIncentive.incentivePools');
-  const veScaPkgId = await builder.address.get('vesca.id');
+  const borrowIncentiveObjId = builder.address.get('borrowIncentive.object');
+  const incentivePoolsId = builder.address.get('borrowIncentive.incentivePools');
+  const veScaPkgId = builder.address.get('vesca.id');
 
   const { client } = builder;
 
@@ -142,12 +142,12 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
   txBlock,
 }) => {
   const borrowIncentiveIds: BorrowIncentiveIds = {
-    borrowIncentivePkg: await builder.address.get('borrowIncentive.id'),
-    query: await builder.address.get('borrowIncentive.query'),
-    incentivePools: await builder.address.get('borrowIncentive.incentivePools'),
-    incentiveAccounts: await builder.address.get('borrowIncentive.incentiveAccounts'),
-    obligationAccessStore: await builder.address.get('core.obligationAccessStore'),
-    config: await builder.address.get('borrowIncentive.config'),
+    borrowIncentivePkg: builder.address.get('borrowIncentive.id'),
+    query: builder.address.get('borrowIncentive.query'),
+    incentivePools: builder.address.get('borrowIncentive.incentivePools'),
+    incentiveAccounts: builder.address.get('borrowIncentive.incentiveAccounts'),
+    obligationAccessStore: builder.address.get('core.obligationAccessStore'),
+    config: builder.address.get('borrowIncentive.config'),
   };
   const OldBorrowIncentiveContract = {
     id: '0xc63072e7f5f4983a2efaf5bdba1480d5e7d74d57948e1c7cc436f8e22cbeb410',
@@ -155,12 +155,11 @@ export const generateBorrowIncentiveNormalMethod: GenerateBorrowIncentiveNormalM
     incentiveAccounts: '0x3c0b707068bdcea8bb859d751ad3e2149a9f83c13fcf4054ef91372a00bccdd3',
   };
   const veScaIds: Omit<VescaIds, 'pkgId'> = {
-    table: await builder.address.get('vesca.table'),
-    treasury: await builder.address.get('vesca.treasury'),
-    config: await builder.address.get('vesca.config'),
+    table: builder.address.get('vesca.table'),
+    treasury: builder.address.get('vesca.treasury'),
+    config: builder.address.get('vesca.config'),
   };
 
-  console.log(borrowIncentiveIds);
   return {
     stakeObligation: (obligationId, obligationKey) => {
       txBlock.moveCall({
@@ -277,7 +276,7 @@ export const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMet
 
       const unstakeObligationBeforeStake = !!txBlock.blockData.transactions.find(
         async (txn) =>
-          txn.kind === 'MoveCall' && txn.target === `${await builder.address.get('borrowIncentive.id')}::user::unstake`,
+          txn.kind === 'MoveCall' && txn.target === `${builder.address.get('borrowIncentive.id')}::user::unstake`,
       );
 
       if (!obligationLocked || unstakeObligationBeforeStake) {
@@ -306,7 +305,7 @@ export const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMet
         async (txn) =>
           txn.kind === 'MoveCall' &&
           (txn.target === `${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::unstake` ||
-            txn.target === `${await builder.address.get('borrowIncentive.id')}::user::unstake`),
+            txn.target === `${builder.address.get('borrowIncentive.id')}::user::unstake`),
       );
 
       if (!obligationLocked || unstakeObligationBeforeStake) {

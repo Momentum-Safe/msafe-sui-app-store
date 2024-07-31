@@ -15,7 +15,7 @@ import type { ScallopAddressParams, AddressesInterface, AddressStringPath, Netwo
  */
 export class ScallopAddress {
   private id: string;
-  private addresses: AddressesInterface | undefined = undefined;
+  private addresses: AddressesInterface;
   public maxRetries = 5;
   public retryDelayInMs = 1000;
   public constructor(params: ScallopAddressParams) {
@@ -48,42 +48,19 @@ export class ScallopAddress {
    * @param path - The path of the address to get.
    * @return The address at the provided path.
    */
-  public async get(path: AddressStringPath): Promise<string> {
-    let retries = 0;
-    const fetchAddressRequest = async (): Promise<AddressesInterface> => {
-      if (this.addresses) {
-        return this.addresses;
-      } else if (retries < this.maxRetries) {
-        retries++;
-        // Use a Promise to correctly handle the async operation with setTimeout
-        await new Promise((resolve) => setTimeout(resolve, this.retryDelayInMs));
-        if (!this.addresses) {
-          await this.read();
-        }
-        return fetchAddressRequest();
-      } else {
-        // Optionally, handle the case where the maximum number of retries is reached
-        console.error('Maximum retries reached');
-        return null;
-      }
-    };
-
-    const addresses = await fetchAddressRequest();
-    if (addresses) throw new Error(`Failed to fetch address ${this.id}`);
+  public get(path: AddressStringPath): string {
+    if (!this.addresses) throw new Error(`Failed to fetch address ${this.id}`);
     const value = path
       .split('.')
       .reduce(
         (nestedAddressObj: any, key: string) =>
           typeof nestedAddressObj === 'object' ? nestedAddressObj[key] : nestedAddressObj,
-        addresses,
+        this.addresses,
       );
     return value;
   }
 
-  /**
-   * Fetch addresses from server
-   */
-  private async fetchAddresses(): Promise<AddressesInterface> {
+  public async read() {
     const options = {
       method: 'GET',
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -92,15 +69,13 @@ export class ScallopAddress {
     const response = await fetch(`${API_BASE_URL}/addresses/${this.id}`, options);
     if (response.status === 200) {
       const responseData = await response.json();
+
       if ('mainnet' in responseData) {
-        return responseData;
+        this.addresses = responseData.mainnet;
+        return;
       }
       throw new Error('Mainnet key is not in address!');
     }
     throw new Error(`Failed to fetch address with id ${this.id}`);
-  }
-
-  public async read() {
-    this.addresses = await this.fetchAddresses();
   }
 }
