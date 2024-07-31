@@ -125,6 +125,8 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
     txSubType: TransactionSubType;
     intentionData: ScallopIntentionData;
   }> {
+    await scallopInstance.init();
+
     const builder = scallopInstance.builder;
     builder.client = input.suiClient;
     builder.walletAddress = input.account.address;
