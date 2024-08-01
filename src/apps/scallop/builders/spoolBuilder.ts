@@ -3,6 +3,7 @@ import type { TransactionArgument, TransactionResult } from '@mysten/sui.js/tran
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { generateSCoinNormalMethod } from './sCoinBuilder';
+import { SUPPORT_SPOOLS } from '../constants';
 import { spoolRewardCoins } from '../constants/enum';
 import type { ScallopBuilder } from '../models';
 import { getStakeAccounts } from '../queries/spoolQuery';
@@ -17,13 +18,11 @@ import type {
   StakeMarketCoinTypes,
 } from '../types';
 import { requireSender } from '../utils';
-import { SUPPORT_SPOOLS } from '../constants';
 
 const stakeHelper = async (
   builder: ScallopBuilder,
   txBlock: TransactionBlock,
   stakeAccount: SuiAddressArg,
-  coinType: string,
   coinName: SupportStakeMarketCoins,
   amount: number,
   sender: string,
@@ -32,8 +31,9 @@ const stakeHelper = async (
   const scoinNormalMethod = await generateSCoinNormalMethod({ builder, txBlock });
   const spoolNormalMethod = await generateSpoolNormalMethod({ builder, txBlock });
   try {
-    const coins = await builder.utils.selectCoinIds(amount, coinType, sender);
-    const [takeCoin, leftCoin] = builder.utils.takeAmountFromCoins(txBlock, coins, amount);
+    const { takeCoin, leftCoin, totalAmount } = isSCoin
+      ? await builder.selectSCoin(txBlock, coinName, amount, sender)
+      : await builder.selectMarketCoin(txBlock, coinName, amount, sender);
     if (isSCoin) {
       const marketCoin = scoinNormalMethod.burnSCoin(coinName, takeCoin);
       spoolNormalMethod.stake(stakeAccount, marketCoin, coinName);
@@ -41,9 +41,9 @@ const stakeHelper = async (
       spoolNormalMethod.stake(stakeAccount, takeCoin, coinName);
     }
     txBlock.transferObjects([leftCoin], sender);
-    return true;
+    return totalAmount;
   } catch (e) {
-    return false;
+    return 0;
   }
 };
 
@@ -129,16 +129,14 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ bui
   const stakePoolIds: StakePoolIds = {};
   const rewardPoolIds: RewardPoolIds = {};
   const stakeMarketCoinTypes: StakeMarketCoinTypes = {};
-  await Promise.all(
-    SUPPORT_SPOOLS.map(async (stakeMarketCoinName) => {
-      const spoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
-      const rewardId = builder.address.get(`spool.pools.${stakeMarketCoinName}.rewardPoolId`);
-      const marketCoinType = await builder.utils.parseMarketCoinType(stakeMarketCoinName);
-      stakePoolIds[stakeMarketCoinName] = spoolId;
-      rewardPoolIds[stakeMarketCoinName] = rewardId;
-      stakeMarketCoinTypes[stakeMarketCoinName] = marketCoinType;
-    }),
-  );
+  SUPPORT_SPOOLS.forEach((stakeMarketCoinName) => {
+    const spoolId = builder.address.get(`spool.pools.${stakeMarketCoinName}.id`);
+    const rewardId = builder.address.get(`spool.pools.${stakeMarketCoinName}.rewardPoolId`);
+    const marketCoinType = builder.utils.parseMarketCoinType(stakeMarketCoinName);
+    stakePoolIds[stakeMarketCoinName] = spoolId;
+    rewardPoolIds[stakeMarketCoinName] = rewardId;
+    stakeMarketCoinTypes[stakeMarketCoinName] = marketCoinType;
+  });
   return {
     createStakeAccount: (stakeMarketCoinName) => {
       const marketCoinType = stakeMarketCoinTypes[stakeMarketCoinName];
@@ -211,33 +209,32 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ bui
  */
 export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ builder, txBlock }) => {
   const normalMethod = await generateSpoolNormalMethod({ builder, txBlock });
+  const scoinMethod = await generateSCoinNormalMethod({ builder, txBlock });
   return {
     normalMethod,
     stakeQuick: async (amountOrMarketCoin, stakeMarketCoinName, stakeAccountId) => {
       const sender = requireSender(txBlock);
       const stakeAccountIds = await requireStakeAccountIds(builder, txBlock, stakeMarketCoinName, stakeAccountId);
 
-      const marketCoinType = await builder.utils.parseMarketCoinType(stakeMarketCoinName);
-      const sCoinType = builder.utils.parseSCoinType(stakeMarketCoinName);
       if (typeof amountOrMarketCoin === 'number') {
         // try stake market coin
-        const stakeMarketCoinRes = await stakeHelper(
+        const stakedMarketCoinAmount = await stakeHelper(
           builder,
           txBlock,
           stakeAccountIds[0],
-          marketCoinType,
           stakeMarketCoinName,
           amountOrMarketCoin,
           sender,
         );
 
+        // eslint-disable-next-line no-param-reassign
+        amountOrMarketCoin -= stakedMarketCoinAmount;
         // no market coin, try sCoin
-        if (!stakeMarketCoinRes) {
+        if (!stakedMarketCoinAmount) {
           await stakeHelper(
             builder,
             txBlock,
             stakeAccountIds[0],
-            sCoinType,
             stakeMarketCoinName,
             amountOrMarketCoin,
             sender,
@@ -257,12 +254,12 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ build
         }
         const amountToUnstake = Math.min(amount, account.staked);
         const marketCoin = normalMethod.unstake(account.id, amountToUnstake, stakeMarketCoinName);
-        toTransfer.push(marketCoin);
+        const sCoin = scoinMethod.mintSCoin(stakeMarketCoinName, marketCoin);
+        toTransfer.push(sCoin);
       });
 
       if (toTransfer.length > 0) {
         const mergedCoin = toTransfer[0];
-
         if (toTransfer.length > 1) {
           txBlock.mergeCoins(mergedCoin, toTransfer.slice(1));
         }
@@ -279,6 +276,7 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ build
             txBlock.mergeCoins(mergedCoin, existingCoins);
           }
         } catch (e) {
+          console.log(e);
           // ignore
         }
         return mergedCoin;

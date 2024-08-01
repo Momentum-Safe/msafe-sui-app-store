@@ -30,8 +30,11 @@ export class ScallopBuilder {
   public readonly isTestnet: boolean;
 
   public address: ScallopAddress;
+
   public query: ScallopQuery;
+
   public utils: ScallopUtils;
+
   public client: SuiClient;
 
   public constructor(params: ScallopBuilderParams, instance: Omit<ScallopInstanceParams, 'builder'>) {
@@ -91,10 +94,16 @@ export class ScallopBuilder {
     amount: number,
     sender: string = this.params.walletAddress,
   ) {
-    const marketCoinType = await this.utils.parseMarketCoinType(marketCoinName);
-    const coins = await this.utils.selectCoinIds(amount, marketCoinType, sender);
-    const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coins, amount);
-    return { takeCoin, leftCoin };
+    const marketCoinType = this.utils.parseMarketCoinType(marketCoinName);
+    const coins = await this.utils.selectCoins(amount, marketCoinType, sender);
+    const totalAmount = coins.reduce((prev, coin) => {
+      // eslint-disable-next-line no-param-reassign
+      prev += Number(coin.balance);
+      return prev;
+    }, 0);
+    const coinIds = coins.map((value) => value.objectId);
+    const [takeCoin, leftCoin] = this.utils.takeAmountFromCoins(txBlock, coinIds, Math.min(amount, totalAmount));
+    return { takeCoin, leftCoin, totalAmount };
   }
 
   /**

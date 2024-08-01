@@ -3,12 +3,12 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 import { SuiNetworks } from '@/types';
 
+import { Scallop } from '../../models';
 import { SupportStakeMarketCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
-import { Scallop } from '../../models';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface StakeSpoolIntentionData {
   amount: number | string;

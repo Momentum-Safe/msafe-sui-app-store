@@ -590,7 +590,7 @@ export class ScallopClient {
     txBlock.setSender(sender);
 
     const marketCoins = await spoolQuickMethod.unstakeQuick(amount, stakeMarketCoinName, stakeAccountId);
-    txBlock.transferObjects(marketCoins, sender);
+    txBlock.transferObjects([marketCoins], txBlock.pure(sender));
     return txBlock;
   }
 
@@ -1046,7 +1046,7 @@ export class ScallopClient {
         try {
           const marketCoins = await this.utils.selectCoinIds(
             Number.MAX_SAFE_INTEGER,
-            await this.utils.parseMarketCoinType(sCoinName as SupportSCoin),
+            this.utils.parseMarketCoinType(sCoinName as SupportSCoin),
             this.params.walletAddress,
           ); // throw error no coins found
 
@@ -1076,19 +1076,9 @@ export class ScallopClient {
               this.utils.parseSCoinType(sCoinName as SupportSCoin),
               this.params.walletAddress,
             ); // throw error on no coins found
-            const mergedSCoin = existSCoins[0];
-            if (existSCoins.length > 1) {
-              txBlock.mergeCoins(mergedSCoin, existSCoins.slice(1));
-            }
-
-            // merge existing sCoin to new sCoin
-            txBlock.mergeCoins(sCoin, [mergedSCoin]);
+            txBlock.mergeCoins(sCoin, existSCoins);
           } catch (e: any) {
-            // ignore
-            const errMsg = e.toString() as string;
-            if (!errMsg.includes('No valid coins found for the transaction')) {
-              throw e;
-            }
+            console.log(e);
           }
           sCoins.push(sCoin);
         }
@@ -1104,11 +1094,7 @@ export class ScallopClient {
               sCoins.push(sCoin);
             }
           } catch (e: any) {
-            // ignore
-            const errMsg = e.toString();
-            if (!errMsg.includes('No stake account found')) {
-              throw e;
-            }
+            console.log(e);
           }
         }
 

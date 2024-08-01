@@ -474,7 +474,7 @@ export class DecoderLending extends Decoder {
     if (!this.isCreateStakeAccountTransaction()) {
       stakeSpoolAccount = this.helperStake.decodeOwnedObjectId(1);
     }
-    const amount = this.helperStake.getNestedInputParam<SplitCoinsTransaction>(2);
+    const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     const coinType = this.helperStake.typeArg(0);
     const coinName = this.scallop.utils.parseCoinNameFromType(coinType);

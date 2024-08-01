@@ -85,7 +85,7 @@ export class ScallopUtils {
    */
   public parseCoinType(coinName: SupportCoins) {
     const validCoinName = isMarketCoin(coinName) ? this.parseCoinName(coinName) : coinName;
-    const coinPackageId = coinIds[coinName as SupportPoolCoins];
+    const coinPackageId = coinIds[validCoinName as SupportPoolCoins];
     const wormHolePackageIds = [
       wormholeCoinIds.usdc,
       wormholeCoinIds.usdt,

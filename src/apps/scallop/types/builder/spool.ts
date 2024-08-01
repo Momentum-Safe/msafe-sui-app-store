@@ -1,7 +1,7 @@
 import type { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
 
 import type { ScallopBuilder } from '../../models';
-import type { SupportStakeCoins, SupportStakeMarketCoins } from '../constant';
+import type { SupportStakeMarketCoins } from '../constant';
 import { SuiAddressArg, SuiObjectArg, SuiTxArg } from '../utils';
 
 export type SpoolIds = {
