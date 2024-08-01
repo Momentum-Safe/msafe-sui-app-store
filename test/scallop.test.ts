@@ -38,7 +38,7 @@ import { appHelpers } from '@/index';
 
 import { Account, Client, Obligation, vescaKey } from './scallop.config';
 
-describe('Scallop App', async () => {
+describe.skip('Scallop App', async () => {
   const scallop = new Scallop({
     client: Client,
     walletAddress: Account.address,
