@@ -117,9 +117,8 @@ export class DecoderLending extends Decoder {
   }
 
   private isBorrowWithReferralTransaction() {
-    const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
     const borrowWithReferral = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow_with_referral`);
-    return !!borrowWithReferral && !!stakeMoveCall;
+    return !!borrowWithReferral;
   }
 
   private isRepayTransaction() {
@@ -436,7 +435,10 @@ export class DecoderLending extends Decoder {
 
   private decodeBorrowWithReferral(): DecodeResult {
     const coinName = this.scallop.utils.parseCoinNameFromType(this.helperBorrowWithReferral.typeArg(0));
-    const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    let veScaKey;
+    if (this.helperStakeObligationWithVeSca.moveCall) {
+      veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    }
     const amount = this.helperBorrowWithReferral.decodeInputU64(6);
     const obligationId = this.helperBorrowWithReferral.decodeSharedObjectId(1);
     const obligationKey = this.helperBorrowWithReferral.decodeOwnedObjectId(2);

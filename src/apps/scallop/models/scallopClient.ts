@@ -379,7 +379,7 @@ export class ScallopClient {
     amount: number,
     obligationId: string,
     obligationKey: string,
-    veScaKey: string,
+    veScaKey: string | undefined,
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
@@ -406,8 +406,10 @@ export class ScallopClient {
     );
     referralMethod.burnReferralTicket(borrowReferral, poolCoinName);
     txBlock.transferObjects([coin], sender);
-    if (availableStake) {
+    if (availableStake && veScaKey) {
       await borrowIncentiveQuickMethod.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    } else {
+      await borrowIncentiveQuickMethod.stakeObligationQuick(obligationId, obligationKey);
     }
     return txBlock;
   }

@@ -15,7 +15,7 @@ export interface BorrowWithReferralIntentionData {
   amount: number | string;
   obligationId: string;
   obligationKey: string;
-  veScaKey: string;
+  veScaKey: string | undefined;
 }
 
 export class BorrowWithReferralIntention extends ScallopCoreBaseIntention<BorrowWithReferralIntentionData> {
