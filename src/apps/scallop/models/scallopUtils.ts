@@ -4,7 +4,6 @@ import { SUI_TYPE_ARG, normalizeStructTag } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
 import {
-  ADDRESSES_ID,
   PROTOCOL_OBJECT_ID,
   spoolRewardCoins,
   borrowIncentiveRewardCoins,
@@ -14,10 +13,11 @@ import {
   coinIds,
   UNLOCK_ROUND_DURATION,
   MAX_LOCK_DURATION,
+  sCoinIds,
+  SUPPORT_SCOIN,
 } from '../constants';
 import type {
   ScallopUtilsParams,
-  ScallopInstanceParams,
   SupportCoins,
   SupportAssetCoins,
   SupportMarketCoins,
@@ -26,6 +26,7 @@ import type {
   CoinWrappedType,
   SupportPoolCoins,
   SuiTxArg,
+  SupportSCoin,
 } from '../types';
 import { findClosestUnlockRound, isMarketCoin, parseAssetSymbol } from '../utils';
 
@@ -50,30 +51,11 @@ export class ScallopUtils {
 
   public client: SuiClient;
 
-  public constructor(params: ScallopUtilsParams, instance?: ScallopInstanceParams) {
+  public constructor(params: ScallopUtilsParams, address: ScallopAddress) {
     this.params = params;
-    this._address =
-      instance?.address ??
-      new ScallopAddress({
-        id: params?.addressesId || ADDRESSES_ID,
-        network: params?.networkType,
-      });
-    this.isTestnet = params.networkType ? params.networkType === 'testnet' : false;
     this.client = params.client;
-  }
 
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   * @param address - ScallopAddress instance.
-   */
-  public init(force = false, address?: ScallopAddress) {
-    if (force || !this._address.getAddresses() || !address?.getAddresses()) {
-      this._address.read();
-    } else {
-      this._address = address;
-    }
+    this._address = address;
   }
 
   /**
@@ -103,30 +85,20 @@ export class ScallopUtils {
    */
   public parseCoinType(coinName: SupportCoins) {
     const validCoinName = isMarketCoin(coinName) ? this.parseCoinName(coinName) : coinName;
-    const coinPackageId =
-      this._address.get(`core.coins.${validCoinName as SupportPoolCoins}.id`) ||
-      coinIds[coinName as SupportPoolCoins] ||
-      undefined;
-    if (!coinPackageId) {
-      throw Error(`Coin ${coinName} is not supported`);
-    }
-    if (coinName === 'sui') {
-      return normalizeStructTag(`${coinPackageId}::sui::SUI`);
-    }
-    const wormHolePckageIds = [
-      this._address.get('core.coins.usdc.id') ?? wormholeCoinIds.usdc,
-      this._address.get('core.coins.usdt.id') ?? wormholeCoinIds.usdt,
-      this._address.get('core.coins.eth.id') ?? wormholeCoinIds.eth,
-      this._address.get('core.coins.btc.id') ?? wormholeCoinIds.btc,
-      this._address.get('core.coins.sol.id') ?? wormholeCoinIds.sol,
-      this._address.get('core.coins.apt.id') ?? wormholeCoinIds.apt,
+    const coinPackageId = coinIds[validCoinName as SupportPoolCoins];
+    const wormHolePackageIds = [
+      wormholeCoinIds.usdc,
+      wormholeCoinIds.usdt,
+      wormholeCoinIds.eth,
+      wormholeCoinIds.btc,
+      wormholeCoinIds.sol,
+      wormholeCoinIds.apt,
     ];
-    const voloPckageIds = [this._address.get('core.coins.vsui.id') ?? voloCoinIds.vsui];
-    if (wormHolePckageIds.includes(coinPackageId)) {
+    if (wormHolePackageIds.includes(coinPackageId)) {
       return `${coinPackageId}::coin::COIN`;
     }
-    if (voloPckageIds.includes(coinPackageId)) {
-      return `${coinPackageId}::cert::CERT`;
+    if (coinName === 'vsui') {
+      return `${voloCoinIds.vsui}::cert::CERT`;
     }
     return `${coinPackageId}::${validCoinName}::${validCoinName.toUpperCase()}`;
   }
@@ -169,15 +141,15 @@ export class ScallopUtils {
     type = coinTypeMatch?.[1] || coinType;
 
     const wormHoleCoinTypeMap: Record<string, SupportAssetCoins> = {
-      [`${this._address.get('core.coins.usdc.id') ?? wormholeCoinIds.usdc}::coin::COIN`]: 'usdc',
-      [`${this._address.get('core.coins.usdt.id') ?? wormholeCoinIds.usdt}::coin::COIN`]: 'usdt',
-      [`${this._address.get('core.coins.eth.id') ?? wormholeCoinIds.eth}::coin::COIN`]: 'eth',
-      [`${this._address.get('core.coins.btc.id') ?? wormholeCoinIds.btc}::coin::COIN`]: 'btc',
-      [`${this._address.get('core.coins.sol.id') ?? wormholeCoinIds.sol}::coin::COIN`]: 'sol',
-      [`${this._address.get('core.coins.apt.id') ?? wormholeCoinIds.apt}::coin::COIN`]: 'apt',
+      [`${wormholeCoinIds.usdc}::coin::COIN`]: 'usdc',
+      [`${wormholeCoinIds.usdt}::coin::COIN`]: 'usdt',
+      [`${wormholeCoinIds.eth}::coin::COIN`]: 'eth',
+      [`${wormholeCoinIds.btc}::coin::COIN`]: 'btc',
+      [`${wormholeCoinIds.sol}::coin::COIN`]: 'sol',
+      [`${wormholeCoinIds.apt}::coin::COIN`]: 'apt',
     };
     const voloCoinTypeMap: Record<string, SupportAssetCoins> = {
-      [`${this._address.get('core.coins.vsui.id') ?? voloCoinIds.vsui}::cert::CERT`]: 'vsui',
+      [`${voloCoinIds.vsui}::cert::CERT`]: 'vsui',
     };
 
     const assetCoinName =
@@ -253,6 +225,34 @@ export class ScallopUtils {
   }
 
   /**
+   * Convert sCoin name into sCoin type
+   * @param sCoinName
+   * @returns sCoin type
+   */
+  public parseSCoinType(sCoinName: SupportSCoin) {
+    return sCoinIds[sCoinName];
+  }
+
+  /**
+   * Convert sCoin name into its underlying coin type
+   * @param sCoinName
+   * @returns coin type
+   */
+  public parseUnderlyingSCoinType(sCoinName: SupportSCoin) {
+    const coinName = this.parseCoinName(sCoinName);
+    return this.parseCoinType(coinName);
+  }
+
+  /**
+   * Get sCoin treasury id from sCoin name
+   * @param sCoinName
+   * @returns sCoin treasury id
+   */
+  public getSCoinTreasury(sCoinName: SupportSCoin) {
+    return this._address.get(`scoin.coins.${sCoinName}.treasury`);
+  }
+
+  /**
    * Select coin id  that add up to the given amount as transaction arguments.
    *
    * @param ownerAddress - The address of the owner.
@@ -260,13 +260,14 @@ export class ScallopUtils {
    * @param coinType - The coin type, default is 0x2::SUI::SUI.
    * @return The selected transaction coin arguments.
    */
-  public async selectCoinIds(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
+  public async selectCoins(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
     const address = ownerAddress;
 
     const selectedCoins: {
       objectId: string;
       digest: string;
       version: string;
+      balance: string;
     }[] = [];
     let totalAmount = 0;
     let hasNext = true;
@@ -284,6 +285,7 @@ export class ScallopUtils {
           objectId: coins.data[i].coinObjectId,
           digest: coins.data[i].digest,
           version: coins.data[i].version,
+          balance: coins.data[i].balance,
         });
         totalAmount += parseInt(coins.data[i].balance, 10);
         if (totalAmount >= amount) {
@@ -297,6 +299,11 @@ export class ScallopUtils {
     if (!selectedCoins.length) {
       throw new Error('No valid coins found for the transaction.');
     }
+    return selectedCoins;
+  }
+
+  public async selectCoinIds(amount: number, coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
+    const selectedCoins = await this.selectCoins(amount, coinType, ownerAddress);
     return selectedCoins.map((coin) => coin.objectId);
   }
 
@@ -364,5 +371,23 @@ export class ScallopUtils {
       newUnlockAtInSecondTimestamp = now + lockPeriod;
     }
     return findClosestUnlockRound(newUnlockAtInSecondTimestamp);
+  }
+
+  /**
+   * Convert coin name to sCoin name.
+   *
+   * @param coinName - Specific support coin name.
+   * @return sCoin name.
+   */
+  public parseSCoinName<T extends SupportSCoin>(coinName: SupportCoins | SupportMarketCoins) {
+    // need more check because sbtc, ssol and sapt has no sCoin type
+    if (isMarketCoin(coinName) && SUPPORT_SCOIN.includes(coinName as SupportSCoin)) {
+      return coinName as T;
+    }
+    const marketCoinName = `s${coinName}`;
+    if (SUPPORT_SCOIN.includes(marketCoinName as SupportSCoin)) {
+      return marketCoinName as T;
+    }
+    return undefined;
   }
 }

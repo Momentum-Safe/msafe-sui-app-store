@@ -3,17 +3,17 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { NetworkType, TransactionSubType } from '../types';
+import { Scallop } from '../../models';
+import { TransactionSubType } from '../../types';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface RedeemScaIntentionData {
   veScaKey: string;
 }
 
-export class RedeemScaIntention extends CoreBaseIntention<RedeemScaIntentionData> {
+export class RedeemScaIntention extends ScallopCoreBaseIntention<RedeemScaIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.RedeemSca;
@@ -26,15 +26,9 @@ export class RedeemScaIntention extends CoreBaseIntention<RedeemScaIntentionData
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const network = input.network.split(':')[1] as NetworkType;
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: network,
-    });
-    scallopClient.init();
-    return scallopClient.redeemSca(this.data.veScaKey);
+    return input.scallop.client.redeemSca(this.data.veScaKey);
   }
 
   static fromData(data: RedeemScaIntentionData): RedeemScaIntention {

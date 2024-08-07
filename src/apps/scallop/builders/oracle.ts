@@ -39,8 +39,11 @@ export const updateOracles = async (
       builder.address.get('core.oracles.pyth.state'),
       builder.address.get('core.oracles.pyth.wormholeState'),
     );
-    const priceIds = coinNames.map((assetCoinName) =>
-      builder.address.get(`core.coins.${assetCoinName}.oracle.pyth.feed`),
+    const priceIds: string[] = [];
+    await Promise.all(
+      coinNames.map(async (assetCoinName) =>
+        priceIds.push(builder.address.get(`core.coins.${assetCoinName}.oracle.pyth.feed`)),
+      ),
     );
 
     // iterate through the endpoints

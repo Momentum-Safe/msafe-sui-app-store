@@ -3,37 +3,59 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { Decoder } from './decoder';
-import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
-import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/borrow-with-boost';
-import { ClaimIncentiveRewardIntention, ClaimIncentiveRewardIntentionData } from './intentions/claim-incentive-reward';
-import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/deposit-collateral';
+import { DecoderLending } from './decoders/decoderLending';
+import { DecoderReferral } from './decoders/decoderReferral';
+import { DecoderVesca } from './decoders/decoderVesca';
+import { BorrowIntention, BorrowIntentionData } from './intentions/lending/borrow';
+import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/lending/borrow-with-boost';
 import {
-  ExtendPeriodAndStakeMoreIntention,
-  ExtendPeriodAndStakeMoreIntentionData,
-} from './intentions/extend-period-and-stake-more';
-import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/extend-stake-period';
-import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/migrate-and-claim';
-import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/open-obligation';
-import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/redeem-sca';
-import { RenewExpStakePeriodIntention, RenewExpStakePeriodIntentionData } from './intentions/renew-exp-stake-period';
-import { RepayIntention, RepayIntentionData } from './intentions/repay';
-import { StakeScaIntention, StakeScaIntentionData } from './intentions/stake-sca';
-import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/stake-spool';
+  BorrowWithReferralIntention,
+  BorrowWithReferralIntentionData,
+} from './intentions/lending/borrow-with-referral';
 import {
-  SupplyAndStakeLendingIntention,
-  SupplyAndStakeLendingIntentionData,
-} from './intentions/supply-and-stake-lending';
-import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/supply-lending';
-import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/unstake-spool';
+  ClaimIncentiveRewardIntention,
+  ClaimIncentiveRewardIntentionData,
+} from './intentions/lending/claim-incentive-reward';
+import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/lending/deposit-collateral';
+import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/lending/migrate-and-claim';
+import { MigrateScoinIntention, MigrateScoinIntentionData } from './intentions/lending/migrate-scoin';
+import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/lending/open-obligation';
+import { RepayIntention, RepayIntentionData } from './intentions/lending/repay';
+import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/lending/stake-spool';
+import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/lending/supply-lending';
+import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/lending/unstake-spool';
 import {
   WithdrawAndUnstakeLendingIntention,
   WithdrawAndUnstakeLendingIntentionData,
-} from './intentions/withdraw-and-unstake-lending';
-import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/withdraw-collateral';
-import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/withdraw-lending';
-import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/withdraw-staked-sca';
-import { ScallopBuilder } from './models';
+} from './intentions/lending/withdraw-and-unstake-lending';
+import { WithdrawCollateralIntention, WithdrawCollateralIntentionData } from './intentions/lending/withdraw-collateral';
+import { WithdrawLendingIntention, WithdrawLendingIntentionData } from './intentions/lending/withdraw-lending';
+import { BindReferralIntention, BindReferralIntentionData } from './intentions/referral/bind-referral';
+import {
+  ClaimRevenueReferralIntention,
+  ClaimRevenueReferralIntentionData,
+} from './intentions/referral/claim-revenue-referral';
+import {
+  CreateReferralLinkIntention,
+  CreateReferralLinkIntentionData,
+} from './intentions/referral/create-referral-link';
+import {
+  ExtendPeriodAndStakeMoreIntention,
+  ExtendPeriodAndStakeMoreIntentionData,
+} from './intentions/staking/extend-period-and-stake-more';
+import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/staking/extend-stake-period';
+import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/staking/redeem-sca';
+import {
+  RenewExpStakePeriodIntention,
+  RenewExpStakePeriodIntentionData,
+} from './intentions/staking/renew-exp-stake-period';
+import { StakeScaIntention, StakeScaIntentionData } from './intentions/staking/stake-sca';
+import {
+  SupplyAndStakeLendingIntention,
+  SupplyAndStakeLendingIntentionData,
+} from './intentions/staking/supply-and-stake-lending';
+import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/staking/withdraw-staked-sca';
+import { Scallop } from './models/scallop';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
 import { MSafeAppHelper } from '../interface';
@@ -58,7 +80,12 @@ export type ScallopIntention =
   | SupplyAndStakeLendingIntention
   | WithdrawAndUnstakeLendingIntention
   | RedeemScaIntention
-  | MigrateAndClaimIntention;
+  | MigrateAndClaimIntention
+  | BorrowWithReferralIntention
+  | CreateReferralLinkIntention
+  | ClaimRevenueReferralIntention
+  | BindReferralIntention
+  | MigrateScoinIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -80,10 +107,17 @@ export type ScallopIntentionData =
   | SupplyAndStakeLendingIntentionData
   | WithdrawAndUnstakeLendingIntentionData
   | RedeemScaIntentionData
-  | MigrateAndClaimIntentionData;
+  | MigrateAndClaimIntentionData
+  | BorrowWithReferralIntentionData
+  | CreateReferralLinkIntentionData
+  | ClaimRevenueReferralIntentionData
+  | BindReferralIntentionData
+  | MigrateScoinIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
+
+  private scallop: Scallop | undefined;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
@@ -92,15 +126,23 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
     txSubType: TransactionSubType;
     intentionData: ScallopIntentionData;
   }> {
-    const builder = new ScallopBuilder({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: input.network.split(':')[1] as any,
-    });
-    await builder.init();
+    if (!this.scallop) {
+      this.scallop = new Scallop({
+        client: input.suiClient,
+        walletAddress: input.account.address,
+      });
+      await this.scallop.init();
+    }
+
     const { transactionBlock } = input;
-    const decoder = new Decoder(transactionBlock, builder);
-    const result = decoder.decode();
+    console.log('transactionBlock', transactionBlock);
+    const decoderLending = new DecoderLending(transactionBlock, this.scallop);
+    const decoderReferral = new DecoderReferral(transactionBlock, this.scallop);
+    const decoderVesca = new DecoderVesca(transactionBlock, this.scallop);
+    const result = decoderLending.decode() || decoderReferral.decode() || decoderVesca.decode();
+    if (!result) {
+      throw new Error('Unknown transaction type');
+    }
     return {
       txType: TransactionType.Other,
       txSubType: result.type,
@@ -116,76 +158,97 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const { suiClient, account, network } = input;
+    const { suiClient, account, network, txSubType, intentionData } = input;
+    if (!this.scallop) {
+      this.scallop = new Scallop({
+        client: input.suiClient,
+        walletAddress: input.account.address,
+      });
+      await this.scallop.init();
+    }
+
     let intention: ScallopIntention;
-    switch (input.txSubType) {
+    switch (txSubType) {
       case TransactionSubType.SupplyLending:
-        intention = SupplyLendingIntention.fromData(input.intentionData as SupplyLendingIntentionData);
+        intention = SupplyLendingIntention.fromData(intentionData as SupplyLendingIntentionData);
         break;
       case TransactionSubType.WithdrawLending:
-        intention = WithdrawLendingIntention.fromData(input.intentionData as WithdrawLendingIntentionData);
+        intention = WithdrawLendingIntention.fromData(intentionData as WithdrawLendingIntentionData);
         break;
       case TransactionSubType.Borrow:
-        intention = BorrowIntention.fromData(input.intentionData as BorrowIntentionData);
+        intention = BorrowIntention.fromData(intentionData as BorrowIntentionData);
         break;
       case TransactionSubType.Repay:
-        intention = RepayIntention.fromData(input.intentionData as RepayIntentionData);
+        intention = RepayIntention.fromData(intentionData as RepayIntentionData);
         break;
       case TransactionSubType.DepositCollateral:
-        intention = DepositCollateralIntention.fromData(input.intentionData as DepositCollateralIntentionData);
+        intention = DepositCollateralIntention.fromData(intentionData as DepositCollateralIntentionData);
         break;
       case TransactionSubType.WithdrawCollateral:
-        intention = WithdrawCollateralIntention.fromData(input.intentionData as WithdrawCollateralIntentionData);
+        intention = WithdrawCollateralIntention.fromData(intentionData as WithdrawCollateralIntentionData);
         break;
       case TransactionSubType.OpenObligation:
-        intention = OpenObligationIntention.fromData(input.intentionData as OpenObligationIntentionData);
+        intention = OpenObligationIntention.fromData(intentionData as OpenObligationIntentionData);
         break;
       case TransactionSubType.StakeSpool:
-        intention = StakeSpoolIntention.fromData(input.intentionData as StakeSpoolIntentionData);
+        intention = StakeSpoolIntention.fromData(intentionData as StakeSpoolIntentionData);
         break;
       case TransactionSubType.UnstakeSpool:
-        intention = UnstakeSpoolIntention.fromData(input.intentionData as UnstakeSpoolIntentionData);
+        intention = UnstakeSpoolIntention.fromData(intentionData as UnstakeSpoolIntentionData);
         break;
       case TransactionSubType.ClaimIncentiveReward:
-        intention = ClaimIncentiveRewardIntention.fromData(input.intentionData as ClaimIncentiveRewardIntentionData);
+        intention = ClaimIncentiveRewardIntention.fromData(intentionData as ClaimIncentiveRewardIntentionData);
         break;
       case TransactionSubType.BorrowWithBoost:
-        intention = BorrowWithBoostIntention.fromData(input.intentionData as BorrowWithBoostIntentionData);
+        intention = BorrowWithBoostIntention.fromData(intentionData as BorrowWithBoostIntentionData);
         break;
       case TransactionSubType.StakeSca:
-        intention = StakeScaIntention.fromData(input.intentionData as StakeScaIntentionData);
+        intention = StakeScaIntention.fromData(intentionData as StakeScaIntentionData);
         break;
       case TransactionSubType.ExtendStakePeriod:
-        intention = ExtendStakePeriodIntention.fromData(input.intentionData as ExtendStakePeriodIntentionData);
+        intention = ExtendStakePeriodIntention.fromData(intentionData as ExtendStakePeriodIntentionData);
         break;
       case TransactionSubType.ExtendPeriodAndStakeMore:
-        intention = ExtendPeriodAndStakeMoreIntention.fromData(
-          input.intentionData as ExtendPeriodAndStakeMoreIntentionData,
-        );
+        intention = ExtendPeriodAndStakeMoreIntention.fromData(intentionData as ExtendPeriodAndStakeMoreIntentionData);
         break;
       case TransactionSubType.RenewExpStakePeriod:
-        intention = RenewExpStakePeriodIntention.fromData(input.intentionData as RenewExpStakePeriodIntentionData);
+        intention = RenewExpStakePeriodIntention.fromData(intentionData as RenewExpStakePeriodIntentionData);
         break;
       case TransactionSubType.WithdrawStakedSca:
-        intention = WithdrawStakedScaIntention.fromData(input.intentionData as WithdrawStakedScaIntentionData);
+        intention = WithdrawStakedScaIntention.fromData(intentionData as WithdrawStakedScaIntentionData);
         break;
       case TransactionSubType.SupplyAndStakeLending:
-        intention = SupplyAndStakeLendingIntention.fromData(input.intentionData as SupplyAndStakeLendingIntentionData);
+        intention = SupplyAndStakeLendingIntention.fromData(intentionData as SupplyAndStakeLendingIntentionData);
         break;
       case TransactionSubType.WithdrawAndUnstakeLending:
         intention = WithdrawAndUnstakeLendingIntention.fromData(
-          input.intentionData as WithdrawAndUnstakeLendingIntentionData,
+          intentionData as WithdrawAndUnstakeLendingIntentionData,
         );
         break;
       case TransactionSubType.RedeemSca:
-        intention = RedeemScaIntention.fromData(input.intentionData as RedeemScaIntentionData);
+        intention = RedeemScaIntention.fromData(intentionData as RedeemScaIntentionData);
         break;
       case TransactionSubType.MigrateAndClaim:
-        intention = MigrateAndClaimIntention.fromData(input.intentionData as MigrateAndClaimIntentionData);
+        intention = MigrateAndClaimIntention.fromData(intentionData as MigrateAndClaimIntentionData);
+        break;
+      case TransactionSubType.BorrowWithReferral:
+        intention = BorrowWithReferralIntention.fromData(intentionData as BorrowWithReferralIntentionData);
+        break;
+      case TransactionSubType.CreateReferralLink:
+        intention = CreateReferralLinkIntention.fromData(intentionData as CreateReferralLinkIntentionData);
+        break;
+      case TransactionSubType.ClaimRevenueReferral:
+        intention = ClaimRevenueReferralIntention.fromData(intentionData as ClaimRevenueReferralIntentionData);
+        break;
+      case TransactionSubType.BindReferral:
+        intention = BindReferralIntention.fromData(intentionData as BindReferralIntentionData);
+        break;
+      case TransactionSubType.MigrateScoin:
+        intention = MigrateScoinIntention.fromData(intentionData as MigrateScoinIntentionData);
         break;
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account, network });
+    return intention.build({ suiClient, account, network, scallop: this.scallop });
   }
 }

@@ -2,6 +2,7 @@ import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactio
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { updateOracles } from './oracle';
+import { generateSCoinNormalMethod } from './sCoinBuilder';
 import type { ScallopBuilder } from '../models';
 import { getObligations } from '../queries';
 import type {
@@ -60,7 +61,7 @@ const requireObligationInfo = async (
  * @param txBlock - TxBlock created by SuiKit.
  * @return Core normal methods.
  */
-export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, txBlock }) => {
+export const generateCoreNormalMethod: GenerateCoreNormalMethod = async ({ builder, txBlock }) => {
   const coreIds: CoreIds = {
     protocolPkg: builder.address.get('core.packages.protocol.id'),
     market: builder.address.get('core.market'),
@@ -68,6 +69,10 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
     coinDecimalsRegistry: builder.address.get('core.coinDecimalsRegistry'),
     xOracle: builder.address.get('core.oracles.xOracle'),
   };
+
+  const referralPkgId = builder.address.get('referral.id');
+  const referralWitnessType = `${referralPkgId}::scallop_referral_program::REFERRAL_WITNESS`;
+
   return {
     openObligation: () =>
       txBlock.moveCall({
@@ -204,6 +209,24 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
         typeArguments: [coinType],
       });
     },
+    borrowWithReferral: (obligation, obligationKey, borrowReferral, amount, poolCoinName) => {
+      const coinType = builder.utils.parseCoinType(poolCoinName);
+      return txBlock.moveCall({
+        target: `${coreIds.protocolPkg}::borrow::borrow_with_referral`,
+        arguments: [
+          txBlock.object(coreIds.version),
+          txBlock.object(obligation as string),
+          txBlock.object(obligationKey as string),
+          txBlock.object(coreIds.market),
+          txBlock.object(coreIds.coinDecimalsRegistry),
+          txBlock.object(borrowReferral as string),
+          txBlock.pure(amount),
+          txBlock.object(coreIds.xOracle),
+          txBlock.object(SUI_CLOCK_OBJECT_ID),
+        ],
+        typeArguments: [coinType, referralWitnessType],
+      });
+    },
     repay: (obligation, coin, poolCoinName) => {
       const coinType = builder.utils.parseCoinType(poolCoinName);
       return txBlock.moveCall({
@@ -254,8 +277,9 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = ({ builder, tx
  * @param txBlock - TxBlock created by SuiKit.
  * @return Core quick methods.
  */
-export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBlock }) => {
-  const normalMethod = generateCoreNormalMethod({ builder, txBlock });
+export const generateCoreQuickMethod: GenerateCoreQuickMethod = async ({ builder, txBlock }) => {
+  const normalMethod = await generateCoreNormalMethod({ builder, txBlock });
+  const scoinNormalMethod = await generateSCoinNormalMethod({ builder, txBlock });
   return {
     normalMethod,
     addCollateralQuick: async (amount, collateralCoinName, obligationId) => {
@@ -304,9 +328,46 @@ export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBl
     withdrawQuick: async (amount, poolCoinName) => {
       const sender = requireSender(txBlock);
       const marketCoinName = builder.utils.parseMarketCoinName(poolCoinName);
-      const { leftCoin, takeCoin } = await builder.selectMarketCoin(txBlock, marketCoinName, amount, sender);
-      txBlock.transferObjects([leftCoin], sender);
-      return normalMethod.withdraw(takeCoin, poolCoinName);
+      // check if user has sCoin instead of marketCoin
+      try {
+        const sCoinName = builder.utils.parseSCoinName(poolCoinName);
+        if (!sCoinName) {
+          throw new Error(`No sCoin for ${poolCoinName}`);
+        }
+        const {
+          leftCoin,
+          takeCoin,
+          totalAmount: sCoinAmount,
+        } = await builder.selectSCoin(txBlock, sCoinName, amount, sender);
+        txBlock.transferObjects([leftCoin], sender);
+        const marketCoin = scoinNormalMethod.burnSCoin(sCoinName, takeCoin);
+
+        const txResult = normalMethod.withdraw(marketCoin, poolCoinName);
+
+        // check amount
+        const amountLeft = amount - sCoinAmount;
+        try {
+          if (amountLeft > 0) {
+            // sCoin is not enough, try market coin
+            const { leftCoin: leftMarketCoin, takeCoin: takeMarketCoin } = await builder.selectMarketCoin(
+              txBlock,
+              marketCoinName,
+              amountLeft,
+              sender,
+            );
+            txBlock.transferObjects([leftMarketCoin], sender);
+            txBlock.mergeCoins(txResult, [normalMethod.withdraw(takeMarketCoin, poolCoinName)]);
+          }
+        } catch (e) {
+          // ignore
+        }
+        return txResult;
+      } catch (e) {
+        // no sCoin found
+        const { leftCoin, takeCoin } = await builder.selectMarketCoin(txBlock, marketCoinName, amount, sender);
+        txBlock.transferObjects([leftCoin], sender);
+        return normalMethod.withdraw(takeCoin, poolCoinName);
+      }
     },
     borrowQuick: async (amount, poolCoinName, obligationId, obligationKey) => {
       const obligationInfo = await requireObligationInfo(txBlock, builder, obligationId, obligationKey);
@@ -316,6 +377,19 @@ export const generateCoreQuickMethod: GenerateCoreQuickMethod = ({ builder, txBl
       return normalMethod.borrow(
         obligationInfo.obligationId,
         obligationInfo.obligationKey as SuiAddressArg,
+        amount,
+        poolCoinName,
+      );
+    },
+    borrowWithReferralQuick: async (amount, poolCoinName, borrowReferral, obligationId, obligationKey) => {
+      const obligationInfo = await requireObligationInfo(txBlock, builder, obligationId, obligationKey);
+      const obligationCoinNames = await builder.query.getObligationCoinNames(obligationInfo.obligationId);
+      const updateCoinNames = [...obligationCoinNames, poolCoinName];
+      await updateOracles(builder, txBlock, updateCoinNames);
+      return normalMethod.borrowWithReferral(
+        obligationInfo.obligationId,
+        obligationInfo.obligationKey as SuiAddressArg,
+        borrowReferral,
         amount,
         poolCoinName,
       );

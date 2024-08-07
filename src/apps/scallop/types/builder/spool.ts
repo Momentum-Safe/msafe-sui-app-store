@@ -8,6 +8,16 @@ export type SpoolIds = {
   spoolPkg: string;
 };
 
+export type StakePoolIds = {
+  [k in SupportStakeMarketCoins]?: string;
+};
+export type RewardPoolIds = {
+  [k in SupportStakeMarketCoins]?: string;
+};
+export type StakeMarketCoinTypes = {
+  [k in SupportStakeMarketCoins]?: string;
+};
+
 export type SpoolNormalMethods = {
   createStakeAccount: (stakeMarketCoinName: SupportStakeMarketCoins) => TransactionResult;
   stake: (stakeAccount: SuiAddressArg, coin: SuiObjectArg, stakeMarketCoinName: SupportStakeMarketCoins) => void;
@@ -30,7 +40,7 @@ export type SpoolQuickMethods = {
     amount: number,
     stakeMarketCoinName: SupportStakeMarketCoins,
     stakeAccountId?: SuiAddressArg,
-  ): Promise<TransactionResult[]>;
+  ): Promise<TransactionResult | undefined>;
   claimQuick(
     stakeMarketCoinName: SupportStakeMarketCoins,
     stakeAccountId?: SuiAddressArg,
@@ -44,12 +54,12 @@ export type SpoolTxBlock = SuiTxBlockWithSpoolNormalMethods & SpoolQuickMethods;
 export type GenerateSpoolNormalMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => SpoolNormalMethods;
+}) => Promise<SpoolNormalMethods>;
 
 export type GenerateSpoolQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => SpoolQuickMethods;
+}) => Promise<SpoolQuickMethods>;
 
 export type SpoolIncentiveParams = {
   stakeMarketCoinName: SupportStakeMarketCoins;

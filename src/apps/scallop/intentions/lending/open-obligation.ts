@@ -3,17 +3,16 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { SuiNetworks } from '@/types';
 
-import { ScallopClient } from '../models/scallopClient';
-import { NetworkType } from '../types';
-import { TransactionSubType } from '../types/utils';
+import { Scallop } from '../../models';
+import { TransactionSubType } from '../../types/utils';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface OpenObligationIntentionData {}
 
-export class OpenObligationIntention extends CoreBaseIntention<OpenObligationIntentionData> {
+export class OpenObligationIntention extends ScallopCoreBaseIntention<OpenObligationIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.OpenObligation;
@@ -26,15 +25,9 @@ export class OpenObligationIntention extends CoreBaseIntention<OpenObligationInt
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
+    scallop: Scallop;
   }): Promise<TransactionBlock> {
-    const network = input.network.split(':')[1] as NetworkType;
-    const scallopClient = new ScallopClient({
-      client: input.suiClient,
-      walletAddress: input.account.address,
-      networkType: network,
-    });
-    scallopClient.init();
-    return scallopClient.openObligation();
+    return input.scallop.client.openObligation();
   }
 
   static fromData(data: OpenObligationIntentionData): OpenObligationIntention {

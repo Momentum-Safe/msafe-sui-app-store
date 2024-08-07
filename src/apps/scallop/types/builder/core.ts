@@ -39,6 +39,13 @@ export type CoreNormalMethods = {
     amount: SuiTxArg,
     poolCoinName: SupportPoolCoins,
   ) => void;
+  borrowWithReferral: (
+    obligation: SuiAddressArg,
+    obligationKey: SuiAddressArg,
+    borrowReferral: SuiObjectArg,
+    amount: SuiTxArg,
+    poolCoinName: SupportPoolCoins,
+  ) => TransactionResult;
   repay: (obligation: SuiAddressArg, coin: SuiObjectArg, poolCoinName: SupportPoolCoins) => void;
   borrowFlashLoan: (amount: SuiTxArg, poolCoinName: SupportPoolCoins) => TransactionResult;
   repayFlashLoan: (coin: SuiObjectArg, loan: SuiAddressArg, poolCoinName: SupportPoolCoins) => void;
@@ -66,6 +73,13 @@ export type CoreQuickMethods = {
     obligationKey?: SuiAddressArg,
     walletAddress?: SuiAddressArg,
   ) => Promise<TransactionResult>;
+  borrowWithReferralQuick: (
+    amount: number,
+    poolCoinName: SupportPoolCoins,
+    borrowReferral: SuiObjectArg,
+    obligationId?: SuiAddressArg,
+    obligationKey?: SuiAddressArg,
+  ) => Promise<TransactionResult>;
   depositQuick: (
     amount: number,
     poolCoinName: SupportPoolCoins,
@@ -92,9 +106,9 @@ export type CoreTxBlock = SuiTxBlockWithCoreNormalMethods & CoreQuickMethods;
 export type GenerateCoreNormalMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => CoreNormalMethods;
+}) => Promise<CoreNormalMethods>;
 
 export type GenerateCoreQuickMethod = (params: {
   builder: ScallopBuilder;
   txBlock: TransactionBlock;
-}) => CoreQuickMethods;
+}) => Promise<CoreQuickMethods>;

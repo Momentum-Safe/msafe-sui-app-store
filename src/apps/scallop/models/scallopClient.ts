@@ -1,6 +1,5 @@
 import type { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
-import { normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { TransactionBlock, TransactionObjectArgument, TransactionResult } from '@mysten/sui.js/transactions';
 import BigNumber from 'bignumber.js';
 
 import { ScallopAddress } from './scallopAddress';
@@ -9,11 +8,12 @@ import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';
 import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveBuilder';
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
+import { generateReferralNormalMethod, generateReferralQuickMethod } from '../builders/referralBuilder';
+import { generateSCoinNormalMethod } from '../builders/sCoinBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
-import { ADDRESSES_ID, SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SPOOLS } from '../constants';
+import { SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SCOIN, SUPPORT_SPOOLS } from '../constants';
 import type {
-  ScallopInstanceParams,
   ScallopClientParams,
   SupportPoolCoins,
   SupportCollateralCoins,
@@ -21,6 +21,8 @@ import type {
   BorrowIncentiveParams,
   SpoolIncentiveParams,
   SupportBorrowIncentiveRewardCoins,
+  SupportSCoin,
+  SuiObjectArg,
 } from '../types';
 
 /**
@@ -40,7 +42,7 @@ export class ScallopClient {
 
   public client: SuiClient;
 
-  public address: ScallopAddress;
+  private address: ScallopAddress;
 
   public builder: ScallopBuilder;
 
@@ -50,49 +52,22 @@ export class ScallopClient {
 
   public walletAddress: string;
 
-  public constructor(params: ScallopClientParams, instance?: ScallopInstanceParams) {
+  public constructor(params: ScallopClientParams, address: ScallopAddress) {
     this.params = params;
     this.client = params.client;
-    this.address =
-      instance?.address ??
-      new ScallopAddress({
-        id: params?.addressesId || ADDRESSES_ID,
-        network: params?.networkType,
-      });
-    this.query =
-      instance?.query ??
-      new ScallopQuery(params, {
-        address: this.address,
-      });
-    this.utils =
-      instance?.utils ??
-      new ScallopUtils(params, {
-        address: this.address,
-        query: this.query,
-      });
-    this.builder =
-      instance?.builder ??
-      new ScallopBuilder(params, {
-        address: this.address,
-        query: this.query,
-        utils: this.utils,
-      });
-    this.walletAddress = normalizeSuiAddress(params.walletAddress);
-  }
 
-  /**
-   * Request the scallop API to initialize data.
-   *
-   * @param force - Whether to force initialization.
-   */
-  public init(force = false) {
-    if (force || !this.address.getAddresses()) {
-      this.address.read();
-    }
+    this.address = address;
+    this.utils = new ScallopUtils(params, this.address);
 
-    this.builder.init(force, this.address);
-    this.query.init(force, this.address);
-    this.utils.init(force, this.address);
+    this.query = new ScallopQuery(params, {
+      address: this.address,
+      utils: this.utils,
+    });
+    this.builder = new ScallopBuilder(params, {
+      address: this.address,
+      query: this.query,
+      utils: this.utils,
+    });
   }
 
   /* ==================== Query Method ==================== */
@@ -107,7 +82,7 @@ export class ScallopClient {
    * @return Obligations data.
    */
   public async getObligations(ownerAddress?: string) {
-    const owner = ownerAddress || this.walletAddress;
+    const owner = ownerAddress || this.params.walletAddress;
     return this.query.getObligations(owner);
   }
 
@@ -121,7 +96,7 @@ export class ScallopClient {
    * @return All stake accounts data.
    */
   async getAllStakeAccounts(ownerAddress?: string) {
-    const owner = ownerAddress || this.walletAddress;
+    const owner = ownerAddress || this.params.walletAddress;
     return this.query.getAllStakeAccounts(owner);
   }
 
@@ -136,7 +111,7 @@ export class ScallopClient {
    * @return Stake accounts data.
    */
   async getStakeAccounts(stakeMarketCoinName: SupportStakeMarketCoins, ownerAddress?: string) {
-    const owner = ownerAddress || this.walletAddress;
+    const owner = ownerAddress || this.params.walletAddress;
     return this.query.getStakeAccounts(stakeMarketCoinName, owner);
   }
 
@@ -176,8 +151,8 @@ export class ScallopClient {
    */
   public async openObligation(walletAddress?: string): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const coreQuickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const coreQuickMethod = await await generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
     coreQuickMethod.normalMethod.openObligationEntry();
     return txBlock;
@@ -200,9 +175,9 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const sender = walletAddress || this.walletAddress;
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
-    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const quickMethod = await generateCoreQuickMethod({ builder: this.builder, txBlock });
 
     const obligations = await this.query.getObligations(sender);
     const specificObligationId = obligationId || obligations?.[0]?.id;
@@ -236,8 +211,8 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const quickMethod = await generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const collateralCoin = await quickMethod.takeCollateralQuick(
@@ -265,15 +240,18 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const quickMethod = generateCoreQuickMethod({
+    const quickMethod = await generateCoreQuickMethod({
       builder: this.builder,
       txBlock,
     });
-    const sender = walletAddress || this.walletAddress;
+    const scoinMethod = await generateSCoinNormalMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const marketCoin = await quickMethod.depositQuick(amount, poolCoinName, walletAddress);
-    txBlock.transferObjects([marketCoin], sender);
+    const parseScoin = this.utils.parseMarketCoinName(poolCoinName);
+    const scoin = scoinMethod.mintSCoin(parseScoin as SupportSCoin, marketCoin);
+    txBlock.transferObjects([scoin], sender);
     return txBlock;
   }
 
@@ -292,8 +270,8 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const sender = walletAddress || this.walletAddress;
-    const quickMethod = generateCoreQuickMethod({
+    const sender = walletAddress || this.params.walletAddress;
+    const quickMethod = await generateCoreQuickMethod({
       builder: this.builder,
       txBlock,
     });
@@ -323,12 +301,12 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
-    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({
+    const quickMethod = await generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveQuickMethod = await generateBorrowIncentiveQuickMethod({
       builder: this.builder,
       txBlock,
     });
-    const sender = walletAddress || this.walletAddress;
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const availableStake = (SUPPORT_BORROW_INCENTIVE_POOLS as readonly SupportPoolCoins[]).includes(poolCoinName);
@@ -364,12 +342,12 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
-    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({
+    const quickMethod = await generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveQuickMethod = await generateBorrowIncentiveQuickMethod({
       builder: this.builder,
       txBlock,
     });
-    const sender = walletAddress || this.walletAddress;
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const availableStake = (SUPPORT_BORROW_INCENTIVE_POOLS as readonly SupportPoolCoins[]).includes(poolCoinName);
@@ -380,6 +358,58 @@ export class ScallopClient {
     txBlock.transferObjects([coin], sender);
     if (availableStake) {
       await borrowIncentiveQuickMethod.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    }
+    return txBlock;
+  }
+
+  /**
+   * Borrow asset from the specific pool with boost from SCA stake.
+   *
+   * @param poolCoinName - Specific support pool coin name.
+   * @param amount - The amount of coins would borrow.
+   * @param sign - Decide to directly sign the transaction or return the transaction block.
+   * @param obligationId - The obligation object.
+   * @param obligationKey - The obligation key object to verifying obligation authority.
+   * @param veScaKey - The vesca key object to verifying sca staker.
+   * @param walletAddress - The wallet address of the owner.
+   * @return Transaction block response or transaction block.
+   */
+  public async borrowWithReferral(
+    poolCoinName: SupportPoolCoins,
+    amount: number,
+    obligationId: string,
+    obligationKey: string,
+    veScaKey: string | undefined,
+    walletAddress?: string,
+  ): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const quickMethod = await generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveQuickMethod = await generateBorrowIncentiveQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
+    const referralMethod = await generateReferralNormalMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
+    txBlock.setSender(sender);
+
+    const availableStake = (SUPPORT_BORROW_INCENTIVE_POOLS as readonly SupportPoolCoins[]).includes(poolCoinName);
+    if (availableStake) {
+      await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKey);
+    }
+    const borrowReferral = referralMethod.claimReferralTicket(poolCoinName);
+    const coin = await quickMethod.borrowWithReferralQuick(
+      amount,
+      poolCoinName,
+      borrowReferral,
+      obligationId,
+      obligationKey,
+    );
+    referralMethod.burnReferralTicket(borrowReferral, poolCoinName);
+    txBlock.transferObjects([coin], sender);
+    if (availableStake && veScaKey) {
+      await borrowIncentiveQuickMethod.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    } else {
+      await borrowIncentiveQuickMethod.stakeObligationQuick(obligationId, obligationKey);
     }
     return txBlock;
   }
@@ -402,12 +432,12 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const quickMethod = generateCoreQuickMethod({ builder: this.builder, txBlock });
-    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({
+    const quickMethod = await generateCoreQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveQuickMethod = await generateBorrowIncentiveQuickMethod({
       builder: this.builder,
       txBlock,
     });
-    const sender = walletAddress || this.walletAddress;
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const availableStake = (SUPPORT_BORROW_INCENTIVE_POOLS as readonly SupportPoolCoins[]).includes(poolCoinName);
@@ -435,8 +465,8 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const stakeAccount = spoolQuickMethod.normalMethod.createStakeAccount(marketCoinName);
@@ -451,12 +481,12 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const quickMethod = generateCoreQuickMethod({
+    const quickMethod = await generateCoreQuickMethod({
       builder: this.builder,
       txBlock,
     });
-    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const marketCoin = await quickMethod.depositQuick(amount, poolCoinName, walletAddress);
@@ -482,12 +512,12 @@ export class ScallopClient {
     unstakeAccount: { id: string; coin: number }[],
   ) {
     const txBlock = new TransactionBlock();
-    const quickMethod = generateCoreQuickMethod({
+    const quickMethod = await generateCoreQuickMethod({
       builder: this.builder,
       txBlock,
     });
-    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
-    const sender = this.walletAddress;
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = this.params.walletAddress;
     const withdrawCoins = [];
     txBlock.setSender(sender);
     const stakeMarketCoinName = this.utils.parseMarketCoinName(poolCoinName) as SupportStakeMarketCoins;
@@ -524,8 +554,8 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const stakeAccounts = await this.query.getStakeAccounts(stakeMarketCoinName, sender);
@@ -557,12 +587,12 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const marketCoins = await spoolQuickMethod.unstakeQuick(amount, stakeMarketCoinName, stakeAccountId);
-    txBlock.transferObjects(marketCoins, sender);
+    txBlock.transferObjects([marketCoins], txBlock.pure(sender));
     return txBlock;
   }
 
@@ -583,9 +613,9 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const spoolQuickMethod = generateSpoolQuickMethod({ builder: this.builder, txBlock });
-    const borrowIncentiveRewarad = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const borrowIncentiveRewarad = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     const rewardCoins: { sui: TransactionResult[]; sca: TransactionResult[] } = {
@@ -652,8 +682,8 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = this.builder.createTxBlock();
-    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const borrowIncentiveQuickMethod = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     await borrowIncentiveQuickMethod.stakeObligationQuick(obligationId, obligationKeyId);
@@ -675,8 +705,8 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = this.builder.createTxBlock();
-    const borrowIncentiveQuickMethod = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const borrowIncentiveQuickMethod = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     await borrowIncentiveQuickMethod.unstakeObligationQuick(obligationId, obligationKeyId);
@@ -702,9 +732,9 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
-    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const vescaQuickMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     // Get all SCA and merge them into one.
@@ -746,8 +776,8 @@ export class ScallopClient {
    */
   public async stakeMoreSca(amount: number, vescaKey?: string, walletAddress?: string): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    // const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    // const vescaQuickMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     // await vescaQuickMethod.extendLockAmountQuick(amount, vescaKey);
@@ -772,9 +802,9 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
-    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const vescaQuickMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     vescaQuickMethod.normalMethod.extendLockPeriod(vescaKey, lockPeriodInDays);
@@ -802,9 +832,9 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
-    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const vescaQuickMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     // Get all SCA and merge them into one.
@@ -848,9 +878,9 @@ export class ScallopClient {
     walletAddress?: string,
   ): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
-    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const vescaQuickMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const borrowIncentive = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     if (isHaveRedeem) {
@@ -880,8 +910,8 @@ export class ScallopClient {
 
   public async redeemSca(veScaKey: string): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
-    const sender = this.walletAddress;
+    const vescaQuickMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = this.params.walletAddress;
     txBlock.setSender(sender);
 
     await vescaQuickMethod.redeemScaQuick(veScaKey);
@@ -889,14 +919,14 @@ export class ScallopClient {
   }
 
   public async migrateAndClaim(
-    veScaKey: string,
     obligationKey: string,
     obligationId: string,
     rewardCoinName: SupportBorrowIncentiveRewardCoins,
+    veScaKey?: string,
   ) {
     const txBlock = new TransactionBlock();
-    const borrowIncentive = generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
-    const sender = this.walletAddress;
+    const borrowIncentive = await generateBorrowIncentiveQuickMethod({ builder: this.builder, txBlock });
+    const sender = this.params.walletAddress;
     txBlock.setSender(sender);
 
     const rewardCoin = borrowIncentive.normalMethod.oldClaimBorrowIncentive(
@@ -905,7 +935,12 @@ export class ScallopClient {
       rewardCoinName,
     );
     txBlock.transferObjects([rewardCoin], sender);
-    borrowIncentive.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    await borrowIncentive.unstakeObligationQuick(obligationId, obligationKey);
+    if (veScaKey) {
+      await borrowIncentive.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    } else {
+      await borrowIncentive.stakeObligationQuick(obligationId, obligationKey);
+    }
     return txBlock;
   }
 
@@ -918,8 +953,8 @@ export class ScallopClient {
    */
   public async withdrawUnlockedSca(vescaKey?: string, walletAddress?: string): Promise<TransactionBlock> {
     const txBlock = new TransactionBlock();
-    const vescaQuickMethod = generateQuickVeScaMethod({ builder: this.builder, txBlock });
-    const sender = walletAddress || this.walletAddress;
+    const vescaQuickMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
     await vescaQuickMethod.redeemScaQuick(vescaKey);
@@ -936,5 +971,153 @@ export class ScallopClient {
       .multipliedBy(increasePointRate)
       .plus(accountPoint.points)
       .shiftedBy(-1 * poolPoint.coinDecimal);
+  }
+
+  /**
+   * Create Referral Link
+   *
+   * @returns Transaction block response or transaction block.
+   */
+  public async createReferralLink(): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const vescaMethod = await generateQuickVeScaMethod({ builder: this.builder, txBlock });
+    const sender = this.params.walletAddress;
+    txBlock.setSender(sender);
+
+    const referralTicket = vescaMethod.normalMethod.mintEmptyVeSca();
+    txBlock.transferObjects([referralTicket], sender);
+    return txBlock;
+  }
+
+  /**
+   * Claim Referral Revenue
+   * @param veScaKey - The vesca key object.
+   * @param coins - The coins would claim.
+   *
+   * @returns Transaction block response or transaction block.
+   */
+  public async claimRevenuReferral(veScaKey: string, coins: string[]): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const referral = await generateReferralQuickMethod({ builder: this.builder, txBlock });
+    const sender = this.params.walletAddress;
+    txBlock.setSender(sender);
+    const coinsName = coins.map((coin) => this.utils.parseCoinNameFromType(coin) as SupportPoolCoins);
+
+    await referral.claimReferralRevenueQuick(veScaKey, sender, coinsName);
+    return txBlock;
+  }
+
+  /**
+   * Bind Referral
+   * @param veScaKey - The vesca key object.
+   *
+   *
+   * @returns Transaction block response or transaction block.
+   */
+  public async bindReferral(veScaKey: string): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const referral = await generateReferralNormalMethod({ builder: this.builder, txBlock });
+    const sender = this.params.walletAddress;
+    txBlock.setSender(sender);
+    referral.bindToReferral(veScaKey);
+    return txBlock;
+  }
+
+  /* ==================== Migrate market coin to sCoin method ==================== */
+  /**
+   * Function to migrate all market coin in user wallet into sCoin
+   * @returns Transaction response
+   */
+  public async migrateAllMarketCoin(): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const scoinNormalMethod = await generateSCoinNormalMethod({ builder: this.builder, txBlock });
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    txBlock.setSender(this.params.walletAddress);
+
+    const toTransfer: SuiObjectArg[] = [];
+    await Promise.all(
+      SUPPORT_SCOIN.map(async (sCoinName) => {
+        /**
+         * First check marketCoin inside mini wallet
+         * Then check stakedMarketCoin inside spool
+         */
+        const sCoins: SuiObjectArg[] = [];
+        let toDestroyMarketCoin: SuiObjectArg | undefined;
+
+        // check market coin in mini wallet
+        try {
+          const marketCoins = await this.utils.selectCoinIds(
+            Number.MAX_SAFE_INTEGER,
+            this.utils.parseMarketCoinType(sCoinName as SupportSCoin),
+            this.params.walletAddress,
+          ); // throw error no coins found
+
+          const mergedMarketCoin = marketCoins[0];
+          if (marketCoins.length > 1) {
+            txBlock.mergeCoins(mergedMarketCoin, marketCoins.slice(1));
+          }
+
+          toDestroyMarketCoin = mergedMarketCoin;
+        } catch (e: any) {
+          // Ignore
+          const errMsg = e.toString() as string;
+          if (!errMsg.includes('No valid coins found for the transaction')) {
+            throw e;
+          }
+        }
+
+        // if market coin found, mint sCoin
+        if (toDestroyMarketCoin) {
+          // mint new sCoin
+          const sCoin = scoinNormalMethod.mintSCoin(sCoinName as SupportSCoin, toDestroyMarketCoin);
+
+          // check if current sCoin exist
+          try {
+            const existSCoins = await this.utils.selectCoinIds(
+              Number.MAX_SAFE_INTEGER,
+              this.utils.parseSCoinType(sCoinName as SupportSCoin),
+              this.params.walletAddress,
+            ); // throw error on no coins found
+            txBlock.mergeCoins(sCoin, existSCoins);
+          } catch (e: any) {
+            console.log(e);
+          }
+          sCoins.push(sCoin);
+        }
+
+        // check for staked market coin in spool
+        if (SUPPORT_SPOOLS.includes(sCoinName as SupportStakeMarketCoins)) {
+          try {
+            const sCoin = await spoolQuickMethod.unstakeQuick(
+              Number.MAX_SAFE_INTEGER,
+              sCoinName as SupportStakeMarketCoins,
+            );
+            if (sCoin) {
+              sCoins.push(sCoin);
+            }
+          } catch (e: any) {
+            console.log(e);
+          }
+        }
+
+        if (sCoins.length > 0) {
+          const mergedSCoin = sCoins[0];
+          if (sCoins.length > 1) {
+            txBlock.mergeCoins(
+              mergedSCoin as TransactionObjectArgument,
+              sCoins.slice(1) as TransactionObjectArgument[],
+            );
+          }
+
+          toTransfer.push(mergedSCoin);
+        }
+      }),
+    );
+
+    if (toTransfer.length > 0) {
+      txBlock.transferObjects(toTransfer as TransactionObjectArgument[], this.params.walletAddress);
+    }
+
+    return txBlock;
   }
 }

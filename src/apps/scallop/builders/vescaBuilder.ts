@@ -20,7 +20,7 @@ import {
  * @param txBlock - TxBlock created by SuiKit .
  * @return veSCA normal methods.
  */
-const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock }) => {
+export const generateNormalVeScaMethod: GenerateVeScaNormalMethod = async ({ builder, txBlock }) => {
   const veScaIds: VescaIds = {
     pkgId: builder.address.get('vesca.id'),
     table: builder.address.get('vesca.table'),
@@ -92,6 +92,12 @@ const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
       }),
+    mintEmptyVeSca: () =>
+      txBlock.moveCall({
+        target: `${veScaIds.pkgId}::ve_sca::mint_ve_sca_placeholder_key`,
+        arguments: [txBlock.object(veScaIds.config), txBlock.object(veScaIds.table)],
+        typeArguments: [],
+      }),
   };
 };
 
@@ -107,8 +113,8 @@ const generateNormalVeScaMethod: GenerateVeScaNormalMethod = ({ builder, txBlock
  * @param txBlock - TxBlock created by SuiKit .
  * @return veSCA quick methods.
  */
-export const generateQuickVeScaMethod: GenerateVeScaQuickMethod = ({ builder, txBlock }) => {
-  const normalMethod = generateNormalVeScaMethod({ builder, txBlock });
+export const generateQuickVeScaMethod: GenerateVeScaQuickMethod = async ({ builder, txBlock }) => {
+  const normalMethod = await generateNormalVeScaMethod({ builder, txBlock });
   return {
     normalMethod,
     lockScaQuick: async (amountOrCoin, lockPeriodInDays, autoCheck = true) => {

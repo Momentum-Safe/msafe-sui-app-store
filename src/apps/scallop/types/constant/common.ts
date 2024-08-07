@@ -7,12 +7,13 @@ import {
   SUPPORT_SPOOLS_REWARDS,
   SUPPORT_BORROW_INCENTIVE_POOLS,
   SUPPORT_BORROW_INCENTIVE_REWARDS,
+  SUPPORT_SCOIN,
 } from '../../constants';
 
 type ParseMarketCoins<T extends string> = `s${T}`;
 type ParseCoins<T extends string> = T extends `s${infer R}` ? R : never;
 
-export type SupportCoins = SupportAssetCoins | SupportMarketCoins | SupportStakeMarketCoins;
+export type SupportCoins = SupportAssetCoins | SupportMarketCoins | SupportStakeMarketCoins | SupportSCoin;
 export type SupportAssetCoins =
   | SupportPoolCoins
   | SupportCollateralCoins
@@ -26,6 +27,7 @@ export type SupportStakeCoins = Extract<SupportPoolCoins, ParseCoins<SupportStak
 export type SupportStakeRewardCoins = (typeof SUPPORT_SPOOLS_REWARDS)[number];
 export type SupportBorrowIncentiveCoins = (typeof SUPPORT_BORROW_INCENTIVE_POOLS)[number];
 export type SupportBorrowIncentiveRewardCoins = (typeof SUPPORT_BORROW_INCENTIVE_REWARDS)[number];
+export type SupportSCoin = (typeof SUPPORT_SCOIN)[number];
 
 export type SupportOracleType = (typeof SUPPORT_ORACLES)[number];
 
