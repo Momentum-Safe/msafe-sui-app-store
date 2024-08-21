@@ -1272,10 +1272,10 @@
     mysql2 "^3.6.3"
     reflect-metadata "^0.1.13"
 
-"@msafe/sui3-utils@^3.1.66":
-  version "3.1.66"
-  resolved "https://registry.yarnpkg.com/@msafe/sui3-utils/-/sui3-utils-3.1.66.tgz#3bbe40fdc76c849b46f9efa70ff83d79807c2463"
-  integrity sha512-/Ho/cvSVlxPCITZKeLWNHryM1+4Fk2fsCUTieDLGmH3wnZ5mIB+DDV4oAsXEz69be48vFHTNE/z8qxsdMz+sdw==
+"@msafe/sui3-utils@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@msafe/sui3-utils/-/sui3-utils-5.0.2.tgz#656864d6cc4fc4831262c1488f8851aaac2f9c6d"
+  integrity sha512-btDOo4v5ZSWfOVEuXrkp8hOAqF0HOO14AcNDCvvvCxHrk9ajd/fI9HZWoofk31Yx4UdgtIMhdy8sRCdnt3mOEw==
   dependencies:
     "@msafe/sui3-model" "^1.0.40"
     "@noble/hashes" "^1.3.3"
