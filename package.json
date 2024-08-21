@@ -43,16 +43,13 @@
     "MSafe Sui"
   ],
   "dependencies": {
-    "@cetusprotocol/cetus-periphery-sdk": "^2.2.0",
-    "@cetusprotocol/cetus-sui-clmm-sdk": "^4.2.0",
     "@iota/iota-sdk": "^0.1.1",
     "@iota/wallet-standard": "^0.1.1",
+    "@msafe/iota-utils": "^1.0.1",
     "sort-keys-recursive": "^2.1.10"
   },
   "devDependencies": {
     "@msafe/sui3-utils": "^5.0.2",
-    "@mysten/sui.js": "^0.54.1",
-    "@mysten/wallet-standard": "^0.11.6",
     "@types/jest": "^29.2.1",
     "@types/luxon": "^3.4.2",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
@@ -74,8 +71,6 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@msafe/sui3-utils": ">3.0.0",
-    "@mysten/sui.js": ">0.50.0",
-    "@mysten/wallet-standard": ">0.11.0"
+    "@msafe/sui3-utils": ">3.0.0"
   }
 }

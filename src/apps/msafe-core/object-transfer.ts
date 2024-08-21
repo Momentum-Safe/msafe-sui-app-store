@@ -1,6 +1,6 @@
 import { TransactionBlock } from '@iota/iota-sdk/transactions';
 import { WalletAccount } from '@iota/wallet-standard';
-import { TransactionType } from '@msafe/sui3-utils';
+import { TransactionType } from '@msafe/iota-utils';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { IotaClient } from '@iota/iota-sdk/dist/cjs/client';

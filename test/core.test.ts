@@ -1,4 +1,4 @@
-import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
+import { TransactionSubTypes, TransactionType } from '@msafe/iota-utils';
 
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { appHelpers } from '@/index';

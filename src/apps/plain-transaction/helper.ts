@@ -1,5 +1,5 @@
 import { fromHEX, toHEX } from '@iota/iota-sdk/utils';
-import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
+import { TransactionSubTypes, TransactionType } from '@msafe/iota-utils';
 import sortKeys from 'sort-keys-recursive';
 
 import { MSafeAppHelper, TransactionIntention } from '@/apps/interface';

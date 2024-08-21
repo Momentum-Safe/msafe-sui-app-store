@@ -1,6 +1,6 @@
 import { IotaClient } from '@iota/iota-sdk/client';
 import { IotaSignTransactionBlockInput, WalletAccount } from '@iota/wallet-standard';
-import { TransactionType } from '@msafe/sui3-utils';
+import { TransactionType } from '@msafe/iota-utils';
 import sortKeys from 'sort-keys-recursive';
 
 import { SuiNetworks } from '@/types';

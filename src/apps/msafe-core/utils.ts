@@ -7,7 +7,7 @@ import {
   isSuiStructEqual,
   ObjectTransferIntention,
   SuiAddress,
-} from '@msafe/sui3-utils';
+} from '@msafe/iota-utils';
 
 export async function buildCoinTransferTxb(client: IotaClient, intention: CoinTransferIntention, sender: SuiAddress) {
   if (isSuiStructEqual(intention.coinType, '0x2::iota::IOTA')) {

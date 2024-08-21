@@ -1,5 +1,5 @@
 import { WalletAccount } from '@iota/wallet-standard';
-import { TransactionDefaultApplication, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
+import { TransactionDefaultApplication, TransactionSubTypes, TransactionType } from '@msafe/iota-utils';
 
 import { MSafeAppHelper } from '@/apps/interface';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';

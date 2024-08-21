@@ -33,7 +33,6 @@ We provide a demo dApp for MSafe app store integration. please refer below GitHu
 Here is an example for transaction intention, if your dapp have multiple transaction types, you need to define 1 by 1 for each type of transaction intention.
 
 ```typescript
-
 export interface CoinTransferIntentionData {
   recipient: string;
   coinType: string;
@@ -120,7 +119,7 @@ The helper is responsible for convert a transaction block to your own transactio
 You can follow be example to write test
 
 ```typescript
-import { TransactionType } from '@msafe/sui3-utils';
+import { TransactionType } from '@msafe/iota-utils';
 
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { appHelpers } from '@/index';
