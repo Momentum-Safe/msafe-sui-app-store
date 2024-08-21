@@ -1,7 +1,7 @@
+import { IotaClient } from '@iota/iota-sdk/client';
+import { TransactionBlock } from '@iota/iota-sdk/transactions';
+import { WalletAccount } from '@iota/wallet-standard';
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
 import { TransactionIntention } from '@/apps/interface';
@@ -23,7 +23,7 @@ export abstract class CoreBaseIntention<D> implements TransactionIntention<D> {
   }
 
   abstract build(input: {
-    suiClient: SuiClient;
+    client: IotaClient;
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock>;

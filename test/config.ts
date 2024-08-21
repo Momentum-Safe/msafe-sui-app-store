@@ -1,11 +1,12 @@
-import { HexToUint8Array } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { SUI_TESTNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
+import { IotaClient } from '@iota/iota-sdk/client';
+import { fromHEX } from '@iota/iota-sdk/utils';
+import { SUPPORTED_CHAINS, WalletAccount } from '@iota/wallet-standard';
+console.log('🚀 ~ SUPPORTED_CHAINS:', SUPPORTED_CHAINS);
 
-export const Client = new SuiClient({ url: 'https://sui-testnet.blockvision.org/v1/2Sgk89ivT64MnKdcGzjmyjY2ndD' });
+export const Client = new IotaClient({ url: 'https://api.iota-rebased-alphanet.iota.cafe' });
 export const Account: WalletAccount = {
   address: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
-  publicKey: HexToUint8Array('0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66'),
-  chains: [SUI_TESTNET_CHAIN],
+  publicKey: fromHEX('0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66'),
+  chains: [],
   features: [],
 };

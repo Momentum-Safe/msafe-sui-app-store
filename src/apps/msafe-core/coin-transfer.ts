@@ -1,9 +1,10 @@
-import { TransactionType, buildCoinTransferTxb } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount } from '@mysten/wallet-standard';
+import { TransactionType } from '@msafe/sui3-utils';
+import { IotaClient } from '@iota/iota-sdk/client';
+import { TransactionBlock } from '@iota/iota-sdk/transactions';
+import { WalletAccount } from '@iota/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { buildCoinTransferTxb } from './utils';
 
 export interface CoinTransferIntentionData {
   recipient: string;
@@ -20,9 +21,9 @@ export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntenti
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
-    return buildCoinTransferTxb(suiClient, this.data, account.address);
+  async build(input: { client: IotaClient; account: WalletAccount }): Promise<TransactionBlock> {
+    const { client, account } = input;
+    return buildCoinTransferTxb(client, this.data, account.address);
   }
 
   static fromData(data: CoinTransferIntentionData) {

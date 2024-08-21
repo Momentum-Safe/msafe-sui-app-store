@@ -1,7 +1,7 @@
+import { IotaClient } from '@iota/iota-sdk/client';
+import { TransactionBlock } from '@iota/iota-sdk/transactions';
+import { WalletAccount } from '@iota/wallet-standard';
 import { TransactionType, isSameAddress } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
@@ -18,7 +18,7 @@ export class PlainPayloadIntention extends CoreBaseIntention<PlainPayloadIntenti
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
+  async build(input: { client: IotaClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { account } = input;
     const tb = TransactionBlock.from(this.data.content);
 

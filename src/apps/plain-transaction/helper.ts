@@ -1,12 +1,12 @@
+import { fromHEX, toHEX } from '@iota/iota-sdk/utils';
 import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { fromHEX, toHEX } from '@mysten/sui.js/utils';
-import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
 import { MSafeAppHelper, TransactionIntention } from '@/apps/interface';
 import { SuiNetworks } from '@/types';
+import { IotaClient } from '@iota/iota-sdk/client';
+import { TransactionBlock } from '@iota/iota-sdk/transactions';
+import { IotaSignTransactionBlockInput, WalletAccount } from '@iota/wallet-standard';
 
 export type PlainTransactionData = {
   content: string;
@@ -36,11 +36,11 @@ export class PlainTransactionHelper implements MSafeAppHelper<PlainTransactionDa
   }
 
   async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+    input: IotaSignTransactionBlockInput & { network: SuiNetworks; client: IotaClient; account: WalletAccount },
   ): Promise<{ txType: TransactionType; txSubType: string; intentionData: PlainTransactionData }> {
-    const { transactionBlock, suiClient } = input;
+    const { transactionBlock, client } = input;
 
-    const content = await transactionBlock.build({ client: suiClient });
+    const content = await transactionBlock.build({ client });
 
     return {
       txType: TransactionType.Other,
@@ -54,13 +54,13 @@ export class PlainTransactionHelper implements MSafeAppHelper<PlainTransactionDa
     txType: TransactionType;
     txSubType: string;
     intentionData: PlainTransactionData;
-    suiClient: SuiClient;
+    client: IotaClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
+    const { client, account } = input;
     const txb = TransactionBlock.from(fromHEX(input.intentionData.content));
 
-    const inspectResult = await suiClient.devInspectTransactionBlock({
+    const inspectResult = await client.devInspectTransactionBlock({
       transactionBlock: txb,
       sender: account.address,
     });

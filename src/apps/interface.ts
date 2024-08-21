@@ -1,17 +1,17 @@
+import { IotaClient } from '@iota/iota-sdk/client';
+import { IotaSignTransactionBlockInput, WalletAccount } from '@iota/wallet-standard';
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
 import { SuiNetworks } from '@/types';
+import { TransactionBlock } from '@iota/iota-sdk/transactions';
 
 export interface MSafeAppHelper<T> {
   application: string;
   deserialize(
-    input: SuiSignTransactionBlockInput & {
+    input: IotaSignTransactionBlockInput & {
       network: SuiNetworks;
-      suiClient: SuiClient;
+      client: IotaClient;
       account: WalletAccount;
     },
   ): Promise<{
@@ -20,11 +20,11 @@ export interface MSafeAppHelper<T> {
     intentionData: T;
   }>;
   build(input: {
-    network: SuiNetworks;
+    network: string;
     txType: TransactionType;
     txSubType: string;
     intentionData: T;
-    suiClient: SuiClient;
+    client: IotaClient;
     account: WalletAccount;
   }): Promise<TransactionBlock>;
 }
@@ -47,7 +47,7 @@ export abstract class BaseIntention<D> implements TransactionIntention<D> {
     network: SuiNetworks;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    client: IotaClient;
     account: WalletAccount;
   }): Promise<TransactionBlock>;
 

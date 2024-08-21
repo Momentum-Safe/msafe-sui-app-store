@@ -1,10 +1,10 @@
+import { WalletAccount } from '@iota/wallet-standard';
 import { TransactionDefaultApplication, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount } from '@mysten/wallet-standard';
 
 import { MSafeAppHelper } from '@/apps/interface';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
+import { IotaClient } from '@iota/iota-sdk/client';
+import { TransactionBlock } from '@iota/iota-sdk/transactions';
 
 import { ObjectTransferIntention, ObjectTransferIntentionData } from './object-transfer';
 import { PlainPayloadIntention, PlainPayloadIntentionData } from './plain-payload';
@@ -28,10 +28,10 @@ export class CoreHelper implements MSafeAppHelper<CoreIntentionData> {
     intentionData: CoreIntentionData;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    client: IotaClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
+    const { client, account } = input;
     let intention: CoreIntention;
     switch (input.txSubType) {
       case TransactionSubTypes.assets.coin.send:
@@ -46,6 +46,6 @@ export class CoreHelper implements MSafeAppHelper<CoreIntentionData> {
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account });
+    return intention.build({ client, account });
   }
 }

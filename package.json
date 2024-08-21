@@ -45,15 +45,9 @@
   "dependencies": {
     "@cetusprotocol/cetus-periphery-sdk": "^2.2.0",
     "@cetusprotocol/cetus-sui-clmm-sdk": "^4.2.0",
-    "@mysten/bcs": "^0.11.1",
-    "axios": "^1.6.7",
-    "bignumber.js": "^9.1.2",
-    "buffer": "^6.0.3",
-    "kriya-dex-sdk": "^1.1.69",
-    "luxon": "^3.4.4",
-    "nanoid": "3",
-    "sort-keys-recursive": "^2.1.10",
-    "turbos-clmm-sdk": "^2.2.2"
+    "@iota/iota-sdk": "^0.1.1",
+    "@iota/wallet-standard": "^0.1.1",
+    "sort-keys-recursive": "^2.1.10"
   },
   "devDependencies": {
     "@msafe/sui3-utils": "^5.0.2",
