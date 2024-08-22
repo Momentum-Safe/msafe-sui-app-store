@@ -1277,15 +1277,6 @@
     mysql2 "^3.6.3"
     reflect-metadata "^0.1.13"
 
-"@msafe/sui3-utils@^5.0.2":
-  version "5.0.2"
-  resolved "https://registry.npmjs.org/@msafe/sui3-utils/-/sui3-utils-5.0.2.tgz#656864d6cc4fc4831262c1488f8851aaac2f9c6d"
-  integrity sha512-btDOo4v5ZSWfOVEuXrkp8hOAqF0HOO14AcNDCvvvCxHrk9ajd/fI9HZWoofk31Yx4UdgtIMhdy8sRCdnt3mOEw==
-  dependencies:
-    "@msafe/sui3-model" "^1.0.40"
-    "@noble/hashes" "^1.3.3"
-    sort-keys-recursive "^2.1.10"
-
 "@noble/curves@^1.1.0", "@noble/curves@~1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.4.0.tgz#f05771ef64da724997f69ee1261b2417a49522d6"
@@ -1923,11 +1914,6 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
-
-"@types/luxon@^3.4.2":
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.4.2.tgz#e4fc7214a420173cea47739c33cdf10874694db7"
-  integrity sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA==
 
 "@types/node@*":
   version "20.12.12"
