@@ -43,12 +43,12 @@
     "MSafe Sui"
   ],
   "dependencies": {
-    "@iota/iota-sdk": "^0.1.1",
-    "@iota/wallet-standard": "^0.1.1",
-    "@msafe/iota-utils": "^1.0.1",
     "sort-keys-recursive": "^2.1.10"
   },
   "devDependencies": {
+    "@iota/iota-sdk": "^0.1.1",
+    "@iota/wallet-standard": "^0.1.1",
+    "@msafe/iota-utils": "^1.0.1",
     "@types/jest": "^29.2.1",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
@@ -67,5 +67,10 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "@iota/iota-sdk": ">0.1.0",
+    "@iota/wallet-standard": ">0.1.0",
+    "@msafe/iota-utils": ">1.0.0"
   }
 }
