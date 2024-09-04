@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 import { MSafeAppHelper } from '../interface';
@@ -89,7 +89,7 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account, network } = input;
     let intention: TURBOSIntention;
     console.log(input.intentionData, 'intentionData');

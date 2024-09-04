@@ -6,8 +6,8 @@ import {
   SetAutoClaimIntentionData,
   TransactionType,
 } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
 import { MSafeAppHelper } from '@/apps/interface';
@@ -83,7 +83,7 @@ export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { intentionData } = input;
     let intention: MPayIntention;
     switch (input.txSubType as StreamTransactionType) {

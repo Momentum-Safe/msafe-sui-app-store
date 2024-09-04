@@ -1,9 +1,9 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import config from '../config';
 import { OptionType, PoolConfig } from '../types';
 
-export function depositToken(txb: TransactionBlock, pool: PoolConfig, coinObject: any, amount: number) {
+export function depositToken(txb: Transaction, pool: PoolConfig, coinObject: any, amount: number) {
   txb.moveCall({
     target: `${config.ProtocolPackage}::incentive_v2::entry_deposit`,
     arguments: [
@@ -21,7 +21,7 @@ export function depositToken(txb: TransactionBlock, pool: PoolConfig, coinObject
   return txb;
 }
 
-export function withdrawToken(txb: TransactionBlock, pool: PoolConfig, amount: number) {
+export function withdrawToken(txb: Transaction, pool: PoolConfig, amount: number) {
   txb.moveCall({
     target: `${config.ProtocolPackage}::incentive_v2::entry_withdraw`,
     arguments: [
@@ -39,7 +39,7 @@ export function withdrawToken(txb: TransactionBlock, pool: PoolConfig, amount: n
   return txb;
 }
 
-export function borrowToken(tx: TransactionBlock, pool: PoolConfig, amount: number, userAddress: string) {
+export function borrowToken(tx: Transaction, pool: PoolConfig, amount: number, userAddress: string) {
   const borrowBalance = tx.moveCall({
     target: `${config.ProtocolPackage}::incentive_v2::borrow`,
     arguments: [
@@ -70,7 +70,7 @@ export function borrowToken(tx: TransactionBlock, pool: PoolConfig, amount: numb
   return tx;
 }
 
-export function repayToken(txb: TransactionBlock, pool: PoolConfig, coinObject: any, amount: number) {
+export function repayToken(txb: Transaction, pool: PoolConfig, coinObject: any, amount: number) {
   txb.moveCall({
     target: `${config.ProtocolPackage}::incentive_v2::entry_repay`,
     arguments: [
@@ -89,7 +89,7 @@ export function repayToken(txb: TransactionBlock, pool: PoolConfig, coinObject: 
 }
 
 export function claimReward(
-  txb: TransactionBlock,
+  txb: Transaction,
   assetId: number,
   poolId: string,
   option: OptionType,

@@ -1,4 +1,4 @@
-import { TransactionBlock, Transactions } from '@mysten/sui.js/transactions';
+import { Transaction, Transactions } from '@mysten/sui.js/transactions';
 
 import { ContractConfig, Globals } from '../common';
 import { ObjectVector, MoveObject, ResultRef, Ref, ObjectId } from '../common/transaction';
@@ -11,7 +11,7 @@ export class BaseContract {
     public readonly globals: Globals,
   ) {}
 
-  addContractCall(txb: TransactionBlock, input: { method: string; arguments: any[]; typeArgs?: string[] }) {
+  addContractCall(txb: Transaction, input: { method: string; arguments: any[]; typeArgs?: string[] }) {
     const target =
       `${this.config.contractId}::${this.moduleName}::${input.method}` as `${string}::${string}::${string}`;
     txb.add(
@@ -35,7 +35,7 @@ export class BaseContract {
     return txb;
   }
 
-  private addTransactionBlock(txb: TransactionBlock, target: string, callArgs: any[] = [], typeArgs: string[] = []) {
+  private addTransactionBlock(txb: Transaction, target: string, callArgs: any[] = [], typeArgs: string[] = []) {
     txb.add(
       Transactions.MoveCall({
         target: target as `${string}::${string}::${string}`,

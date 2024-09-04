@@ -4,7 +4,7 @@
 //   completed: !canceled && streamed === 100 && claimable === 0
 //   canceled: canceled && claimable !== 0
 //   settled: canceled && claimable === 0
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { DateTime, Duration } from 'luxon';
 
 import { StreamEvent } from './events';
@@ -31,14 +31,14 @@ export interface IStream {
   historyEvents(options?: PaginationOptions): Promise<Paginated<StreamEvent>>;
 
   // Sender
-  cancel(): Promise<TransactionBlock>;
+  cancel(): Promise<Transaction>;
 
   // Recipient
-  claim(): Promise<TransactionBlock>;
-  setAutoClaim(enabled: boolean): Promise<TransactionBlock>;
+  claim(): Promise<Transaction>;
+  setAutoClaim(enabled: boolean): Promise<Transaction>;
 
   // Third party
-  claimByProxy(): Promise<TransactionBlock>;
+  claimByProxy(): Promise<Transaction>;
 }
 
 export interface IStreamGroup {

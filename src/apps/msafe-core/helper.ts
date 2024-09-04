@@ -1,6 +1,6 @@
 import { TransactionDefaultApplication, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { MSafeAppHelper } from '@/apps/interface';
@@ -30,7 +30,7 @@ export class CoreHelper implements MSafeAppHelper<CoreIntentionData> {
     txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account } = input;
     let intention: CoreIntention;
     switch (input.txSubType) {

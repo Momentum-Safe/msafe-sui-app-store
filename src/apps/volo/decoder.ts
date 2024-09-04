@@ -1,7 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
+import { Transaction, TransactionBlockInput } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import config from './config';
@@ -22,7 +22,7 @@ type DecodeResult = {
 };
 
 export class Decoder {
-  constructor(public readonly txb: TransactionBlock) {}
+  constructor(public readonly txb: Transaction) {}
 
   decode() {
     console.log('txb', this.txb);
@@ -107,7 +107,7 @@ export class Decoder {
 export class MoveCallHelper {
   constructor(
     public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {}
 
   decodeSharedObjectId(argIndex: number) {

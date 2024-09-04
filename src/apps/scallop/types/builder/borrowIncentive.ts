@@ -1,4 +1,4 @@
-import type { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
+import type { Transaction, TransactionResult } from '@mysten/sui.js/transactions';
 
 import type { ScallopBuilder } from '../../models';
 import type { SupportBorrowIncentiveRewardCoins } from '../constant';
@@ -46,18 +46,18 @@ export type BorrowIncentiveQuickMethods = {
   ): TransactionResult;
 };
 
-export type SuiTxBlockWithBorrowIncentiveNormalMethods = TransactionBlock & BorrowIncentiveNormalMethods;
+export type SuiTxBlockWithBorrowIncentiveNormalMethods = Transaction & BorrowIncentiveNormalMethods;
 
 export type BorrowIncentiveTxBlock = SuiTxBlockWithBorrowIncentiveNormalMethods & BorrowIncentiveQuickMethods;
 
 export type GenerateBorrowIncentiveNormalMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<BorrowIncentiveNormalMethods>;
 
 export type GenerateBorrowIncentiveQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<BorrowIncentiveQuickMethods>;
 
 export type BorrowIncentiveParams = {

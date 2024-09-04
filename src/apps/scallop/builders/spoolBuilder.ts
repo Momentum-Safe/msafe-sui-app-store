@@ -1,6 +1,6 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
+import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui/utils';
 import type { TransactionArgument, TransactionResult } from '@mysten/sui.js/transactions';
-import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { generateSCoinNormalMethod } from './sCoinBuilder';
 import { SUPPORT_SPOOLS } from '../constants';
@@ -21,7 +21,7 @@ import { requireSender } from '../utils';
 
 const stakeHelper = async (
   builder: ScallopBuilder,
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   stakeAccount: SuiAddressArg,
   coinName: SupportStakeMarketCoins,
   amount: number,
@@ -63,7 +63,7 @@ const stakeHelper = async (
 const requireStakeAccountIds = async (
   ...params: [
     builder: ScallopBuilder,
-    txBlock: TransactionBlock,
+    txBlock: Transaction,
     stakeMarketCoinName: SupportStakeMarketCoins,
     stakeAccountId?: SuiAddressArg,
   ]
@@ -96,7 +96,7 @@ const requireStakeAccountIds = async (
 const requireStakeAccounts = async (
   ...params: [
     builder: ScallopBuilder,
-    txBlock: TransactionBlock,
+    txBlock: Transaction,
     stakeMarketCoinName: SupportStakeMarketCoins,
     stakeAccountId?: SuiAddressArg,
   ]

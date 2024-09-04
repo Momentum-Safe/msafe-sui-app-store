@@ -1,6 +1,6 @@
 import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { fromHEX, toHEX } from '@mysten/sui.js/utils';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
@@ -56,9 +56,9 @@ export class PlainTransactionHelper implements MSafeAppHelper<PlainTransactionDa
     intentionData: PlainTransactionData;
     suiClient: SuiClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account } = input;
-    const txb = TransactionBlock.from(fromHEX(input.intentionData.content));
+    const txb = Transaction.from(fromHEX(input.intentionData.content));
 
     const inspectResult = await suiClient.devInspectTransactionBlock({
       transactionBlock: txb,

@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
@@ -33,7 +33,7 @@ export class StakeScaIntention extends ScallopCoreBaseIntention<StakeScaIntentio
     account: WalletAccount;
     network: SuiNetworks;
     scallop: Scallop;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     return input.scallop.client.stakeSca(
       this.data.amount,
       this.data.isObligationLocked,

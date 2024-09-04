@@ -1,11 +1,11 @@
 import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction, TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/dist/cjs/transactions';
+import { MoveCallTransaction, Transaction, TransactionBlockInput } from '@mysten/sui.js/dist/cjs/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 export class MoveCallHelper {
   constructor(
     public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {}
 
   decodeSharedObjectId(argIndex: number) {

@@ -1,9 +1,9 @@
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { SuiNetworks, TransactionSubType } from '../types';
 import { Pool, Trade } from 'turbos-clmm-sdk';
-import { SuiClient } from '@mysten/sui.js/client';
+import { SuiClient } from '@mysten/sui/client';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { TurbosSdk, Network } from 'turbos-clmm-sdk';
 
@@ -18,11 +18,7 @@ export class SwapIntention extends CoreBaseIntention<SwapIntentionData> {
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<Transaction> {
     console.log(this.data, 'this.data');
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { routes, coinTypeA, coinTypeB, address, amountA, amountB, slippage, amountSpecifiedIsInput, deadline, txb } =

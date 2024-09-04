@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
@@ -26,7 +26,7 @@ export interface MSafeAppHelper<T> {
     intentionData: T;
     suiClient: SuiClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock>;
+  }): Promise<Transaction>;
 }
 
 export interface TransactionIntention<D> {
@@ -49,7 +49,7 @@ export abstract class BaseIntention<D> implements TransactionIntention<D> {
     txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock>;
+  }): Promise<Transaction>;
 
   serialize() {
     return JSON.stringify(sortKeys(this.data));

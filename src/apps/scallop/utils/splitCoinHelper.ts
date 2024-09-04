@@ -1,12 +1,12 @@
 import { bcs } from '@mysten/sui.js/bcs';
-import { SplitCoinsTransaction, TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/dist/cjs/transactions';
+import { SplitCoinsTransaction, Transaction, TransactionBlockInput } from '@mysten/sui.js/dist/cjs/transactions';
 
 import { MoveCallHelper } from './moveCallHelper';
 
 export class SplitCoinHelper {
   constructor(
     public readonly splitCoin: SplitCoinsTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {}
 
   getAmountInput() {

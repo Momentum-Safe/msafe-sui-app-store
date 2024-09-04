@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionArgument, Transaction } from '@mysten/sui.js/transactions';
 
 export type MoveNumber = bigint | string | number;
 export type Ref<T> = T | ResultRef;
@@ -7,7 +7,7 @@ export type ObjectId = string;
 export class MoveObject {
   constructor(public readonly object: string) {}
 
-  moveArg(txb: TransactionBlock) {
+  moveArg(txb: Transaction) {
     return txb.object(this.object);
   }
 }
@@ -15,7 +15,7 @@ export class MoveObject {
 export class ObjectVector {
   constructor(public readonly objects: string[]) {}
 
-  moveArgs(txb: TransactionBlock) {
+  moveArgs(txb: Transaction) {
     return txb.makeMoveVec({ objects: this.objects.map((o) => txb.object(o)) });
   }
 }

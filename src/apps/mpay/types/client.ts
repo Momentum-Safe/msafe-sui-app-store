@@ -1,5 +1,5 @@
 import { CoinBalance, CoinMetadata, SuiTransactionBlockResponse, DevInspectResults } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { DateTime, Duration } from 'luxon';
 
 import { StreamFilterStatus } from './backend';
@@ -20,7 +20,7 @@ export interface IMPayClient {
   getRecipientsForStreamFilter(options?: StreamFilterStatus): Promise<string[]>;
   getCreatorsForStreamFilter(options?: StreamFilterStatus): Promise<string[]>;
 
-  createStream(info: CreateStreamInfo): Promise<TransactionBlock>;
+  createStream(info: CreateStreamInfo): Promise<Transaction>;
 }
 
 export interface PaymentWithFee {
@@ -46,7 +46,7 @@ export interface IMPayHelper {
   calculateStreamAmount(input: { totalAmount: bigint; steps: bigint; cliff?: Fraction }): CalculatedStreamAmount;
   calculateTimelineByInterval(input: { timeStart: DateTime; interval: Duration; steps: bigint }): CalculatedTimeline;
   calculateTimelineByTotalDuration(input: { timeStart: DateTime; total: Duration; steps: bigint }): CalculatedTimeline;
-  simulateTransactionBlock(txb: TransactionBlock): Promise<DevInspectResults>;
+  simulateTransactionBlock(txb: Transaction): Promise<DevInspectResults>;
 }
 
 export type IPagedStreamListIterator = SuiIterator<(IStream | IStreamGroup)[]>;

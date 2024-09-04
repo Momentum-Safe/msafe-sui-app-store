@@ -1,5 +1,5 @@
 import type { SuiObjectResponse, SuiObjectData } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import BigNumber from 'bignumber.js';
 
 import { SUPPORT_POOLS, PROTOCOL_OBJECT_ID } from '../constants';
@@ -329,7 +329,7 @@ export const getMarketCoinAmount = async (
 export const queryObligation = async (query: ScallopQuery, obligationId: SuiAddressArg) => {
   const packageId = query.address.get('core.packages.query.id');
   const queryTarget = `${packageId}::obligation_query::obligation_data` as `${string}::${string}::${string}`;
-  const txBlock = new TransactionBlock();
+  const txBlock = new Transaction();
   txBlock.moveCall({
     target: queryTarget,
     arguments: [txBlock.object(obligationId as string)],

@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
@@ -21,9 +21,9 @@ export class EntryWithdrawIntention extends CoreBaseIntention<EntryWithdrawInten
     super(data);
   }
 
-  async build(): Promise<TransactionBlock> {
+  async build(): Promise<Transaction> {
     const { coinType, amount } = this.data;
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
     console.log('build', this.data);
 
     const pool = config.pool[coinType];

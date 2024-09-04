@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 
@@ -26,9 +26,9 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
     super(data);
   }
 
-  async build(): Promise<TransactionBlock> {
+  async build(): Promise<Transaction> {
     const { claims } = this.data;
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
 
     claims.forEach((claim) => {
       const { assetId, poolId, option, typeArguments } = claim;

@@ -1,6 +1,6 @@
 import { TransactionType, isSameAddress } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
@@ -18,9 +18,9 @@ export class PlainPayloadIntention extends CoreBaseIntention<PlainPayloadIntenti
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account } = input;
-    const tb = TransactionBlock.from(this.data.content);
+    const tb = Transaction.from(this.data.content);
 
     if (!isSameAddress(tb.blockData.sender, account.address)) {
       throw new Error('Invalid sender address');

@@ -49,7 +49,7 @@ export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntenti
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { suiClient, account } = input;
     return buildCoinTransferTxb(suiClient, this.data, account.address);
   }
@@ -63,7 +63,7 @@ export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntenti
 Each intention should have one data structure to store transaction information for future build.
 This structure can be defined according to your own business logic, it can be any type of data, (should be JSON serializable)
 
-Transaction intention implement mainly one API `build(): Promise<TransactionBlock>` which will build Sui transaction block from your defined business data.
+Transaction intention implement mainly one API `build(): Promise<Transaction>` which will build Sui transaction block from your defined business data.
 
 ### Create helper
 
@@ -93,7 +93,7 @@ export class CoreHelper implements MSafeAppHelper<CoreIntention, CoreIntentionDa
     txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account } = input;
     let intention: CoreIntention;
     switch (input.txSubType) {

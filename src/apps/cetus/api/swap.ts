@@ -1,5 +1,5 @@
 import { TransactionUtil } from '@cetusprotocol/cetus-sui-clmm-sdk';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
@@ -11,10 +11,10 @@ export const getSwapRouterTxb = async (
   slippage: number,
   account: WalletAccount,
   network: SuiNetworks,
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
   const allCoinAsset = await clmmSdk.getOwnerCoinAssets(account.address);
-  const txb: TransactionBlock = await TransactionUtil.buildAggregatorSwapTransaction(
+  const txb: Transaction = await TransactionUtil.buildAggregatorSwapTransaction(
     clmmSdk,
     createTxParams,
     allCoinAsset,

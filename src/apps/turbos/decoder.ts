@@ -1,7 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
+import { Transaction, TransactionBlockInput } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
@@ -44,7 +44,7 @@ const getAtoB = (layer: 0 | 1, target: string, swap1Layer: string[], swap2Layer:
 
 export class Decoder {
   constructor(
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
     public readonly turbosSdk: TurbosSdk,
     public readonly config: Contract.Config,
   ) {}
@@ -503,7 +503,7 @@ export class Decoder {
 export class MoveCallHelper {
   constructor(
     public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {}
 
   decodeSharedObjectId(argIndex: number) {

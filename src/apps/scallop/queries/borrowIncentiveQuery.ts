@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui.js/utils';
 import BigNumber from 'bignumber.js';
 
@@ -34,7 +34,7 @@ export const queryBorrowIncentiveAccounts = async (
   const incentiveAccountsId = query.address.get('borrowIncentive.incentiveAccounts');
   const queryTarget =
     `${queryPkgId}::incentive_account_query::incentive_account_data` as `${string}::${string}::${string}`;
-  const txBlock = new TransactionBlock();
+  const txBlock = new Transaction();
   txBlock.moveCall({
     target: queryTarget,
     arguments: [txBlock.object(incentiveAccountsId), txBlock.object(obligationId)],
@@ -71,7 +71,7 @@ export const queryBorrowIncentivePools = async (query: ScallopQuery, coinNames?:
   const queryPkgId = query.address.get('borrowIncentive.query');
   const incentivePoolsId = query.address.get('borrowIncentive.incentivePools');
 
-  const txBlock = new TransactionBlock();
+  const txBlock = new Transaction();
   const queryTarget = `${queryPkgId}::incentive_pools_query::incentive_pools_data` as `${string}::${string}::${string}`;
   txBlock.moveCall({ target: queryTarget, arguments: [txBlock.object(incentivePoolsId)] });
   const queryResult = await query.client.devInspectTransactionBlock({

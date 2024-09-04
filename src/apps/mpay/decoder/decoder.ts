@@ -1,5 +1,5 @@
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { CreateStreamDecodeHelper } from './create';
 import { MoveCallHelper } from './moveCall';
@@ -17,7 +17,7 @@ import {
 } from '../types/decode';
 
 export class StreamTransactionDecoder {
-  static decodeTransaction(globals: Globals, txb: TransactionBlock): StreamDecodedTransaction {
+  static decodeTransaction(globals: Globals, txb: Transaction): StreamDecodedTransaction {
     const helper = new DecodeHelper(globals, txb);
     return helper.decode();
   }
@@ -28,7 +28,7 @@ export class DecodeHelper {
 
   constructor(
     public readonly globals: Globals,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {
     this.contract = new StreamContract(globals.envConfig.contract, globals);
   }

@@ -1,4 +1,4 @@
-import type { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
+import type { Transaction, TransactionResult } from '@mysten/sui.js/transactions';
 
 import type { ScallopBuilder } from '../../models';
 import type { SupportStakeMarketCoins } from '../constant';
@@ -47,18 +47,18 @@ export type SpoolQuickMethods = {
   ): Promise<TransactionResult[]>;
 };
 
-export type SuiTxBlockWithSpoolNormalMethods = TransactionBlock & SpoolNormalMethods;
+export type SuiTxBlockWithSpoolNormalMethods = Transaction & SpoolNormalMethods;
 
 export type SpoolTxBlock = SuiTxBlockWithSpoolNormalMethods & SpoolQuickMethods;
 
 export type GenerateSpoolNormalMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<SpoolNormalMethods>;
 
 export type GenerateSpoolQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<SpoolQuickMethods>;
 
 export type SpoolIncentiveParams = {

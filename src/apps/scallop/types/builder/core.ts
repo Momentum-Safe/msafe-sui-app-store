@@ -1,4 +1,4 @@
-import type { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
+import type { Transaction, TransactionResult } from '@mysten/sui.js/transactions';
 
 import type { ScallopBuilder } from '../../models';
 import type { SupportCollateralCoins, SupportPoolCoins, SupportAssetCoins } from '../constant';
@@ -99,16 +99,16 @@ export type CoreQuickMethods = {
   updateAssetPricesQuick: (assetCoinNames?: SupportAssetCoins[]) => Promise<void>;
 };
 
-export type SuiTxBlockWithCoreNormalMethods = TransactionBlock & CoreNormalMethods;
+export type SuiTxBlockWithCoreNormalMethods = Transaction & CoreNormalMethods;
 
 export type CoreTxBlock = SuiTxBlockWithCoreNormalMethods & CoreQuickMethods;
 
 export type GenerateCoreNormalMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<CoreNormalMethods>;
 
 export type GenerateCoreQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<CoreQuickMethods>;

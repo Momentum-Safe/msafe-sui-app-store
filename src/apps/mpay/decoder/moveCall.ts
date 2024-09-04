@@ -1,13 +1,13 @@
 // Helper class to decode move call
 import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
+import { Transaction, TransactionBlockInput } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 export class MoveCallHelper {
   constructor(
     public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {}
 
   decodeSharedObjectId(argIndex: number) {

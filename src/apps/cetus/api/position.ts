@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
@@ -9,9 +9,9 @@ export const getAddLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
+  const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
   );
@@ -22,9 +22,9 @@ export const getIncreaseLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: TransactionBlock = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
+  const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
   );
@@ -35,9 +35,9 @@ export const getRemoveLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: TransactionBlock = await clmmSdk.Position.closePositionTransactionPayload(txbParams);
+  const txb: Transaction = await clmmSdk.Position.closePositionTransactionPayload(txbParams);
   return txb;
 };
 
@@ -45,9 +45,9 @@ export const getDecreaseLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: TransactionBlock = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams);
+  const txb: Transaction = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams);
   return txb;
 };
 
@@ -55,8 +55,8 @@ export const getClaimFeeAndMiningTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: TransactionBlock = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams);
+  const txb: Transaction = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams);
   return txb;
 };

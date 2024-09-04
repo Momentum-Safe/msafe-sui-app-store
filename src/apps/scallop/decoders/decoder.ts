@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/dist/cjs/transactions';
+import { Transaction } from '@mysten/sui.js/dist/cjs/transactions';
 
 import { Scallop } from '../models';
 
@@ -6,7 +6,7 @@ export class Decoder {
   protected scallop: Scallop;
 
   constructor(
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
     scallop: Scallop,
   ) {
     this.scallop = scallop;

@@ -1,4 +1,4 @@
-import { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
+import { Transaction, TransactionResult } from '@mysten/sui.js/transactions';
 
 import { ScallopBuilder } from '../../models';
 import { SupportSCoin } from '../constant';
@@ -33,12 +33,12 @@ export type SCoinQuickMethods = {
   burnSCoinQuick: (sCoinName: SupportSCoin, amount: number, walletAddress: string) => Promise<TransactionResult>;
 };
 
-export type SuiTxBlockWithSCoinNormalMethods = TransactionBlock & SCoinNormalMethods;
+export type SuiTxBlockWithSCoinNormalMethods = Transaction & SCoinNormalMethods;
 export type SCoinTxBlock = SuiTxBlockWithSCoinNormalMethods & SCoinQuickMethods;
 
 export type GenerateSCoinNormalMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<SCoinNormalMethods>;
 
 export type GenerateSCoinQuickMethod = (params: {

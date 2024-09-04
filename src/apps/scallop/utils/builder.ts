@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import {
   MAX_LOCK_DURATION,
@@ -15,7 +15,7 @@ import { SuiObjectArg } from '../types';
  * @param txBlock - TxBlock created by SuiKit.
  * @return Sender of transaction.
  */
-export const requireSender = (txBlock: TransactionBlock) => {
+export const requireSender = (txBlock: Transaction) => {
   const { sender } = txBlock.blockData;
   if (!sender) {
     throw new Error('Sender is required');

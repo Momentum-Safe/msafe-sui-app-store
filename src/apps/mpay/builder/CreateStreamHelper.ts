@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock, TransactionObjectArgument } from '@mysten/sui.js/transactions';
+import { TransactionArgument, Transaction, TransactionObjectArgument } from '@mysten/sui.js/transactions';
 import { SUI_TYPE_ARG, normalizeStructTag } from '@mysten/sui.js/utils';
 
 import { CLAIM_FEE_NUMERATOR, FEE_DENOMINATOR, FEE_NUMERATOR, FLAT_FEE_SUI } from './const';
@@ -45,8 +45,8 @@ export class CreateStreamHelper {
     };
   }
 
-  async buildCreateStreamTransactionBlock(info: CreateStreamInfoInternal): Promise<TransactionBlock> {
-    const txb = new TransactionBlock();
+  async buildCreateStreamTransactionBlock(info: CreateStreamInfoInternal): Promise<Transaction> {
+    const txb = new Transaction();
     const paymentWithFee = this.calculateFeesInternal(info);
     const coinReqs = this.getCreateStreamCoinRequests(info, paymentWithFee);
     const coinResp = await this.wallet.requestCoins(coinReqs);
@@ -102,7 +102,7 @@ export class CreateStreamHelper {
     };
   }
 
-  private async addMergeCoins(txb: TransactionBlock, coins: CoinRequestResponse): Promise<TransactionObjectArgument> {
+  private async addMergeCoins(txb: Transaction, coins: CoinRequestResponse): Promise<TransactionObjectArgument> {
     let mergedCoin: TransactionObjectArgument;
     if (coins.mergedCoins && coins.mergedCoins.length) {
       txb.mergeCoins(
@@ -176,7 +176,7 @@ export class CreateStreamHelper {
   }
 
   async getStreamFeeRemote(streamAmount: bigint) {
-    const txb = this.feeContract.streamingFee(new TransactionBlock(), streamAmount);
+    const txb = this.feeContract.streamingFee(new Transaction(), streamAmount);
     const res = await this.globals.suiClient.devInspectTransactionBlock({
       sender: await this.globals.walletAddress(),
       transactionBlock: txb,

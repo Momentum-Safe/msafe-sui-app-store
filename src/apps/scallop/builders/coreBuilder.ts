@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionArgument, Transaction } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { updateOracles } from './oracle';
@@ -30,7 +30,7 @@ import { requireSender } from '../utils';
  */
 const requireObligationInfo = async (
   ...params: [
-    txBlock: TransactionBlock,
+    txBlock: Transaction,
     builder: ScallopBuilder,
     obligationId?: SuiAddressArg,
     obligationKey?: SuiAddressArg,

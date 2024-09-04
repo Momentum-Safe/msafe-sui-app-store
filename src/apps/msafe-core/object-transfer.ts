@@ -1,6 +1,6 @@
 import { TransactionType, buildObjectTransferTxb } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { CoreBaseIntention } from '@/apps/msafe-core/intention';
@@ -20,7 +20,7 @@ export class ObjectTransferIntention extends CoreBaseIntention<ObjectTransferInt
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { suiClient, account } = input;
     return buildObjectTransferTxb(suiClient, this.data, account.address);
   }

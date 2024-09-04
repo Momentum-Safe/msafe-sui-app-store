@@ -1,5 +1,5 @@
 import { SuiObjectData, SuiObjectResponse, SuiParsedData } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag, parseStructTag } from '@mysten/sui.js/utils';
 import { DateTime, Duration } from 'luxon';
 
@@ -98,7 +98,7 @@ export class Stream implements IStream {
     if ((await this.globals.walletAddress()) !== this.creator) {
       throw new NotCreatorError();
     }
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.cancelStream(txb, {
       streamId: this.streamId,
       coinType: this.coinType,
@@ -110,7 +110,7 @@ export class Stream implements IStream {
     if ((await this.globals.walletAddress()) !== this.recipient) {
       throw new NotRecipientError();
     }
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.claimStream(txb, {
       streamId: this.streamId,
       coinType: this.coinType,
@@ -122,7 +122,7 @@ export class Stream implements IStream {
     if ((await this.globals.walletAddress()) !== this.recipient) {
       throw new NotRecipientError();
     }
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.setAutoClaim(txb, {
       streamId: this.streamId,
       coinType: this.coinType,
@@ -132,7 +132,7 @@ export class Stream implements IStream {
   }
 
   async claimByProxy() {
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.claimStreamByProxy(txb, {
       streamId: this.streamId,
       coinType: this.coinType,

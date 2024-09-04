@@ -1,4 +1,4 @@
-import { SuiClient } from '@mysten/sui.js/client';
+import { SuiClient } from '@mysten/sui/client';
 
 import { EnvConfig, Env, EnvConfigOptions, getConfig } from './env';
 import { NoBackendError } from '../error/NoBackendError';

@@ -1,5 +1,5 @@
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { SUI_TYPE_ARG, normalizeStructTag } from '@mysten/sui.js/utils';
 
 import { ScallopAddress } from './scallopAddress';
@@ -329,7 +329,7 @@ export class ScallopUtils {
     return ((1 + apy) ** (1 / compoundFrequency) - 1) * compoundFrequency;
   }
 
-  public takeAmountFromCoins(txBlock: TransactionBlock, coinObjectId: string[], amount: SuiTxArg) {
+  public takeAmountFromCoins(txBlock: Transaction, coinObjectId: string[], amount: SuiTxArg) {
     const coinObjects = coinObjectId.map((objectId) => txBlock.object(objectId));
     const mergedCoin = coinObjects[0];
     if (coinObjects.length > 1) {

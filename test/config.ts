@@ -1,5 +1,5 @@
 import { HexToUint8Array } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
+import { SuiClient } from '@mysten/sui/client';
 import { SUI_TESTNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 
 export const Client = new SuiClient({ url: 'https://sui-testnet.blockvision.org/v1/2Sgk89ivT64MnKdcGzjmyjY2ndD' });

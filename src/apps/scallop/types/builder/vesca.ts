@@ -1,4 +1,4 @@
-import type { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
+import type { Transaction, TransactionResult } from '@mysten/sui.js/transactions';
 
 import { SuiAddressArg, SuiObjectArg, SuiTxArg } from '..';
 import { ScallopBuilder } from '../../models';
@@ -33,16 +33,16 @@ export type VeScaQuickMethods = {
   redeemScaQuick: (veScaKey?: SuiAddressArg) => Promise<void>;
 };
 
-export type SuiTxBlockWithVeScaNormalMethods = TransactionBlock & VeScaNormalMethods;
+export type SuiTxBlockWithVeScaNormalMethods = Transaction & VeScaNormalMethods;
 
 export type VeScaTxBlock = SuiTxBlockWithVeScaNormalMethods & VeScaQuickMethods;
 
 export type GenerateVeScaNormalMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<VeScaNormalMethods>;
 
 export type GenerateVeScaQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<VeScaQuickMethods>;

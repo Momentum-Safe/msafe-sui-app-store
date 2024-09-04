@@ -1,11 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { bcs, BcsType, TypeTag } from '@mysten/sui/bcs';
+import { Transaction, TransactionInput } from '@mysten/sui/transactions';
+import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 
 import config from './config';
 import { CoinType, TransactionSubType } from './types';
+import { EnumOutputShapeWithKeys } from '@mysten/bcs';
 
 export function isSameCoinType(type1: string, type2: string) {
   return normalizeStructTag(type1) === normalizeStructTag(type2);
@@ -22,7 +22,7 @@ type DecodeResult = {
 };
 
 export class Decoder {
-  constructor(public readonly txb: TransactionBlock) {}
+  constructor(public readonly txb: Transaction) {}
 
   decode() {
     console.log('txb', this.txb);
@@ -48,11 +48,16 @@ export class Decoder {
   }
 
   private get transactions() {
-    return this.txb.blockData.transactions;
+    // return this.txb.blockData.transactions;
+    return this.txb.getData().commands;
   }
 
   private getMoveCallTransaction(target: string) {
-    return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
+    return this.transactions.find(
+      (trans) =>
+        trans.$kind === 'MoveCall' &&
+        `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}` === target,
+    );
   }
 
   private isClaimRewardTransaction() {
@@ -96,13 +101,17 @@ export class Decoder {
       typeArguments: string[];
     }[];
     this.transactions.forEach((trans) => {
-      if (trans.kind === 'MoveCall' && trans.target === `${config.ProtocolPackage}::incentive_v2::claim_reward`) {
+      if (
+        trans.$kind === 'MoveCall' &&
+        `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}` ===
+          `${config.ProtocolPackage}::incentive_v2::claim_reward`
+      ) {
         const helper = new MoveCallHelper(trans, this.txb);
         const assetId = helper.decodeInputU8(4);
         const optionId = helper.decodeInputU8(5);
         const poolId = helper.decodeSharedObjectId(2);
         const pool = this.findPoolByAssetId(assetId);
-        const typeArguments = [...trans.typeArguments];
+        const typeArguments = [...trans.MoveCall.typeArguments];
         claims.push({
           coinType: pool.coinType,
           option: optionId,
@@ -180,16 +189,61 @@ export class Decoder {
 
   private get helper() {
     const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(config.ProtocolPackage),
-    ) as MoveCallTransaction;
+      (trans) =>
+        trans.$kind === 'MoveCall' &&
+        `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`.startsWith(
+          config.ProtocolPackage,
+        ),
+    );
     return new MoveCallHelper(moveCall, this.txb);
   }
 }
 
 export class MoveCallHelper {
   constructor(
-    public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly moveCall: EnumOutputShapeWithKeys<
+      {
+        MoveCall: {
+          function: string;
+          module: string;
+          package: string;
+          typeArguments: string[];
+          arguments: (
+            | {
+                $kind: 'GasCoin';
+                GasCoin: true;
+              }
+            | {
+                $kind: 'Input';
+                Input: number;
+                type?: 'pure';
+              }
+            | {
+                $kind: 'Input';
+                Input: number;
+                type?: 'object';
+              }
+            | {
+                $kind: 'Result';
+                Result: number;
+              }
+            | {
+                $kind: 'NestedResult';
+                NestedResult: [number, number];
+              }
+          )[];
+          _argumentTypes?:
+            | {
+                ref: '&' | '&mut' | null;
+                body: import('./data/internal.js').OpenMoveTypeSignatureBody;
+              }[]
+            | null
+            | undefined;
+        };
+      },
+      'MoveCall'
+    >,
+    public readonly txb: Transaction,
   ) {}
 
   decodeSharedObjectId(argIndex: number) {
@@ -235,21 +289,22 @@ export class MoveCallHelper {
     if (arg.kind !== 'Input') {
       throw new Error('not input type');
     }
-    return this.txb.blockData.inputs[arg.index];
+    // return this.txb.blockData.inputs[arg.index];
+    return this.txb.getData().inputs[arg.index];
   }
 
-  static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
+  static getPureInputValue<T>(input: TransactionInput, bcsType: string) {
+    if (input.$kind !== 'Pure') {
       throw new Error('not pure argument');
     }
-    if (typeof input.value === 'object' && 'Pure' in input.value) {
+    if (typeof input.Object === 'object' && 'Pure' in input.value) {
       const bcsNums = input.value.Pure;
       return bcs.de(bcsType, new Uint8Array(bcsNums)) as T;
     }
     return input.value as T;
   }
 
-  static getOwnedObjectId(input: TransactionBlockInput) {
+  static getOwnedObjectId(input: TransactionInput) {
     if (input.type !== 'object') {
       throw new Error(`not object argument: ${JSON.stringify(input)}`);
     }
@@ -262,7 +317,7 @@ export class MoveCallHelper {
     return normalizeSuiAddress(input.value as string);
   }
 
-  static getSharedObjectId(input: TransactionBlockInput) {
+  static getSharedObjectId(input: TransactionInput) {
     if (input.type !== 'object') {
       throw new Error(`not object argument: ${JSON.stringify(input)}`);
     }
@@ -275,7 +330,7 @@ export class MoveCallHelper {
     return normalizeSuiAddress(input.value.Object.Shared.objectId as string);
   }
 
-  static getPureInput<T>(input: TransactionBlockInput, bcsType: string) {
+  static getPureInput<T>(input: TransactionInput, bcsType: string) {
     if (input.type !== 'pure') {
       throw new Error('not pure argument');
     }

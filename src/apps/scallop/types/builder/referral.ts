@@ -1,4 +1,4 @@
-import { TransactionBlock, TransactionResult } from '@mysten/sui.js/transactions';
+import { Transaction, TransactionResult } from '@mysten/sui.js/transactions';
 
 import { ScallopBuilder } from '../../models';
 import { SupportPoolCoins } from '../constant';
@@ -28,15 +28,15 @@ export type ReferralQuickMethods = {
   ) => Promise<void>;
 };
 
-export type SuiTxBlockWithReferralNormalMethods = TransactionBlock & ReferralNormalMethods;
+export type SuiTxBlockWithReferralNormalMethods = Transaction & ReferralNormalMethods;
 export type ReferralTxBlock = SuiTxBlockWithReferralNormalMethods & ReferralQuickMethods;
 
 export type GenerateReferralNormalMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<ReferralNormalMethods>;
 
 export type GenerateReferralQuickMethod = (params: {
   builder: ScallopBuilder;
-  txBlock: TransactionBlock;
+  txBlock: Transaction;
 }) => Promise<ReferralQuickMethods>;

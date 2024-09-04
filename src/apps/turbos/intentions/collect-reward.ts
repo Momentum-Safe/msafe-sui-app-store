@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { Network, Pool, TurbosSdk } from 'turbos-clmm-sdk';
 
@@ -19,11 +19,7 @@ export class CollectRewardIntention extends CoreBaseIntention<CollectRewardInten
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<Transaction> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { pool, address, nft, rewardAmounts, deadline, txb } = this.data;
 

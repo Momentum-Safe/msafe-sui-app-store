@@ -1,5 +1,5 @@
 import type { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopQuery } from './scallopQuery';
@@ -54,8 +54,8 @@ export class ScallopBuilder {
    * @param txBlock - Scallop txBlock, txBlock created by SuiKit, or original transaction block.
    * @return Scallop txBlock.
    */
-  public createTxBlock(txBlock?: ScallopTxBlock | TransactionBlock) {
-    return new TransactionBlock(txBlock);
+  public createTxBlock(txBlock?: ScallopTxBlock | Transaction) {
+    return new Transaction(txBlock);
   }
 
   /**
@@ -89,7 +89,7 @@ export class ScallopBuilder {
    * @return Take coin and left coin.
    */
   public async selectMarketCoin(
-    txBlock: TransactionBlock,
+    txBlock: Transaction,
     marketCoinName: SupportMarketCoins,
     amount: number,
     sender: string = this.params.walletAddress,
@@ -116,7 +116,7 @@ export class ScallopBuilder {
    * @return Take coin and left coin.
    */
   public async selectSCoin(
-    txBlock: TransactionBlock,
+    txBlock: Transaction,
     sCoinName: SupportSCoin,
     amount: number,
     sender: string = this.params.walletAddress,

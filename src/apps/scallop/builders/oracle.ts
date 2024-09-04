@@ -1,4 +1,4 @@
-import type { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import type { TransactionArgument, Transaction } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import axios from 'axios';
@@ -28,7 +28,7 @@ export const getLatestVaas = async (endpoint: string, priceIds: string[]) => {
  */
 export const updateOracles = async (
   builder: ScallopBuilder,
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   assetCoinNames?: SupportAssetCoins[],
 ) => {
   const coinNames = assetCoinNames ?? [...new Set([...SUPPORT_POOLS, ...SUPPORT_COLLATERALS])];
@@ -72,7 +72,7 @@ export const updateOracles = async (
  */
 const updateOracle = async (
   builder: ScallopBuilder,
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   assetCoinName: SupportAssetCoins,
   rules: SupportOracleType[],
 ) => {
@@ -118,7 +118,7 @@ const updateOracle = async (
  * @return TxBlock created by SuiKit.
  */
 const updatePrice = (
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   rules: SupportOracleType[],
   xOraclePackageId: string,
   xOracleId: TransactionArgument | string,
@@ -165,7 +165,7 @@ const updatePrice = (
  * @return TxBlock created by SuiKit.
  */
 const priceUpdateRequest = (
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   packageId: string,
   xOracleId: TransactionArgument | string,
   coinType: string,
@@ -187,7 +187,7 @@ const priceUpdateRequest = (
  * @return TxBlock created by SuiKit.
  */
 const confirmPriceUpdateRequest = (
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   packageId: string,
   xOracleId: TransactionArgument | string,
   request: TransactionArgument,
@@ -216,7 +216,7 @@ const confirmPriceUpdateRequest = (
  * @return TxBlock created by SuiKit.
  */
 const updateSupraPrice = (
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   packageId: string,
   request: TransactionArgument,
   holderId: TransactionArgument | string,
@@ -244,7 +244,7 @@ const updateSupraPrice = (
  * @return TxBlock created by SuiKit.
  */
 const updateSwitchboardPrice = (
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   packageId: string,
   request: TransactionArgument,
   aggregatorId: TransactionArgument | string,
@@ -275,7 +275,7 @@ const updateSwitchboardPrice = (
  * @return TxBlock created by SuiKit.
  */
 const updatePythPrice = (
-  txBlock: TransactionBlock,
+  txBlock: Transaction,
   packageId: string,
   request: TransactionArgument | string,
   stateId: TransactionArgument | string,

@@ -5,7 +5,7 @@ import {
   SuiTransactionBlockResponse,
   DevInspectResults,
 } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag, SUI_TYPE_ARG } from '@mysten/sui.js/utils';
 import { DateTime, Duration } from 'luxon';
 
@@ -142,7 +142,7 @@ export class MPayHelper implements IMPayHelper {
     return this.coinMetaHelper.getCoinMeta(coinType);
   }
 
-  async simulateTransactionBlock(txb: TransactionBlock): Promise<DevInspectResults> {
+  async simulateTransactionBlock(txb: Transaction): Promise<DevInspectResults> {
     return this.globals.suiClient.devInspectTransactionBlock({
       transactionBlock: txb,
       sender: await this.globals.wallet.address(),

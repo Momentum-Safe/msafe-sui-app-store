@@ -1,4 +1,4 @@
-import { SuiClient } from '@mysten/sui.js/client';
+import { SuiClient } from '@mysten/sui/client';
 
 import { ScallopAddress } from './scallopAddress';
 import { ScallopUtils } from './scallopUtils';

@@ -1,5 +1,5 @@
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import { TransactionArgument, Transaction } from '@mysten/sui.js/transactions';
 
 import { CreateStreamHelper } from '../builder/CreateStreamHelper';
 import { Globals } from '../common';
@@ -16,7 +16,7 @@ import { MoveCallHelper } from './moveCall';
 export class CreateStreamDecodeHelper {
   constructor(
     public readonly globals: Globals,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {}
 
   decode(): DecodedCreateStream {

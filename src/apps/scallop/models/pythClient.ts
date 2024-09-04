@@ -1,6 +1,6 @@
 import { bcs } from '@mysten/sui.js/bcs';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 const MAX_ARGUMENT_SIZE = 16 * 1024;
@@ -80,7 +80,7 @@ export class PythClient {
    * @param vaas array of vaas to verify
    * @param tx transaction block to add commands to
    */
-  async verifyVaas(vaas: Buffer[], tx: TransactionBlock) {
+  async verifyVaas(vaas: Buffer[], tx: Transaction) {
     const wormholePackageId = await this.getWormholePackageId();
     const verifiedVaas: {
       index: number;
@@ -113,7 +113,7 @@ export class PythClient {
    * @param updates array of price feed updates received from the price service
    * @param feedIds array of feed ids to update (in hex format)
    */
-  async updatePriceFeeds(tx: TransactionBlock, updates: Buffer[], feedIds: string[]) {
+  async updatePriceFeeds(tx: Transaction, updates: Buffer[], feedIds: string[]) {
     const packageId = await this.getPythPackageId();
     let priceUpdatesHotPotato;
     if (updates.length > 1) {
@@ -169,7 +169,7 @@ export class PythClient {
     return priceInfoObjects;
   }
 
-  async createPriceFeed(tx: TransactionBlock, updates: Buffer[]) {
+  async createPriceFeed(tx: Transaction, updates: Buffer[]) {
     const packageId = await this.getPythPackageId();
     if (updates.length > 1) {
       throw new Error('SDK does not support sending multiple accumulator messages in a single transaction');

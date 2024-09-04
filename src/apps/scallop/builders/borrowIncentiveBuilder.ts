@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { SUI_CLOCK_OBJECT_ID, SUI_TYPE_ARG } from '@mysten/sui.js/utils';
 
 import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '../constants';
@@ -27,7 +27,7 @@ import { requireSender } from '../utils';
  */
 
 export const requireVeSca = async (
-  ...params: [builder: ScallopBuilder, SuiTxBlock: TransactionBlock, veScaKey?: SuiAddressArg]
+  ...params: [builder: ScallopBuilder, SuiTxBlock: Transaction, veScaKey?: SuiAddressArg]
 ) => {
   const [builder, txBlock, veScaKey] = params;
   if (params.length === 3 && veScaKey && typeof veScaKey === 'string') {
@@ -111,7 +111,7 @@ export const getBindedObligationId = async (builder: ScallopBuilder, veScaKey: s
  * @return Obligation id and key.
  */
 const requireObligationInfo = async (
-  ...params: [builder: ScallopBuilder, txBlock: TransactionBlock, obligationId?: string, obligationKey?: string]
+  ...params: [builder: ScallopBuilder, txBlock: Transaction, obligationId?: string, obligationKey?: string]
 ) => {
   const [builder, txBlock, obligationId, obligationKey] = params;
   if (params.length === 4 && obligationId && obligationKey && typeof obligationId === 'string') {
