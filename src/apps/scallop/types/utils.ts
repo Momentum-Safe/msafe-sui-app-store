@@ -60,6 +60,7 @@ export enum TransactionSubType {
   ClaimRevenueReferral = 'ClaimRevenueReferral',
   BindReferral = 'BindReferral',
   MigrateScoin = 'MigrateScoin',
+  RepayWithBoost = 'RepayWithBoost',
 }
 
 export type DecodeResult = {

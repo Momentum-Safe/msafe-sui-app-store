@@ -4,6 +4,7 @@ import { BorrowWithReferralIntention } from '@/apps/scallop/intentions/lending/b
 import { DepositCollateralIntention } from '@/apps/scallop/intentions/lending/deposit-collateral';
 import { OpenObligationIntention } from '@/apps/scallop/intentions/lending/open-obligation';
 import { RepayIntention } from '@/apps/scallop/intentions/lending/repay';
+import { RepayWithBoostIntention } from '@/apps/scallop/intentions/lending/repay-with-boost';
 import { StakeSpoolIntention } from '@/apps/scallop/intentions/lending/stake-spool';
 import { SupplyLendingIntention } from '@/apps/scallop/intentions/lending/supply-lending';
 import { WithdrawCollateralIntention } from '@/apps/scallop/intentions/lending/withdraw-collateral';
@@ -106,6 +107,19 @@ describe('Scallop App', () => {
 
     expect(intention.serialize()).toBe(
       `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}"}`,
+    );
+  });
+
+  it('Test Repay With Boost intention serialization', () => {
+    const intention = RepayWithBoostIntention.fromData({
+      amount: 1000,
+      coinName: 'sui',
+      obligationId: Obligation.obligationId,
+      veScaKey: vescaKey,
+    });
+
+    expect(intention.serialize()).toBe(
+      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","veScaKey":"${vescaKey}"}`,
     );
   });
 

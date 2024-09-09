@@ -77,7 +77,7 @@ export const generateCoreNormalMethod: GenerateCoreNormalMethod = async ({ build
     openObligation: () =>
       txBlock.moveCall({
         target: `${coreIds.protocolPkg}::open_obligation::open_obligation`,
-        arguments: [txBlock.pure(coreIds.version)],
+        arguments: [txBlock.object(coreIds.version)],
       }),
     returnObligation: (obligation, obligationHotPotato) =>
       txBlock.moveCall({
