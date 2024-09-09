@@ -561,19 +561,16 @@ export class DecoderLending extends Decoder {
       stakeAccountWithAmount.push({ id: stakeAccountId, coin: amount });
     });
     const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
-    const findWithdrawWithNested = this.helperRedeems.find((tx) => tx.isHaveNestedInput(2));
-    let amount;
-    if (findWithdrawWithNested) {
-      amount = new SplitCoinHelper(findWithdrawWithNested.getNestedInputParam<SplitCoinsTransaction>(2), this.txb)
-        .getAmountInput()
-        .reduce((a, b) => a + b, 0);
+    let amountFromSplitCoin = 0;
+    if (this.helperBurnScoin.moveCall) {
+      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     }
-
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.WithdrawAndUnstakeLending,
       intentionData: {
-        amount,
+        amount: amountFromSplitCoin,
         coinName,
         stakeAccountId: stakeAccountWithAmount,
       },
