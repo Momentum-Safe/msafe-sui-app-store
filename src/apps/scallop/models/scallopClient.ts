@@ -635,8 +635,8 @@ export class ScallopClient {
     const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
     const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
-
-    const marketCoins = await spoolQuickMethod.unstakeQuick(amount, stakeMarketCoinName, stakeAccountId);
+    const returnScoin = SUPPORT_SCOIN.includes(stakeMarketCoinName);
+    const marketCoins = await spoolQuickMethod.unstakeQuick(amount, stakeMarketCoinName, stakeAccountId, returnScoin);
     txBlock.transferObjects([marketCoins], txBlock.pure(sender));
     return txBlock;
   }

@@ -40,6 +40,7 @@ export type SpoolQuickMethods = {
     amount: number,
     stakeMarketCoinName: SupportStakeMarketCoins,
     stakeAccountId?: SuiAddressArg,
+    returnSCoin?: boolean,
   ): Promise<TransactionResult | undefined>;
   claimQuick(
     stakeMarketCoinName: SupportStakeMarketCoins,
