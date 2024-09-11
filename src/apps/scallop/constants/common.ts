@@ -62,11 +62,36 @@ export const SUPPORT_COLLATERALS = [
 
 export const SUPPORT_SPOOLS = ['seth', 'ssui', 'susdc', 'susdt', 'scetus', 'safsui', 'shasui', 'svsui'] as const;
 
-export const SUPPORT_SCOIN = ['ssui', 'susdc', 'susdt', 'safsui', 'shasui', 'svsui', 'seth', 'ssca', 'scetus'] as const;
+export const SUPPORT_SCOIN = [
+  'ssui',
+  'susdc',
+  'susdt',
+  'safsui',
+  'shasui',
+  'svsui',
+  'seth',
+  'ssca',
+  'scetus',
+  'sbtc',
+  'ssol',
+] as const;
+
+export const UNSUPPORT_SCOIN = ['btc', 'sol'] as const;
 
 export const SUPPORT_SPOOLS_REWARDS = ['sui'] as const;
 
-export const SUPPORT_BORROW_INCENTIVE_POOLS = ['sui', 'usdc', 'usdt', 'afsui', 'hasui', 'vsui', 'eth', 'sca'] as const;
+export const SUPPORT_BORROW_INCENTIVE_POOLS = [
+  'sui',
+  'usdc',
+  'usdt',
+  'afsui',
+  'hasui',
+  'vsui',
+  'eth',
+  'sca',
+  'btc',
+  'sol',
+] as const;
 
 export const SUPPORT_BORROW_INCENTIVE_REWARDS = ['sui', 'sca'] as const;
 export const SUPPORT_ORACLES = ['supra', 'switchboard', 'pyth'] as const;

@@ -43,6 +43,9 @@ export class DecoderLending extends Decoder {
     if (this.isBorrowTransaction()) {
       return this.decodeBorrow();
     }
+    if (this.isRepayWithBoostTransaction()) {
+      return this.decodeRepayWithBoost();
+    }
     if (this.isRepayTransaction()) {
       return this.decodeRepay();
     }
@@ -125,6 +128,12 @@ export class DecoderLending extends Decoder {
     return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::repay::repay`);
   }
 
+  private isRepayWithBoostTransaction() {
+    const repayMoveCall = !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::repay::repay`);
+    const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    return !!repayMoveCall && !!stakeMoveCall;
+  }
+
   private isUnstakeSpoolTransaction() {
     return !!this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::unstake`);
   }
@@ -140,7 +149,7 @@ export class DecoderLending extends Decoder {
   }
 
   private isOpenObligationTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::open_obligation::open_obligation_entry`);
+    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::open_obligation::open_obligation`);
   }
 
   private isMigrateAndClaim() {
@@ -297,8 +306,8 @@ export class DecoderLending extends Decoder {
     if (this.helperStakeObligationWithVeSca.moveCall) {
       veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
     }
-    const obligationKey = this.helperClaimBorrowReward[0].decodeSharedObjectId(2);
-    const obligationId = this.helperClaimBorrowReward[0].decodeOwnedObjectId(3);
+    const obligationKey = this.helperClaimBorrowReward[0].decodeOwnedObjectId(2);
+    const obligationId = this.helperClaimBorrowReward[0].decodeSharedObjectId(3);
     const rewardCoinName = this.scallop.utils.parseCoinNameFromType(
       this.helperClaimBorrowReward[0].typeArg(0),
     ) as SupportBorrowIncentiveRewardCoins;
@@ -471,6 +480,24 @@ export class DecoderLending extends Decoder {
     };
   }
 
+  private decodeRepayWithBoost(): DecodeResult {
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
+    const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
+    const amount = this.helperRepay.getNestedInputParam<SplitCoinsTransaction>(3);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const obligationId = this.helperRepay.decodeSharedObjectId(1);
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.RepayWithBoost,
+      intentionData: {
+        amount: amountFromSplitCoin,
+        obligationId,
+        coinName,
+        veScaKey,
+      },
+    };
+  }
+
   private decodeStakeSpool(): DecodeResult {
     let stakeSpoolAccount;
     if (!this.isCreateStakeAccountTransaction()) {
@@ -534,19 +561,16 @@ export class DecoderLending extends Decoder {
       stakeAccountWithAmount.push({ id: stakeAccountId, coin: amount });
     });
     const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
-    const findWithdrawWithNested = this.helperRedeems.find((tx) => tx.isHaveNestedInput(2));
-    let amount;
-    if (findWithdrawWithNested) {
-      amount = new SplitCoinHelper(findWithdrawWithNested.getNestedInputParam<SplitCoinsTransaction>(2), this.txb)
-        .getAmountInput()
-        .reduce((a, b) => a + b, 0);
+    let amountFromSplitCoin = 0;
+    if (this.helperBurnScoin.moveCall) {
+      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     }
-
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.WithdrawAndUnstakeLending,
       intentionData: {
-        amount,
+        amount: amountFromSplitCoin,
         coinName,
         stakeAccountId: stakeAccountWithAmount,
       },

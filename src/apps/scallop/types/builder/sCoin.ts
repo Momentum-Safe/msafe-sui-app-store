@@ -7,6 +7,7 @@ import { SuiObjectArg } from '../utils';
 export type SCoinPkgIds = {
   pkgId: string;
 };
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export type sCoinTreasuryIds = {
   [k in SupportSCoin]?: string;
 };

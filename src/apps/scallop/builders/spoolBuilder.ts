@@ -245,39 +245,36 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ build
         normalMethod.stake(stakeAccountIds[0], amountOrMarketCoin, stakeMarketCoinName);
       }
     },
-    unstakeQuick: async (amount, stakeMarketCoinName, stakeAccountId) => {
+    unstakeQuick: async (amount, stakeMarketCoinName, stakeAccountId, returnSCoin) => {
       const stakeAccounts = await requireStakeAccounts(builder, txBlock, stakeMarketCoinName, stakeAccountId);
       const toTransfer: TransactionResult[] = [];
-      stakeAccounts.forEach((account) => {
+      let amountUnstake = amount;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const account of stakeAccounts) {
         if (account.staked === 0) {
-          return;
+          continue;
         }
-        const amountToUnstake = Math.min(amount, account.staked);
+        const amountToUnstake = Math.min(amountUnstake, account.staked);
         const marketCoin = normalMethod.unstake(account.id, amountToUnstake, stakeMarketCoinName);
-        const sCoin = scoinMethod.mintSCoin(stakeMarketCoinName, marketCoin);
-        toTransfer.push(sCoin);
-      });
 
+        // convert to new sCoin
+        if (returnSCoin) {
+          const sCoin = scoinMethod.mintSCoin(stakeMarketCoinName, marketCoin);
+          toTransfer.push(sCoin);
+        } else {
+          toTransfer.push(marketCoin);
+        }
+
+        amountUnstake -= amountToUnstake;
+        if (amount <= 0) {
+          break;
+        }
+      }
       if (toTransfer.length > 0) {
         const mergedCoin = toTransfer[0];
+
         if (toTransfer.length > 1) {
           txBlock.mergeCoins(mergedCoin, toTransfer.slice(1));
-        }
-
-        // check for existing sCoins
-        try {
-          const existingCoins = await builder.utils.selectCoinIds(
-            Number.MAX_SAFE_INTEGER,
-            builder.utils.parseSCoinType(stakeMarketCoinName),
-            requireSender(txBlock),
-          );
-
-          if (existingCoins.length > 0) {
-            txBlock.mergeCoins(mergedCoin, existingCoins);
-          }
-        } catch (e) {
-          console.log(e);
-          // ignore
         }
         return mergedCoin;
       }

@@ -21,6 +21,7 @@ import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intent
 import { MigrateScoinIntention, MigrateScoinIntentionData } from './intentions/lending/migrate-scoin';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/lending/open-obligation';
 import { RepayIntention, RepayIntentionData } from './intentions/lending/repay';
+import { RepayWithBoostIntention, RepayWithBoostIntentionData } from './intentions/lending/repay-with-boost';
 import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/lending/stake-spool';
 import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/lending/supply-lending';
 import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/lending/unstake-spool';
@@ -85,7 +86,8 @@ export type ScallopIntention =
   | CreateReferralLinkIntention
   | ClaimRevenueReferralIntention
   | BindReferralIntention
-  | MigrateScoinIntention;
+  | MigrateScoinIntention
+  | RepayWithBoostIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -112,7 +114,8 @@ export type ScallopIntentionData =
   | CreateReferralLinkIntentionData
   | ClaimRevenueReferralIntentionData
   | BindReferralIntentionData
-  | MigrateScoinIntentionData;
+  | MigrateScoinIntentionData
+  | RepayWithBoostIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -245,6 +248,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.MigrateScoin:
         intention = MigrateScoinIntention.fromData(intentionData as MigrateScoinIntentionData);
+        break;
+      case TransactionSubType.RepayWithBoost:
+        intention = RepayWithBoostIntention.fromData(intentionData as RepayWithBoostIntentionData);
         break;
       default:
         throw new Error('not implemented');
