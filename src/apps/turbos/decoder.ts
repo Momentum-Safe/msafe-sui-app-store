@@ -6,6 +6,7 @@ import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig, prixConfig } from './config';
+// eslint-disable-next-line import/no-cycle
 import { TURBOSIntentionData } from './helper';
 import { TransactionSubType } from './types';
 

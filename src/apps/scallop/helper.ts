@@ -3,6 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
+import { IAppHelperLegacy } from '../interface';
 import { DecoderLending } from './decoders/decoderLending';
 import { DecoderReferral } from './decoders/decoderReferral';
 import { DecoderVesca } from './decoders/decoderVesca';
@@ -58,7 +59,6 @@ import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './in
 import { Scallop } from './models/scallop';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
-import { MSafeAppHelper } from '../interface';
 
 export type ScallopIntention =
   | SupplyLendingIntention
@@ -114,8 +114,10 @@ export type ScallopIntentionData =
   | BindReferralIntentionData
   | MigrateScoinIntentionData;
 
-export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
+export class ScallopAppHelper implements IAppHelperLegacy<ScallopIntentionData> {
   application = 'scallop';
+
+  supportSDK: '@mysten/sui.js';
 
   private scallop: Scallop | undefined;
 

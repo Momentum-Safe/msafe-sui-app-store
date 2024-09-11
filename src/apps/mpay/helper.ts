@@ -10,7 +10,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { MSafeAppHelper } from '@/apps/interface';
+import { IAppHelperLegacy } from '@/apps/interface';
 import { SuiNetworks } from '@/types';
 
 import { CancelStreamIntention } from './cancel-stream';
@@ -36,8 +36,10 @@ export type MPayIntentionData =
   | ClaimByProxyStreamIntentionData
   | CancelStreamIntentionData;
 
-export class MPayAppHelper implements MSafeAppHelper<MPayIntentionData> {
+export class MPayAppHelper implements IAppHelperLegacy<MPayIntentionData> {
   application = 'mpay';
+
+  supportSDK: '@mysten/sui.js';
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },

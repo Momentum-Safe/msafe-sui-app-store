@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 
-import { MSafeAppHelper } from '@/apps/interface';
+import { IAppHelperLegacy } from '@/apps/interface';
 import { SuiNetworks } from '@/types';
 
 import { updatePackageId } from './config';
@@ -29,8 +29,10 @@ export type NAVIIntentionData =
   | EntryWithdrawIntentionData
   | ClaimRewardIntentionData;
 
-export class NAVIAppHelper implements MSafeAppHelper<NAVIIntentionData> {
+export class NAVIAppHelper implements IAppHelperLegacy<NAVIIntentionData> {
   application = 'navi';
+
+  supportSDK: '@mysten/sui.js';
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
