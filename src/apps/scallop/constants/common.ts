@@ -62,7 +62,19 @@ export const SUPPORT_COLLATERALS = [
 
 export const SUPPORT_SPOOLS = ['seth', 'ssui', 'susdc', 'susdt', 'scetus', 'safsui', 'shasui', 'svsui'] as const;
 
-export const SUPPORT_SCOIN = ['ssui', 'susdc', 'susdt', 'safsui', 'shasui', 'svsui', 'seth', 'ssca', 'scetus'] as const;
+export const SUPPORT_SCOIN = [
+  'ssui',
+  'susdc',
+  'susdt',
+  'safsui',
+  'shasui',
+  'svsui',
+  'seth',
+  'ssca',
+  'scetus',
+  'sbtc',
+  'ssol',
+] as const;
 
 export const UNSUPPORT_SCOIN = ['btc', 'sol'] as const;
 
