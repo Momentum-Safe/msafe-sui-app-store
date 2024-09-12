@@ -76,7 +76,7 @@ export type CoreIntention = CoinTransferIntention | ObjectTransferIntention;
 
 export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData;
 
-export class CoreHelper implements IAppHelperLegacy<CoreIntention, CoreIntentionData> {
+export class CoreHelper implements IAppHelperInternalLegacy<CoreIntention, CoreIntentionData> {
   application: string;
 
   constructor() {

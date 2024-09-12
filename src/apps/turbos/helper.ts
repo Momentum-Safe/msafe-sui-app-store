@@ -4,7 +4,7 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
-import { IAppHelperLegacy } from '../interface';
+import { IAppHelperInternalLegacy } from '../interface';
 // eslint-disable-next-line import/no-cycle
 import { Decoder } from './decoder';
 import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
@@ -58,7 +58,7 @@ export type TURBOSIntentionData =
   | SwapExactQuoteForBaseIntentionData
   | SwapExactBaseForQuoteIntentionData;
 
-export class TURBOSAppHelper implements IAppHelperLegacy<TURBOSIntentionData> {
+export class TURBOSAppHelper implements IAppHelperInternalLegacy<TURBOSIntentionData> {
   application = 'turbos';
 
   supportSDK: '@mysten/sui.js';

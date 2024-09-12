@@ -5,18 +5,18 @@ import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelper, IAppHelperLegacy, IAppHelperInternal } from '@/apps/interface';
+import { IAppHelper, IAppHelperInternalLegacy, IAppHelperInternal } from '@/apps/interface';
 import { SuiNetworks } from '@/types';
 
 export class MSafeApps {
   apps: Map<string, IAppHelper<any>>;
 
-  constructor(apps: (IAppHelperLegacy<any> | IAppHelperInternal<any>)[]) {
+  constructor(apps: (IAppHelperInternalLegacy<any> | IAppHelperInternal<any>)[]) {
     this.apps = new Map(
       apps.map((app) => {
         switch (app.supportSDK) {
           case '@mysten/sui.js':
-            return [app.application, new SuiJSSDKAdapter(app) as IAppHelper<any>];
+            return [app.application, new SuiJsSdkAdapter(app) as IAppHelper<any>];
           case '@mysten/sui':
             return [app.application, new SuiSDKAdapter(app)];
           default:
@@ -70,8 +70,8 @@ export class SuiSDKAdapter implements IAppHelper<any> {
   }
 }
 
-export class SuiJSSDKAdapter implements IAppHelper<any> {
-  constructor(protected readonly helper: IAppHelperLegacy<any>) {}
+export class SuiJsSdkAdapter implements IAppHelper<any> {
+  constructor(protected readonly helper: IAppHelperInternalLegacy<any>) {}
 
   application: string;
 

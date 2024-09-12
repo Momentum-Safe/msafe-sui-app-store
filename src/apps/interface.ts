@@ -35,7 +35,7 @@ export interface IAppHelper<T> {
   }): Promise<TransactionBlock>;
 }
 
-export interface IAppHelperLegacy<T> {
+export interface IAppHelperInternalLegacy<T> {
   application: string;
   supportSDK: '@mysten/sui.js';
 
@@ -60,6 +60,7 @@ export interface IAppHelperLegacy<T> {
   }): Promise<TransactionBlock>;
 }
 
+// interface for @mysten/sui package
 export interface IAppHelperInternal<T> {
   application: string;
   supportSDK: '@mysten/sui';
@@ -84,29 +85,6 @@ export interface IAppHelperInternal<T> {
     account: WalletAccount;
   }): Promise<Transaction>;
 }
-
-// export interface IAppHelperLegacy<T> {
-//   application: string;
-//   deserialize(
-//     input: SuiSignTransactionBlockInput & {
-//       network: SuiNetworks;
-//       suiClient: SuiClient;
-//       account: WalletAccount;
-//     },
-//   ): Promise<{
-//     txType: TransactionType;
-//     txSubType: string;
-//     intentionData: T;
-//   }>;
-//   build(input: {
-//     network: SuiNetworks;
-//     txType: TransactionType;
-//     txSubType: string;
-//     intentionData: T;
-//     suiClient: SuiClient;
-//     account: WalletAccount;
-//   }): Promise<TransactionBlock>;
-// }
 
 export interface TransactionIntention<D> {
   txType: TransactionType;
