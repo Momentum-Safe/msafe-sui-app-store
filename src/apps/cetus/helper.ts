@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 
-import { MSafeAppHelper } from '@/apps/interface';
+import { IAppHelperInternalLegacy } from '@/apps/interface';
 
 import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { ClaimFeeAndMiningIntention } from './intentions/claim-fee-and-mining';
@@ -51,8 +51,10 @@ export type CetusIntention =
   | VestingRedeemIntention
   | SwapIntention;
 
-export class CetusHelper implements MSafeAppHelper<CetusIntentionData> {
+export class CetusHelper implements IAppHelperInternalLegacy<CetusIntentionData> {
   application = 'cetus';
+
+  supportSDK: '@mysten/sui.js';
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {

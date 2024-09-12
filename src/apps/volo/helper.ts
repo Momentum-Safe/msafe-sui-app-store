@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { MSafeAppHelper } from '@/apps/interface';
+import { IAppHelperInternalLegacy } from '@/apps/interface';
 import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';
@@ -16,8 +16,10 @@ export type VoloIntention = StakeIntention | UnStakeIntention | ClaimTicketInten
 
 export type VoloIntentionData = StakeIntentionData | UnStakeIntentionData | ClaimTicketIntentionData;
 
-export class VoloAppHelper implements MSafeAppHelper<VoloIntentionData> {
+export class VoloAppHelper implements IAppHelperInternalLegacy<VoloIntentionData> {
   application = 'volo';
+
+  supportSDK: '@mysten/sui.js';
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
