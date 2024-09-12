@@ -3,7 +3,7 @@ import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { appHelpers } from '@/index';
 
-import { Account, Client } from './config';
+import { Account, clientUrl } from './config';
 
 describe('MSafe Core Wallet', () => {
   it('Core transaction build', async () => {
@@ -15,7 +15,7 @@ describe('MSafe Core Wallet', () => {
       network: 'sui:devnet',
       txType: TransactionType.Assets,
       txSubType: TransactionSubTypes.assets.coin.send,
-      suiClient: Client,
+      clientUrl,
       account: Account,
       intentionData: {
         amount: '1000',

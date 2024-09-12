@@ -104,7 +104,7 @@ export abstract class BaseIntention<D> implements TransactionIntention<D> {
     network: SuiNetworks;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    suiClient: SuiClientLegacy;
     account: WalletAccount;
   }): Promise<TransactionBlock>;
 

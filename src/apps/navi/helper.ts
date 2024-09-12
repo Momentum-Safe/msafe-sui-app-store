@@ -32,7 +32,7 @@ export type NAVIIntentionData =
 export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData> {
   application = 'navi';
 
-  supportSDK: '@mysten/sui.js';
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },

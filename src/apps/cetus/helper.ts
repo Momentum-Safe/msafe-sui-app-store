@@ -54,7 +54,7 @@ export type CetusIntention =
 export class CetusHelper implements IAppHelperInternalLegacy<CetusIntentionData> {
   application = 'cetus';
 
-  supportSDK: '@mysten/sui.js';
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {

@@ -3,6 +3,8 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
+import { SuiNetworks } from '@/types';
+
 import { IAppHelperInternalLegacy } from '../interface';
 import { Decoder } from './decoder';
 import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
@@ -15,7 +17,6 @@ import { RemoveLiquidityIntention, RemoveLiquidityIntentionData } from './intent
 import { StakeLiquidityIntention, StakeLiquidityIntentionData } from './intentions/stake-liquidity';
 import { UnstakeLiquidityIntention, UnstakeLiquidityIntentionData } from './intentions/unstake-liquidity';
 import { TransactionSubType } from './types';
-import { SuiNetworks } from '@/types';
 
 export type KRIYAIntention =
   | AddLiquidityIntention
@@ -35,6 +36,8 @@ export type KRIYAIntentionData =
 
 export class KRIYAAppHelper implements IAppHelperInternalLegacy<KRIYAIntentionData> {
   application = 'kriya';
+
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },

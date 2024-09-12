@@ -16,9 +16,9 @@ export class MSafeApps {
       apps.map((app) => {
         switch (app.supportSDK) {
           case '@mysten/sui.js':
-            return [app.application, new SuiJsSdkAdapter(app) as IAppHelper<any>];
+            return [app.application, new SuiJsSdkAdapter(app).helper as any];
           case '@mysten/sui':
-            return [app.application, new SuiSDKAdapter(app)];
+            return [app.application, new SuiSdkAdapter(app).helper as any];
           default:
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
@@ -37,8 +37,8 @@ export class MSafeApps {
   }
 }
 
-export class SuiSDKAdapter implements IAppHelper<any> {
-  constructor(protected readonly helper: IAppHelperInternal<any>) {}
+export class SuiSdkAdapter implements IAppHelper<any> {
+  constructor(public helper: IAppHelperInternal<any>) {}
 
   application: string;
 
@@ -71,7 +71,7 @@ export class SuiSDKAdapter implements IAppHelper<any> {
 }
 
 export class SuiJsSdkAdapter implements IAppHelper<any> {
-  constructor(protected readonly helper: IAppHelperInternalLegacy<any>) {}
+  constructor(public helper: IAppHelperInternalLegacy<any>) {}
 
   application: string;
 
