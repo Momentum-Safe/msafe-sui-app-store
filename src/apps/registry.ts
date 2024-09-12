@@ -16,9 +16,9 @@ export class MSafeApps {
       apps.map((app) => {
         switch (app.supportSDK) {
           case '@mysten/sui.js':
-            return [app.application, new SuiJsSdkAdapter(app).helper as IAppHelper<any>];
+            return [app.application, new SuiJsSdkAdapter(app).helper as any];
           case '@mysten/sui':
-            return [app.application, new SuiSdkAdapter(app).helper as IAppHelper<any];
+            return [app.application, new SuiSdkAdapter(app).helper as any];
           default:
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

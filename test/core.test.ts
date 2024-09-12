@@ -7,9 +7,7 @@ import { Account, clientUrl } from './config';
 
 describe('MSafe Core Wallet', () => {
   it('Core transaction build', async () => {
-    console.log('🚀 ~ file: core.test.ts:11 ~ it ~ appHelpers:', appHelpers);
     const appHelper = appHelpers.getAppHelper('msafe-core');
-    console.log('🚀 ~ file: core.test.ts:11 ~ it ~ appHelper:', appHelper, appHelper.application);
 
     expect(appHelper.application).toBe('msafe-core');
 
