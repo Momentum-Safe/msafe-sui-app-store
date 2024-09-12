@@ -37,7 +37,7 @@ export type KRIYAIntentionData =
 export class KRIYAAppHelper implements IAppHelperInternalLegacy<KRIYAIntentionData> {
   application = 'kriya';
 
-  supportSDK: '@mysten/sui.js';
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
