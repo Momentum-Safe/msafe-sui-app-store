@@ -3,8 +3,8 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { SuiNetworks } from '@/types';
 
 import { Env } from './common';
-import { MPayClient, MSafeSingleWallet } from './stream/client';
 import { BaseIntention } from '../interface';
+import { MPayClient, MSafeSingleWallet } from './stream/client';
 
 export abstract class StreamIntention<T> extends BaseIntention<T> {
   public application = 'mpay';

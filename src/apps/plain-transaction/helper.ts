@@ -31,7 +31,7 @@ export class PlainTransactionIntention implements TransactionIntention<PlainTran
 export class PlainTransactionHelper implements IAppHelperInternal<PlainTransactionData> {
   application: string;
 
-  supportSDK: '@mysten/sui';
+  supportSDK = '@mysten/sui' as const;
 
   constructor() {
     this.application = PlainTransactionApplication;

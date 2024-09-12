@@ -39,7 +39,7 @@ export type MPayIntentionData =
 export class MPayAppHelper implements IAppHelperInternalLegacy<MPayIntentionData> {
   application = 'mpay';
 
-  supportSDK: '@mysten/sui.js';
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },

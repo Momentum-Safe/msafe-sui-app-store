@@ -61,7 +61,7 @@ export type TURBOSIntentionData =
 export class TURBOSAppHelper implements IAppHelperInternalLegacy<TURBOSIntentionData> {
   application = 'turbos';
 
-  supportSDK: '@mysten/sui.js';
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {

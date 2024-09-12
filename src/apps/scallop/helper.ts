@@ -117,7 +117,7 @@ export type ScallopIntentionData =
 export class ScallopAppHelper implements IAppHelperInternalLegacy<ScallopIntentionData> {
   application = 'scallop';
 
-  supportSDK: '@mysten/sui.js';
+  supportSDK = '@mysten/sui.js' as const;
 
   private scallop: Scallop | undefined;
 

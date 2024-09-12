@@ -3,11 +3,13 @@ import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { appHelpers } from '@/index';
 
-import { Account, Client } from './config';
+import { Account, clientUrl } from './config';
 
 describe('MSafe Core Wallet', () => {
   it('Core transaction build', async () => {
+    console.log('🚀 ~ file: core.test.ts:11 ~ it ~ appHelpers:', appHelpers);
     const appHelper = appHelpers.getAppHelper('msafe-core');
+    console.log('🚀 ~ file: core.test.ts:11 ~ it ~ appHelper:', appHelper, appHelper.application);
 
     expect(appHelper.application).toBe('msafe-core');
 
@@ -15,7 +17,7 @@ describe('MSafe Core Wallet', () => {
       network: 'sui:devnet',
       txType: TransactionType.Assets,
       txSubType: TransactionSubTypes.assets.coin.send,
-      suiClient: Client,
+      clientUrl,
       account: Account,
       intentionData: {
         amount: '1000',

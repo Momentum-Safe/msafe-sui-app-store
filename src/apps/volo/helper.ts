@@ -19,7 +19,7 @@ export type VoloIntentionData = StakeIntentionData | UnStakeIntentionData | Clai
 export class VoloAppHelper implements IAppHelperInternalLegacy<VoloIntentionData> {
   application = 'volo';
 
-  supportSDK: '@mysten/sui.js';
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
