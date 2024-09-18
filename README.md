@@ -32,30 +32,67 @@ We provide a demo dApp for MSafe app store integration. please refer below GitHu
 
 Here is an example for transaction intention, if your dapp have multiple transaction types, you need to define 1 by 1 for each type of transaction intention.
 
-```typescript
+If you are using @mysten/sui.js, you can refer to the following code:
 
-export interface CoinTransferIntentionData {
-  recipient: string;
-  coinType: string;
-  amount: string;
+```typescript
+import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
+
+export interface ExampleIntentionData {
+  foo: string;
+  bar: string;
 }
 
-export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntentionData> {
-  txType: TransactionType.Assets;
+export class ExampleIntention extends BaseIntentionLegacy<ExampleIntentionData> {
+  txType: TransactionType.Other;
 
-  txSubType: 'SendCoin';
+  txSubType: 'Example';
 
-  constructor(public readonly data: CoinTransferIntentionData) {
+  constructor(public readonly data: ExampleIntentionData) {
     super(data);
   }
 
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { suiClient, account } = input;
-    return buildCoinTransferTxb(suiClient, this.data, account.address);
+    ...
+    return txb;
   }
 
-  static fromData(data: CoinTransferIntentionData) {
-    return new CoinTransferIntention(data);
+  static fromData(data: ExampleIntentionData) {
+    return new ExampleIntention(data);
+  }
+}
+```
+
+
+If you are using @mysten/sui, you can refer to the following code:
+
+```typescript
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+
+export interface ExampleIntentionData {
+  foo: string;
+  bar: string;
+}
+
+export class ExampleIntention extends BaseIntention<ExampleIntentionData> {
+  txType: TransactionType.Other;
+
+  txSubType: 'Example';
+
+  constructor(public readonly data: ExampleIntentionData) {
+    super(data);
+  }
+
+  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
+    const { suiClient, account } = input;
+    ...
+    return txb;
+  }
+
+  static fromData(data: ExampleIntentionData) {
+    return new ExampleIntention(data);
   }
 }
 ```
