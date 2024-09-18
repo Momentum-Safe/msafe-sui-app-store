@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 export interface ObjectTransferIntentionData {
   receiver: string;
@@ -11,7 +11,7 @@ export interface ObjectTransferIntentionData {
   objectId: string;
 }
 
-export class ObjectTransferIntention extends CoreBaseIntention<ObjectTransferIntentionData> {
+export class ObjectTransferIntention extends BaseIntentionLegacy<ObjectTransferIntentionData> {
   txType: TransactionType.Assets;
 
   txSubType: 'SendObject';

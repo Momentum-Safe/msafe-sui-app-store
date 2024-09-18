@@ -3,12 +3,12 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { getSwapRouterTxb } from '../api/swap';
 import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
 
-export class SwapIntention extends CoreBaseIntention<CetusIntentionData> {
+export class SwapIntention extends BaseIntentionLegacy<CetusIntentionData> {
   txType = TransactionType.Other;
 
   txSubType = TransactionSubType.Swap;

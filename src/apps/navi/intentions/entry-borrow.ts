@@ -2,7 +2,7 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { borrowToken } from '../api/incentiveV2';
 import config from '../config';
@@ -13,7 +13,7 @@ export interface EntryBorrowIntentionData {
   coinType: CoinType;
 }
 
-export class EntryBorrowIntention extends CoreBaseIntention<EntryBorrowIntentionData> {
+export class EntryBorrowIntention extends BaseIntentionLegacy<EntryBorrowIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.EntryBorrow;

@@ -1,15 +1,17 @@
-import { SuiNetworks, TransactionSubType } from '../types';
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiClient } from '@mysten/sui.js/client';
-import { WalletAccount } from '@mysten/wallet-standard';
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
-import { prixConfig } from '../config';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
+import { WalletAccount } from '@mysten/wallet-standard';
+
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+
+import { prixConfig } from '../config';
+import { SuiNetworks, TransactionSubType } from '../types';
 
 export interface PrixClaimIntentionData {}
 
-export class PrixClaimIntention extends CoreBaseIntention<PrixClaimIntentionData> {
+export class PrixClaimIntention extends BaseIntentionLegacy<PrixClaimIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixClaim;

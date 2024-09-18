@@ -1,12 +1,12 @@
 import { WalletAccount } from '@mysten/wallet-standard';
 
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 import { SuiNetworks } from '@/types';
 
 import { Env } from './common';
-import { BaseIntention } from '../interface';
 import { MPayClient, MSafeSingleWallet } from './stream/client';
 
-export abstract class StreamIntention<T> extends BaseIntention<T> {
+export abstract class StreamIntention<T> extends BaseIntentionLegacy<T> {
   public application = 'mpay';
 
   getClient(network: SuiNetworks, account: WalletAccount): MPayClient {

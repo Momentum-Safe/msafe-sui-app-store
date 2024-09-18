@@ -1,15 +1,16 @@
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SuiNetworks, TransactionSubType } from '../types';
-import { Pool, Trade } from 'turbos-clmm-sdk';
 import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { TurbosSdk, Network } from 'turbos-clmm-sdk';
+import { Trade, TurbosSdk, Network } from 'turbos-clmm-sdk';
 
-export interface SwapIntentionData extends Trade.SwapOptions {}
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
-export class SwapIntention extends CoreBaseIntention<SwapIntentionData> {
+import { SuiNetworks, TransactionSubType } from '../types';
+
+export type SwapIntentionData = Trade.SwapOptions;
+
+export class SwapIntention extends BaseIntentionLegacy<SwapIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.AddLiquidity;

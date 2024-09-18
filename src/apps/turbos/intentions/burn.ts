@@ -1,15 +1,16 @@
-import { SuiNetworks, TransactionSubType } from '../types';
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { NFT } from 'turbos-clmm-sdk';
 import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { TurbosSdk, Network } from 'turbos-clmm-sdk';
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { NFT, TurbosSdk, Network } from 'turbos-clmm-sdk';
 
-export interface BurnIntentionData extends NFT.BurnOptions {}
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
-export class BurnIntention extends CoreBaseIntention<BurnIntentionData> {
+import { SuiNetworks, TransactionSubType } from '../types';
+
+export type BurnIntentionData = NFT.BurnOptions;
+
+export class BurnIntention extends BaseIntentionLegacy<BurnIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.AddLiquidity;

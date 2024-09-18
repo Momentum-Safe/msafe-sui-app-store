@@ -3,7 +3,8 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '../interface';
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+
 import { DecoderLending } from './decoders/decoderLending';
 import { DecoderReferral } from './decoders/decoderReferral';
 import { DecoderVesca } from './decoders/decoderVesca';

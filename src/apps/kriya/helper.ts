@@ -3,9 +3,9 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { SuiNetworks } from '@/types';
 
-import { IAppHelperInternalLegacy } from '../interface';
 import { Decoder } from './decoder';
 import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
 import {

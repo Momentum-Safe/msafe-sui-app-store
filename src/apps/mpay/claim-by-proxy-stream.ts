@@ -19,8 +19,6 @@ export class ClaimByProxyStreamIntention extends StreamIntention<ClaimByProxyStr
 
   async build(input: {
     network: SuiNetworks;
-    txType: TransactionType;
-    txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {

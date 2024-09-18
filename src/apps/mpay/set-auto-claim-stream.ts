@@ -19,8 +19,6 @@ export class SetAutoClaimStreamIntention extends StreamIntention<SetAutoClaimInt
 
   async build(input: {
     network: SuiNetworks;
-    txType: TransactionType;
-    txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {

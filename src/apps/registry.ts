@@ -5,7 +5,9 @@ import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelper, IAppHelperInternalLegacy, IAppHelperInternal } from '@/apps/interface';
+import { IAppHelper } from '@/apps/interface/common';
+import { IAppHelperInternal } from '@/apps/interface/sui';
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { SuiNetworks } from '@/types';
 
 export class MSafeApps {
@@ -37,6 +39,10 @@ export class MSafeApps {
   }
 }
 
+/*
+  SuiSdkAdapter adapts IAppHelperInternal with @mysten/sui to IAppHelper
+  TODO: build to @mysten/sui Transaction after update sdk and api
+ */
 export class SuiSdkAdapter implements IAppHelper<any> {
   constructor(public helper: IAppHelperInternal<any>) {}
 
@@ -70,6 +76,10 @@ export class SuiSdkAdapter implements IAppHelper<any> {
   }
 }
 
+/*
+  SuiJsSdkAdapter adapts IAppHelperInternalLegacy with @mysten/sui.js to IAppHelper
+  TODO: build to @mysten/sui Transaction after update sdk and api
+ */
 export class SuiJsSdkAdapter implements IAppHelper<any> {
   constructor(public helper: IAppHelperInternalLegacy<any>) {}
 

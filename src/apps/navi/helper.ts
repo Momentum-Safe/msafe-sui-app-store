@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface';
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { SuiNetworks } from '@/types';
 
 import { updatePackageId } from './config';
