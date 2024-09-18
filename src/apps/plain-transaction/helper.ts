@@ -5,7 +5,7 @@ import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
-import { IAppHelperInternal, TransactionIntention } from '@/apps/interface';
+import { IAppHelperInternal, TransactionIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 export type PlainTransactionData = {
@@ -27,7 +27,17 @@ export class PlainTransactionIntention implements TransactionIntention<PlainTran
   serialize() {
     return JSON.stringify(sortKeys(this.data));
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<Transaction> {
+    return Transaction.from(fromHEX(this.data.content));
+  }
+
+  static fromData(data: PlainTransactionData) {
+    return new PlainTransactionIntention(data);
+  }
 }
+
 export class PlainTransactionHelper implements IAppHelperInternal<PlainTransactionData> {
   application: string;
 
@@ -64,7 +74,9 @@ export class PlainTransactionHelper implements IAppHelperInternal<PlainTransacti
     account: WalletAccount;
   }): Promise<Transaction> {
     const { account } = input;
-    const tx = Transaction.from(fromHEX(input.intentionData.content));
+
+    const intention = PlainTransactionIntention.fromData(input.intentionData);
+    const tx = await intention.build({ suiClient: input.suiClient, network: input.network, account: input.account });
     const client = input.suiClient;
     const inspectResult = await client.devInspectTransactionBlock({
       transactionBlock: tx,

@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import config from '../config';
 import { TransactionSubType } from '../types';
@@ -12,7 +12,7 @@ export interface UnStakeIntentionData {
   amount: number;
 }
 
-export class UnStakeIntention extends CoreBaseIntention<UnStakeIntentionData> {
+export class UnStakeIntention extends BaseIntentionLegacy<UnStakeIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.Stake;

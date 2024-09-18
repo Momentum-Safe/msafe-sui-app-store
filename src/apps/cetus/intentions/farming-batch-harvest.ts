@@ -3,12 +3,12 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { getFarmingBatchHarvest } from '../api/farming';
 import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
 
-export class FarmingBatchHarvestIntention extends CoreBaseIntention<CetusIntentionData> {
+export class FarmingBatchHarvestIntention extends BaseIntentionLegacy<CetusIntentionData> {
   txType = TransactionType.Other;
 
   txSubType = TransactionSubType.FarmingBatchHarvest;

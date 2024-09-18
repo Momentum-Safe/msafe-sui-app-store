@@ -4,12 +4,12 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 import { SuiNetworks } from '@/types';
 
 import { Scallop } from '../models';
 
-export abstract class ScallopCoreBaseIntention<D> implements CoreBaseIntention<D> {
+export abstract class ScallopCoreBaseIntention<D> implements BaseIntentionLegacy<D> {
   abstract txType: TransactionType;
 
   abstract txSubType: string;

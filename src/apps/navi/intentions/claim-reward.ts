@@ -1,10 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { claimReward } from '../api/incentiveV2';
-import config from '../config';
 import { CoinType, TransactionSubType, OptionType } from '../types';
 
 export interface ClaimRewardIntentionData {
@@ -17,7 +16,7 @@ export interface ClaimRewardIntentionData {
   }[];
 }
 
-export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntentionData> {
+export class ClaimRewardIntention extends BaseIntentionLegacy<ClaimRewardIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.ClaimReward;

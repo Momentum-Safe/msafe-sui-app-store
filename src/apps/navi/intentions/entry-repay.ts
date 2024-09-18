@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { repayToken } from '../api/incentiveV2';
 import config from '../config';
@@ -15,7 +15,7 @@ export interface EntryRepayIntentionData {
   coinType: CoinType;
 }
 
-export class EntryRepayIntention extends CoreBaseIntention<EntryRepayIntentionData> {
+export class EntryRepayIntention extends BaseIntentionLegacy<EntryRepayIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.EntryRepay;

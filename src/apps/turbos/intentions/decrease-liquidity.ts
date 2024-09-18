@@ -1,15 +1,16 @@
-import { SuiNetworks, TransactionSubType } from '../types';
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { Pool } from 'turbos-clmm-sdk';
 import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { TurbosSdk, Network } from 'turbos-clmm-sdk';
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { Pool, TurbosSdk, Network } from 'turbos-clmm-sdk';
 
-export interface DecreaseLiquidityIntentionData extends Pool.DecreaseLiquidityOptions {}
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
-export class DecreaseLiquidityIntention extends CoreBaseIntention<DecreaseLiquidityIntentionData> {
+import { SuiNetworks, TransactionSubType } from '../types';
+
+export type DecreaseLiquidityIntentionData = Pool.DecreaseLiquidityOptions;
+
+export class DecreaseLiquidityIntention extends BaseIntentionLegacy<DecreaseLiquidityIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.AddLiquidity;

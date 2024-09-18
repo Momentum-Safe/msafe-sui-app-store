@@ -4,8 +4,9 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
-import { IAppHelperInternalLegacy } from '../interface';
 // eslint-disable-next-line import/no-cycle
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+
 import { Decoder } from './decoder';
 import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
 import { BurnIntention, BurnIntentionData } from './intentions/burn';

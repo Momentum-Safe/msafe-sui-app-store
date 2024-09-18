@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 export interface CoinTransferIntentionData {
   recipient: string;
@@ -11,7 +11,7 @@ export interface CoinTransferIntentionData {
   amount: string;
 }
 
-export class CoinTransferIntention extends CoreBaseIntention<CoinTransferIntentionData> {
+export class CoinTransferIntention extends BaseIntentionLegacy<CoinTransferIntentionData> {
   txType: TransactionType.Assets;
 
   txSubType: 'SendCoin';

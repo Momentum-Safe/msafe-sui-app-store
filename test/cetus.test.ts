@@ -10,7 +10,6 @@ describe('Cetus App', () => {
       action: 'xCETUSConvert',
     });
 
-    console.log('intention.serialize(): ', intention.serialize());
     expect(intention.serialize()).toBe(
       '{"action":"xCETUSConvert","txbParams":{"amount":"1000","venft_id":"venftidx1123"}}',
     );

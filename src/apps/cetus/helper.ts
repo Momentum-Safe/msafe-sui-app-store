@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface';
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 
 import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { ClaimFeeAndMiningIntention } from './intentions/claim-fee-and-mining';
@@ -84,9 +84,7 @@ export class CetusHelper implements IAppHelperInternalLegacy<CetusIntentionData>
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
     const { suiClient, account, network } = input;
-    console.log('helper build input: ', input);
-    console.log('helper build input.intentionData: ', input.intentionData);
-    console.log('helper build input.intentionData JSON: ', JSON.stringify(input.intentionData));
+
     let intention: CetusIntention;
     switch (input.txSubType) {
       case TransactionSubType.OpenAndAddLiquidity:
@@ -155,9 +153,7 @@ export class CetusHelper implements IAppHelperInternalLegacy<CetusIntentionData>
       default:
         throw new Error('not implemented');
     }
-    console.log('helper build intention: ', intention);
-    console.log('helper build account: ', account);
-    console.log('helper build network: ', network);
+
     return intention.build({ suiClient, account, network });
   }
 }
