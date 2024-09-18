@@ -74,7 +74,7 @@ export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
     const { transactionBlock, account } = input;
     console.log(input, 'input');
     const decoder = new Decoder(transactionBlock, turbosSdk, contract);
-    const result = decoder.decode(account.address);
+    const result = await decoder.decode(account.address);
     return {
       txType: TransactionType.Other,
       txSubType: result.type,

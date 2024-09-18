@@ -65,9 +65,9 @@ export class Decoder {
     ];
   }
 
-  decode(address: string) {
+  async decode(address: string) {
     if (this.isSwapTransaction()) {
-      return this.decodeSwap();
+      return await this.decodeSwap();
     }
 
     if (this.isAddLiquidityTransaction()) {
@@ -182,7 +182,7 @@ export class Decoder {
     return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`);
   }
 
-  private decodeSwap(): DecodeResult {
+  private async decodeSwap(): Promise<DecodeResult> {
     const moveCall = this.transactions.find((trans) => trans.kind === 'MoveCall') as MoveCallTransaction;
     let layer: 0 | 1 = 0;
     if (this.swap2Layer.includes(moveCall.target)) {
@@ -217,6 +217,12 @@ export class Decoder {
     const amountA = this.helper.decodeInputU64(2 + layer);
     const amountB = this.helper.decodeInputU64(3 + layer);
 
+    const result = await this.turbosSdk.trade.computeSwapResultV2({
+      pools: [{ pool: routes[0].pool, a2b: routes[0].a2b, amountSpecified: amountA }],
+      address,
+      amountSpecifiedIsInput,
+    });
+
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.Swap,
@@ -235,6 +241,7 @@ export class Decoder {
   }
 
   private decodeAddLiquidity(): DecodeResult {
+    console.log(this.helper, 'this.helper.decodeAddLiquidity')
     const pool = this.helper.decodeSharedObjectId(0);
     const address = this.helper.decodeInputAddress(12);
 
@@ -246,7 +253,16 @@ export class Decoder {
     const tickUpperIsNeg = this.helper.decodeInputBool(7);
 
     const deadline = this.helper.decodeInputU64(13);
-
+    console.log({
+      pool, 
+      address,
+      amountA,
+      amountB,
+      tickLower,
+      tickLowerIsNeg,
+      tickUpper,
+      tickUpperIsNeg
+    });
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.AddLiquidity,
