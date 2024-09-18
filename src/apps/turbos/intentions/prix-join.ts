@@ -1,14 +1,16 @@
-import { SuiNetworks, TransactionSubType } from '../types';
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+
 import { prixConfig } from '../config';
+import { SuiNetworks, TransactionSubType } from '../types';
 
 export interface PrixJoinIntentionData {}
 
-export class PrixJoinIntention extends CoreBaseIntention<PrixJoinIntentionData> {
+export class PrixJoinIntention extends BaseIntentionLegacy<PrixJoinIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixJoin;

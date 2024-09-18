@@ -1,11 +1,13 @@
 import { CoinType, type Pool } from './types';
 
+let updated = false;
+
 const config = {
-  ProtocolPackage: '0x7c9b90b3fda0fa4aa8ee88ae6c4a0b83c773f74936b5354448cb94662e94442d',
+  ProtocolPackage: '0xc6374c7da60746002bfee93014aeb607e023b2d6b25c9e55a152b826dbc8c1ce',
   StorageId: '0xbb4e2f4b6205c2e2a2db47aeb4f830796ec7c005f88537ee775986639bc442fe',
   Incentive: '0xaaf735bf83ff564e1b219a0d644de894ef5bdc4b2250b126b2a46dd002331821',
   IncentiveV2: '0xf87a8acb8b81d14307894d12595541a73f19933f88e1326d5be349c7a6f7559c', // The new incentive version: V2
-
+  gasBudget: 50_000_000,
   PriceOracle: '0x1568865ed9a0b5ec414220e8f79b3d04c77acc82358f6e5ae4635687392ffbef',
   ReserveParentId: '0xe6d4c6610b86ce7735ea754596d71d72d10c7980b5052fc3c8cdf8d09fea9b4b', // get it from storage object id. storage.reserves
   pool: {
@@ -94,6 +96,30 @@ const config = {
       supplyBalanceParentId: '0x59dedca8dc44e8df50b190f8b5fe673098c1273ac6168c0a4addf3613afcdee5',
     },
   } as Pool,
+  borrowFee: 0.003,
+  borrowFeeAddress: '0x70b9b10704263cf53392849e33b1f5fd16005869b4198ed5524836bad1234ea2',
 };
+
+export async function updatePackageId() {
+  if (updated) {
+    return;
+  }
+  try {
+    const data = await fetch('https://open-api.naviprotocol.io/api/msafe').then((res) => res.json());
+    const { packageId, borrowFee, borrowFeeAddress } = data;
+    if (packageId) {
+      config.ProtocolPackage = packageId;
+    }
+    if (borrowFee) {
+      config.borrowFee = borrowFee;
+    }
+    if (borrowFeeAddress) {
+      config.borrowFeeAddress = borrowFeeAddress;
+    }
+    updated = true;
+  } catch (e: any) {
+    console.error(e.message);
+  }
+}
 
 export default config;

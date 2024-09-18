@@ -1,11 +1,8 @@
-import { SuiClient } from '@mysten/sui.js/dist/cjs/client';
+import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_TYPE_ARG, normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { MPayHelper } from './helper';
-import { PagedStreamListIterator } from './query';
-import { Stream } from './Stream';
 import { MPayBuilder } from '../builder/MPayBuilder';
 import { Env, EnvConfigOptions, Globals } from '../common';
 import { InvalidInputError } from '../error/InvalidInputError';
@@ -29,6 +26,9 @@ import {
   IWallet,
   WalletType,
 } from '../types/wallet';
+import { Stream } from './Stream';
+import { MPayHelper } from './helper';
+import { PagedStreamListIterator } from './query';
 
 export class MSafeAccountAdapter implements IWallet {
   constructor(private readonly msafe: IMSafeAccount) {}

@@ -1,18 +1,22 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { claimReward } from '../api/incentiveV2';
-import config from '../config';
 import { CoinType, TransactionSubType, OptionType } from '../types';
 
 export interface ClaimRewardIntentionData {
-  coinType: CoinType;
-  option: OptionType;
+  claims: {
+    coinType: CoinType;
+    option: OptionType;
+    poolId: string;
+    assetId: number;
+    typeArguments: string[];
+  }[];
 }
 
-export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntentionData> {
+export class ClaimRewardIntention extends BaseIntentionLegacy<ClaimRewardIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.ClaimReward;
@@ -22,20 +26,16 @@ export class ClaimRewardIntention extends CoreBaseIntention<ClaimRewardIntention
   }
 
   async build(): Promise<TransactionBlock> {
-    const { coinType, option } = this.data;
+    const { claims } = this.data;
     const tx = new TransactionBlock();
 
-    const pool = config.pool[coinType];
+    claims.forEach((claim) => {
+      const { assetId, poolId, option, typeArguments } = claim;
 
-    if (!pool) {
-      throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
-    }
+      claimReward(tx, assetId, poolId, option, typeArguments);
+    });
 
-    if (!pool.fondPoolId) {
-      throw new Error(`${coinType} not support claim reward.`);
-    }
-
-    return claimReward(tx, pool, option);
+    return tx;
   }
 
   static fromData(data: ClaimRewardIntentionData) {

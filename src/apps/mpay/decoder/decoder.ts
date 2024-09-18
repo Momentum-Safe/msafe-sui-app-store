@@ -1,4 +1,4 @@
-import { MoveCallTransaction } from '@mysten/sui.js/src/builder/Transactions';
+import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
 import { CreateStreamDecodeHelper } from './create';
@@ -7,13 +7,13 @@ import { Globals } from '../common';
 import { StreamContract } from '../contract/StreamContract';
 import { isSameTarget } from '../sui/utils';
 import {
-  StreamDecodedTransaction,
+  DecodedCancelStream,
+  DecodedClaimByProxy,
+  DecodedClaimStream,
   DecodedCreateStream,
   DecodedSetAutoClaim,
+  StreamDecodedTransaction,
   StreamTransactionType,
-  DecodedClaimStream,
-  DecodedClaimByProxy,
-  DecodedCancelStream,
 } from '../types/decode';
 
 export class StreamTransactionDecoder {

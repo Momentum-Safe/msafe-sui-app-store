@@ -3,7 +3,10 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
-import { MSafeAppHelper } from '../interface';
+
+// eslint-disable-next-line import/no-cycle
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+
 import { Decoder } from './decoder';
 import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
 import { BurnIntention, BurnIntentionData } from './intentions/burn';
@@ -56,8 +59,10 @@ export type TURBOSIntentionData =
   | SwapExactQuoteForBaseIntentionData
   | SwapExactBaseForQuoteIntentionData;
 
-export class TURBOSAppHelper implements MSafeAppHelper<TURBOSIntentionData> {
+export class TURBOSAppHelper implements IAppHelperInternalLegacy<TURBOSIntentionData> {
   application = 'turbos';
+
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {

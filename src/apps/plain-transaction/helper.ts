@@ -1,11 +1,11 @@
 import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { fromHEX, toHEX } from '@mysten/sui.js/utils';
-import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
+import { fromHEX, toHEX } from '@mysten/bcs';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import sortKeys from 'sort-keys-recursive';
 
-import { MSafeAppHelper, TransactionIntention } from '@/apps/interface';
+import { IAppHelperInternal, TransactionIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 export type PlainTransactionData = {
@@ -27,20 +27,36 @@ export class PlainTransactionIntention implements TransactionIntention<PlainTran
   serialize() {
     return JSON.stringify(sortKeys(this.data));
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<Transaction> {
+    return Transaction.from(fromHEX(this.data.content));
+  }
+
+  static fromData(data: PlainTransactionData) {
+    return new PlainTransactionIntention(data);
+  }
 }
-export class PlainTransactionHelper implements MSafeAppHelper<PlainTransactionData> {
+
+export class PlainTransactionHelper implements IAppHelperInternal<PlainTransactionData> {
   application: string;
+
+  supportSDK = '@mysten/sui' as const;
 
   constructor() {
     this.application = PlainTransactionApplication;
   }
 
-  async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
-  ): Promise<{ txType: TransactionType; txSubType: string; intentionData: PlainTransactionData }> {
-    const { transactionBlock, suiClient } = input;
+  async deserialize(input: {
+    transaction: Transaction;
+    chain: IdentifierString;
+    network: SuiNetworks;
+    suiClient: SuiClient;
+    account: WalletAccount;
+  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: PlainTransactionData }> {
+    const { transaction } = input;
 
-    const content = await transactionBlock.build({ client: suiClient });
+    const content = await transaction.build({ client: input.suiClient });
 
     return {
       txType: TransactionType.Other,
@@ -56,12 +72,14 @@ export class PlainTransactionHelper implements MSafeAppHelper<PlainTransactionDa
     intentionData: PlainTransactionData;
     suiClient: SuiClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
-    const txb = TransactionBlock.from(fromHEX(input.intentionData.content));
+  }): Promise<Transaction> {
+    const { account } = input;
 
-    const inspectResult = await suiClient.devInspectTransactionBlock({
-      transactionBlock: txb,
+    const intention = PlainTransactionIntention.fromData(input.intentionData);
+    const tx = await intention.build({ suiClient: input.suiClient, network: input.network, account: input.account });
+    const client = input.suiClient;
+    const inspectResult = await client.devInspectTransactionBlock({
+      transactionBlock: tx,
       sender: account.address,
     });
     const success = inspectResult.effects.status.status === 'success';
@@ -69,6 +87,6 @@ export class PlainTransactionHelper implements MSafeAppHelper<PlainTransactionDa
       throw new Error(inspectResult.effects.status.error);
     }
 
-    return txb;
+    return tx;
   }
 }

@@ -1,11 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/builder';
-import { TransactionBlockInput, TransactionBlock } from '@mysten/sui.js/transactions';
+import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
+import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import config from './config';
-import { TransactionSubType } from './types';
+import { CoinType, TransactionSubType } from './types';
 
 export function isSameCoinType(type1: string, type2: string) {
   return normalizeStructTag(type1) === normalizeStructTag(type2);
@@ -25,10 +25,14 @@ export class Decoder {
   constructor(public readonly txb: TransactionBlock) {}
 
   decode() {
+    console.log('txb', this.txb);
     if (this.isClaimRewardTransaction()) {
       return this.decodeClaimReward();
     }
     if (this.isEntryBorrowTransaction()) {
+      return this.decodeEntryBorrow();
+    }
+    if (this.isEntryBorrowWithFeeTransaction()) {
       return this.decodeEntryBorrow();
     }
     if (this.isEntryDepositTransaction()) {
@@ -59,6 +63,10 @@ export class Decoder {
     return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_borrow`);
   }
 
+  private isEntryBorrowWithFeeTransaction() {
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::borrow`);
+  }
+
   private isEntryDepositTransaction() {
     return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_deposit`);
   }
@@ -80,15 +88,36 @@ export class Decoder {
   }
 
   private decodeClaimReward(): DecodeResult {
-    const assetId = this.helper.decodeInputU8(4);
-    const optionId = this.helper.decodeInputU8(5);
-    const pool = this.findPoolByAssetId(assetId);
+    const claims = [] as {
+      coinType: CoinType;
+      option: number;
+      poolId: string;
+      assetId: number;
+      typeArguments: string[];
+    }[];
+    this.transactions.forEach((trans) => {
+      if (trans.kind === 'MoveCall' && trans.target === `${config.ProtocolPackage}::incentive_v2::claim_reward`) {
+        const helper = new MoveCallHelper(trans, this.txb);
+        const assetId = helper.decodeInputU8(4);
+        const optionId = helper.decodeInputU8(5);
+        const poolId = helper.decodeSharedObjectId(2);
+        const pool = this.findPoolByAssetId(assetId);
+        const typeArguments = [...trans.typeArguments];
+        claims.push({
+          coinType: pool.coinType,
+          option: optionId,
+          typeArguments,
+          assetId,
+          poolId,
+        });
+      }
+    });
+    console.log('decode claims', claims);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.ClaimReward,
       intentionData: {
-        coinType: pool.coinType,
-        option: optionId,
+        claims,
       },
     };
   }

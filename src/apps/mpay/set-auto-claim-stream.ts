@@ -1,5 +1,5 @@
 import { SetAutoClaimIntentionData, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/dist/cjs/client';
+import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
@@ -19,8 +19,6 @@ export class SetAutoClaimStreamIntention extends StreamIntention<SetAutoClaimInt
 
   async build(input: {
     network: SuiNetworks;
-    txType: TransactionType;
-    txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<TransactionBlock> {

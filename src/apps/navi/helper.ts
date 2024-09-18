@@ -3,9 +3,10 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
 
-import { MSafeAppHelper } from '@/apps/interface';
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { SuiNetworks } from '@/types';
 
+import { updatePackageId } from './config';
 import { Decoder } from './decoder';
 import { ClaimRewardIntention, ClaimRewardIntentionData } from './intentions/claim-reward';
 import { EntryBorrowIntention, EntryBorrowIntentionData } from './intentions/entry-borrow';
@@ -28,12 +29,15 @@ export type NAVIIntentionData =
   | EntryWithdrawIntentionData
   | ClaimRewardIntentionData;
 
-export class NAVIAppHelper implements MSafeAppHelper<NAVIIntentionData> {
+export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData> {
   application = 'navi';
+
+  supportSDK = '@mysten/sui.js' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
   ): Promise<{ txType: TransactionType; txSubType: TransactionSubType; intentionData: NAVIIntentionData }> {
+    await updatePackageId();
     const { transactionBlock } = input;
     const decoder = new Decoder(transactionBlock);
     const result = decoder.decode();
@@ -53,6 +57,7 @@ export class NAVIAppHelper implements MSafeAppHelper<NAVIIntentionData> {
   }): Promise<TransactionBlock> {
     const { suiClient, account } = input;
     let intention: NAVIIntention;
+    await updatePackageId();
     switch (input.txSubType) {
       case TransactionSubType.EntryDeposit:
         intention = EntryDepositIntention.fromData(input.intentionData as EntryDepositIntentionData);

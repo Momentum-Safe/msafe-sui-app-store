@@ -6,8 +6,10 @@ import sortKeys from 'sort-keys-recursive';
 
 import { SuiNetworks } from '@/types';
 
-export interface MSafeAppHelper<T> {
+export interface IAppHelperInternalLegacy<T> {
   application: string;
+  supportSDK: '@mysten/sui.js';
+
   deserialize(
     input: SuiSignTransactionBlockInput & {
       network: SuiNetworks;
@@ -19,6 +21,7 @@ export interface MSafeAppHelper<T> {
     txSubType: string;
     intentionData: T;
   }>;
+
   build(input: {
     network: SuiNetworks;
     txType: TransactionType;
@@ -29,29 +32,30 @@ export interface MSafeAppHelper<T> {
   }): Promise<TransactionBlock>;
 }
 
-export interface TransactionIntention<D> {
+export interface TransactionIntentionLegacy<D> {
   txType: TransactionType;
   txSubType: string;
   data: D;
+
   serialize(): string;
+
+  build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<TransactionBlock>;
 }
 
-export abstract class BaseIntention<D> implements TransactionIntention<D> {
+export abstract class BaseIntentionLegacy<D> implements TransactionIntentionLegacy<D> {
   abstract txType: TransactionType;
 
   abstract txSubType: string;
 
   protected constructor(public readonly data: D) {}
 
-  abstract build(input: {
-    network: SuiNetworks;
-    txType: TransactionType;
-    txSubType: string;
-    suiClient: SuiClient;
-    account: WalletAccount;
-  }): Promise<TransactionBlock>;
-
   serialize() {
     return JSON.stringify(sortKeys(this.data));
   }
+
+  abstract build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<TransactionBlock>;
 }

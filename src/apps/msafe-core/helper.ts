@@ -3,7 +3,7 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { MSafeAppHelper } from '@/apps/interface';
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 
 import { ObjectTransferIntention, ObjectTransferIntentionData } from './object-transfer';
@@ -13,8 +13,10 @@ export type CoreIntention = CoinTransferIntention | ObjectTransferIntention | Pl
 
 export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData | PlainPayloadIntentionData;
 
-export class CoreHelper implements MSafeAppHelper<CoreIntentionData> {
-  application: string;
+export class CoreHelper implements IAppHelperInternalLegacy<CoreIntentionData> {
+  application = 'msafe-core';
+
+  supportSDK = '@mysten/sui.js' as const;
 
   constructor() {
     this.application = TransactionDefaultApplication;

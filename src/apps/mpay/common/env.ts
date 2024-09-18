@@ -1,3 +1,5 @@
+import { getFullnodeUrl } from '@mysten/sui.js/client';
+
 import * as devContractConfig from '../config/dev.json';
 import * as prodContractConfig from '../config/prod.json';
 
@@ -36,10 +38,10 @@ export interface ContractConfig {
   feeObjId: string;
 }
 
-export const DEV_RPC_ENDPOINT = 'https://sui-testnet.blockvision.org/v1/2Sgk89ivT64MnKdcGzjmyjY2ndD';
-export const STG_RPC_ENDPOINT = 'https://sui-testnet.blockvision.org/v1/2Sgk89ivT64MnKdcGzjmyjY2ndD';
-export const PREV_RPC_ENDPOINT = 'https://sui-mainnet.blockvision.org/v1/2Sgk7NPvqkd7mESYkxF01yX15l7';
-export const PROD_RPC_ENDPOINT = 'https://sui-mainnet.blockvision.org/v1/2Sgk7NPvqkd7mESYkxF01yX15l7';
+export const DEV_RPC_ENDPOINT = getFullnodeUrl('testnet');
+export const STG_RPC_ENDPOINT = getFullnodeUrl('testnet');
+export const PREV_RPC_ENDPOINT = getFullnodeUrl('mainnet');
+export const PROD_RPC_ENDPOINT = getFullnodeUrl('mainnet');
 
 export const DEV_BE_API = 'https://bc3p6l5unl.execute-api.us-west-1.amazonaws.com/prod';
 export const STG_BE_API = 'https://rolsbkota7.execute-api.us-west-1.amazonaws.com/prod';

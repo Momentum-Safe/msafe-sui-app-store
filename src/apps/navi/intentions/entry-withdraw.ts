@@ -1,7 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 
-import { CoreBaseIntention } from '@/apps/msafe-core/intention';
+import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { withdrawToken } from '../api/incentiveV2';
 import config from '../config';
@@ -12,7 +12,7 @@ export interface EntryWithdrawIntentionData {
   coinType: CoinType;
 }
 
-export class EntryWithdrawIntention extends CoreBaseIntention<EntryWithdrawIntentionData> {
+export class EntryWithdrawIntention extends BaseIntentionLegacy<EntryWithdrawIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.EntryWithdraw;
@@ -24,6 +24,7 @@ export class EntryWithdrawIntention extends CoreBaseIntention<EntryWithdrawInten
   async build(): Promise<TransactionBlock> {
     const { coinType, amount } = this.data;
     const tx = new TransactionBlock();
+    console.log('build', this.data);
 
     const pool = config.pool[coinType];
 

@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.35",
+  "version": "0.0.128",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -25,7 +25,8 @@
     "build": "yarn clean && tsup --platform browser --format cjs,esm --minify --dts",
     "build-yalc": "yarn build && yalc publish --private",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "prerelease": "yarn build && chmod +x ./scripts/prerelease.sh && ./scripts/prerelease.sh"
   },
   "repository": {
     "type": "git",
@@ -42,20 +43,25 @@
     "MSafe Sui"
   ],
   "dependencies": {
-    "@mysten/sui.js": "^0.50.1",
+    "@cetusprotocol/cetus-periphery-sdk": "2.2.0",
+    "@cetusprotocol/cetus-sui-clmm-sdk": "^4.2.0",
+    "@mysten/bcs": "^0.11.1",
+    "@mysten/sui": "^1.8.0",
     "axios": "^1.6.7",
+    "bignumber.js": "^9.1.2",
     "buffer": "^6.0.3",
+    "kriya-dex-sdk": "^1.1.69",
     "luxon": "^3.4.4",
     "nanoid": "3",
     "sort-keys-recursive": "^2.1.10",
     "turbos-clmm-sdk": "^2.2.2"
   },
   "devDependencies": {
-    "@msafe/sui3-utils": "^3.1.59",
-    "@mysten/wallet-standard": "^0.10.1",
+    "@msafe/sui3-utils": "^3.1.66",
+    "@mysten/sui.js": "0.54.1",
+    "@mysten/wallet-standard": "0.11.6",
     "@types/jest": "^29.2.1",
     "@types/luxon": "^3.4.2",
-    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "eslint": "^8.42.0",
@@ -75,7 +81,8 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@msafe/sui3-utils": "^3.1.47",
-    "@mysten/wallet-standard": "^0.10.1"
+    "@msafe/sui3-utils": ">3.0.0",
+    "@mysten/sui.js": ">0.50.0",
+    "@mysten/wallet-standard": ">0.11.0"
   }
 }
