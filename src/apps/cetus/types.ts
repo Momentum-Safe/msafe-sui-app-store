@@ -6,7 +6,7 @@ export interface CetusIntentionData {
 }
 
 export enum TransactionSubType {
-  Swap = 'Swap',
+  Swap = 'AggregatorSwap',
   OpenAndAddLiquidity = 'OpenAndAddLiquidity',
   IncreaseLiquidity = 'IncreaseLiquidity',
   DecreaseLiquidity = 'DecreaseLiquidity',

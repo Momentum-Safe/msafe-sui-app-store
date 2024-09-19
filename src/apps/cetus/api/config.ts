@@ -1,5 +1,7 @@
+import { AggregatorClient, Env } from '@cetusprotocol/aggregator-sdk';
 import { CetusPeripherySDK, SdkOptions as PeripherySdkOptions } from '@cetusprotocol/cetus-periphery-sdk';
 import { CetusClmmSDK, SdkOptions } from '@cetusprotocol/cetus-sui-clmm-sdk';
+import { SuiClient } from '@mysten/sui/client';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '../types';
@@ -87,6 +89,8 @@ export const peripheryConfig: PeripherySdkOptions = {
       dividend_manager_id: '0x721c990bfc031d074341c6059a113a59c1febfbd2faeb62d49dcead8408fa6b5',
       dividend_admin_id: '',
       dividend_settle_id: '',
+      venft_dividends_id: '',
+      venft_dividends_id_v2: '',
     },
   },
   cetus_faucet: {
@@ -202,6 +206,19 @@ export const peripheryConfig: PeripherySdkOptions = {
       admin_cap_id: '0xf10fbf1fea5b7aeaa524b87769461a28c5c977613046360093673991f26d886c',
     },
   },
+  dca: {
+    package_id: '',
+    published_at: '',
+    version: 0,
+    config: {
+      admin_cap_id: '',
+      global_config_id: '',
+      indexer_id: '',
+      user_indexer_id: '',
+      in_coin_whitelist_id: '',
+      out_coin_whitelist_id: '',
+    },
+  },
 };
 
 export const clmmConfigTestnet: SdkOptions = {
@@ -285,6 +302,8 @@ export const peripheryConfigTestnet: PeripherySdkOptions = {
       dividend_manager_id: '0x13b7facb704fae1d199ff0038b8acabc253415a77d142b39189dee97d457e442',
       dividend_admin_id: '0x5eb78463007422d4130b21f61c180bcd190819b7792f56e00a61df3b8fb928ef',
       dividend_settle_id: '0x495095e13a170ff494d242ae44ac2c7453011ca6c33cff27498010105e10e4b4',
+      venft_dividends_id: '',
+      venft_dividends_id_v2: '',
     },
   },
   cetus_faucet: {
@@ -367,6 +386,19 @@ export const peripheryConfigTestnet: PeripherySdkOptions = {
       admin_cap_id: '0x4ec248bca2d1fc05f39fd7491ab490464a46d128624caa4d3c2a66d957ef40b0',
     },
   },
+  dca: {
+    package_id: '',
+    published_at: '',
+    version: 0,
+    config: {
+      admin_cap_id: '',
+      global_config_id: '',
+      indexer_id: '',
+      user_indexer_id: '',
+      in_coin_whitelist_id: '',
+      out_coin_whitelist_id: '',
+    },
+  },
 };
 
 export const getClmmSdk = (network: SuiNetworks, account: WalletAccount) => {
@@ -381,4 +413,13 @@ export const getPeripherySdk = (network: SuiNetworks, account: WalletAccount) =>
   const config = network === 'sui:mainnet' ? peripheryConfig : peripheryConfigTestnet;
   const peripherySdk = new CetusPeripherySDK(config, clmmSdk);
   return peripherySdk;
+};
+
+const aggregatorURL = 'https://api-sui.cetus.zone/router_v2/find_routes';
+export const getAggregatorSdk = (network: SuiNetworks, account: WalletAccount) => {
+  const suiClient = new SuiClient({
+    url: 'https://fullnode.mainnet.sui.io/',
+  });
+  const aggregatorSdk = new AggregatorClient(aggregatorURL, account.address, suiClient, Env.Mainnet);
+  return aggregatorSdk;
 };

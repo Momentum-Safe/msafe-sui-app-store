@@ -1,14 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
+import { SuiNetworks } from '@/types';
 
 import { getAddLiquidityTxb } from '../api/position';
-import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
+import { CetusIntentionData, TransactionSubType } from '../types';
 
-export class AddLiquidityIntention extends BaseIntentionLegacy<CetusIntentionData> {
+export class AddLiquidityIntention extends BaseIntention<CetusIntentionData> {
   txType = TransactionType.Other;
 
   txSubType = TransactionSubType.OpenAndAddLiquidity;
@@ -17,11 +18,7 @@ export class AddLiquidityIntention extends BaseIntentionLegacy<CetusIntentionDat
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
     const { txbParams } = this.data;
     const txb = await getAddLiquidityTxb(txbParams, account, network);
