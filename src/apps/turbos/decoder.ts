@@ -137,12 +137,6 @@ export class Decoder {
     return !!this.getSwapMoveCallTransaction([...this.swap1Layer, ...this.swap2Layer]);
   }
 
-  private isCoinZero() {
-    return !!this.getMoveCallTransaction(
-      '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero',
-    );
-  }
-
   private isAddLiquidityTransaction() {
     return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::mint`);
   }
@@ -249,20 +243,18 @@ export class Decoder {
   }
 
   private decodeAddLiquidity(): DecodeResult {
-    console.log(this.helper,  'decodeAddLiquidity this.helper');
-    const isCoinZero = this.isCoinZero();
-    const index = isCoinZero ? 1 : 0;
-    const pool = this.helper.decodeSharedObjectId(0 + index);
-    const address = this.helper.decodeInputAddress(12 + index);
+    console.log(this.helper, 'decodeAddLiquidity this.helper');
+    const pool = this.helper.decodeSharedObjectId(0);
+    const address = this.helper.decodeInputAddress(12);
 
-    const amountA = this.helper.decodeInputU64(8 + index);
-    const amountB = this.helper.decodeInputU64(9 + index);
-    const tickLower = this.helper.decodeInputU32(4 + index);
-    const tickLowerIsNeg = this.helper.decodeInputBool(5 + index);
-    const tickUpper = this.helper.decodeInputU32(6 + index);
-    const tickUpperIsNeg = this.helper.decodeInputBool(7 + index);
+    const amountA = this.helper.decodeInputU64(8);
+    const amountB = this.helper.decodeInputU64(9);
+    const tickLower = this.helper.decodeInputU32(4);
+    const tickLowerIsNeg = this.helper.decodeInputBool(5);
+    const tickUpper = this.helper.decodeInputU32(6);
+    const tickUpperIsNeg = this.helper.decodeInputBool(7);
 
-    const deadline = this.helper.decodeInputU64(13 + index);
+    const deadline = this.helper.decodeInputU64(13);
 
     return {
       txType: TransactionType.Other,
@@ -281,16 +273,14 @@ export class Decoder {
   }
 
   private decodeIncreaseLiquidity(address: string): DecodeResult {
-    console.log(this.helper,  'decodeIncreaseLiquidity this.helper');
-    const isCoinZero = this.isCoinZero();
-    const index = isCoinZero ? 1 : 0;
+    console.log(this.helper, 'decodeIncreaseLiquidity this.helper');
 
-    const pool = this.helper.decodeSharedObjectId(0 + index);
-    const nft = this.helper.decodeSharedObjectId(4 + index);
-    const amountA = this.helper.decodeInputU64(5 + index);
-    const amountB = this.helper.decodeInputU64(6 + index);
+    const pool = this.helper.decodeSharedObjectId(0);
+    const nft = this.helper.decodeSharedObjectId(4);
+    const amountA = this.helper.decodeInputU64(5);
+    const amountB = this.helper.decodeInputU64(6);
 
-    const deadline = this.helper.decodeInputU64(9 + index);
+    const deadline = this.helper.decodeInputU64(9);
 
     return {
       txType: TransactionType.Other,
@@ -308,7 +298,7 @@ export class Decoder {
   }
 
   private decodeDecreaseLiquidity(address: string): DecodeResult {
-    console.log(this.helper,  'decodeDecreaseLiquidity this.helper');
+    console.log(this.helper, 'decodeDecreaseLiquidity this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const decreaseLiquidity = this.helper.decodeInputU64(3);
@@ -334,7 +324,7 @@ export class Decoder {
   }
 
   private decodeCollectFee(): DecodeResult {
-    console.log(this.helper,  'decodeCollectFee this.helper');
+    console.log(this.helper, 'decodeCollectFee this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const address = this.helper.decodeInputAddress(5);
@@ -358,7 +348,7 @@ export class Decoder {
   }
 
   private decodeCollectReward(): DecodeResult {
-    console.log(this.helper,  'decodeCollectReward this.helper');
+    console.log(this.helper, 'decodeCollectReward this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
     const address = this.helper.decodeInputAddress(6);
@@ -380,7 +370,7 @@ export class Decoder {
   }
 
   private decodeBurn(): DecodeResult {
-    console.log(this.helper,  'decodeBurn this.helper');
+    console.log(this.helper, 'decodeBurn this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeSharedObjectId(2);
 
@@ -395,7 +385,7 @@ export class Decoder {
   }
 
   private decodeRemoveLiquidity(address: string): DecodeResult {
-    console.log(this.helper,  'decodeRemoveLiquidity this.helper');
+    console.log(this.helper, 'decodeRemoveLiquidity this.helper');
     const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(0);
     const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(2);
     const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(3);
@@ -480,7 +470,10 @@ export class Decoder {
 
   private get helper() {
     const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target !== '0x2::coin::zero',
+      (trans) =>
+        trans.kind === 'MoveCall' &&
+        trans.target !== '0x2::coin::zero' &&
+        trans.target !== '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero',
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }
