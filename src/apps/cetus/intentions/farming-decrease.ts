@@ -1,14 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
+import { SuiNetworks } from '@/types';
 
 import { getFarmingDecreaseLiquidityTxb } from '../api/farming';
-import { CetusIntentionData, TransactionSubType, SuiNetworks } from '../types';
+import { CetusIntentionData, TransactionSubType } from '../types';
 
-export class FarmingDecreaseLiquidityIntention extends BaseIntentionLegacy<CetusIntentionData> {
+export class FarmingDecreaseLiquidityIntention extends BaseIntention<CetusIntentionData> {
   txType = TransactionType.Other;
 
   txSubType = TransactionSubType.FarmingDecreaseLiquidity;
@@ -17,11 +18,7 @@ export class FarmingDecreaseLiquidityIntention extends BaseIntentionLegacy<Cetus
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<Transaction> {
     const { account, network } = input;
     const { txbParams } = this.data;
     const txb = await getFarmingDecreaseLiquidityTxb(txbParams, account, network);

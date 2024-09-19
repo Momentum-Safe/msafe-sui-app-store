@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
@@ -13,12 +13,12 @@ export const getVestingRedeemTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
-): Promise<TransactionBlock> => {
+): Promise<Transaction> => {
   console.log('getVestingRedeemTxb txbParams: ', txbParams);
   console.log('getVestingRedeemTxb account: ', account);
   console.log('getVestingRedeemTxb network: ', network);
   const { pool, nftId, periods, CLOCK_ADDRESS } = txbParams;
-  const txb = new TransactionBlock();
+  const txb = new Transaction();
 
   periods.forEach((period: any) => {
     txb.moveCall({

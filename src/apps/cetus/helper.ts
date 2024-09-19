@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { IAppHelperInternal } from '@/apps/interface/sui';
 
 import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { ClaimFeeAndMiningIntention } from './intentions/claim-fee-and-mining';
@@ -51,17 +51,20 @@ export type CetusIntention =
   | VestingRedeemIntention
   | SwapIntention;
 
-export class CetusHelper implements IAppHelperInternalLegacy<CetusIntentionData> {
+export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
   application = 'cetus';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui' as const;
 
-  async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {
-      action?: string;
-      txbParams?: any;
-    },
-  ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
+  async deserialize(input: {
+    transaction: Transaction;
+    chain: IdentifierString;
+    network: SuiNetworks;
+    suiClient: SuiClient;
+    account: WalletAccount;
+    action?: string;
+    txbParams?: any;
+  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
     console.log('Cetus helper deserialize input: ', input);
     const { txbParams, action } = input;
 
@@ -82,7 +85,7 @@ export class CetusHelper implements IAppHelperInternalLegacy<CetusIntentionData>
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account, network } = input;
 
     let intention: CetusIntention;
