@@ -1658,10 +1658,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cetusprotocol/aggregator-sdk@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.2.0.tgz#00ebdfb4b691a5083a3c042a02d2834cd16fa6ff"
-  integrity sha512-pXONCP4Ib4VGLjEYCy2uccyzZcalIA5ZJJS8LlB1xZzUCNCYwdpbZzrk6Yop9/W9FEvERxtbLbriCX+r/GMyAA==
+"@cetusprotocol/aggregator-sdk@0.0.0-experimental-20240923104055":
+  version "0.0.0-experimental-20240923104055"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.0.0-experimental-20240923104055.tgz#74fc8fb58f1eccee11fad9735afcfa4380e91fe0"
+  integrity sha512-H8Jlr26zWZWlVVKRH0L6MFNmBaJ99rl5qizhsCOGYIA4mQdQoEMuSHENuqQ/G2Qg7RXfCG1ixKCRVrn+dvdGsw==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
