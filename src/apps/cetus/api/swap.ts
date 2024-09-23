@@ -1,3 +1,4 @@
+import { restituteMsafeFastRouterSwapParams } from '@cetusprotocol/aggregator-sdk';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
@@ -14,6 +15,7 @@ export const getSwapRouterTxb = async (
   const txb = new Transaction();
   await aggregatorSdk.fastRouterSwap({
     ...txbParams,
+    routers: restituteMsafeFastRouterSwapParams(txbParams.routers),
     txb,
   });
   return txb;
