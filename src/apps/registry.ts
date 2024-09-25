@@ -18,9 +18,9 @@ export class MSafeApps {
       apps.map((app) => {
         switch (app.supportSDK) {
           case '@mysten/sui.js':
-            return [app.application, new SuiJsSdkAdapter(app).helper as any];
+            return [app.application, new SuiJsSdkAdapter(app, app.application) as any];
           case '@mysten/sui':
-            return [app.application, new SuiSdkAdapter(app).helper as any];
+            return [app.application, new SuiSdkAdapter(app, app.application) as any];
           default:
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
@@ -44,7 +44,12 @@ export class MSafeApps {
   TODO: build to @mysten/sui Transaction after update sdk and api
  */
 export class SuiSdkAdapter implements IAppHelper<any> {
-  constructor(public helper: IAppHelperInternal<any>) {}
+  constructor(
+    public helper: IAppHelperInternal<any>,
+    application: string,
+  ) {
+    this.application = application;
+  }
 
   application: string;
 
@@ -81,7 +86,12 @@ export class SuiSdkAdapter implements IAppHelper<any> {
   TODO: build to @mysten/sui Transaction after update sdk and api
  */
 export class SuiJsSdkAdapter implements IAppHelper<any> {
-  constructor(public helper: IAppHelperInternalLegacy<any>) {}
+  constructor(
+    public helper: IAppHelperInternalLegacy<any>,
+    application: string,
+  ) {
+    this.application = application;
+  }
 
   application: string;
 
@@ -106,7 +116,7 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
   }): Promise<TransactionBlock> {
     const client = new SuiClientLegacy({ url: input.clientUrl });
     const tx = await this.helper.build({ ...input, suiClient: client });
-    const bytes = await tx.build();
+    const bytes = await tx.build({ client });
     return TransactionBlock.from(bytes);
   }
 }
