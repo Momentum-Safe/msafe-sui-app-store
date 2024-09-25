@@ -7,6 +7,8 @@ export enum CoinType {
   voloSui = 'voloSui',
   haSui = 'haSui',
   navx = 'navx',
+  ausd = 'ausd',
+  wbtc = 'wbtc',
 }
 
 export type Pool = { [key in CoinType]: PoolConfig };
