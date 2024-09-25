@@ -77,7 +77,9 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     const client = new SuiClient({ url: input.clientUrl });
     const tx = await this.helper.build({ ...input, suiClient: client });
     const bytes = await tx.build();
-    return TransactionBlock.from(bytes);
+    const txb = TransactionBlock.from(bytes);
+    txb.setSender(input.account.address);
+    return txb;
   }
 }
 
