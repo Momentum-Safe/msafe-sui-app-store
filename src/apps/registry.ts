@@ -116,7 +116,8 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
   }): Promise<TransactionBlock> {
     const client = new SuiClientLegacy({ url: input.clientUrl });
     const tx = await this.helper.build({ ...input, suiClient: client });
-    const bytes = await tx.build({ client });
-    return TransactionBlock.from(bytes);
+    return tx;
+    // const bytes = await tx.build({ client });
+    // return TransactionBlock.from(bytes);
   }
 }
