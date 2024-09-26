@@ -13,21 +13,36 @@ import { SuiNetworks } from '@/types';
 export class MSafeApps {
   apps: Map<string, IAppHelper<any>>;
 
-  constructor(apps: (IAppHelperInternalLegacy<any> | IAppHelperInternal<any>)[]) {
-    this.apps = new Map(
-      apps.map((app) => {
-        switch (app.supportSDK) {
-          case '@mysten/sui.js':
-            return [app.application, new SuiJsSdkAdapter(app) as any];
-          case '@mysten/sui':
-            return [app.application, new SuiSdkAdapter(app) as any];
-          default:
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            throw new Error(`${app.application}: ${app.supportSDK} SDK not supported`);
-        }
-      }),
-    );
+  private constructor() {
+    this.apps = new Map<string, IAppHelper<any>>();
+  }
+
+  static fromHelpers(apps: (IAppHelperInternalLegacy<any> | IAppHelperInternal<any>)[]) {
+    const mApps = new MSafeApps();
+    for (let i = 0; i < apps.length; i++) {
+      const app = apps[i];
+      switch (app.supportSDK) {
+        case '@mysten/sui.js':
+          mApps.addLegacyHelper(app);
+          break;
+        case '@mysten/sui':
+          mApps.addHelper(app);
+          break;
+        default:
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          throw new Error(`${app.application}: ${app.supportSDK} SDK not supported`);
+      }
+    }
+    return mApps;
+  }
+
+  addLegacyHelper(app: IAppHelperInternalLegacy<any>) {
+    this.apps.set(app.application, new SuiJsSdkAdapter(app));
+  }
+
+  addHelper(app: IAppHelperInternal<any>) {
+    this.apps.set(app.application, new SuiSdkAdapter(app));
   }
 
   getAppHelper(appName: string): IAppHelper<any> {
