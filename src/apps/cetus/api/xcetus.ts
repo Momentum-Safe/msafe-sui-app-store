@@ -12,7 +12,8 @@ export const getXcetusConvertTxb = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const peripherySdk = getPeripherySdk(network, account);
-  const txb: Transaction = await peripherySdk.XCetusModule.convertPayload(txbParams);
+  const tx = new Transaction();
+  const txb: Transaction = await peripherySdk.XCetusModule.convertPayload(txbParams, tx);
   return txb;
 };
 
