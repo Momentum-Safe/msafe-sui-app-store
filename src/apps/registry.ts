@@ -13,21 +13,36 @@ import { SuiNetworks } from '@/types';
 export class MSafeApps {
   apps: Map<string, IAppHelper<any>>;
 
-  constructor(apps: (IAppHelperInternalLegacy<any> | IAppHelperInternal<any>)[]) {
-    this.apps = new Map(
-      apps.map((app) => {
-        switch (app.supportSDK) {
-          case '@mysten/sui.js':
-            return [app.application, new SuiJsSdkAdapter(app, app.application) as any];
-          case '@mysten/sui':
-            return [app.application, new SuiSdkAdapter(app, app.application) as any];
-          default:
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            throw new Error(`${app.application}: ${app.supportSDK} SDK not supported`);
-        }
-      }),
-    );
+  private constructor() {
+    this.apps = new Map<string, IAppHelper<any>>();
+  }
+
+  static fromHelpers(apps: (IAppHelperInternalLegacy<any> | IAppHelperInternal<any>)[]) {
+    const mApps = new MSafeApps();
+    for (let i = 0; i < apps.length; i++) {
+      const app = apps[i];
+      switch (app.supportSDK) {
+        case '@mysten/sui.js':
+          mApps.addLegacyHelper(app);
+          break;
+        case '@mysten/sui':
+          mApps.addHelper(app);
+          break;
+        default:
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          throw new Error(`${app.application}: ${app.supportSDK} SDK not supported`);
+      }
+    }
+    return mApps;
+  }
+
+  addLegacyHelper(app: IAppHelperInternalLegacy<any>) {
+    this.apps.set(app.application, new SuiJsSdkAdapter(app));
+  }
+
+  addHelper(app: IAppHelperInternal<any>) {
+    this.apps.set(app.application, new SuiSdkAdapter(app));
   }
 
   getAppHelper(appName: string): IAppHelper<any> {
@@ -44,14 +59,7 @@ export class MSafeApps {
   TODO: build to @mysten/sui Transaction after update sdk and api
  */
 export class SuiSdkAdapter implements IAppHelper<any> {
-  constructor(
-    public helper: IAppHelperInternal<any>,
-    application: string,
-  ) {
-    this.application = application;
-  }
-
-  application: string;
+  constructor(public helper: IAppHelperInternal<any>) {}
 
   async deserialize(
     input: SuiSignTransactionBlockInput & {
@@ -61,7 +69,8 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     },
   ) {
     const client = new SuiClient({ url: input.clientUrl });
-    const build = await input.transactionBlock.build();
+    const clientLegacy = new SuiClientLegacy({ url: input.clientUrl });
+    const build = await input.transactionBlock.build({ client: clientLegacy });
     const tx = Transaction.from(build);
     return this.helper.deserialize({ ...input, suiClient: client, transaction: tx });
   }
@@ -76,7 +85,8 @@ export class SuiSdkAdapter implements IAppHelper<any> {
   }): Promise<TransactionBlock> {
     const client = new SuiClient({ url: input.clientUrl });
     const tx = await this.helper.build({ ...input, suiClient: client });
-    const bytes = tx.serialize();
+    tx.setSender(input.account.address);
+    const bytes = await tx.build({ client });
     return TransactionBlock.from(bytes);
   }
 }
@@ -86,14 +96,7 @@ export class SuiSdkAdapter implements IAppHelper<any> {
   TODO: build to @mysten/sui Transaction after update sdk and api
  */
 export class SuiJsSdkAdapter implements IAppHelper<any> {
-  constructor(
-    public helper: IAppHelperInternalLegacy<any>,
-    application: string,
-  ) {
-    this.application = application;
-  }
-
-  application: string;
+  constructor(public helper: IAppHelperInternalLegacy<any>) {}
 
   async deserialize(
     input: SuiSignTransactionBlockInput & {
@@ -115,9 +118,6 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
     const client = new SuiClientLegacy({ url: input.clientUrl });
-    const tx = await this.helper.build({ ...input, suiClient: client });
-    return tx;
-    // const bytes = await tx.build({ client });
-    // return TransactionBlock.from(bytes);
+    return this.helper.build({ ...input, suiClient: client });
   }
 }
