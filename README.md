@@ -64,7 +64,6 @@ export class ExampleIntention extends BaseIntentionLegacy<ExampleIntentionData> 
 }
 ```
 
-
 If you are using @mysten/sui, you can refer to the following code:
 
 ```typescript
