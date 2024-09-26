@@ -69,7 +69,8 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     },
   ) {
     const client = new SuiClient({ url: input.clientUrl });
-    const build = await input.transactionBlock.build();
+    const clientLegacy = new SuiClientLegacy({ url: input.clientUrl });
+    const build = await input.transactionBlock.build({ client: clientLegacy });
     const tx = Transaction.from(build);
     return this.helper.deserialize({ ...input, suiClient: client, transaction: tx });
   }
