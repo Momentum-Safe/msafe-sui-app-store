@@ -8,8 +8,6 @@ import { SuiNetworks } from '@/types';
 //
 // TODO: update to @mysten/sui after backend & sdk updated to @mysten/sui
 export interface IAppHelper<T> {
-  application: string;
-
   deserialize(
     input: SuiSignTransactionBlockInput & {
       network: SuiNetworks;

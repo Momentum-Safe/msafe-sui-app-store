@@ -8,7 +8,7 @@ import { ScallopAppHelper } from '@/apps/scallop/helper';
 import { TURBOSAppHelper } from '@/apps/turbos/helper';
 import { VoloAppHelper } from '@/apps/volo/helper';
 
-export const appHelpers = new MSafeApps([
+export const appHelpers = MSafeApps.fromHelpers([
   new CoreHelper(),
   new NAVIAppHelper(),
   new MPayAppHelper(),

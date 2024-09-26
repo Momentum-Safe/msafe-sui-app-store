@@ -9,8 +9,6 @@ describe('MSafe Core Wallet', () => {
   it('Core transaction build', async () => {
     const appHelper = appHelpers.getAppHelper('msafe-core');
 
-    expect(appHelper.application).toBe('msafe-core');
-
     const res = await appHelper.build({
       network: 'sui:devnet',
       txType: TransactionType.Assets,
