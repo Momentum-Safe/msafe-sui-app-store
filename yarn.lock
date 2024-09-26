@@ -1658,10 +1658,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cetusprotocol/aggregator-sdk@0.0.0-experimental-20240923104055":
-  version "0.0.0-experimental-20240923104055"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.0.0-experimental-20240923104055.tgz#74fc8fb58f1eccee11fad9735afcfa4380e91fe0"
-  integrity sha512-H8Jlr26zWZWlVVKRH0L6MFNmBaJ99rl5qizhsCOGYIA4mQdQoEMuSHENuqQ/G2Qg7RXfCG1ixKCRVrn+dvdGsw==
+"@cetusprotocol/aggregator-sdk@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.2.1.tgz#205f09ca5de5d972597ce5424eb6390274927568"
+  integrity sha512-fYHdzGiV/tz3ucpXNyLmQrroilqxnzJtFbmlGyn0IDXzMFDISTR/Bte+jV55/aWHtRJBuKPG2Gp9g+xLZwvcdA==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
@@ -1678,10 +1678,10 @@
     ts-jest "^29.1.3"
     typescript "^5.4.5"
 
-"@cetusprotocol/cetus-periphery-sdk@0.0.0-experimental-20240926104827":
-  version "0.0.0-experimental-20240926104827"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-periphery-sdk/-/cetus-periphery-sdk-0.0.0-experimental-20240926104827.tgz#fa834129c73fd06dd5ccad43367cdeecb8c61a38"
-  integrity sha512-/mw4iWRxR9i6XyLUMwk+R3ByJURNxmJ4332m1l3sXpp4jlaezY0PDiqhe/XduV4xYKlF5lYLXxhhwBUr0XLoaQ==
+"@cetusprotocol/cetus-periphery-sdk@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-periphery-sdk/-/cetus-periphery-sdk-3.3.1.tgz#a445f8bb2e0d4cf7dddc80df58893d77c20414d2"
+  integrity sha512-El7S9+FpCgxPynabT5pPoFGetHvR1hodYnuGkuT+45IMw1Lhyds83A7z8z9jyBI2G5DK1XeSKEwtaF5j1EFyFg==
   dependencies:
     "@cetusprotocol/cetus-sui-clmm-sdk" "0.0.0-experimental-20240926104310"
     "@mysten/bcs" "^0.11.1"
@@ -1702,6 +1702,26 @@
   version "0.0.0-experimental-20240926104310"
   resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-0.0.0-experimental-20240926104310.tgz#ebe78da2f14a7d45fa33861b188e223ef54c8d72"
   integrity sha512-QbA2QQOVt9cZbADEBnOkEKbg6MWpgfNhiCw8XYQSZ0svW++BlhOMLYQNk8W8sdGnfc5Zf8tYu8RTNbq3ozk0uA==
+  dependencies:
+    "@suchipi/femver" "^1.0.0"
+    "@syntsugar/cc-graph" "^0.1.1"
+    "@types/bn.js" "^5.1.1"
+    axios "^1.4.0"
+    bn.js "^5.2.1"
+    cors "^2.8.5"
+    decimal.js "^10.4.1"
+    isomorphic-fetch "^3.0.0"
+    js-base64 "^3.7.4"
+    js-sha3 "^0.8.0"
+    superstruct "^1.0.3"
+    tiny-invariant "^1.1.0"
+    tweetnacl "^1.0.3"
+    uuid "^9.0.0"
+
+"@cetusprotocol/cetus-sui-clmm-sdk@^5.1.5":
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.1.5.tgz#87dc13db56fb4c6866c89acce96488c84a81161a"
+  integrity sha512-t+l/6bgZ5+bg2GQ6X6NHGq7cMqJ0igARuGEorF+n5vegrSIKoWhu+6azp5kR0+fX4EfMmOU0AJAoB6OkWzulUw==
   dependencies:
     "@suchipi/femver" "^1.0.0"
     "@syntsugar/cc-graph" "^0.1.1"
