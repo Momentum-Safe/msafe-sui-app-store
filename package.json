@@ -50,6 +50,7 @@
     "@mysten/sui": "^1.8.0",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
+    "bucket-protocol-sdk": "^0.9.8",
     "buffer": "^6.0.3",
     "kriya-dex-sdk": "^1.1.69",
     "luxon": "^3.4.4",
