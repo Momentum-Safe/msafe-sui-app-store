@@ -1,5 +1,5 @@
 import { TransactionBlock } from '@mysten/sui.js/transactions';
-import type { TransactionArgument, TransactionResult } from '@mysten/sui.js/transactions';
+import type { TransactionResult } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 
 import { generateSCoinNormalMethod } from './sCoinBuilder';
@@ -74,9 +74,6 @@ const requireStakeAccountIds = async (
   }
   const sender = requireSender(txBlock);
   const stakeAccounts = await getStakeAccounts(builder.query, sender);
-  if (stakeAccounts[stakeMarketCoinName].length === 0) {
-    throw new Error(`No stake account id found for sender ${sender}`);
-  }
   return stakeAccounts[stakeMarketCoinName].map((account) => account.id);
 };
 
@@ -155,7 +152,7 @@ export const generateSpoolNormalMethod: GenerateSpoolNormalMethod = async ({ bui
         arguments: [
           txBlock.object(stakePoolId),
           txBlock.object(stakeAccount as string),
-          typeof coin === 'string' ? txBlock.pure(coin) : (coin as TransactionArgument),
+          typeof coin === 'string' ? txBlock.pure(coin) : (coin as any),
           txBlock.object(SUI_CLOCK_OBJECT_ID),
         ],
         typeArguments: [marketCoinType],
@@ -215,13 +212,18 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ build
     stakeQuick: async (amountOrMarketCoin, stakeMarketCoinName, stakeAccountId) => {
       const sender = requireSender(txBlock);
       const stakeAccountIds = await requireStakeAccountIds(builder, txBlock, stakeMarketCoinName, stakeAccountId);
+      const createdStakeAccount = [];
+      if (stakeAccountIds.length === 0) {
+        const stakeAccount = normalMethod.createStakeAccount(stakeMarketCoinName);
+        createdStakeAccount.push(stakeAccount);
+      }
 
       if (typeof amountOrMarketCoin === 'number') {
         // try stake market coin
         const stakedMarketCoinAmount = await stakeHelper(
           builder,
           txBlock,
-          stakeAccountIds[0],
+          stakeAccountIds.length > 0 ? stakeAccountIds[0] : createdStakeAccount[0],
           stakeMarketCoinName,
           amountOrMarketCoin,
           sender,
@@ -234,7 +236,7 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ build
           await stakeHelper(
             builder,
             txBlock,
-            stakeAccountIds[0],
+            stakeAccountIds.length > 0 ? stakeAccountIds[0] : createdStakeAccount[0],
             stakeMarketCoinName,
             amountOrMarketCoin,
             sender,
@@ -242,7 +244,14 @@ export const generateSpoolQuickMethod: GenerateSpoolQuickMethod = async ({ build
           );
         }
       } else {
-        normalMethod.stake(stakeAccountIds[0], amountOrMarketCoin, stakeMarketCoinName);
+        normalMethod.stake(
+          stakeAccountIds.length > 0 ? stakeAccountIds[0] : createdStakeAccount[0],
+          amountOrMarketCoin,
+          stakeMarketCoinName,
+        );
+      }
+      if (createdStakeAccount.length > 0) {
+        txBlock.transferObjects(createdStakeAccount, sender);
       }
     },
     unstakeQuick: async (amount, stakeMarketCoinName, stakeAccountId, returnSCoin) => {

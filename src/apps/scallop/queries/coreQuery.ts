@@ -280,7 +280,6 @@ export const getMarketCoinAmount = async (
 ) => {
   const owner = ownerAddress;
   const marketCoinType = query.utils.parseMarketCoinType(marketCoinName);
-  console.log(marketCoinType);
   const marketCoinObjectsResponse: SuiObjectResponse[] = [];
   let hasNextPage = false;
   let nextCursor: string | null = null;

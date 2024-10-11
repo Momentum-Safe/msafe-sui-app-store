@@ -40,7 +40,7 @@ export type AssetCoinIds = {
 type PickFromUnion<T, K extends string> = K extends T ? K : never;
 
 export type WormholeCoinIds = {
-  [key in PickFromUnion<SupportAssetCoins, 'eth' | 'btc' | 'usdc' | 'usdt' | 'apt' | 'sol'>]: string;
+  [key in PickFromUnion<SupportAssetCoins, 'weth' | 'wbtc' | 'wusdc' | 'wusdt' | 'wapt' | 'wsol'>]: string;
 };
 
 export type VoloCoinIds = {

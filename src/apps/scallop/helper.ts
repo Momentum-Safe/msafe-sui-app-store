@@ -19,6 +19,10 @@ import {
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/lending/deposit-collateral';
 import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/lending/migrate-and-claim';
 import { MigrateScoinIntention, MigrateScoinIntentionData } from './intentions/lending/migrate-scoin';
+import {
+  MigrateWusdcToUsdcIntention,
+  MigrateWusdcToUsdcIntentionData,
+} from './intentions/lending/migrate-wusd-to-usdc';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/lending/open-obligation';
 import { RepayIntention, RepayIntentionData } from './intentions/lending/repay';
 import { RepayWithBoostIntention, RepayWithBoostIntentionData } from './intentions/lending/repay-with-boost';
@@ -87,7 +91,8 @@ export type ScallopIntention =
   | ClaimRevenueReferralIntention
   | BindReferralIntention
   | MigrateScoinIntention
-  | RepayWithBoostIntention;
+  | RepayWithBoostIntention
+  | MigrateWusdcToUsdcIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -115,7 +120,8 @@ export type ScallopIntentionData =
   | ClaimRevenueReferralIntentionData
   | BindReferralIntentionData
   | MigrateScoinIntentionData
-  | RepayWithBoostIntentionData;
+  | RepayWithBoostIntentionData
+  | MigrateWusdcToUsdcIntentionData;
 
 export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
   application = 'scallop';
@@ -251,6 +257,9 @@ export class ScallopAppHelper implements MSafeAppHelper<ScallopIntentionData> {
         break;
       case TransactionSubType.RepayWithBoost:
         intention = RepayWithBoostIntention.fromData(intentionData as RepayWithBoostIntentionData);
+        break;
+      case TransactionSubType.MigrateWusdcToUsdc:
+        intention = MigrateWusdcToUsdcIntention.fromData(intentionData as MigrateWusdcToUsdcIntentionData);
         break;
       default:
         throw new Error('not implemented');
