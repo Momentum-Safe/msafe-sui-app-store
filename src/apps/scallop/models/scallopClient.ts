@@ -1206,6 +1206,7 @@ export class ScallopClient {
       const account = unstakeAccount[i];
       const [marketCoin] = await spoolQuickMethod.unstakeQuick(account.coin, stakeMarketCoinName, account.id);
       if (marketCoin) {
+        // If user has market coin object merge it
         if (coinIds.length > 0) {
           txBlock.mergeCoins(marketCoin, coinIds);
         }
@@ -1213,11 +1214,14 @@ export class ScallopClient {
         withdrawCoins.push(wdCoin);
       }
     }
+
+    // burn scoin then withdraw wusdc
     if (amount > 0) {
       const wdCoin = await quickMethod.withdrawQuick(amount, poolCoinName);
       withdrawCoins.push(wdCoin);
     }
 
+    // Merge withdraw coins to one object
     if (withdrawCoins.length > 1) {
       txBlock.mergeCoins(withdrawCoins[0], withdrawCoins.slice(1));
     }

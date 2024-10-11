@@ -528,7 +528,7 @@ export class DecoderLending extends Decoder {
       const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
       amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     }
-    if (this.helperStake.moveCall) {
+    if (this.helperStake.moveCall && amountFromSplitCoin === 0) {
       const amount = this.helperStake.getNestedInputParam<SplitCoinsTransaction>(2);
       amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
     }
