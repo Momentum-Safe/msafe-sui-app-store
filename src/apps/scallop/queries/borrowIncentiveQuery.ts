@@ -1,9 +1,10 @@
+import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { normalizeStructTag } from '@mysten/sui.js/utils';
 import BigNumber from 'bignumber.js';
 
 import { SUPPORT_BORROW_INCENTIVE_POOLS } from '../constants';
-import type { ScallopQuery } from '../models';
+import type { ScallopAddress, ScallopQuery } from '../models';
 import type {
   BorrowIncentiveAccountsQueryInterface,
   BorrowIncentiveAccounts,
@@ -131,4 +132,47 @@ export const queryBorrowIncentivePools = async (query: ScallopQuery, coinNames?:
   }
 
   return borrowIncentivePools;
+};
+
+export const getBindedVeScaKey = async (
+  {
+    address,
+    client,
+  }: {
+    address: ScallopAddress;
+    client: SuiClient;
+  },
+  obligationId: string,
+): Promise<string | null> => {
+  const borrowIncentiveObjectId = address.get('borrowIncentive.object');
+  const incentiveAccountsId = address.get('borrowIncentive.incentiveAccounts');
+  const corePkg = address.get('core.object');
+
+  // get IncentiveAccounts object
+  const incentiveAccountsObject = await client.getObject({
+    id: incentiveAccountsId,
+    options: {
+      showContent: true,
+    },
+  });
+  if (incentiveAccountsObject?.data?.content?.dataType !== 'moveObject') {
+    return null;
+  }
+  const incentiveAccountsTableId = (incentiveAccountsObject.data.content.fields as any).accounts.fields.id.id;
+
+  // Search in the table
+  const bindedIncentiveAcc = await client.getDynamicFieldObject({
+    parentId: incentiveAccountsTableId,
+    name: {
+      type: `${borrowIncentiveObjectId}::typed_id::TypedID<${corePkg}::obligation::Obligation>`,
+      value: obligationId,
+    },
+  });
+
+  if (bindedIncentiveAcc?.data?.content?.dataType !== 'moveObject') {
+    return null;
+  }
+  const bindedIncentiveAccFields = bindedIncentiveAcc.data.content.fields as any;
+
+  return bindedIncentiveAccFields.value.fields.binded_ve_sca_key?.fields.id ?? null;
 };
