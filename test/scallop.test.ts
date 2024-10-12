@@ -2,6 +2,7 @@ import { BorrowIntention } from '@/apps/scallop/intentions/lending/borrow';
 import { BorrowWithBoostIntention } from '@/apps/scallop/intentions/lending/borrow-with-boost';
 import { BorrowWithReferralIntention } from '@/apps/scallop/intentions/lending/borrow-with-referral';
 import { DepositCollateralIntention } from '@/apps/scallop/intentions/lending/deposit-collateral';
+import { MigrateWusdcToUsdcIntention } from '@/apps/scallop/intentions/lending/migrate-wusd-to-usdc';
 import { OpenObligationIntention } from '@/apps/scallop/intentions/lending/open-obligation';
 import { RepayIntention } from '@/apps/scallop/intentions/lending/repay';
 import { RepayWithBoostIntention } from '@/apps/scallop/intentions/lending/repay-with-boost';
@@ -230,5 +231,23 @@ describe('Scallop App', () => {
     const intention = CreateReferralLinkIntention.fromData({});
 
     expect(intention.serialize()).toBe(`{}`);
+  });
+
+  it('Test migrate position wUSDC to USDC on lending pool', () => {
+    const intention = MigrateWusdcToUsdcIntention.fromData({
+      amount: 10000000,
+      coinName: 'wusdc',
+      slippage: 500000,
+      validSwapAmount: '10000000',
+      stakeAccountId: [
+        {
+          id: '0x56574789e0e6bb0837ba090e85757e046390cab25cace7f09838314207a2ce74',
+          coin: 5000000,
+        },
+      ],
+    });
+    expect(intention.serialize()).toBe(
+      '{"amount":10000000,"coinName":"wusdc","slippage":500000,"stakeAccountId":[{"id":"0x56574789e0e6bb0837ba090e85757e046390cab25cace7f09838314207a2ce74","coin":5000000}],"validSwapAmount":"10000000"}',
+    );
   });
 });
