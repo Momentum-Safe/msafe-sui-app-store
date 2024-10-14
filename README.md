@@ -196,6 +196,58 @@ describe('MSafe Core Wallet', () => {
 });
 ```
 
+### App custom parameters
+
+- You can pass custom parameters into the `appContext` parameter of the Helper.deserialize method. 
+
+```typescript
+deserialize(input: {
+    transaction: Transaction;
+    chain: IdentifierString;
+    network: SuiNetworks;
+    suiClient: SuiClient;
+    account: WalletAccount;
+    **appContext?: any;**
+  }): Promise<{
+    txType: TransactionType;
+    txSubType: string;
+    intentionData: T;
+  }>;
+```
+
+- When implementing your app's `Helper.deserialize`, you can write your business logic based on the custom parameters you've passed in.
+
+- For reference, you can review the implementation logic demo code below.
+
+```typescript
+export class DemoHelper implements IAppHelperInternal<DemoIntentionData> {
+
+...
+
+async deserialize(input: {
+    transaction: Transaction;
+    chain: IdentifierString;
+    network: SuiNetworks;
+    suiClient: SuiClient;
+    account: WalletAccount;
+    appContext?: any;
+  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
+    const { txbParams, action } = input.appContext;
+
+    return {
+      txType: TransactionType.Other,
+      txSubType: action,
+      intentionData: {
+        txbParams: { ...txbParams },
+        action,
+      },
+    };
+  }
+
+... 
+
+```
+
 ### Register your app helper
 
 - Add your app helper to file `src/index.ts`
