@@ -10,6 +10,9 @@ import { SplitCoinHelper } from '../utils/splitCoinHelper';
 
 export class DecoderLending extends Decoder {
   decode() {
+    if (this.isMoveAsset()) {
+      return this.decodeMoveAsset();
+    }
     if (this.isSupplyWithStakeSpoolTransaction()) {
       return this.decodeSupplyWithStakeSpool();
     }
@@ -65,6 +68,12 @@ export class DecoderLending extends Decoder {
       return this.decodeMigrateScoin();
     }
     return undefined;
+  }
+
+  private isMoveAsset() {
+    return !!this.getMoveCallTransaction(
+      '0x5857d185897aaff40ae37b2eecc895efc1a9dff1b210c4fb894eabbce4ac2603::slippage_check::check_slippage',
+    );
   }
 
   private isMigrateScoinTransaction() {
@@ -234,6 +243,17 @@ export class DecoderLending extends Decoder {
     const moveCall = this.transactions.find(
       (trans) =>
         trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.scoin}::s_coin_converter::burn_s_coin`),
+    ) as MoveCallTransaction;
+    return new MoveCallHelper(moveCall, this.txb);
+  }
+
+  private get helperSlippage() {
+    const moveCall = this.transactions.find(
+      (trans) =>
+        trans.kind === 'MoveCall' &&
+        trans.target.startsWith(
+          `0x5857d185897aaff40ae37b2eecc895efc1a9dff1b210c4fb894eabbce4ac2603::slippage_check::check_slippage`,
+        ),
     ) as MoveCallTransaction;
     return new MoveCallHelper(moveCall, this.txb);
   }
@@ -503,8 +523,15 @@ export class DecoderLending extends Decoder {
     if (!this.isCreateStakeAccountTransaction()) {
       stakeSpoolAccount = this.helperStake.decodeOwnedObjectId(1);
     }
-    const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    let amountFromSplitCoin = 0;
+    if (this.helperBurnScoin.moveCall) {
+      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    }
+    if (this.helperStake.moveCall && amountFromSplitCoin === 0) {
+      const amount = this.helperStake.getNestedInputParam<SplitCoinsTransaction>(2);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    }
     const coinType = this.helperStake.typeArg(0);
     const coinName = this.scallop.utils.parseCoinNameFromType(coinType);
     return {
@@ -572,6 +599,35 @@ export class DecoderLending extends Decoder {
       intentionData: {
         amount: amountFromSplitCoin,
         coinName,
+        stakeAccountId: stakeAccountWithAmount,
+      },
+    };
+  }
+
+  private decodeMoveAsset(): DecodeResult {
+    const stakeAccountWithAmount: { id: string; coin: number }[] = [];
+    this.helperUnstakes.forEach((tx) => {
+      const stakeAccountId = tx.decodeOwnedObjectId(1);
+      const amount = tx.decodeInputU64(2);
+      stakeAccountWithAmount.push({ id: stakeAccountId, coin: amount });
+    });
+    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
+    let amountFromSplitCoin = 0;
+    if (this.helperBurnScoin.moveCall) {
+      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    }
+    const slippage = this.helperSlippage.decodePureArg(1, 'u64');
+    const validSwapAmount = this.helperSlippage.decodePureArg(2, 'string');
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.MigrateWusdcToUsdc,
+      intentionData: {
+        amount: amountFromSplitCoin,
+        coinName,
+        slippage,
+        validSwapAmount,
         stakeAccountId: stakeAccountWithAmount,
       },
     };

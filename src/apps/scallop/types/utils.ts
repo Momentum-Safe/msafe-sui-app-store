@@ -61,6 +61,7 @@ export enum TransactionSubType {
   BindReferral = 'BindReferral',
   MigrateScoin = 'MigrateScoin',
   RepayWithBoost = 'RepayWithBoost',
+  MigrateWusdcToUsdc = 'MigrateWusdcToUsdc',
 }
 
 export type DecodeResult = {

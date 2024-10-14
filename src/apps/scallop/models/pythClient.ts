@@ -64,7 +64,6 @@ export class PythClient {
         if (result.data?.content?.dataType === 'moveObject') {
           return result.data.content.fields;
         }
-        console.log(result.data?.content);
         throw new Error(`Cannot fetch package id for object ${objectId}`);
       });
     if ('upgrade_cap' in state) {

@@ -87,12 +87,12 @@ export class ScallopUtils {
     const validCoinName = isMarketCoin(coinName) ? this.parseCoinName(coinName) : coinName;
     const coinPackageId = coinIds[validCoinName as SupportPoolCoins];
     const wormHolePackageIds = [
-      wormholeCoinIds.usdc,
-      wormholeCoinIds.usdt,
-      wormholeCoinIds.eth,
-      wormholeCoinIds.btc,
-      wormholeCoinIds.sol,
-      wormholeCoinIds.apt,
+      wormholeCoinIds.wusdc,
+      wormholeCoinIds.wusdt,
+      wormholeCoinIds.weth,
+      wormholeCoinIds.wbtc,
+      wormholeCoinIds.wsol,
+      wormholeCoinIds.wapt,
     ];
     if (wormHolePackageIds.includes(coinPackageId)) {
       return `${coinPackageId}::coin::COIN`;
@@ -141,12 +141,12 @@ export class ScallopUtils {
     type = coinTypeMatch?.[1] || coinType;
 
     const wormHoleCoinTypeMap: Record<string, SupportAssetCoins> = {
-      [`${wormholeCoinIds.usdc}::coin::COIN`]: 'usdc',
-      [`${wormholeCoinIds.usdt}::coin::COIN`]: 'usdt',
-      [`${wormholeCoinIds.eth}::coin::COIN`]: 'eth',
-      [`${wormholeCoinIds.btc}::coin::COIN`]: 'btc',
-      [`${wormholeCoinIds.sol}::coin::COIN`]: 'sol',
-      [`${wormholeCoinIds.apt}::coin::COIN`]: 'apt',
+      [`${wormholeCoinIds.wusdc}::coin::COIN`]: 'wusdc',
+      [`${wormholeCoinIds.wusdt}::coin::COIN`]: 'wusdt',
+      [`${wormholeCoinIds.weth}::coin::COIN`]: 'weth',
+      [`${wormholeCoinIds.wbtc}::coin::COIN`]: 'wbtc',
+      [`${wormholeCoinIds.wsol}::coin::COIN`]: 'wsol',
+      [`${wormholeCoinIds.wapt}::coin::COIN`]: 'wapt',
     };
     const voloCoinTypeMap: Record<string, SupportAssetCoins> = {
       [`${voloCoinIds.vsui}::cert::CERT`]: 'vsui',
@@ -211,12 +211,12 @@ export class ScallopUtils {
    * return Coin wrapped type.
    */
   public getCoinWrappedType(assetCoinName: SupportAssetCoins): CoinWrappedType {
-    return assetCoinName === 'usdc' ||
-      assetCoinName === 'usdt' ||
-      assetCoinName === 'eth' ||
-      assetCoinName === 'btc' ||
-      assetCoinName === 'apt' ||
-      assetCoinName === 'sol'
+    return assetCoinName === 'wusdc' ||
+      assetCoinName === 'wusdt' ||
+      assetCoinName === 'weth' ||
+      assetCoinName === 'wbtc' ||
+      assetCoinName === 'wapt' ||
+      assetCoinName === 'wsol'
       ? {
           from: 'Wormhole',
           type: 'Portal from Ethereum',
@@ -299,6 +299,51 @@ export class ScallopUtils {
     if (!selectedCoins.length) {
       throw new Error('No valid coins found for the transaction.');
     }
+    return selectedCoins;
+  }
+
+  /**
+   * Select coin id  that add up to the given amount as transaction arguments.
+   *
+   * @param ownerAddress - The address of the owner.
+   * @param amount - The amount that including coin decimals.
+   * @param coinType - The coin type, default is 0x2::SUI::SUI.
+   * @return The selected transaction coin arguments.
+   */
+  public async selectCoinsMarketCoin(coinType: string = SUI_TYPE_ARG, ownerAddress?: string) {
+    const address = ownerAddress;
+
+    const selectedCoins: {
+      objectId: string;
+      digest: string;
+      version: string;
+      balance: string;
+    }[] = [];
+    let hasNext = true;
+    let nextCursor: string | null | undefined = null;
+    while (hasNext) {
+      const coins = await this.client.getCoins({
+        owner: address,
+        coinType,
+        cursor: nextCursor,
+      });
+      // Sort the coins by balance in descending order
+      coins.data.sort((a, b) => parseInt(b.balance, 10) - parseInt(a.balance, 10));
+      for (let i = 0; i < coins.data.length; i++) {
+        selectedCoins.push({
+          objectId: coins.data[i].coinObjectId,
+          digest: coins.data[i].digest,
+          version: coins.data[i].version,
+          balance: coins.data[i].balance,
+        });
+        if (selectedCoins.length > 50) {
+          break;
+        }
+      }
+      nextCursor = coins.nextCursor;
+      hasNext = coins.hasNextPage;
+    }
+
     return selectedCoins;
   }
 

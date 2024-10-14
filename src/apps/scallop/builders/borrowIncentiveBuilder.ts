@@ -3,7 +3,7 @@ import { SUI_CLOCK_OBJECT_ID, SUI_TYPE_ARG } from '@mysten/sui.js/utils';
 
 import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '../constants';
 import type { ScallopBuilder } from '../models';
-import { getObligations, getObligationLocked, getVeSca, getVeScas } from '../queries';
+import { getObligations, getObligationLocked, getVeSca, getVeScas, getBindedVeScaKey } from '../queries';
 import type {
   BorrowIncentiveIds,
   GenerateBorrowIncentiveNormalMethod,
@@ -315,15 +315,15 @@ export const generateBorrowIncentiveQuickMethod: GenerateBorrowIncentiveQuickMet
       );
 
       if (!obligationLocked || unstakeObligationBeforeStake) {
-        const veSca = await requireVeSca(builder, txBlock, veScaKey);
-        if (veSca) {
-          const bindedObligationId = await getBindedObligationId(builder, veSca.keyId);
-          // if bindedObligationId is equal to obligationId, then use it again
-          if (!bindedObligationId || bindedObligationId === obligationArg) {
-            normalMethod.stakeObligationWithVesca(obligationArg, obligationtKeyArg, veSca.keyId);
-          } else {
-            normalMethod.stakeObligation(obligationArg, obligationtKeyArg);
-          }
+        const bindedVeScaKey = await getBindedVeScaKey(
+          { address: builder.address, client: builder.client },
+          obligationArg,
+        );
+        if (veScaKey && veScaKey !== bindedVeScaKey) {
+          throw new Error('Binded veScaKey is not equal to the provided veScaKey');
+        }
+        if (bindedVeScaKey) {
+          normalMethod.stakeObligationWithVesca(obligationArg, obligationtKeyArg, bindedVeScaKey);
         } else {
           normalMethod.stakeObligation(obligationArg, obligationtKeyArg);
         }

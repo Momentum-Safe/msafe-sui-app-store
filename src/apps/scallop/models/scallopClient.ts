@@ -10,9 +10,12 @@ import { generateBorrowIncentiveQuickMethod } from '../builders/borrowIncentiveB
 import { generateCoreQuickMethod } from '../builders/coreBuilder';
 import { generateReferralNormalMethod, generateReferralQuickMethod } from '../builders/referralBuilder';
 import { generateSCoinNormalMethod } from '../builders/sCoinBuilder';
+import { SlippageTxBuilder } from '../builders/slipPageBuilder';
 import { generateSpoolQuickMethod } from '../builders/spoolBuilder';
 import { generateQuickVeScaMethod } from '../builders/vescaBuilder';
 import { SCA_COIN_TYPE, SUPPORT_BORROW_INCENTIVE_POOLS, SUPPORT_SCOIN, SUPPORT_SPOOLS } from '../constants';
+// eslint-disable-next-line import/no-cycle
+import { DeepBookSwap } from '../swap/deepbook/swap';
 import type {
   ScallopClientParams,
   SupportPoolCoins,
@@ -52,6 +55,8 @@ export class ScallopClient {
 
   public walletAddress: string;
 
+  public deepbookSwap: DeepBookSwap;
+
   public constructor(params: ScallopClientParams, address: ScallopAddress) {
     this.params = params;
     this.client = params.client;
@@ -67,6 +72,12 @@ export class ScallopClient {
       address: this.address,
       query: this.query,
       utils: this.utils,
+    });
+
+    this.deepbookSwap = new DeepBookSwap({
+      client: this.client,
+      currentAddress: this.params.walletAddress,
+      scallopUtils: this.utils,
     });
   }
 
@@ -577,6 +588,9 @@ export class ScallopClient {
     if (amount > 0) {
       const wdCoin = await quickMethod.withdrawQuick(amount, poolCoinName);
       withdrawCoins.push(wdCoin);
+    }
+    if (withdrawCoins.length > 1) {
+      txBlock.mergeCoins(withdrawCoins[0], withdrawCoins.slice(1));
     }
     txBlock.transferObjects(withdrawCoins, sender);
     return txBlock;
@@ -1163,6 +1177,71 @@ export class ScallopClient {
       txBlock.transferObjects(toTransfer as TransactionObjectArgument[], this.params.walletAddress);
     }
 
+    return txBlock;
+  }
+
+  public async migrateLendingWusdcToUsdcNative(
+    poolCoinName: SupportPoolCoins,
+    amount: number,
+    slippage: number,
+    validSwapAmount: string,
+    unstakeAccount: { id: string; coin: number }[],
+  ): Promise<TransactionBlock> {
+    const txBlock = new TransactionBlock();
+    const quickMethod = await generateCoreQuickMethod({
+      builder: this.builder,
+      txBlock,
+    });
+    const spoolQuickMethod = await generateSpoolQuickMethod({ builder: this.builder, txBlock });
+    const sender = this.params.walletAddress;
+    const withdrawCoins = [];
+
+    const stakeMarketCoinName = this.utils.parseMarketCoinName(poolCoinName) as SupportStakeMarketCoins;
+    const marketCoinType = this.utils.parseMarketCoinType(stakeMarketCoinName);
+    const coins = await this.utils.selectCoinsMarketCoin(marketCoinType, sender);
+    const coinIds = coins.map((value) => value.objectId);
+
+    txBlock.setSender(sender);
+    for (let i = 0; i < unstakeAccount.length; i++) {
+      const account = unstakeAccount[i];
+      const [marketCoin] = await spoolQuickMethod.unstakeQuick(account.coin, stakeMarketCoinName, account.id);
+      if (marketCoin) {
+        // If user has market coin object merge it
+        if (coinIds.length > 0) {
+          txBlock.mergeCoins(marketCoin, coinIds);
+        }
+        const wdCoin = quickMethod.normalMethod.withdraw(marketCoin, poolCoinName);
+        withdrawCoins.push(wdCoin);
+      }
+    }
+
+    // burn scoin then withdraw wusdc
+    if (amount > 0) {
+      const wdCoin = await quickMethod.withdrawQuick(amount, poolCoinName);
+      withdrawCoins.push(wdCoin);
+    }
+
+    // Merge withdraw coins to one object
+    if (withdrawCoins.length > 1) {
+      txBlock.mergeCoins(withdrawCoins[0], withdrawCoins.slice(1));
+    }
+    const [coinSwap] = txBlock.splitCoins(withdrawCoins[0], [txBlock.pure(validSwapAmount)]);
+    txBlock.transferObjects([withdrawCoins[0]], sender);
+
+    const { swapResult: coinB, accountCap } = await this.deepbookSwap.swapToken({
+      baseCoinName: 'wusdc',
+      quoteCoinName: 'usdc',
+      tokenObjectIn: coinSwap,
+      tx: txBlock,
+    });
+    if (typeof accountCap === 'string') {
+      txBlock.transferObjects([accountCap], sender);
+    }
+
+    SlippageTxBuilder.check_slippage(txBlock, coinB, slippage, validSwapAmount, this.query.utils.parseCoinType('usdc'));
+
+    const mintedMarketCoin = quickMethod.normalMethod.deposit(coinB, 'usdc');
+    await spoolQuickMethod.stakeQuick(mintedMarketCoin, 'susdc');
     return txBlock;
   }
 }
