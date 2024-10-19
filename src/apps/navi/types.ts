@@ -1,6 +1,7 @@
 export enum CoinType {
   sui = 'sui',
-  usdc = 'usdc',
+  wusdc = 'wusdc',
+  nusdc = 'nusdc',
   usdt = 'usdt',
   weth = 'weth',
   cetus = 'cetus',
@@ -9,6 +10,8 @@ export enum CoinType {
   navx = 'navx',
   ausd = 'ausd',
   wbtc = 'wbtc',
+  eth = 'eth',
+  usdy = 'usdy',
 }
 
 export type Pool = { [key in CoinType]: PoolConfig };
