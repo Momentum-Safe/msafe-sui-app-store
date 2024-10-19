@@ -13,6 +13,7 @@ export interface IAppHelper<T> {
       network: SuiNetworks;
       clientUrl: string;
       account: WalletAccount;
+      appContext?: any;
     },
   ): Promise<{
     txType: TransactionType;

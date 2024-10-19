@@ -56,6 +56,7 @@ export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
 
   supportSDK = '@mysten/sui' as const;
 
+  // TODO: Please refer to the documentation and move the `action` and `txbParams` params into the `appContext` structure.
   async deserialize(input: {
     transaction: Transaction;
     chain: IdentifierString;
