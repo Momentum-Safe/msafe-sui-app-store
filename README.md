@@ -207,7 +207,7 @@ deserialize(input: {
     network: SuiNetworks;
     suiClient: SuiClient;
     account: WalletAccount;
-    **appContext?: any;**
+    appContext?: any;
   }): Promise<{
     txType: TransactionType;
     txSubType: string;
