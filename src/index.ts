@@ -1,3 +1,4 @@
+import { BucketHelper } from '@/apps/bucket/helper';
 import { CetusHelper } from '@/apps/cetus/helper';
 import { MPayAppHelper } from '@/apps/mpay/helper';
 import { CoreHelper } from '@/apps/msafe-core/helper';
@@ -18,4 +19,5 @@ export const appHelpers = MSafeApps.fromHelpers([
   // new KRIYAAppHelper(),
   new ScallopAppHelper(),
   new VoloAppHelper(),
+  new BucketHelper(),
 ]);
