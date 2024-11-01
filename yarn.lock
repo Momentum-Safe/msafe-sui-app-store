@@ -1439,10 +1439,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cetusprotocol/aggregator-sdk@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.2.1.tgz#205f09ca5de5d972597ce5424eb6390274927568"
-  integrity sha512-fYHdzGiV/tz3ucpXNyLmQrroilqxnzJtFbmlGyn0IDXzMFDISTR/Bte+jV55/aWHtRJBuKPG2Gp9g+xLZwvcdA==
+"@cetusprotocol/aggregator-sdk@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.3.tgz#271227d2fe77849e65b082b08fe1774af84e1452"
+  integrity sha512-zyncWARazkfD2OfofLDnpweBuaEpMvYn8rcX6FRJIajSM6nHYkD/hylKUpf9buidLiTL0LJuE8qftXhmHJXAsA==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
@@ -1459,12 +1459,12 @@
     ts-jest "^29.1.3"
     typescript "^5.4.5"
 
-"@cetusprotocol/cetus-periphery-sdk@^3.3.2":
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-periphery-sdk/-/cetus-periphery-sdk-3.3.2.tgz#faa612a431d442b22ce2c2ff692fe465cb050e87"
-  integrity sha512-4Y+XRvlP6ZRGtw8FM1RweD5o4TGuKexfHPTVDyTQ4fHuB6wedG2mSUr0PyvM24Rkv9K/mfk0FvU3Y7M5to7ZbA==
+"@cetusprotocol/cetus-periphery-sdk@^3.3.5":
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-periphery-sdk/-/cetus-periphery-sdk-3.3.5.tgz#67d9b70c896e73a0b9ffa0c1f4ad938ef4eff662"
+  integrity sha512-k7Jc2/0CuEFSGa938bKatxGZR6pj3Q0UCbTz0GooCAEPn6hgBiBPFS9j4DR28Fewtssp1K0wCe0cS9cp5gc38g==
   dependencies:
-    "@cetusprotocol/cetus-sui-clmm-sdk" "^5.1.5"
+    "@cetusprotocol/cetus-sui-clmm-sdk" "^5.1.7"
     "@mysten/bcs" "^0.11.1"
     "@mysten/sui" "^1.8.0"
     "@suchipi/femver" "^1.0.0"
@@ -1479,10 +1479,10 @@
     tiny-invariant "^1.1.0"
     tweetnacl "^1.0.3"
 
-"@cetusprotocol/cetus-sui-clmm-sdk@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.1.5.tgz#87dc13db56fb4c6866c89acce96488c84a81161a"
-  integrity sha512-t+l/6bgZ5+bg2GQ6X6NHGq7cMqJ0igARuGEorF+n5vegrSIKoWhu+6azp5kR0+fX4EfMmOU0AJAoB6OkWzulUw==
+"@cetusprotocol/cetus-sui-clmm-sdk@^5.1.7":
+  version "5.1.7"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.1.7.tgz#de3402d4ace1aa5806032894c7effb2b38bb3bed"
+  integrity sha512-zkxCL+aZFxgzdW0QFeMECmB7l4QCGvLGxaAzJS8EV4fEcj7YkPO4S49o6Jv04vjfGJO5XM1MVNScYe1XhtDKdg==
   dependencies:
     "@suchipi/femver" "^1.0.0"
     "@syntsugar/cc-graph" "^0.1.1"
@@ -6171,16 +6171,7 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0":
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
-string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -6226,14 +6217,7 @@ string.prototype.trimstart@^1.0.8:
     define-properties "^1.2.1"
     es-object-atoms "^1.0.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
-  dependencies:
-    ansi-regex "^5.0.1"
-
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -6745,16 +6729,7 @@ word-wrap@^1.2.5:
   resolved "https://registry.yarnpkg.com/word-wrap/-/word-wrap-1.2.5.tgz#d2c45c6dd4fbce621a66f136cbe328afd0410b34"
   integrity sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
