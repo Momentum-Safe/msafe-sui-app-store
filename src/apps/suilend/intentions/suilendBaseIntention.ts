@@ -4,7 +4,7 @@ import sortKeys from 'sort-keys-recursive';
 
 import { BaseIntention } from '@/apps/interface/sui';
 
-import { IntentionInput } from '../types';
+import { IntentionInput } from '../helper';
 
 export abstract class SuilendBaseIntention<D> implements BaseIntention<D> {
   abstract txType: TransactionType;

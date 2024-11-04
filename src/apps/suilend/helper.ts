@@ -11,19 +11,31 @@ import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';
 import { DepositIntention, DepositIntentionData } from './intentions/deposit';
-import { IntentionInput, SuilendIntention, SuilendIntentionData, TransactionSubType } from './types';
+import { TransactionSubType } from './types';
 
 const getSuilendClient = async (suiClient: SuiClient) =>
   SuilendClient.initializeWithLendingMarket(
-    await LendingMarket.fetch(suiClient, phantom(LENDING_MARKET_TYPE), LENDING_MARKET_ID),
-    suiClient,
+    await LendingMarket.fetch(suiClient as any, phantom(LENDING_MARKET_TYPE), LENDING_MARKET_ID),
+    suiClient as any,
   );
 
 const getObligationOwnerCaps = async (account: WalletAccount, suilendClient: SuilendClient, suiClient: SuiClient) =>
-  SuilendClient.getObligationOwnerCaps(account.address, suilendClient.lendingMarket.$typeArgs, suiClient);
+  SuilendClient.getObligationOwnerCaps(account.address, suilendClient.lendingMarket.$typeArgs, suiClient as any);
+
+export type SuilendIntention = DepositIntention;
+
+export type SuilendIntentionData = DepositIntentionData;
+
+export type IntentionInput = {
+  network: SuiNetworks;
+  suiClient: SuiClient;
+  account: WalletAccount;
+  suilendClient: SuilendClient;
+  obligationOwnerCaps: ObligationOwnerCap<string>[];
+};
 
 export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData> {
-  application = 'suilend';
+  application = 'Suilend';
 
   supportSDK = '@mysten/sui' as const;
 

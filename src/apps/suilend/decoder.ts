@@ -1,8 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 
+import { SuilendIntentionData } from './helper';
 import { DepositIntentionData } from './intentions/deposit';
-import { SuilendIntentionData, TransactionSubType } from './types';
+import { TransactionSubType } from './types';
 
 const PACKAGE_ID = '0x93b70b8e21d77f695507558839715d900d05e0ee54acf25d176a179112001d7a';
 const MODULE = 'lending_market';
