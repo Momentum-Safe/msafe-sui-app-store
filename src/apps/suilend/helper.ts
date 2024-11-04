@@ -5,12 +5,16 @@ import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { LENDING_MARKET_ID, LENDING_MARKET_TYPE, SuilendClient } from '@suilend/sdk';
 import { phantom } from '@suilend/sdk/_generated/_framework/reified';
 import { LendingMarket, ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-market/structs';
+import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';
+import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
 import { DepositIntention, DepositIntentionData } from './intentions/deposit';
+import { RepayIntention, RepayIntentionData } from './intentions/repay';
+import { WithdrawIntention, WithdrawIntentionData } from './intentions/withdraw';
 import { TransactionSubType } from './types';
 
 const getSuilendClient = async (suiClient: SuiClient) =>
@@ -19,12 +23,27 @@ const getSuilendClient = async (suiClient: SuiClient) =>
     suiClient as any,
   );
 
-const getObligationOwnerCaps = async (account: WalletAccount, suilendClient: SuilendClient, suiClient: SuiClient) =>
+const getObligationOwnerCaps = async (suiClient: SuiClient, account: WalletAccount, suilendClient: SuilendClient) =>
   SuilendClient.getObligationOwnerCaps(account.address, suilendClient.lendingMarket.$typeArgs, suiClient as any);
 
-export type SuilendIntention = DepositIntention;
+const getObligations = async (
+  suiClient: SuiClient,
+  suilendClient: SuilendClient,
+  obligationOwnerCaps: ObligationOwnerCap<string>[],
+) =>
+  Promise.all(
+    obligationOwnerCaps.map((ownerCap) =>
+      SuilendClient.getObligation(ownerCap.obligationId, suilendClient.lendingMarket.$typeArgs, suiClient as any),
+    ),
+  );
 
-export type SuilendIntentionData = DepositIntentionData;
+export type SuilendIntention = DepositIntention | WithdrawIntention | BorrowIntention | RepayIntention;
+
+export type SuilendIntentionData =
+  | DepositIntentionData
+  | WithdrawIntentionData
+  | BorrowIntentionData
+  | RepayIntentionData;
 
 export type IntentionInput = {
   network: SuiNetworks;
@@ -32,6 +51,7 @@ export type IntentionInput = {
   account: WalletAccount;
   suilendClient: SuilendClient;
   obligationOwnerCaps: ObligationOwnerCap<string>[];
+  obligations: Obligation<string>[];
 };
 
 export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData> {
@@ -42,6 +62,8 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
   private suilendClient: SuilendClient | undefined;
 
   private obligationOwnerCaps: ObligationOwnerCap<string>[] | undefined;
+
+  private obligations: Obligation<string>[] | undefined;
 
   async deserialize(input: {
     transaction: Transaction;
@@ -57,7 +79,10 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       this.suilendClient = await getSuilendClient(suiClient);
     }
     if (!this.obligationOwnerCaps) {
-      this.obligationOwnerCaps = await getObligationOwnerCaps(account, this.suilendClient, suiClient);
+      this.obligationOwnerCaps = await getObligationOwnerCaps(suiClient, account, this.suilendClient);
+    }
+    if (!this.obligations) {
+      this.obligations = await getObligations(suiClient, this.suilendClient, this.obligationOwnerCaps);
     }
 
     const decoder = new Decoder(transaction);
@@ -84,7 +109,10 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       this.suilendClient = await getSuilendClient(suiClient);
     }
     if (!this.obligationOwnerCaps) {
-      this.obligationOwnerCaps = await getObligationOwnerCaps(account, this.suilendClient, suiClient);
+      this.obligationOwnerCaps = await getObligationOwnerCaps(suiClient, account, this.suilendClient);
+    }
+    if (!this.obligations) {
+      this.obligations = await getObligations(suiClient, this.suilendClient, this.obligationOwnerCaps);
     }
 
     let intention: SuilendIntention;
@@ -92,15 +120,15 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       case TransactionSubType.DEPOSIT:
         intention = DepositIntention.fromData(intentionData as DepositIntentionData);
         break;
-      // case TransactionSubType.WITHDRAW:
-      //   intention = WithdrawIntention.fromData(intentionData as WithdrawIntentionData);
-      //   break;
-      // case TransactionSubType.BORROW:
-      //   intention = BorrowIntention.fromData(intentionData as BorrowIntentionData);
-      //   break;
-      // case TransactionSubType.REPAY:
-      //   intention = RepayIntention.fromData(intentionData as RepayIntentionData);
-      //   break;
+      case TransactionSubType.WITHDRAW:
+        intention = WithdrawIntention.fromData(intentionData as WithdrawIntentionData);
+        break;
+      case TransactionSubType.BORROW:
+        intention = BorrowIntention.fromData(intentionData as BorrowIntentionData);
+        break;
+      case TransactionSubType.REPAY:
+        intention = RepayIntention.fromData(intentionData as RepayIntentionData);
+        break;
       // case TransactionSubType.CLAIM:
       //   intention = ClaimIntention.fromData(intentionData as ClaimIntentionData);
       //   break;
@@ -113,6 +141,7 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       account,
       suilendClient: this.suilendClient,
       obligationOwnerCaps: this.obligationOwnerCaps,
+      obligations: this.obligations,
     } as IntentionInput);
   }
 }
