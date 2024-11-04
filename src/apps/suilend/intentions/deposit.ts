@@ -1,8 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { IntentionInput, TransactionSubType } from '../types';
+import { TransactionSubType } from '../types';
 import { SuilendBaseIntention } from './suilendBaseIntention';
+import { IntentionInput } from '../helper';
 
 export interface DepositIntentionData {
   coinType: string;
@@ -27,7 +28,7 @@ export class DepositIntention extends SuilendBaseIntention<DepositIntentionData>
       account.address,
       this.data.coinType,
       this.data.value,
-      transaction,
+      transaction as any,
       obligationOwnerCaps[0]?.id,
     );
 
