@@ -15,12 +15,20 @@ import { IntentionInput, SuilendIntention, SuilendIntentionData, TransactionSubT
 
 const getSuilendClient = async (suiClient: SuiClient) =>
   SuilendClient.initializeWithLendingMarket(
-    await LendingMarket.fetch(suiClient, phantom(LENDING_MARKET_TYPE), LENDING_MARKET_ID),
-    suiClient,
+    await LendingMarket.fetch(
+      suiClient as unknown as SuilendClient['client'],
+      phantom(LENDING_MARKET_TYPE),
+      LENDING_MARKET_ID,
+    ),
+    suiClient as unknown as SuilendClient['client'],
   );
 
 const getObligationOwnerCaps = async (account: WalletAccount, suilendClient: SuilendClient, suiClient: SuiClient) =>
-  SuilendClient.getObligationOwnerCaps(account.address, suilendClient.lendingMarket.$typeArgs, suiClient);
+  SuilendClient.getObligationOwnerCaps(
+    account.address,
+    suilendClient.lendingMarket.$typeArgs,
+    suiClient as unknown as SuilendClient['client'],
+  );
 
 export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData> {
   application = 'suilend';
