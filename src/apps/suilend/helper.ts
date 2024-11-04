@@ -31,7 +31,7 @@ const getObligationOwnerCaps = async (account: WalletAccount, suilendClient: Sui
   );
 
 export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData> {
-  application = 'suilend';
+  application = 'Suilend';
 
   supportSDK = '@mysten/sui' as const;
 
