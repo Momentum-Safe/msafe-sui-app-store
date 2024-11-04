@@ -5,6 +5,7 @@ import { NAVIAppHelper } from '@/apps/navi/helper';
 import { PlainTransactionHelper } from '@/apps/plain-transaction/helper';
 import { MSafeApps } from '@/apps/registry';
 import { ScallopAppHelper } from '@/apps/scallop/helper';
+import { SuilendAppHelper } from '@/apps/suilend/helper';
 import { TURBOSAppHelper } from '@/apps/turbos/helper';
 import { VoloAppHelper } from '@/apps/volo/helper';
 
@@ -18,4 +19,5 @@ export const appHelpers = MSafeApps.fromHelpers([
   // new KRIYAAppHelper(),
   new ScallopAppHelper(),
   new VoloAppHelper(),
+  new SuilendAppHelper(),
 ]);
