@@ -1446,10 +1446,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cetusprotocol/aggregator-sdk@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.2.1.tgz#205f09ca5de5d972597ce5424eb6390274927568"
-  integrity sha512-fYHdzGiV/tz3ucpXNyLmQrroilqxnzJtFbmlGyn0IDXzMFDISTR/Bte+jV55/aWHtRJBuKPG2Gp9g+xLZwvcdA==
+"@cetusprotocol/aggregator-sdk@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.3.tgz#271227d2fe77849e65b082b08fe1774af84e1452"
+  integrity sha512-zyncWARazkfD2OfofLDnpweBuaEpMvYn8rcX6FRJIajSM6nHYkD/hylKUpf9buidLiTL0LJuE8qftXhmHJXAsA==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
@@ -1466,12 +1466,12 @@
     ts-jest "^29.1.3"
     typescript "^5.4.5"
 
-"@cetusprotocol/cetus-periphery-sdk@^3.3.2":
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-periphery-sdk/-/cetus-periphery-sdk-3.3.2.tgz#faa612a431d442b22ce2c2ff692fe465cb050e87"
-  integrity sha512-4Y+XRvlP6ZRGtw8FM1RweD5o4TGuKexfHPTVDyTQ4fHuB6wedG2mSUr0PyvM24Rkv9K/mfk0FvU3Y7M5to7ZbA==
+"@cetusprotocol/cetus-periphery-sdk@^3.3.5":
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-periphery-sdk/-/cetus-periphery-sdk-3.3.5.tgz#67d9b70c896e73a0b9ffa0c1f4ad938ef4eff662"
+  integrity sha512-k7Jc2/0CuEFSGa938bKatxGZR6pj3Q0UCbTz0GooCAEPn6hgBiBPFS9j4DR28Fewtssp1K0wCe0cS9cp5gc38g==
   dependencies:
-    "@cetusprotocol/cetus-sui-clmm-sdk" "^5.1.5"
+    "@cetusprotocol/cetus-sui-clmm-sdk" "^5.1.7"
     "@mysten/bcs" "^0.11.1"
     "@mysten/sui" "^1.8.0"
     "@suchipi/femver" "^1.0.0"
@@ -1486,10 +1486,10 @@
     tiny-invariant "^1.1.0"
     tweetnacl "^1.0.3"
 
-"@cetusprotocol/cetus-sui-clmm-sdk@^5.1.5":
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.1.5.tgz#87dc13db56fb4c6866c89acce96488c84a81161a"
-  integrity sha512-t+l/6bgZ5+bg2GQ6X6NHGq7cMqJ0igARuGEorF+n5vegrSIKoWhu+6azp5kR0+fX4EfMmOU0AJAoB6OkWzulUw==
+"@cetusprotocol/cetus-sui-clmm-sdk@^5.1.7":
+  version "5.1.7"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.1.7.tgz#de3402d4ace1aa5806032894c7effb2b38bb3bed"
+  integrity sha512-zkxCL+aZFxgzdW0QFeMECmB7l4QCGvLGxaAzJS8EV4fEcj7YkPO4S49o6Jv04vjfGJO5XM1MVNScYe1XhtDKdg==
   dependencies:
     "@suchipi/femver" "^1.0.0"
     "@syntsugar/cc-graph" "^0.1.1"
@@ -2827,6 +2827,13 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.3.tgz#6209321eb2c1712a7e7466422b8cb1fc0d9dd5d8"
   integrity sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==
 
+"@types/superstruct@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@types/superstruct/-/superstruct-0.8.2.tgz#60c7d52e0b7a4c7cc819d1f0a43b36c1d56f0bd4"
+  integrity sha512-iM57MTPOXVkLwvo5Md6X5YhAszcJmuLlO6u5Z+JGzxTQ/3uHoZTKdWhjs408QJ27+NphS3kPgSSbqJWBSPsegg==
+  dependencies:
+    superstruct "*"
+
 "@types/ws@^8.5.3":
   version "8.5.13"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.13.tgz#6414c280875e2691d0d1e080b05addbf5cb91e20"
@@ -3377,6 +3384,15 @@ bser@2.1.1:
   integrity sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==
   dependencies:
     node-int64 "^0.4.0"
+
+bucket-protocol-sdk@0.9.33-alpha2:
+  version "0.9.33-alpha2"
+  resolved "https://registry.yarnpkg.com/bucket-protocol-sdk/-/bucket-protocol-sdk-0.9.33-alpha2.tgz#7f1066f8ddd033cb7c51d9b5b21e9e146b01a707"
+  integrity sha512-y5pvNczsoRuXVJObkUp6KiVEcwxF0kXu9Y+Mvn0oitxvdicgMHlVpEOmFM3cga4F9gWD0aCQJGTfYgKez+bJ8A==
+  dependencies:
+    "@mysten/sui" "^1.8.0"
+    "@types/superstruct" "^0.8.2"
+    superstruct "^1.0.3"
 
 buffer-from@^1.0.0:
   version "1.1.2"
@@ -6350,6 +6366,11 @@ sucrase@^3.35.0:
     mz "^2.7.0"
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
+
+superstruct@*:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-2.0.2.tgz#3f6d32fbdc11c357deff127d591a39b996300c54"
+  integrity sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==
 
 superstruct@^1.0.3:
   version "1.0.4"
