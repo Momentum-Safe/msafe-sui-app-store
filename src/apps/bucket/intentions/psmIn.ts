@@ -6,27 +6,25 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
-import { BucketIntentionData, TransactionSubType } from '../types';
-import { getPsmTx } from '../api/psm';
+import { TransactionSubType } from '../types';
+import { getPsmTx, PsmIntentionData } from '../api/psm';
 
-export class PsmIntention extends BaseIntention<BucketIntentionData> {
+export class PsmInIntention extends BaseIntention<PsmIntentionData> {
   txType = TransactionType.Other;
 
-  txSubType = TransactionSubType.Psm;
+  txSubType = TransactionSubType.PsmIn;
 
-  constructor(public readonly data: BucketIntentionData) {
+  constructor(public readonly data: PsmIntentionData) {
     super(data);
   }
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    const { txbParams } = this.data;
-
-    const tx = await getPsmTx(txbParams, account, network);
+    const tx = await getPsmTx(this.data, account, network, true);
     return tx;
   }
 
-  static fromData(data: BucketIntentionData) {
-    return new PsmIntention(data);
+  static fromData(data: PsmIntentionData) {
+    return new PsmInIntention(data);
   }
 }
