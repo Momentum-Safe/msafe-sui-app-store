@@ -2,10 +2,10 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
-import { LENDING_MARKET_ID, LENDING_MARKET_TYPE, SuilendClient } from '@suilend/sdk';
-import { phantom } from '@suilend/sdk/_generated/_framework/reified';
-import { LendingMarket, ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-market/structs';
-import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
+import { LENDING_MARKET_ID, LENDING_MARKET_TYPE, SuilendClient } from 'suilend-sdk';
+import { phantom } from 'suilend-sdk/_generated/_framework/reified';
+import { LendingMarket, ObligationOwnerCap } from 'suilend-sdk/_generated/suilend/lending-market/structs';
+import { Obligation } from 'suilend-sdk/_generated/suilend/obligation/structs';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
