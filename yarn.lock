@@ -2024,7 +2024,25 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@^1.12.0", "@mysten/sui@^1.3.0":
+"@mysten/sui@1.14.1":
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.1.tgz#d2747da37e9295c2f1cf7c8ed92626ccf7b97fa0"
+  integrity sha512-RWXmJboYHzIzIqSeXrjTQWYL4ZLhdUkwvd/oOiNjAA2GkYxxur3BpMRGf2F5/j6DDZoUSC0So2P6ELe4LbsmLQ==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@mysten/bcs" "1.1.0"
+    "@noble/curves" "^1.4.2"
+    "@noble/hashes" "^1.4.0"
+    "@scure/bip32" "^1.4.0"
+    "@scure/bip39" "^1.3.0"
+    "@suchipi/femver" "^1.0.0"
+    bech32 "^2.0.0"
+    gql.tada "^1.8.2"
+    graphql "^16.9.0"
+    tweetnacl "^1.0.3"
+    valibot "^0.36.0"
+
+"@mysten/sui@^1.3.0":
   version "1.14.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.0.tgz#557b8970774dcdf2bc776088dd60c4ab8bcf35e1"
   integrity sha512-dVndFXe1YaiJdNMfO5ZqmcrKxqWaR8TLBd5PT7M3OQeud3wo1EXFSZhT2b2FUsLMa04t+kOYph7kKgqUrfWZyA==
@@ -2669,13 +2687,13 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/sdk@^1.1.9":
-  version "1.1.9"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.9.tgz#7f7eb4b52134282c93aabe314b0a69ef12d98f62"
-  integrity sha512-8bJxspn3uWrk/14TGSpcvo4SL55niHkRFpCFhlqB6aa8Z1ZaOnrnAjAlyQ4HwzMce3nCXZ+EDv9RVb85nZbtFA==
+"@suilend/sdk@^1.1.11":
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.11.tgz#ba5e047104ffa2d26bd48ed97a44aa6f76c23283"
+  integrity sha512-acurYu/KOJs1wjr5ktonmX4nGxvSWh5Y8Cskoz3a2kuc85uJA4hNcXC+SP1Lccm4zIlwU6hx6OLV2OFrEjkOZw==
   dependencies:
     "@mysten/bcs" "1.1.0"
-    "@mysten/sui" "^1.12.0"
+    "@mysten/sui" "1.14.1"
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
     p-limit "3.1.0"
