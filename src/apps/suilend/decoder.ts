@@ -1,12 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
-import { SuiEvent } from '@mysten/sui.js/client';
 
 import { SuilendIntentionData } from './helper';
 import { BorrowIntentionData } from './intentions/borrow';
 import { DepositIntentionData } from './intentions/deposit';
 import { RepayIntentionData } from './intentions/repay';
-import { WithdrawIntentionData } from './intentions/withdraw';
 import { TransactionSubType } from './types';
 
 const PACKAGE_ID = '0x93b70b8e21d77f695507558839715d900d05e0ee54acf25d176a179112001d7a';
@@ -19,23 +17,23 @@ type DecodeResult = {
 };
 
 export class Decoder {
-  constructor(
-    public readonly transaction: Transaction,
-    public readonly transactionEvents: SuiEvent[],
-  ) {}
+  constructor(public readonly transaction: Transaction) {}
 
   decode() {
     if (this.isDepositTransaction()) {
       return this.decodeDeposit();
     }
     if (this.isWithdrawTransaction()) {
-      return this.decodeWithdraw();
+      // return this.decodeWithdraw();
     }
     if (this.isBorrowTransaction()) {
       return this.decodeBorrow();
     }
     if (this.isRepayTransaction()) {
       return this.decodeRepay();
+    }
+    if (this.isClaimRewardsTransaction()) {
+      return this.decodeClaimRewards();
     }
 
     throw new Error(`Unknown transaction type`);
@@ -78,6 +76,10 @@ export class Decoder {
     return !!this.getMoveCallCommand('repay');
   }
 
+  private isClaimRewardsTransaction() {
+    return !!this.getMoveCallCommand('claim_rewards');
+  }
+
   // decode*
   private decodeDeposit(): DecodeResult {
     const commands = {
@@ -99,27 +101,27 @@ export class Decoder {
     };
   }
 
-  private decodeWithdraw(): DecodeResult {
-    const commands = {
-      withdraw_ctokens: this.getMoveCallCommand('withdraw_ctokens'),
-    };
-    const events = {
-      redeem: this.transactionEvents.find((event) => event.type.endsWith('lending_market::RedeemEvent')),
-    };
+  // private decodeWithdraw(): DecodeResult {
+  //   const commands = {
+  //     withdraw_ctokens: this.getMoveCallCommand('withdraw_ctokens'),
+  //   };
+  //   const events = {
+  //     redeem: this.transactionEvents.find((event) => event.type.endsWith('lending_market::RedeemEvent')),
+  //   };
 
-    const coinType = commands.withdraw_ctokens.MoveCall.typeArguments[1];
-    const value = (events.redeem.parsedJson as any).liquidity_amount as string;
-    console.log('Decoder.decodeWithdraw', coinType, value);
+  //   const coinType = commands.withdraw_ctokens.MoveCall.typeArguments[1];
+  //   const value = (events.redeem.parsedJson as any).liquidity_amount as string;
+  //   console.log('Decoder.decodeWithdraw', coinType, value);
 
-    return {
-      txType: TransactionType.Other,
-      type: TransactionSubType.WITHDRAW,
-      intentionData: {
-        coinType,
-        value,
-      } as WithdrawIntentionData,
-    };
-  }
+  //   return {
+  //     txType: TransactionType.Other,
+  //     type: TransactionSubType.WITHDRAW,
+  //     intentionData: {
+  //       coinType,
+  //       value,
+  //     } as WithdrawIntentionData,
+  //   };
+  // }
 
   private decodeBorrow(): DecodeResult {
     const commands = {
@@ -141,6 +143,26 @@ export class Decoder {
   }
 
   private decodeRepay(): DecodeResult {
+    const commands = {
+      splitCoins: this.getSplitCoinsCommands()[0],
+      repay: this.getMoveCallCommand('repay'),
+    };
+
+    const coinType = commands.repay.MoveCall.typeArguments[1];
+    const value = (commands.splitCoins.SplitCoins.amounts[0] as any).value as string;
+    console.log('Decoder.decodeRepay', coinType, value);
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.REPAY,
+      intentionData: {
+        coinType,
+        value,
+      } as RepayIntentionData,
+    };
+  }
+
+  private decodeClaimRewards(): DecodeResult {
     const commands = {
       splitCoins: this.getSplitCoinsCommands()[0],
       repay: this.getMoveCallCommand('repay'),
