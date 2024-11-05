@@ -38,7 +38,7 @@ export const clmmConfig: SdkOptions = {
   },
   integrate: {
     package_id: '0x996c4d9480708fb8b92aa7acf819fb0497b5ec8e65ba06601cae2fb6db3312c3',
-    published_at: '0x6f5e582ede61fe5395b50c4a449ec11479a54d7ff8e0158247adfda60d98970b',
+    published_at: '0x8faab90228e4c4df91c41626bbaefa19fc25c514405ac64de54578dec9e6f5ee',
     version: 6,
   },
   deepbook: {
@@ -142,7 +142,7 @@ export const peripheryConfig: PeripherySdkOptions = {
   },
   vaults: {
     package_id: '0xd3453d9be7e35efe222f78a810bb3af1859fd1600926afced8b4936d825c9a05',
-    published_at: '0x016b8ce6560f55bfe02abb2cc0681bb91f767107cfb1c9b6e73a6bcf74492a02',
+    published_at: '0xabbd278f738affe762e9df4765b3409bb1e86a355a4f611ad82b278c18108918',
     version: 1,
     config: {
       admin_cap_id: '0x78a42978709c4032fab7b33b782b5bcef64c1c6603250bf23644650b72144375',

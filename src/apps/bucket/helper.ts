@@ -3,8 +3,8 @@ import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
-import { SuiNetworks } from '@/types';
 import { IAppHelperInternal } from '@/apps/interface/sui';
+import { SuiNetworks } from '@/types';
 
 import { PsmInIntention } from './intentions/psmIn';
 import { PsmOutIntention } from './intentions/psmOut';
