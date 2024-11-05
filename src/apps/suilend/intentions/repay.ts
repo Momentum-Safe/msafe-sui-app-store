@@ -36,6 +36,7 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
   }
 
   static fromData(data: RepayIntentionData) {
+    console.log('RepayIntention.fromData', data);
     return new RepayIntention(data);
   }
 }

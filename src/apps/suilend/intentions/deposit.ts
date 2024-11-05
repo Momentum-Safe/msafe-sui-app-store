@@ -36,6 +36,7 @@ export class DepositIntention extends SuilendBaseIntention<DepositIntentionData>
   }
 
   static fromData(data: DepositIntentionData) {
+    console.log('DepositIntention.fromData', data);
     return new DepositIntention(data);
   }
 }

@@ -37,6 +37,7 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
   }
 
   static fromData(data: BorrowIntentionData) {
+    console.log('BorrowIntention.fromData', data);
     return new BorrowIntention(data);
   }
 }

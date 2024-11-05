@@ -12,6 +12,7 @@ import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';
 import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
+// import { ClaimRewardsIntention, ClaimRewardsIntentionData } from './intentions/claimRewards';
 import { DepositIntention, DepositIntentionData } from './intentions/deposit';
 import { RepayIntention, RepayIntentionData } from './intentions/repay';
 import { WithdrawIntention, WithdrawIntentionData } from './intentions/withdraw';
@@ -38,12 +39,14 @@ const getObligations = async (
   );
 
 export type SuilendIntention = DepositIntention | WithdrawIntention | BorrowIntention | RepayIntention;
+// | ClaimRewardsIntention;
 
 export type SuilendIntentionData =
   | DepositIntentionData
   | WithdrawIntentionData
   | BorrowIntentionData
   | RepayIntentionData;
+// | ClaimRewardsIntentionData;
 
 export type IntentionInput = {
   network: SuiNetworks;
@@ -85,7 +88,15 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       this.obligations = await getObligations(suiClient, this.suilendClient, this.obligationOwnerCaps);
     }
 
-    const decoder = new Decoder(transaction);
+    const digest = await transaction.getDigest();
+    const transactionWithEvents = await suiClient.getTransactionBlock({
+      digest,
+      options: {
+        showEvents: true,
+      },
+    });
+
+    const decoder = new Decoder(transaction, transactionWithEvents.events);
     const result = decoder.decode();
 
     return {
@@ -129,8 +140,8 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       case TransactionSubType.REPAY:
         intention = RepayIntention.fromData(intentionData as RepayIntentionData);
         break;
-      // case TransactionSubType.CLAIM:
-      //   intention = ClaimIntention.fromData(intentionData as ClaimIntentionData);
+      // case TransactionSubType.CLAIM_REWARDS:
+      //   intention = ClaimRewardsIntention.fromData(intentionData as ClaimRewardsIntentionData);
       //   break;
       default:
         throw new Error('not implemented');

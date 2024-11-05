@@ -37,6 +37,7 @@ export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionDat
   }
 
   static fromData(data: WithdrawIntentionData) {
+    console.log('WithdrawIntention.fromData', data);
     return new WithdrawIntention(data);
   }
 }
