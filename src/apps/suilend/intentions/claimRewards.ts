@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 
 import { TransactionSubType } from '../types';
 import { SuilendBaseIntention } from './suilendBaseIntention';
+import { isSendPoints } from '../constants';
 import { IntentionInput } from '../helper';
 
 export interface ClaimRewardsIntentionData {
@@ -61,6 +62,7 @@ export class ClaimRewardsIntention extends SuilendBaseIntention<ClaimRewardsInte
           }))
           .filter(
             (r) =>
+              !isSendPoints(r.rewardCoinType) &&
               !!sideUrm.rewards[r.rewardIndex] &&
               new BigNumber(sideUrm.rewards[r.rewardIndex].earnedRewards.value.toString()).gt(0),
           );
