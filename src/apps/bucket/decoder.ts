@@ -1,10 +1,12 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { Transaction } from '@mysten/sui/transactions';
+import { Transaction, TransactionInput } from '@mysten/sui/transactions';
 
 import { TransactionSubType } from './types';
 import { CORE_PACKAGE_ID } from 'bucket-protocol-sdk';
 import { BucketIntentionData } from './helper';
 import { PsmIntentionData } from './api/psm';
+import { MoveCallHelper } from '../mpay/decoder/moveCall';
+import { bcs } from "@mysten/sui/bcs";
 
 type DecodeResult = {
   txType: TransactionType;
@@ -29,7 +31,13 @@ export class Decoder {
   private get commands() {
     return this.transaction
       .getData()
-      .commands.filter((command) => command.MoveCall.package === CORE_PACKAGE_ID && command.MoveCall.module === "buck");
+      .commands;
+  }
+
+  private get inputs() {
+    return this.transaction
+      .getData()
+      .inputs;
   }
 
   private getMoveCallCommand(fn: string) {
@@ -40,6 +48,10 @@ export class Decoder {
     return this.commands.filter((command) => command.$kind === 'SplitCoins');
   }
 
+  private getTransferCommands() {
+    return this.commands.filter((command) => command.$kind === 'TransferObjects');
+  }
+
   private isPsmInTransaction() {
     return !!this.getMoveCallCommand('charge_reservoir');
   }
@@ -48,38 +60,55 @@ export class Decoder {
   }
 
   private decodePsmIn(): DecodeResult {
-    const splitCoinsCommand = this.getSplitCoinsCommands()[0];
-    const psmInCommand = this.getMoveCallCommand('charge_reservoir');
+    let amount = "0";
+    const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
+    if (inputCoinObject.$kind == "Input") {
+      amount = this.getPureInputU64(inputCoinObject.Input);
+    }
 
-    const coinType = psmInCommand.MoveCall.typeArguments[1];
-    const { value } = splitCoinsCommand.SplitCoins.amounts[0] as any;
-    console.log('Decoder.decodePsmIn', coinType, value);
+    const psmCommand = this.getMoveCallCommand('charge_reservoir').MoveCall;
+    const coinType = psmCommand.typeArguments[0];
+    console.log('Decoder.decodePsmIn', coinType, amount);
 
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.PsmIn,
       intentionData: {
         coinType,
-        amount: value,
+        amount,
       } as PsmIntentionData,
     };
   }
 
   private decodePsmOut(): DecodeResult {
-    const splitCoinsCommand = this.getSplitCoinsCommands()[0];
-    const psmOutCommand = this.getMoveCallCommand('discharge_reservoir');
+    let amount = "0";
+    const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
+    if (inputCoinObject.$kind == "Input") {
+      amount = this.getPureInputU64(inputCoinObject.Input);
+    }
 
-    const coinType = psmOutCommand.MoveCall.typeArguments[1];
-    const { value } = splitCoinsCommand.SplitCoins.amounts[0] as any;
-    console.log('Decoder.decodePsmOut', coinType, value);
+    const psmCommand = this.getMoveCallCommand('discharge_reservoir').MoveCall;
+    const coinType = psmCommand.typeArguments[0];
+    console.log('Decoder.decodePsmOut', coinType, amount);
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.PsmIn,
+      type: TransactionSubType.PsmOut,
       intentionData: {
         coinType,
-        amount: value,
+        amount,
       } as PsmIntentionData,
     };
+  }
+
+
+  // Helpers
+  private getPureInputU64(idx: number) {
+    const input = this.inputs[idx];
+    if (input.$kind !== 'Pure') {
+      throw new Error('not pure argument');
+    }
+
+    return bcs.U64.fromBase64(input.Pure.bytes);
   }
 }

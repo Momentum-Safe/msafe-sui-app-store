@@ -20,7 +20,7 @@ export class PsmOutIntention extends BaseIntention<PsmIntentionData> {
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    const tx = await getPsmTx(this.data, account, network, false);
+    const tx = await getPsmTx(this.data, account, network, true);
     return tx;
   }
 

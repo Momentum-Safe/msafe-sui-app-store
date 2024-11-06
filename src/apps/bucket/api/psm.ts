@@ -12,13 +12,13 @@ export const getPsmTx = async (
     txbParams: PsmIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
-    isIn: boolean
+    isOut: boolean
 ): Promise<Transaction> => {
     const { coinType, amount } = txbParams;
 
     const tx = new Transaction();
     const client = getBucketClient(network, account);
-    await client.getPsmTx(tx, coinType, amount, isIn, account.address);
+    await client.getPsmTx(tx, coinType, amount, isOut, account.address);
 
     return tx;
 };
