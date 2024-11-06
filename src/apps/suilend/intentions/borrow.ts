@@ -23,6 +23,12 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
     const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
     console.log('BorrowIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
 
+    const obligationOwnerCap = obligationOwnerCaps[0];
+    const obligation = obligations[0];
+    if (!obligationOwnerCap || !obligation) {
+      throw new Error('Obligation not found');
+    }
+
     const transaction = new Transaction();
     await suilendClient.borrowFromObligation(
       account.address,

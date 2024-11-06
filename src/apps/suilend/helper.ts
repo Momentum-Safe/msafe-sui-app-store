@@ -2,10 +2,10 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
-import { LENDING_MARKET_ID, LENDING_MARKET_TYPE, SuilendClient } from 'suilend-sdk';
-import { phantom } from 'suilend-sdk/_generated/_framework/reified';
-import { LendingMarket, ObligationOwnerCap } from 'suilend-sdk/_generated/suilend/lending-market/structs';
-import { Obligation } from 'suilend-sdk/_generated/suilend/obligation/structs';
+import { LENDING_MARKET_ID, LENDING_MARKET_TYPE, SuilendClient } from '@suilend/sdk';
+import { phantom } from '@suilend/sdk/_generated/_framework/reified';
+import { LendingMarket, ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-market/structs';
+import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
@@ -92,7 +92,13 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       this.obligations = await getObligations(suiClient, this.suilendClient, this.obligationOwnerCaps);
     }
 
-    const decoder = new Decoder(transaction);
+    const simResult = await suiClient.devInspectTransactionBlock({
+      sender: account.address,
+      transactionBlock: transaction,
+    });
+    console.log('SuilendAppHelper.deserialize', simResult);
+
+    const decoder = new Decoder(transaction, simResult);
     const result = decoder.decode();
 
     return {
