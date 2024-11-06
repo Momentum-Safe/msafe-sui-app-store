@@ -23,6 +23,12 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
     const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
     console.log('RepayIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
 
+    const obligationOwnerCap = obligationOwnerCaps[0];
+    const obligation = obligations[0];
+    if (!obligationOwnerCap || !obligation) {
+      throw new Error('Obligation not found');
+    }
+
     const transaction = new Transaction();
     await suilendClient.repayIntoObligation(
       account.address,
