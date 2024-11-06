@@ -2699,6 +2699,16 @@
     p-limit "3.1.0"
     uuid "^9.0.1"
 
+"@suilend/springsui-sdk@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.4.tgz#82e9e3005838e0e2cf4c9c6e9f8376241bc157e8"
+  integrity sha512-dQj0pDTuVitrTux/dIZglzvxnqVqpO/crU4rycckEuFwWKauu3pGmaAMpyAen+zFOWJOvToxrazMeb3bbCnYWg==
+  dependencies:
+    "@mysten/bcs" "1.1.0"
+    "@mysten/sui" "1.14.1"
+    commander "^12.1.0"
+    uuid "^9.0.1"
+
 "@syntsugar/cc-graph@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@syntsugar/cc-graph/-/cc-graph-0.1.1.tgz#8ff79e2bd4264d163069fe5ce3a5c47107dcb2a9"
@@ -3564,6 +3574,11 @@ combined-stream@^1.0.8:
   integrity sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
   dependencies:
     delayed-stream "~1.0.0"
+
+commander@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-12.1.0.tgz#01423b36f501259fdaac4d0e4d60c96c991585d3"
+  integrity sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==
 
 commander@^4.0.0:
   version "4.1.1"
