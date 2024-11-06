@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.150",
+  "version": "0.0.152",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -49,7 +49,6 @@
     "@mysten/bcs": "^0.11.1",
     "@mysten/sui": "^1.8.0",
     "@pythnetwork/pyth-sui-js": "^2.1.0",
-    "@suilend/sdk": "^1.1.9",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
     "bucket-protocol-sdk": "0.9.33-alpha2",
@@ -58,6 +57,7 @@
     "luxon": "^3.4.4",
     "nanoid": "3",
     "sort-keys-recursive": "^2.1.10",
+    "suilend-sdk": "npm:@suilend/sdk@v1.1.11",
     "turbos-clmm-sdk": "^2.2.2"
   },
   "devDependencies": {
