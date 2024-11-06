@@ -6,10 +6,15 @@ import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
-import { PsmIntention } from './intentions/psm';
-import { BucketIntentionData, TransactionSubType } from './types';
+import { PsmInIntention } from './intentions/psmIn';
+import { PsmOutIntention } from './intentions/psmOut';
+import { Decoder } from './decoder';
+import { TransactionSubType } from './types';
+import { PsmIntentionData } from './api/psm';
 
-export type BucketIntention = PsmIntention;
+export type BucketIntention = PsmInIntention | PsmOutIntention;
+
+export type BucketIntentionData = PsmIntentionData;
 
 export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
   application = 'bucket';
@@ -23,19 +28,15 @@ export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
     network: SuiNetworks;
     suiClient: SuiClient;
     account: WalletAccount;
-    action?: string;
-    txbParams?: any;
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BucketIntentionData }> {
     console.log('Bucket helper deserialize input: ', input);
-    const { txbParams, action } = input;
-
+    const { transaction } = input;
+    const decoder = new Decoder(transaction);
+    const result = decoder.decode();
     return {
       txType: TransactionType.Other,
-      txSubType: action,
-      intentionData: {
-        txbParams: { ...txbParams },
-        action,
-      },
+      txSubType: result.type,
+      intentionData: result.intentionData,
     };
   }
 
@@ -51,8 +52,11 @@ export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
 
     let intention: BucketIntention;
     switch (input.txSubType) {
-      case TransactionSubType.Psm:
-        intention = PsmIntention.fromData(input.intentionData);
+      case TransactionSubType.PsmIn:
+        intention = PsmInIntention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.PsmOut:
+        intention = PsmOutIntention.fromData(input.intentionData);
         break;
       default:
         throw new Error('not implemented');
