@@ -2024,24 +2024,6 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.1.tgz#d2747da37e9295c2f1cf7c8ed92626ccf7b97fa0"
-  integrity sha512-RWXmJboYHzIzIqSeXrjTQWYL4ZLhdUkwvd/oOiNjAA2GkYxxur3BpMRGf2F5/j6DDZoUSC0So2P6ELe4LbsmLQ==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.1.0"
-    "@noble/curves" "^1.4.2"
-    "@noble/hashes" "^1.4.0"
-    "@scure/bip32" "^1.4.0"
-    "@scure/bip39" "^1.3.0"
-    "@suchipi/femver" "^1.0.0"
-    bech32 "^2.0.0"
-    gql.tada "^1.8.2"
-    graphql "^16.9.0"
-    tweetnacl "^1.0.3"
-    valibot "^0.36.0"
-
 "@mysten/sui@1.14.2":
   version "1.14.2"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.2.tgz#cc7eed6b0157bc5c1b8ec26c3b6bdf3ef130cb94"
@@ -2717,14 +2699,13 @@
     p-limit "^3.1.0"
     uuid "^9.0.1"
 
-"@suilend/springsui-sdk@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.4.tgz#82e9e3005838e0e2cf4c9c6e9f8376241bc157e8"
-  integrity sha512-dQj0pDTuVitrTux/dIZglzvxnqVqpO/crU4rycckEuFwWKauu3pGmaAMpyAen+zFOWJOvToxrazMeb3bbCnYWg==
+"@suilend/springsui-sdk@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.5.tgz#11c796d12cb6b209639af79ffca008b287624edf"
+  integrity sha512-o/RtkTmDaCpFXf5ZGVbBL0a5vfc0jt7898za4GCho+WqinLSpKTnxoSBJAWfygeHg4vludwnObx/Rbwphc+KmQ==
   dependencies:
     "@mysten/bcs" "1.1.0"
-    "@mysten/sui" "1.14.1"
-    commander "^12.1.0"
+    "@mysten/sui" "1.14.2"
     uuid "^9.0.1"
 
 "@syntsugar/cc-graph@^0.1.1":
@@ -3592,11 +3573,6 @@ combined-stream@^1.0.8:
   integrity sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==
   dependencies:
     delayed-stream "~1.0.0"
-
-commander@^12.1.0:
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-12.1.0.tgz#01423b36f501259fdaac4d0e4d60c96c991585d3"
-  integrity sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==
 
 commander@^4.0.0:
   version "4.1.1"
