@@ -50,6 +50,7 @@
     "@mysten/sui": "^1.8.0",
     "@pythnetwork/pyth-sui-js": "^2.1.0",
     "@suilend/sdk": "^1.1.12",
+    "@suilend/springsui-sdk": "^1.0.5",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
     "bucket-protocol-sdk": "0.9.33-alpha2",

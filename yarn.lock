@@ -2699,6 +2699,15 @@
     p-limit "^3.1.0"
     uuid "^9.0.1"
 
+"@suilend/springsui-sdk@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.5.tgz#11c796d12cb6b209639af79ffca008b287624edf"
+  integrity sha512-o/RtkTmDaCpFXf5ZGVbBL0a5vfc0jt7898za4GCho+WqinLSpKTnxoSBJAWfygeHg4vludwnObx/Rbwphc+KmQ==
+  dependencies:
+    "@mysten/bcs" "1.1.0"
+    "@mysten/sui" "1.14.2"
+    uuid "^9.0.1"
+
 "@syntsugar/cc-graph@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@syntsugar/cc-graph/-/cc-graph-0.1.1.tgz#8ff79e2bd4264d163069fe5ce3a5c47107dcb2a9"
