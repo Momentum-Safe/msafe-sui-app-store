@@ -1,6 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag } from '@mysten/sui/utils';
 
 import { SuilendIntentionData } from './helper';
 import { BorrowIntentionData } from './intentions/borrow';
@@ -83,7 +84,7 @@ export class Decoder {
       MintEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::MintEvent')),
     };
 
-    const coinType = (events.MintEvent.parsedJson as any).coin_type.name as string;
+    const coinType = normalizeStructTag((events.MintEvent.parsedJson as any).coin_type.name as string);
     const value = (events.MintEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeDeposit', coinType, value);
 
@@ -102,7 +103,7 @@ export class Decoder {
       RedeemEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::RedeemEvent')),
     };
 
-    const coinType = (events.RedeemEvent.parsedJson as any).coin_type.name as string;
+    const coinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).coin_type.name as string);
     const value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeWithdraw', coinType, value);
 
@@ -121,7 +122,7 @@ export class Decoder {
       BorrowEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::BorrowEvent')),
     };
 
-    const coinType = (events.BorrowEvent.parsedJson as any).coin_type.name as string;
+    const coinType = normalizeStructTag((events.BorrowEvent.parsedJson as any).coin_type.name as string);
     const value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
     console.log('Decoder.decodeBorrow', coinType, value);
 
@@ -140,7 +141,7 @@ export class Decoder {
       RepayEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::RepayEvent')),
     };
 
-    const coinType = (events.RepayEvent.parsedJson as any).coin_type.name as string;
+    const coinType = normalizeStructTag((events.RepayEvent.parsedJson as any).coin_type.name as string);
     const value = (events.RepayEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeRepay', coinType, value);
 
@@ -163,7 +164,7 @@ export class Decoder {
     for (let i = 0; i < events.ClaimReward.length; i++) {
       const claimRewardEvent = events.ClaimReward[i];
 
-      const coinType = (claimRewardEvent.parsedJson as any).coin_type.name as string;
+      const coinType = normalizeStructTag((claimRewardEvent.parsedJson as any).coin_type.name as string);
       const value = (claimRewardEvent.parsedJson as any).liquidity_amount as string;
 
       result[coinType] = `${+(result[coinType] ?? '0') + +value}`;
