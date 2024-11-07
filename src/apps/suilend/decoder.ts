@@ -83,7 +83,7 @@ export class Decoder {
       MintEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::MintEvent')),
     };
 
-    const coinType = (events.MintEvent.parsedJson as any).coin_type as string;
+    const coinType = (events.MintEvent.parsedJson as any).coin_type.name as string;
     const value = (events.MintEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeDeposit', coinType, value);
 
@@ -102,7 +102,7 @@ export class Decoder {
       RedeemEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::RedeemEvent')),
     };
 
-    const coinType = (events.RedeemEvent.parsedJson as any).coin_type as string;
+    const coinType = (events.RedeemEvent.parsedJson as any).coin_type.name as string;
     const value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeWithdraw', coinType, value);
 
@@ -121,7 +121,7 @@ export class Decoder {
       BorrowEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::BorrowEvent')),
     };
 
-    const coinType = (events.BorrowEvent.parsedJson as any).coin_type as string;
+    const coinType = (events.BorrowEvent.parsedJson as any).coin_type.name as string;
     const value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
     console.log('Decoder.decodeBorrow', coinType, value);
 
@@ -140,7 +140,7 @@ export class Decoder {
       RepayEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::RepayEvent')),
     };
 
-    const coinType = (events.RepayEvent.parsedJson as any).coin_type as string;
+    const coinType = (events.RepayEvent.parsedJson as any).coin_type.name as string;
     const value = (events.RepayEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeRepay', coinType, value);
 
@@ -163,7 +163,7 @@ export class Decoder {
     for (let i = 0; i < events.ClaimReward.length; i++) {
       const claimRewardEvent = events.ClaimReward[i];
 
-      const coinType = (claimRewardEvent.parsedJson as any).coin_type as string;
+      const coinType = (claimRewardEvent.parsedJson as any).coin_type.name as string;
       const value = (claimRewardEvent.parsedJson as any).liquidity_amount as string;
 
       result[coinType] = `${+(result[coinType] ?? '0') + +value}`;
