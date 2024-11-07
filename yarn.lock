@@ -2024,10 +2024,10 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.1.tgz#d2747da37e9295c2f1cf7c8ed92626ccf7b97fa0"
-  integrity sha512-RWXmJboYHzIzIqSeXrjTQWYL4ZLhdUkwvd/oOiNjAA2GkYxxur3BpMRGf2F5/j6DDZoUSC0So2P6ELe4LbsmLQ==
+"@mysten/sui@1.14.2":
+  version "1.14.2"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.2.tgz#cc7eed6b0157bc5c1b8ec26c3b6bdf3ef130cb94"
+  integrity sha512-WkkVLoP9SXhcZYh/yqtXaM8zX8KPdCTfMUY9oNjHBIFBN3K0s6M5mFRPekZdG8+PVGyRLZI1mFQOs7cRyx4xKg==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
     "@mysten/bcs" "1.1.0"
@@ -2687,16 +2687,16 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/sdk@^1.1.11":
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.11.tgz#ba5e047104ffa2d26bd48ed97a44aa6f76c23283"
-  integrity sha512-acurYu/KOJs1wjr5ktonmX4nGxvSWh5Y8Cskoz3a2kuc85uJA4hNcXC+SP1Lccm4zIlwU6hx6OLV2OFrEjkOZw==
+"@suilend/sdk@^1.1.12":
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.12.tgz#1c7117ed4fd33bc7f8c32f15e30d9041ab1fc56d"
+  integrity sha512-DC7FRGvnSWY3dQ10vxf18VGcjqvUAofcPtNIcIK7VY3rXyS6BiRsa3+IHTH+wzrYqmx8v8DeIRMJllLxqnkotw==
   dependencies:
     "@mysten/bcs" "1.1.0"
-    "@mysten/sui" "1.14.1"
+    "@mysten/sui" "1.14.2"
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
-    p-limit "3.1.0"
+    p-limit "^3.1.0"
     uuid "^9.0.1"
 
 "@syntsugar/cc-graph@^0.1.1":
@@ -5760,19 +5760,19 @@ optionator@^0.9.3:
     type-check "^0.4.0"
     word-wrap "^1.2.5"
 
-p-limit@3.1.0, p-limit@^3.0.2, p-limit@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
-  integrity sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==
-  dependencies:
-    yocto-queue "^0.1.0"
-
 p-limit@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-2.3.0.tgz#3dd33c647a214fdfffd835933eb086da0dc21db1"
   integrity sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==
   dependencies:
     p-try "^2.0.0"
+
+p-limit@^3.0.2, p-limit@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
+  integrity sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==
+  dependencies:
+    yocto-queue "^0.1.0"
 
 p-locate@^4.1.0:
   version "4.1.0"
