@@ -50,10 +50,10 @@ export class Decoder {
   // decode*
   private decodeMint(): DecodeResult {
     const events = {
-      MintEvent: this.simResult.events.find((event) => event.type.endsWith('liquid_staking::MintEvent')),
+      MintEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::MintEvent')),
     };
 
-    const amount = (events.MintEvent.parsedJson as any).sui_amount_in as string;
+    const amount = (events.MintEvent.parsedJson as any).event.sui_amount_in as string;
     console.log('Decoder.decodeMint', amount);
 
     return {
@@ -67,10 +67,10 @@ export class Decoder {
 
   private decodeRedeem(): DecodeResult {
     const events = {
-      RedeemEvent: this.simResult.events.find((event) => event.type.endsWith('liquid_staking::RedeemEvent')),
+      RedeemEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::RedeemEvent')),
     };
 
-    const amount = (events.RedeemEvent.parsedJson as any).lst_amount_in as string;
+    const amount = (events.RedeemEvent.parsedJson as any).event.lst_amount_in as string;
     console.log('Decoder.decodeRedeem', amount);
 
     return {

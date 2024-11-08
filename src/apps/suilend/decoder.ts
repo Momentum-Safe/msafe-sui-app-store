@@ -81,7 +81,7 @@ export class Decoder {
   // decode*
   private decodeDeposit(): DecodeResult {
     const events = {
-      MintEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::MintEvent')),
+      MintEvent: this.simResult.events.find((event) => event.type.includes('lending_market::MintEvent')),
     };
 
     const coinType = normalizeStructTag((events.MintEvent.parsedJson as any).coin_type.name as string);
@@ -100,7 +100,7 @@ export class Decoder {
 
   private decodeWithdraw(): DecodeResult {
     const events = {
-      RedeemEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::RedeemEvent')),
+      RedeemEvent: this.simResult.events.find((event) => event.type.includes('lending_market::RedeemEvent')),
     };
 
     const coinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).coin_type.name as string);
@@ -119,7 +119,7 @@ export class Decoder {
 
   private decodeBorrow(): DecodeResult {
     const events = {
-      BorrowEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::BorrowEvent')),
+      BorrowEvent: this.simResult.events.find((event) => event.type.includes('lending_market::BorrowEvent')),
     };
 
     const coinType = normalizeStructTag((events.BorrowEvent.parsedJson as any).coin_type.name as string);
@@ -138,7 +138,7 @@ export class Decoder {
 
   private decodeRepay(): DecodeResult {
     const events = {
-      RepayEvent: this.simResult.events.find((event) => event.type.endsWith('lending_market::RepayEvent')),
+      RepayEvent: this.simResult.events.find((event) => event.type.includes('lending_market::RepayEvent')),
     };
 
     const coinType = normalizeStructTag((events.RepayEvent.parsedJson as any).coin_type.name as string);
@@ -157,7 +157,7 @@ export class Decoder {
 
   private decodeClaimRewards(): DecodeResult {
     const events = {
-      ClaimReward: this.simResult.events.filter((event) => event.type.endsWith('lending_market::ClaimReward')),
+      ClaimReward: this.simResult.events.filter((event) => event.type.includes('lending_market::ClaimReward')),
     };
 
     const result: Record<string, string> = {};
