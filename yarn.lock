@@ -2699,10 +2699,10 @@
     p-limit "^3.1.0"
     uuid "^9.0.1"
 
-"@suilend/springsui-sdk@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.5.tgz#11c796d12cb6b209639af79ffca008b287624edf"
-  integrity sha512-o/RtkTmDaCpFXf5ZGVbBL0a5vfc0jt7898za4GCho+WqinLSpKTnxoSBJAWfygeHg4vludwnObx/Rbwphc+KmQ==
+"@suilend/springsui-sdk@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.6.tgz#cbfd6913515a7014e141da09d538683de525c5e9"
+  integrity sha512-hkQGcLLVEpTUYOhGCLJXWh++4fn1xgADnJRG49fbMaF9SC3xW3iLnlpo84+ENY6U2Pw71FOda/SN1+mddDsE5g==
   dependencies:
     "@mysten/bcs" "1.1.0"
     "@mysten/sui" "1.14.2"

@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 
+import { IntentionInput } from '../helper';
 import { TransactionSubType } from '../types';
 import { SuilendBaseIntention } from './suilendBaseIntention';
-import { IntentionInput } from '../helper';
 
 export interface BorrowIntentionData {
   coinType: string;
