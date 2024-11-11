@@ -1,10 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 
+import { IntentionInput } from '../helper';
 import { TransactionSubType } from '../types';
 import { SpringSuiBaseIntention } from './springSuiBaseIntention';
-import { LIQUID_STAKING_INFO } from '../constants';
-import { IntentionInput } from '../helper';
 
 export interface MintIntentionData {
   amount: string;
@@ -24,16 +23,7 @@ export class MintIntention extends SpringSuiBaseIntention<MintIntentionData> {
     console.log('MintIntention.build', suiClient, account, lstClient);
 
     const transaction = new Transaction();
-
-    //
-
-    const [sui] = transaction.splitCoins(transaction.gas, [BigInt(this.data.amount)]);
-    const rSui = lstClient.mint(transaction as any, sui);
-    transaction.transferObjects([rSui], account.address);
-
-    lstClient.rebalance(transaction as any, LIQUID_STAKING_INFO.weightHookId);
-
-    //
+    lstClient.mintAndRebalanceAndSendToUser(transaction as any, account.address, this.data.amount);
 
     return transaction;
   }

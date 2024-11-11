@@ -1,10 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 
+import { IntentionInput } from '../helper';
 import { TransactionSubType } from '../types';
 import { SpringSuiBaseIntention } from './springSuiBaseIntention';
-import { NORMALIZED_LST_COINTYPE } from '../constants';
-import { IntentionInput } from '../helper';
 
 export interface RedeemIntentionData {
   amount: string;
@@ -24,28 +23,7 @@ export class RedeemIntention extends SpringSuiBaseIntention<RedeemIntentionData>
     console.log('RedeemIntention.build', suiClient, account, lstClient);
 
     const transaction = new Transaction();
-
-    //
-
-    const coins = (
-      await suiClient.getCoins({
-        owner: account.address,
-        coinType: NORMALIZED_LST_COINTYPE,
-      })
-    ).data;
-
-    if (coins.length > 1) {
-      transaction.mergeCoins(
-        transaction.object(coins[0].coinObjectId),
-        coins.map((c) => transaction.object(c.coinObjectId)).slice(1),
-      );
-    }
-
-    const [lst] = transaction.splitCoins(transaction.object(coins[0].coinObjectId), [BigInt(this.data.amount)]);
-    const sui = lstClient.redeemLst(transaction as any, lst);
-    transaction.transferObjects([sui], account.address);
-
-    //
+    lstClient.redeemAndSendToUser(transaction as any, account.address, this.data.amount);
 
     return transaction;
   }

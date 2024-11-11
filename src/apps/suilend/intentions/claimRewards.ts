@@ -4,10 +4,10 @@ import { normalizeStructTag } from '@mysten/sui.js/utils';
 import { Side } from '@suilend/sdk';
 import BigNumber from 'bignumber.js';
 
-import { TransactionSubType } from '../types';
-import { SuilendBaseIntention } from './suilendBaseIntention';
 import { isSendPoints } from '../constants';
 import { IntentionInput } from '../helper';
+import { TransactionSubType } from '../types';
+import { SuilendBaseIntention } from './suilendBaseIntention';
 
 export interface ClaimRewardsIntentionData {
   value: Record<string, string>;
