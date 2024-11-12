@@ -23,7 +23,7 @@ export class RedeemIntention extends SpringSuiBaseIntention<RedeemIntentionData>
     console.log('RedeemIntention.build', suiClient, account, lstClient);
 
     const transaction = new Transaction();
-    lstClient.redeemAndSendToUser(transaction as any, account.address, this.data.amount);
+    await lstClient.redeemAndSendToUser(transaction as any, account.address, this.data.amount);
 
     return transaction;
   }
