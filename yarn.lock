@@ -2687,10 +2687,10 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/sdk@^1.1.12":
-  version "1.1.12"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.12.tgz#1c7117ed4fd33bc7f8c32f15e30d9041ab1fc56d"
-  integrity sha512-DC7FRGvnSWY3dQ10vxf18VGcjqvUAofcPtNIcIK7VY3rXyS6BiRsa3+IHTH+wzrYqmx8v8DeIRMJllLxqnkotw==
+"@suilend/sdk@^1.1.13":
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.13.tgz#1958f473b34ca30a73e9e4c735dc40dd39ac3cfd"
+  integrity sha512-nMs5zf4Q9HI0ETan0mBCvYnhMPWYZRyeKduDif84gixM8cIuSljT1nMcfMvIBbrRr+Udbo47IEb3qkSscJU7sg==
   dependencies:
     "@mysten/bcs" "1.1.0"
     "@mysten/sui" "1.14.2"
@@ -2699,10 +2699,10 @@
     p-limit "^3.1.0"
     uuid "^9.0.1"
 
-"@suilend/springsui-sdk@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.6.tgz#cbfd6913515a7014e141da09d538683de525c5e9"
-  integrity sha512-hkQGcLLVEpTUYOhGCLJXWh++4fn1xgADnJRG49fbMaF9SC3xW3iLnlpo84+ENY6U2Pw71FOda/SN1+mddDsE5g==
+"@suilend/springsui-sdk@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.8.tgz#5d84c159d1a2ca4c55dc31c06329e9c368e0c575"
+  integrity sha512-jKfYezkgXFjNfiaFI/RBSHZT/eLSqRlFhQTCduGJ+kQPkUinslsT5NCDH+nwvwyq635vTySHv1In56HcQFtctA==
   dependencies:
     "@mysten/bcs" "1.1.0"
     "@mysten/sui" "1.14.2"
