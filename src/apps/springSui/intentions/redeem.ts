@@ -19,8 +19,8 @@ export class RedeemIntention extends SpringSuiBaseIntention<RedeemIntentionData>
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, lstClient } = input;
-    console.log('RedeemIntention.build', suiClient, account, lstClient);
+    const { suiClient, account, lstClient, suilendClient, obligationOwnerCap, obligation } = input;
+    console.log('RedeemIntention.build', suiClient, account, lstClient, suilendClient, obligationOwnerCap, obligation);
 
     const transaction = new Transaction();
     await lstClient.redeemAndSendToUser(transaction as any, account.address, this.data.amount);

@@ -20,9 +20,8 @@ export class DepositIntention extends SuilendBaseIntention<DepositIntentionData>
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendUtils } = input;
-    const { suilendClient, obligationOwnerCaps } = suilendUtils;
-    console.log('DepositIntention.build', suiClient, account, suilendClient, obligationOwnerCaps);
+    const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
+    console.log('DepositIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
     const transaction = new Transaction();
     await suilendClient.depositIntoObligation(
@@ -30,7 +29,7 @@ export class DepositIntention extends SuilendBaseIntention<DepositIntentionData>
       this.data.coinType,
       this.data.value,
       transaction as any,
-      obligationOwnerCaps[0]?.id,
+      obligationOwnerCap?.id,
     );
 
     return transaction;

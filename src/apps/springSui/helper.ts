@@ -2,6 +2,9 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
+import { SuilendClient } from '@suilend/sdk';
+import { ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-market/structs';
+import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
 import { LstClient } from '@suilend/springsui-sdk';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
@@ -10,20 +13,36 @@ import { SuiNetworks } from '@/types';
 import { LIQUID_STAKING_INFO } from './constants';
 import { Decoder } from './decoder';
 import { MintIntention, MintIntentionData } from './intentions/mint';
+import { MintAndDepositIntention, MintAndDepositIntentionData } from './intentions/mintAndDeposit';
 import { RedeemIntention, RedeemIntentionData } from './intentions/redeem';
 import { TransactionSubType } from './types';
+import { getUtils as getSuilendUtils, Utils as SuilendUtils } from '../suilend/helper';
 
-const getLstClient = async (suiClient: SuiClient) => LstClient.initialize(suiClient as any, LIQUID_STAKING_INFO);
+type Utils = {
+  lstClient: LstClient;
+} & SuilendUtils;
 
-export type SpringSuiIntention = MintIntention | RedeemIntention;
+const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
+  const lstClient = await LstClient.initialize(suiClient as any, LIQUID_STAKING_INFO);
 
-export type SpringSuiIntentionData = MintIntentionData | RedeemIntentionData;
+  const suilendUtils = await getSuilendUtils(suiClient, account);
+
+  return { lstClient, ...suilendUtils };
+};
+
+export type SpringSuiIntention = MintIntention | MintAndDepositIntention | RedeemIntention;
+
+export type SpringSuiIntentionData = MintIntentionData | MintAndDepositIntentionData | RedeemIntentionData;
 
 export type IntentionInput = {
   network: SuiNetworks;
   suiClient: SuiClient;
   account: WalletAccount;
+
   lstClient: LstClient;
+  suilendClient: SuilendClient;
+  obligationOwnerCap: ObligationOwnerCap<string> | undefined;
+  obligation: Obligation<string> | undefined;
 };
 
 export class SpringSuiAppHelper implements IAppHelperInternal<SpringSuiIntentionData> {
@@ -31,7 +50,7 @@ export class SpringSuiAppHelper implements IAppHelperInternal<SpringSuiIntention
 
   supportSDK = '@mysten/sui' as const;
 
-  private lstClient: LstClient | undefined;
+  private utils: Utils | undefined;
 
   async deserialize(input: {
     transaction: Transaction;
@@ -43,8 +62,8 @@ export class SpringSuiAppHelper implements IAppHelperInternal<SpringSuiIntention
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: SpringSuiIntentionData }> {
     const { transaction, suiClient, account } = input;
 
-    if (!this.lstClient) {
-      this.lstClient = await getLstClient(suiClient);
+    if (!this.utils) {
+      this.utils = await getUtils(suiClient, account);
     }
 
     const simResult = await suiClient.devInspectTransactionBlock({
@@ -73,14 +92,17 @@ export class SpringSuiAppHelper implements IAppHelperInternal<SpringSuiIntention
   }): Promise<Transaction> {
     const { network, txSubType, intentionData, suiClient, account } = input;
 
-    if (!this.lstClient) {
-      this.lstClient = await getLstClient(suiClient);
+    if (!this.utils) {
+      this.utils = await getUtils(suiClient, account);
     }
 
     let intention: SpringSuiIntention;
     switch (txSubType) {
       case TransactionSubType.MINT:
         intention = MintIntention.fromData(intentionData as MintIntentionData);
+        break;
+      case TransactionSubType.MINT_AND_DEPOSIT:
+        intention = MintAndDepositIntention.fromData(intentionData as MintAndDepositIntentionData);
         break;
       case TransactionSubType.REDEEM:
         intention = RedeemIntention.fromData(intentionData as RedeemIntentionData);
@@ -92,7 +114,11 @@ export class SpringSuiAppHelper implements IAppHelperInternal<SpringSuiIntention
       network,
       suiClient,
       account,
-      lstClient: this.lstClient,
+
+      lstClient: this.utils.lstClient,
+      suilendClient: this.utils.suilendClient,
+      obligationOwnerCap: this.utils.obligationOwnerCaps?.[0],
+      obligation: this.utils.obligations?.[0],
     } as IntentionInput);
   }
 }

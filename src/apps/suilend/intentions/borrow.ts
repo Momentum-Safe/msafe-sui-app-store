@@ -20,12 +20,9 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendUtils } = input;
-    const { suilendClient, obligationOwnerCaps, obligations } = suilendUtils;
-    console.log('BorrowIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
+    const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
+    console.log('BorrowIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
-    const obligationOwnerCap = obligationOwnerCaps[0];
-    const obligation = obligations[0];
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
     }
@@ -33,8 +30,8 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
     const transaction = new Transaction();
     await suilendClient.borrowAndSendToUser(
       account.address,
-      obligationOwnerCaps[0].id,
-      obligations[0].id,
+      obligationOwnerCap.id,
+      obligation.id,
       this.data.coinType,
       this.data.value,
       transaction as any,

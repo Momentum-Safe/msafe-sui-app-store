@@ -18,13 +18,13 @@ import { RepayIntention, RepayIntentionData } from './intentions/repay';
 import { WithdrawIntention, WithdrawIntentionData } from './intentions/withdraw';
 import { TransactionSubType } from './types';
 
-export type SuilendUtils = {
-  suilendClient: SuilendClient | undefined;
-  obligationOwnerCaps: ObligationOwnerCap<string>[] | undefined;
-  obligations: Obligation<string>[] | undefined;
+export type Utils = {
+  suilendClient: SuilendClient;
+  obligationOwnerCaps: ObligationOwnerCap<string>[];
+  obligations: Obligation<string>[];
 };
 
-export const getSuilendUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<SuilendUtils> => {
+export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
   const suilendClient = await SuilendClient.initializeWithLendingMarket(
     await LendingMarket.fetch(suiClient as any, phantom(LENDING_MARKET_TYPE), LENDING_MARKET_ID),
     suiClient as any,
@@ -63,7 +63,10 @@ export type IntentionInput = {
   network: SuiNetworks;
   suiClient: SuiClient;
   account: WalletAccount;
-  suilendUtils: SuilendUtils;
+
+  suilendClient: SuilendClient;
+  obligationOwnerCap: ObligationOwnerCap<string> | undefined;
+  obligation: Obligation<string> | undefined;
 };
 
 export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData> {
@@ -71,7 +74,7 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
 
   supportSDK = '@mysten/sui' as const;
 
-  private suilendUtils: SuilendUtils;
+  private utils: Utils | undefined;
 
   async deserialize(input: {
     transaction: Transaction;
@@ -83,8 +86,8 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: SuilendIntentionData }> {
     const { transaction, suiClient, account } = input;
 
-    if (!this.suilendUtils) {
-      this.suilendUtils = await getSuilendUtils(suiClient, account);
+    if (!this.utils) {
+      this.utils = await getUtils(suiClient, account);
     }
 
     const simResult = await suiClient.devInspectTransactionBlock({
@@ -113,8 +116,8 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
   }): Promise<Transaction> {
     const { network, txSubType, intentionData, suiClient, account } = input;
 
-    if (!this.suilendUtils) {
-      this.suilendUtils = await getSuilendUtils(suiClient, account);
+    if (!this.utils) {
+      this.utils = await getUtils(suiClient, account);
     }
 
     let intention: SuilendIntention;
@@ -141,7 +144,10 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       network,
       suiClient,
       account,
-      suilendUtils: this.suilendUtils,
+
+      suilendClient: this.utils.suilendClient,
+      obligationOwnerCap: this.utils.obligationOwnerCaps?.[0],
+      obligation: this.utils.obligations?.[0],
     } as IntentionInput);
   }
 }
