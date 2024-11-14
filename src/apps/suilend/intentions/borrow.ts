@@ -20,7 +20,8 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
+    const { suiClient, account, suilendUtils } = input;
+    const { suilendClient, obligationOwnerCaps, obligations } = suilendUtils;
     console.log('BorrowIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
 
     const obligationOwnerCap = obligationOwnerCaps[0];
@@ -30,7 +31,7 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
     }
 
     const transaction = new Transaction();
-    await suilendClient.borrowFromObligation(
+    await suilendClient.borrowAndSendToUser(
       account.address,
       obligationOwnerCaps[0].id,
       obligations[0].id,

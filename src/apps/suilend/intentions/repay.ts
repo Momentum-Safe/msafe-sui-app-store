@@ -20,7 +20,8 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
+    const { suiClient, account, suilendUtils } = input;
+    const { suilendClient, obligationOwnerCaps, obligations } = suilendUtils;
     console.log('RepayIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
 
     const obligationOwnerCap = obligationOwnerCaps[0];

@@ -20,7 +20,8 @@ export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionDat
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
+    const { suiClient, account, suilendUtils } = input;
+    const { suilendClient, obligationOwnerCaps, obligations } = suilendUtils;
     console.log('WithdrawIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
 
     const obligationOwnerCap = obligationOwnerCaps[0];
@@ -30,7 +31,7 @@ export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionDat
     }
 
     const transaction = new Transaction();
-    await suilendClient.withdrawFromObligation(
+    await suilendClient.withdrawAndSendToUser(
       account.address,
       obligationOwnerCaps[0].id,
       obligations[0].id,

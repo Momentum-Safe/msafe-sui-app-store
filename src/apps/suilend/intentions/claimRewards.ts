@@ -23,7 +23,8 @@ export class ClaimRewardsIntention extends SuilendBaseIntention<ClaimRewardsInte
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
+    const { suiClient, account, suilendUtils } = input;
+    const { suilendClient, obligationOwnerCaps, obligations } = suilendUtils;
     console.log('ClaimRewardsIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
 
     const obligationOwnerCap = obligationOwnerCaps[0];
@@ -70,7 +71,7 @@ export class ClaimRewardsIntention extends SuilendBaseIntention<ClaimRewardsInte
     });
 
     const transaction = new Transaction();
-    await suilendClient.claimRewardsToObligation(
+    suilendClient.claimRewardsAndSendToUser(
       account.address,
       Object.values(rewardsMap)
         .flat()
