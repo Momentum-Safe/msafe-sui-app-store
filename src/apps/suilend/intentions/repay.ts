@@ -20,11 +20,9 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
-    console.log('RepayIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
+    const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
+    console.log('RepayIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
-    const obligationOwnerCap = obligationOwnerCaps[0];
-    const obligation = obligations[0];
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
     }
@@ -32,7 +30,7 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
     const transaction = new Transaction();
     await suilendClient.repayIntoObligation(
       account.address,
-      obligations[0].id,
+      obligation.id,
       this.data.coinType,
       this.data.value,
       transaction as any,

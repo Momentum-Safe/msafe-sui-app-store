@@ -23,11 +23,9 @@ export class ClaimRewardsIntention extends SuilendBaseIntention<ClaimRewardsInte
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
-    console.log('ClaimRewardsIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
+    const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
+    console.log('ClaimRewardsIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
-    const obligationOwnerCap = obligationOwnerCaps[0];
-    const obligation = obligations[0];
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
     }
@@ -70,7 +68,7 @@ export class ClaimRewardsIntention extends SuilendBaseIntention<ClaimRewardsInte
     });
 
     const transaction = new Transaction();
-    await suilendClient.claimRewardsToObligation(
+    suilendClient.claimRewardsAndSendToUser(
       account.address,
       Object.values(rewardsMap)
         .flat()

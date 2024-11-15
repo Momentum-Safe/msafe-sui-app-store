@@ -19,8 +19,8 @@ export class MintIntention extends SpringSuiBaseIntention<MintIntentionData> {
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, lstClient } = input;
-    console.log('MintIntention.build', suiClient, account, lstClient);
+    const { suiClient, account, lstClient, suilendClient, obligationOwnerCap, obligation } = input;
+    console.log('MintIntention.build', suiClient, account, lstClient, suilendClient, obligationOwnerCap, obligation);
 
     const transaction = new Transaction();
     lstClient.mintAndRebalanceAndSendToUser(transaction as any, account.address, this.data.amount);

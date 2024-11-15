@@ -20,20 +20,18 @@ export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionDat
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, suilendClient, obligationOwnerCaps, obligations } = input;
-    console.log('WithdrawIntention.build', suiClient, account, suilendClient, obligationOwnerCaps, obligations);
+    const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
+    console.log('WithdrawIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
-    const obligationOwnerCap = obligationOwnerCaps[0];
-    const obligation = obligations[0];
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
     }
 
     const transaction = new Transaction();
-    await suilendClient.withdrawFromObligation(
+    await suilendClient.withdrawAndSendToUser(
       account.address,
-      obligationOwnerCaps[0].id,
-      obligations[0].id,
+      obligationOwnerCap.id,
+      obligation.id,
       this.data.coinType,
       this.data.value,
       transaction as any,
