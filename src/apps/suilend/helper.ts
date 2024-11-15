@@ -140,14 +140,27 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       default:
         throw new Error('not implemented');
     }
+
+    const obligationId = window.localStorage.getItem('obligationId');
+    const obligation = this.utils.obligations?.find((o) => o.id === obligationId) ?? this.utils.obligations?.[0];
+    const obligationOwnerCap = this.utils.obligationOwnerCaps?.find((o) => o.obligationId === obligation?.id);
+    console.log(
+      'XXX obligationId:',
+      obligationId,
+      'obligations:',
+      this.utils.obligations,
+      'obligationOwnerCaps:',
+      this.utils.obligationOwnerCaps,
+    );
+
     return intention.build({
       network,
       suiClient,
       account,
 
       suilendClient: this.utils.suilendClient,
-      obligationOwnerCap: this.utils.obligationOwnerCaps?.[0],
-      obligation: this.utils.obligations?.[0],
+      obligationOwnerCap,
+      obligation,
     } as IntentionInput);
   }
 }
