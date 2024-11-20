@@ -2,6 +2,7 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
+import { maxU64 } from '@suilend/sdk';
 
 import { SuilendIntentionData } from './helper';
 import { BorrowIntentionData } from './intentions/borrow';
@@ -62,12 +63,12 @@ export class Decoder {
   private isWithdrawTransaction() {
     return (
       !!this.getMoveCallCommand('withdraw_ctokens') &&
-      !!this.getMoveCallCommand('redeem_ctokens_and_withdraw_liquidity')
+      !!this.getMoveCallCommand('redeem_ctokens_and_withdraw_liquidity_request')
     );
   }
 
   private isBorrowTransaction() {
-    return !!this.getMoveCallCommand('borrow');
+    return !!this.getMoveCallCommand('borrow_request');
   }
 
   private isRepayTransaction() {
@@ -99,13 +100,22 @@ export class Decoder {
   }
 
   private decodeWithdraw(): DecodeResult {
+    const commands = {
+      withdraw_ctokens: this.getMoveCallCommand('withdraw_ctokens'),
+    };
     const events = {
       RedeemEvent: this.simResult.events.find((event) => event.type.includes('lending_market::RedeemEvent')),
     };
 
     const coinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).coin_type.name as string);
-    const value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
+    let value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeWithdraw', coinType, value);
+
+    const isMax = (commands.withdraw_ctokens.MoveCall.arguments[4] as any).value === maxU64.toString();
+    console.log('XXX decodeWithdraw - isMax:', isMax, commands.withdraw_ctokens.MoveCall.arguments[4] as any);
+    if (isMax) {
+      value = maxU64.toString();
+    }
 
     return {
       txType: TransactionType.Other,
@@ -118,13 +128,22 @@ export class Decoder {
   }
 
   private decodeBorrow(): DecodeResult {
+    const commands = {
+      borrow_request: this.getMoveCallCommand('borrow_request'),
+    };
     const events = {
       BorrowEvent: this.simResult.events.find((event) => event.type.includes('lending_market::BorrowEvent')),
     };
 
     const coinType = normalizeStructTag((events.BorrowEvent.parsedJson as any).coin_type.name as string);
-    const value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
+    let value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
     console.log('Decoder.decodeBorrow', coinType, value);
+
+    const isMax = (commands.borrow_request.MoveCall.arguments[4] as any).value === maxU64.toString();
+    console.log('XXX decodeBorrow - isMax:', isMax, commands.borrow_request.MoveCall.arguments[4] as any);
+    if (isMax) {
+      value = maxU64.toString();
+    }
 
     return {
       txType: TransactionType.Other,

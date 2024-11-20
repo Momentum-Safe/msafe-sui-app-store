@@ -2024,10 +2024,10 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.14.2":
-  version "1.14.2"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.2.tgz#cc7eed6b0157bc5c1b8ec26c3b6bdf3ef130cb94"
-  integrity sha512-WkkVLoP9SXhcZYh/yqtXaM8zX8KPdCTfMUY9oNjHBIFBN3K0s6M5mFRPekZdG8+PVGyRLZI1mFQOs7cRyx4xKg==
+"@mysten/sui@1.14.3":
+  version "1.14.3"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.3.tgz#e8ad11ddfaa4543b52ec6e87eb9d49f92eb2e41f"
+  integrity sha512-5vhOnbSAT/9daMIDPYOp7q9j+6DXqjPAYEJy7ZbR9viBsyAx4UMChCwaLyjoYcJKvhrkDn4LTdDTJEUvpj7TTg==
   dependencies:
     "@graphql-typed-document-node/core" "^3.2.0"
     "@mysten/bcs" "1.1.0"
@@ -2687,27 +2687,26 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/sdk@^1.1.15":
-  version "1.1.15"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.15.tgz#7906991c7ee4270de521f119f8b689e4c3cac3ef"
-  integrity sha512-+gxRtfN0KAOnp87ZNeptMt3bk3065FCxK/DnOwFPiKmF76K5z0EL8w53HKk06WeFNflqxJO+2MOy9pNMWNofww==
+"@suilend/sdk@^1.1.23":
+  version "1.1.23"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.23.tgz#22fa0605d42e5821d608c7cc51f8d65fbaa02a00"
+  integrity sha512-+LVWcZ0IdHGqd+TDLTms6ZV+cUH9QiwZvMJ53X5b3dSMjVhGR2xdf+yzpSKAEwXa+jCX+ZwlQ8G00wHnR4HpIg==
   dependencies:
     "@mysten/bcs" "1.1.0"
-    "@mysten/sui" "1.14.2"
+    "@mysten/sui" "1.14.3"
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
-    p-limit "^3.1.0"
-    uuid "^9.0.1"
+    p-limit "3.1.0"
+    uuid "^11.0.3"
 
-"@suilend/springsui-sdk@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.10.tgz#953fccec40249a5f0ca3e3a22c7016305ca5acc0"
-  integrity sha512-c5lXJvaFHH2YnFEdWxlCetuIiwi31jJOvaqZB41ViWJZsHkiRYXFaWSr+6ThiUMMX+fryeKQKb1MApDwb1a6Eg==
+"@suilend/springsui-sdk@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.11.tgz#478e33fa0b737ff1c65bab009c2738e546523352"
+  integrity sha512-ow17fQKwT8aOg5Dmk9zkg7Znwpp1jul1sD39IW7wevw9mwpJTv4w15pnDOdMR36GK84J2qj8ZJP0cAVhAod7CQ==
   dependencies:
     "@mysten/bcs" "1.1.0"
-    "@mysten/sui" "1.14.2"
+    "@mysten/sui" "1.14.3"
     bignumber.js "^9.1.2"
-    uuid "^9.0.1"
 
 "@syntsugar/cc-graph@^0.1.1":
   version "0.1.1"
@@ -5770,19 +5769,19 @@ optionator@^0.9.3:
     type-check "^0.4.0"
     word-wrap "^1.2.5"
 
+p-limit@3.1.0, p-limit@^3.0.2, p-limit@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
+  integrity sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==
+  dependencies:
+    yocto-queue "^0.1.0"
+
 p-limit@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-2.3.0.tgz#3dd33c647a214fdfffd835933eb086da0dc21db1"
   integrity sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==
   dependencies:
     p-try "^2.0.0"
-
-p-limit@^3.0.2, p-limit@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
-  integrity sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==
-  dependencies:
-    yocto-queue "^0.1.0"
 
 p-locate@^4.1.0:
   version "4.1.0"
@@ -6752,6 +6751,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+uuid@^11.0.3:
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-11.0.3.tgz#248451cac9d1a4a4128033e765d137e2b2c49a3d"
+  integrity sha512-d0z310fCWv5dJwnX1Y/MncBAqGMKEzlBb1AOf7z9K8ALnd0utBX/msg/fA0+sbyN1ihbMsLhrBlnl1ak7Wa0rg==
 
 uuid@^9.0.0, uuid@^9.0.1:
   version "9.0.1"
