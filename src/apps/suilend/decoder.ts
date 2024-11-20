@@ -6,7 +6,8 @@ import { maxU64 } from '@suilend/sdk';
 
 import { SuilendIntentionData } from './helper';
 import { BorrowIntentionData } from './intentions/borrow';
-import { ClaimRewardsIntentionData } from './intentions/claimRewards';
+import { ClaimIntentionData } from './intentions/claim';
+import { ClaimAndDepositIntentionData } from './intentions/claimAndDeposit';
 import { DepositIntentionData } from './intentions/deposit';
 import { RepayIntentionData } from './intentions/repay';
 import { WithdrawIntentionData } from './intentions/withdraw';
@@ -37,8 +38,11 @@ export class Decoder {
     if (this.isRepayTransaction()) {
       return this.decodeRepay();
     }
-    if (this.isClaimRewardsTransaction()) {
-      return this.decodeClaimRewards();
+    if (this.isClaimTransaction()) {
+      return this.decodeClaim();
+    }
+    if (this.isClaimAndDepositTransaction()) {
+      return this.decodeClaimAndDeposit();
     }
 
     throw new Error(`Unknown transaction type`);
@@ -75,8 +79,12 @@ export class Decoder {
     return !!this.getMoveCallCommand('repay');
   }
 
-  private isClaimRewardsTransaction() {
-    return !!this.getMoveCallCommand('claim_rewards');
+  private isClaimTransaction() {
+    return !!this.getMoveCallCommand('claim_rewards') && !this.isDepositTransaction();
+  }
+
+  private isClaimAndDepositTransaction() {
+    return !!this.getMoveCallCommand('claim_rewards') && this.isDepositTransaction();
   }
 
   // decode*
@@ -174,7 +182,7 @@ export class Decoder {
     };
   }
 
-  private decodeClaimRewards(): DecodeResult {
+  private decodeClaim(): DecodeResult {
     const events = {
       ClaimReward: this.simResult.events.filter((event) => event.type.includes('lending_market::ClaimReward')),
     };
@@ -192,10 +200,18 @@ export class Decoder {
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.CLAIM_REWARDS,
+      type: TransactionSubType.CLAIM,
       intentionData: {
         value: result,
-      } as ClaimRewardsIntentionData,
+      } as ClaimIntentionData,
+    };
+  }
+
+  private decodeClaimAndDeposit(): DecodeResult {
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.CLAIM_AND_DEPOSIT,
+      intentionData: this.decodeClaim().intentionData as ClaimAndDepositIntentionData,
     };
   }
 }

@@ -81,19 +81,10 @@ export class Decoder {
   }
 
   private decodeMintAndDeposit(): DecodeResult {
-    const events = {
-      MintEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::MintEvent')),
-    };
-
-    const amount = (events.MintEvent.parsedJson as any).event.sui_amount_in as string;
-    console.log('Decoder.decodeMintAndDeposit', amount);
-
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.MINT_AND_DEPOSIT,
-      intentionData: {
-        amount,
-      } as MintAndDepositIntentionData,
+      intentionData: this.decodeMint().intentionData as MintAndDepositIntentionData,
     };
   }
 
