@@ -3,5 +3,6 @@ export enum TransactionSubType {
   WITHDRAW = 'withdraw',
   BORROW = 'borrow',
   REPAY = 'repay',
-  CLAIM_REWARDS = 'claimRewards',
+  CLAIM = 'claim',
+  CLAIM_AND_DEPOSIT = 'claimAndDeposit',
 }
