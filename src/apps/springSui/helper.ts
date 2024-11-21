@@ -2,7 +2,6 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
-import { LIQUID_STAKING_INFO_MAP, LstId } from '@suilend/frontend-sui';
 import { SuilendClient } from '@suilend/sdk';
 import { ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-market/structs';
 import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
@@ -11,6 +10,7 @@ import { LstClient } from '@suilend/springsui-sdk';
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
+import { LIQUID_STAKING_INFO } from './constants';
 import { Decoder } from './decoder';
 import { MintIntention, MintIntentionData } from './intentions/mint';
 import { MintAndDepositIntention, MintAndDepositIntentionData } from './intentions/mintAndDeposit';
@@ -23,7 +23,7 @@ type Utils = {
 } & SuilendUtils;
 
 const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
-  const lstClient = await LstClient.initialize(suiClient as any, LIQUID_STAKING_INFO_MAP[LstId.sSUI]);
+  const lstClient = await LstClient.initialize(suiClient as any, LIQUID_STAKING_INFO);
 
   const suilendUtils = await getSuilendUtils(suiClient, account);
 
