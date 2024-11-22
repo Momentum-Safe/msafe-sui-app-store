@@ -7,7 +7,6 @@ import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 
 import { ObjectTransferIntention, ObjectTransferIntentionData } from './object-transfer';
-import { PlainPayloadIntention, PlainPayloadIntentionData } from './plain-payload';
 
 export type CoreIntention = CoinTransferIntention | ObjectTransferIntention | PlainPayloadIntention;
 
@@ -41,9 +40,6 @@ export class CoreHelper implements IAppHelperInternalLegacy<CoreIntentionData> {
         break;
       case TransactionSubTypes.assets.object.send:
         intention = ObjectTransferIntention.fromData(input.intentionData as ObjectTransferIntentionData);
-        break;
-      case TransactionSubTypes.others.plain:
-        intention = PlainPayloadIntention.fromData(input.intentionData as PlainPayloadIntentionData);
         break;
       default:
         throw new Error('not implemented');
