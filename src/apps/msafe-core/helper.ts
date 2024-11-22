@@ -8,9 +8,9 @@ import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-c
 
 import { ObjectTransferIntention, ObjectTransferIntentionData } from './object-transfer';
 
-export type CoreIntention = CoinTransferIntention | ObjectTransferIntention | PlainPayloadIntention;
+export type CoreIntention = CoinTransferIntention | ObjectTransferIntention;
 
-export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData | PlainPayloadIntentionData;
+export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData;
 
 export class CoreHelper implements IAppHelperInternalLegacy<CoreIntentionData> {
   application = 'msafe-core';
