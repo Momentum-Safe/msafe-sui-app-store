@@ -180,7 +180,7 @@ export class Decoder {
 
     const isMax = inputValue === maxU64.toString();
     console.log(
-      'XXX decodeWithdraw - isMax:',
+      'XXX decodeBorrow - isMax:',
       isMax,
       'inputIndex:',
       inputIndex,
