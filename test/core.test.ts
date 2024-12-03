@@ -7,7 +7,7 @@ import { CoreIntentionData, CoreHelper } from '@/apps/msafe-core/helper';
 import { ObjectTransferIntention, ObjectTransferIntentionData } from '@/apps/msafe-core/object-transfer';
 
 import { Account } from './config';
-import { TestSuiteLegacy } from './TestSuite';
+import { TestSuiteLegacy } from './testSuite';
 
 const COIN_TRANSFER_TEST_INTENTION_DATA = {
   amount: '1000',
@@ -74,6 +74,8 @@ describe('MSafe Core main flow', () => {
       const txb = await ts.voteAndExecuteIntention();
 
       expect(txb).toBeDefined();
+      expect(txb.txb.blockData.sender).toBe(testWallet.address);
+      expect(txb.txb.blockData.version).toBe(1);
     });
   });
 

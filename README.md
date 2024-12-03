@@ -256,9 +256,9 @@ async deserialize(input: {
 export const appHelpers = new MSafeApps([new CoreHelper(), <your app helper instance here>]);
 ```
 
-### Test your helper
+### Test your integration with our test framework `TestSuite`
 
-- before create pull request, you should test your helper with test suite
+- before create pull request, you should test your helper with test suite, add at least one test case before creating the PR.
 - here is an example for using test suite to test your helper
 
 ```typescript
@@ -291,7 +291,9 @@ describe('Main flow', () => {
       // ...
       // programming your transaction block here
       // ...
-      await ts.signAndSubmitTransaction({ txb: appTxb });
+      await ts.signAndSubmitTransaction({ txb: appTxb, appContext: {
+        // ... your app context here, will be passed to your helper.deserialize method
+      } });
       const finalizedTxb = await ts.voteAndExecuteIntention();
 
       expect(finalizedTxb).toBeDefined();
