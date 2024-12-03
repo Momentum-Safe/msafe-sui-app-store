@@ -16,9 +16,10 @@ const COIN_TRANSFER_TEST_INTENTION_DATA = {
 } as CoinTransferIntentionData;
 
 const OBJECT_TRANSFER_TEST_INTENTION_DATA = {
+  // test coin item (regard it as an object)
   objectType: '0x2::coin::Coin<0x2::sui::SUI>',
-  objectId: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
-  receiver: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
+  objectId: '0xe8de48fb010e97fa763b0b653f9208bc36a3808819284f4344b8219493cfe739',
+  receiver: '0xa9743028e574b7abe4f0af88b08eb5a700a34ea3b1adc667d8d67dcdfa2b5233',
 } as ObjectTransferIntentionData;
 
 describe('MSafe Core main flow', () => {
@@ -80,31 +81,31 @@ describe('MSafe Core main flow', () => {
   });
 
   describe('Object transfer', () => {
-    // because ObjectTransferIntention build will check if object exists in mainnet
-    // so here will throw error: Object not found
-    it('build throw error', async () => {
-      expect(async () => {
-        await ts.appHelper.build({
-          network: 'sui:devnet',
-          txType: TransactionType.Assets,
-          txSubType: TransactionSubTypes.assets.object.send,
-          suiClient: new SuiClient({ url: getFullnodeUrl('mainnet') }),
-          account: Account,
-          intentionData: OBJECT_TRANSFER_TEST_INTENTION_DATA,
-        });
-      }).rejects.toThrow('Object not found');
-    });
-
-    it('Test intention serialization', () => {
-      const intention = ObjectTransferIntention.fromData({
-        receiver: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
-        objectType: '0x2::coin::Coin<0x2::sui::SUI>',
-        objectId: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
+    it('build object transfer transaction', async () => {
+      const txb = await ts.appHelper.build({
+        network: 'sui:devnet',
+        txType: TransactionType.Assets,
+        txSubType: TransactionSubTypes.assets.object.send,
+        suiClient: new SuiClient({ url: getFullnodeUrl('mainnet') }),
+        account: testWallet,
+        intentionData: OBJECT_TRANSFER_TEST_INTENTION_DATA,
       });
 
-      expect(intention.serialize()).toBe(
-        '{"objectId":"0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66","objectType":"0x2::coin::Coin<0x2::sui::SUI>","receiver":"0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66"}',
-      );
+      expect(txb).toBeDefined();
+      expect(txb.blockData.sender).toBe(testWallet.address);
+      expect(txb.blockData.version).toBe(1);
     });
+  });
+
+  it('Test intention serialization', () => {
+    const intention = ObjectTransferIntention.fromData({
+      receiver: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
+      objectType: '0x2::coin::Coin<0x2::sui::SUI>',
+      objectId: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
+    });
+
+    expect(intention.serialize()).toBe(
+      '{"objectId":"0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66","objectType":"0x2::coin::Coin<0x2::sui::SUI>","receiver":"0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66"}',
+    );
   });
 });
