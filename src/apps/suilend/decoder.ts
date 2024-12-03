@@ -56,12 +56,20 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
-  // is*
-  private isDepositTransaction() {
+  private hasDepositTransactionMoveCallCommands() {
     return (
       !!this.getMoveCallCommand('deposit_liquidity_and_mint_ctokens') &&
       !!this.getMoveCallCommand('deposit_ctokens_into_obligation')
     );
+  }
+
+  private hasClaimTransactionMoveCallCommands() {
+    return !!this.getMoveCallCommand('claim_rewards');
+  }
+
+  // is*
+  private isDepositTransaction() {
+    return !this.hasClaimTransactionMoveCallCommands() && this.hasDepositTransactionMoveCallCommands();
   }
 
   private isWithdrawTransaction() {
@@ -80,11 +88,11 @@ export class Decoder {
   }
 
   private isClaimTransaction() {
-    return !!this.getMoveCallCommand('claim_rewards') && !this.isDepositTransaction();
+    return this.hasClaimTransactionMoveCallCommands() && !this.hasDepositTransactionMoveCallCommands();
   }
 
   private isClaimAndDepositTransaction() {
-    return !!this.getMoveCallCommand('claim_rewards') && this.isDepositTransaction();
+    return this.hasClaimTransactionMoveCallCommands() && this.hasDepositTransactionMoveCallCommands();
   }
 
   // decode*
