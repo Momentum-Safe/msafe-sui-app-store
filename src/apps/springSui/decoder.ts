@@ -42,20 +42,24 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
-  // is*
-  private isSuilendDepositTransaction() {
+  private hasSuilendDepositTransactionMoveCallCommands() {
     return (
       !!this.getMoveCallCommand('deposit_liquidity_and_mint_ctokens') &&
       !!this.getMoveCallCommand('deposit_ctokens_into_obligation')
     );
   }
 
+  private hasMintTransactionMoveCallCommands() {
+    return !!this.getMoveCallCommand('mint');
+  }
+
+  // is*
   private isMintTransaction() {
-    return !!this.getMoveCallCommand('mint') && !this.isSuilendDepositTransaction();
+    return this.hasMintTransactionMoveCallCommands() && !this.hasSuilendDepositTransactionMoveCallCommands();
   }
 
   private isMintAndDepositTransaction() {
-    return !!this.getMoveCallCommand('mint') && this.isSuilendDepositTransaction();
+    return this.hasMintTransactionMoveCallCommands() && this.hasSuilendDepositTransactionMoveCallCommands();
   }
 
   private isRedeemTransaction() {
