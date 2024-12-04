@@ -1,8 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { fromB64, toHEX } from '@mysten/bcs';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
 import { maxU64 } from '@suilend/sdk';
+import BigNumber from 'bignumber.js';
 
 import { SuilendIntentionData } from './helper';
 import { BorrowIntentionData } from './intentions/borrow';
@@ -48,7 +50,13 @@ export class Decoder {
     throw new Error(`Unknown transaction type`);
   }
 
+  private get inputs() {
+    console.log('XXX this.transaction.getData().inputs', this.transaction.getData().inputs);
+    return this.transaction.getData().inputs;
+  }
+
   private get commands() {
+    console.log('XXX this.transaction.getData().commands', this.transaction.getData().commands);
     return this.transaction.getData().commands;
   }
 
@@ -56,12 +64,20 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
-  // is*
-  private isDepositTransaction() {
+  private hasDepositTransactionMoveCallCommands() {
     return (
       !!this.getMoveCallCommand('deposit_liquidity_and_mint_ctokens') &&
       !!this.getMoveCallCommand('deposit_ctokens_into_obligation')
     );
+  }
+
+  private hasClaimTransactionMoveCallCommands() {
+    return !!this.getMoveCallCommand('claim_rewards');
+  }
+
+  // is*
+  private isDepositTransaction() {
+    return !this.hasClaimTransactionMoveCallCommands() && this.hasDepositTransactionMoveCallCommands();
   }
 
   private isWithdrawTransaction() {
@@ -80,11 +96,11 @@ export class Decoder {
   }
 
   private isClaimTransaction() {
-    return !!this.getMoveCallCommand('claim_rewards') && !this.isDepositTransaction();
+    return this.hasClaimTransactionMoveCallCommands() && !this.hasDepositTransactionMoveCallCommands();
   }
 
   private isClaimAndDepositTransaction() {
-    return !!this.getMoveCallCommand('claim_rewards') && this.isDepositTransaction();
+    return this.hasClaimTransactionMoveCallCommands() && this.hasDepositTransactionMoveCallCommands();
   }
 
   // decode*
@@ -119,8 +135,20 @@ export class Decoder {
     let value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeWithdraw', coinType, value);
 
-    const isMax = (commands.withdraw_ctokens.MoveCall.arguments[4] as any).value === maxU64.toString();
-    console.log('XXX decodeWithdraw - isMax:', isMax, commands.withdraw_ctokens.MoveCall.arguments[4] as any);
+    const inputIndex = (commands.withdraw_ctokens.MoveCall.arguments[4] as any).Input as number;
+    const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
+
+    const isMax = inputValue === maxU64.toString();
+    console.log(
+      'XXX decodeWithdraw - isMax:',
+      isMax,
+      'inputIndex:',
+      inputIndex,
+      'inputValue:',
+      inputValue,
+      'maxU64.toString():',
+      maxU64.toString(),
+    );
     if (isMax) {
       value = maxU64.toString();
     }
@@ -147,8 +175,20 @@ export class Decoder {
     let value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
     console.log('Decoder.decodeBorrow', coinType, value);
 
-    const isMax = (commands.borrow_request.MoveCall.arguments[4] as any).value === maxU64.toString();
-    console.log('XXX decodeBorrow - isMax:', isMax, commands.borrow_request.MoveCall.arguments[4] as any);
+    const inputIndex = (commands.borrow_request.MoveCall.arguments[4] as any).Input as number;
+    const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
+
+    const isMax = inputValue === maxU64.toString();
+    console.log(
+      'XXX decodeBorrow - isMax:',
+      isMax,
+      'inputIndex:',
+      inputIndex,
+      'inputValue:',
+      inputValue,
+      'maxU64.toString():',
+      maxU64.toString(),
+    );
     if (isMax) {
       value = maxU64.toString();
     }
