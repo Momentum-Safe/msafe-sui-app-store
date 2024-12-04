@@ -256,6 +256,71 @@ async deserialize(input: {
 export const appHelpers = new MSafeApps([new CoreHelper(), <your app helper instance here>]);
 ```
 
+### Test your integration with our test framework `TestSuite`
+
+- before create pull request, you should test your helper with test suite, add at least one test case before creating the PR.
+- here is an example for using test suite to test your helper
+
+```typescript
+import { TestSuite, TestSuiteLegacy } from './TestSuite';
+
+describe('Main flow', () => {
+  const testWallet: WalletAccount = {
+    address: 'YOUR_TEST_WALLET_ADDRESS',
+    publicKey: HexToUint8Array('YOUR_TEST_WALLET_PUBLIC_KEY'),
+    chains: [SUI_MAINNET_CHAIN],
+    features: [],
+  };
+
+  // Choose one of the following to instantiate TestSuite according to your implementation (helper.supportSDK:  @mysten/sui or @mysten/sui.js)
+  // Instantiate TestSuite with your test wallet, network, and the app helper(implement with @mysten/sui)
+  
+  let ts: TestSuite<YourIntentionData>;
+
+  // (implement with @mysten/sui.js)
+  let ts: TestSuiteLegacy<YourIntentionData>;
+
+  beforeEach(() => {
+    ts = new TestSuite(testWallet, 'sui:mainnet', new YourHelper());
+  });
+
+  describe('overall flow', () => {
+    it('overall flow', async () => {
+      // Mock application and user behavior
+      const appTxb = new TransactionBlock();
+      // ...
+      // programming your transaction block here
+      // ...
+      await ts.signAndSubmitTransaction({ txb: appTxb, appContext: {
+        // ... your app context here, will be passed to your helper.deserialize method
+      } });
+      const finalizedTxb = await ts.voteAndExecuteIntention();
+
+      expect(finalizedTxb).toBeDefined();
+    });
+  });
+
+  it('deserialize', async () => {
+    const appTxb = new TransactionBlock();
+    // ...
+    // programming your transaction block here
+    // ...
+    await ts.signAndSubmitTransaction({ txb: appTxb });
+
+    expect(ts.pendingIntention).toBeDefined();
+  });
+
+  it('build', async () => {
+    ts.setIntention({} as any);
+    const txb = await ts.voteAndExecuteIntention();
+
+    expect(txb).toBeDefined();
+  });
+});
+```
+You can refer to `test/core.test.ts` for more details implementation.
+
+
 ### Create pull request for submit
 
 Once you finish development, you can create a PR to submit your changes.

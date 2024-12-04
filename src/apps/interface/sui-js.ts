@@ -15,6 +15,7 @@ export interface IAppHelperInternalLegacy<T> {
       network: SuiNetworks;
       suiClient: SuiClient;
       account: WalletAccount;
+      appContext?: any;
     },
   ): Promise<{
     txType: TransactionType;
