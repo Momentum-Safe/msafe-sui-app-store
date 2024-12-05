@@ -126,7 +126,7 @@ export default class TxBuilder {
       params.isCoinA,
       true,
       params.slippage,
-      TickMath.priceToSqrtPriceX64(new Decimal(pool.current_sqrt_price), pool.coin_a.decimals, pool.coin_b.decimals),
+      new BN(pool.current_sqrt_price),
     );
   }
 }

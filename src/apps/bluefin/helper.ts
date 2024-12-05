@@ -9,12 +9,19 @@ import { ClosePosition } from './intentions/close-position';
 import { CollectFee } from './intentions/collect-fee';
 import { CollectFeeAndRewards } from './intentions/collect-fee-and-rewards';
 import { CollectRewards } from './intentions/collect-rewards';
-import { OpenAndAddLiquidity } from './intentions/open-position-with-liquidity copy';
+import { OpenAndAddLiquidity } from './intentions/open-position-with-liquidity';
 import { ProvideLiquidity } from './intentions/provide-liquidity';
 import { RemoveLiquidity } from './intentions/remove-liquidity';
 import { SuiNetworks, BluefinIntentionData, TransactionSubType } from './types';
 
-export type BluefinIntention = OpenAndAddLiquidity | ProvideLiquidity | RemoveLiquidity | ClosePosition;
+export type BluefinIntention =
+  | OpenAndAddLiquidity
+  | ProvideLiquidity
+  | RemoveLiquidity
+  | ClosePosition
+  | CollectFee
+  | CollectRewards
+  | CollectFeeAndRewards;
 export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
   application = 'bluefin';
 
