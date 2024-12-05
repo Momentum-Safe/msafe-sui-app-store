@@ -1,3 +1,4 @@
+import { BluefinHelper } from '@/apps/bluefin/helper';
 import { BucketHelper } from '@/apps/bucket/helper';
 import { CetusHelper } from '@/apps/cetus/helper';
 import { MPayAppHelper } from '@/apps/mpay/helper';
@@ -24,4 +25,5 @@ export const appHelpers = MSafeApps.fromHelpers([
   new BucketHelper(),
   new SuilendAppHelper(),
   new SpringSuiAppHelper(),
+  new BluefinHelper(),
 ]);
