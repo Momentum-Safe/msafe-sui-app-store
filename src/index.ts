@@ -10,6 +10,7 @@ import { SpringSuiAppHelper } from '@/apps/springSui/helper';
 import { SuilendAppHelper } from '@/apps/suilend/helper';
 import { TURBOSAppHelper } from '@/apps/turbos/helper';
 import { VoloAppHelper } from '@/apps/volo/helper';
+import { AlphaFiHelper } from '@/apps/alphafi/helper';
 
 export const appHelpers = MSafeApps.fromHelpers([
   new CoreHelper(),
@@ -24,4 +25,5 @@ export const appHelpers = MSafeApps.fromHelpers([
   new BucketHelper(),
   new SuilendAppHelper(),
   new SpringSuiAppHelper(),
+  new AlphaFiHelper(),
 ]);
