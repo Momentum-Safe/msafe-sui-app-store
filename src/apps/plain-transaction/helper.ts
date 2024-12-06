@@ -1,5 +1,5 @@
 import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { fromHEX, toHEX } from '@mysten/bcs';
+import { fromHEX } from '@mysten/bcs';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
@@ -53,15 +53,16 @@ export class PlainTransactionHelper implements IAppHelperInternal<PlainTransacti
     network: SuiNetworks;
     suiClient: SuiClient;
     account: WalletAccount;
+    appContext: {
+      content: string;
+    };
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: PlainTransactionData }> {
-    const { transaction } = input;
-
-    const content = await transaction.build({ client: input.suiClient });
+    const { content } = input.appContext;
 
     return {
       txType: TransactionType.Other,
       txSubType: PlainTransactionType,
-      intentionData: { content: toHEX(content) },
+      intentionData: { content },
     };
   }
 
@@ -73,20 +74,8 @@ export class PlainTransactionHelper implements IAppHelperInternal<PlainTransacti
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<Transaction> {
-    const { account } = input;
-
+    const { suiClient, network, account } = input;
     const intention = PlainTransactionIntention.fromData(input.intentionData);
-    const tx = await intention.build({ suiClient: input.suiClient, network: input.network, account: input.account });
-    const client = input.suiClient;
-    const inspectResult = await client.devInspectTransactionBlock({
-      transactionBlock: tx,
-      sender: account.address,
-    });
-    const success = inspectResult.effects.status.status === 'success';
-    if (!success) {
-      throw new Error(inspectResult.effects.status.error);
-    }
-
-    return tx;
+    return intention.build({ suiClient, network, account });
   }
 }
