@@ -13,6 +13,7 @@ import { EntryBorrowIntention, EntryBorrowIntentionData } from './intentions/ent
 import { EntryDepositIntention, EntryDepositIntentionData } from './intentions/entry-deposit';
 import { EntryRepayIntention, EntryRepayIntentionData } from './intentions/entry-repay';
 import { EntryWithdrawIntention, EntryWithdrawIntentionData } from './intentions/entry-withdraw';
+import { EntryMultiDepositIntention, EntryMultiDepositIntentionData } from './intentions/multi-deposit';
 import { TransactionSubType } from './types';
 
 export type NAVIIntention =
@@ -20,6 +21,7 @@ export type NAVIIntention =
   | EntryBorrowIntention
   | EntryRepayIntention
   | EntryWithdrawIntention
+  | EntryMultiDepositIntention
   | ClaimRewardIntention;
 
 export type NAVIIntentionData =
@@ -27,6 +29,7 @@ export type NAVIIntentionData =
   | EntryBorrowIntentionData
   | EntryRepayIntentionData
   | EntryWithdrawIntentionData
+  | EntryMultiDepositIntentionData
   | ClaimRewardIntentionData;
 
 export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData> {
@@ -70,6 +73,9 @@ export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData
         break;
       case TransactionSubType.EntryWithdraw:
         intention = EntryWithdrawIntention.fromData(input.intentionData as EntryWithdrawIntentionData);
+        break;
+      case TransactionSubType.EntryMultiDeposit:
+        intention = EntryMultiDepositIntention.fromData(input.intentionData as EntryMultiDepositIntentionData);
         break;
       case TransactionSubType.ClaimReward:
         intention = ClaimRewardIntention.fromData(input.intentionData as ClaimRewardIntentionData);

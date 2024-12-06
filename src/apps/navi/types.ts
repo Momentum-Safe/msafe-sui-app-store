@@ -33,6 +33,7 @@ export enum TransactionSubType {
   EntryBorrow = 'EntryBorrow',
   EntryRepay = 'EntryRepay',
   EntryWithdraw = 'EntryWithdraw',
+  EntryMultiDeposit = 'EntryMultiDeposit',
   ClaimReward = 'ClaimReward',
 }
 

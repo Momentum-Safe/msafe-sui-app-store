@@ -35,6 +35,9 @@ export class Decoder {
     if (this.isEntryBorrowWithFeeTransaction()) {
       return this.decodeEntryBorrow();
     }
+    if (this.isEntryMultiDepositTransaction()) {
+      return this.decodeEntryMultiDeposit();
+    }
     if (this.isEntryDepositTransaction()) {
       return this.decodeEntryDeposit();
     }
@@ -65,6 +68,19 @@ export class Decoder {
 
   private isEntryBorrowWithFeeTransaction() {
     return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::borrow`);
+  }
+
+  private isEntryMultiDepositTransaction() {
+    const target = `${config.ProtocolPackage}::incentive_v2::entry_deposit`;
+    const transactions = this.transactions.filter((trans) => trans.kind === 'MoveCall' && trans.target === target);
+    const claimTransaction = this.transactions.find(
+      (trans) =>
+        trans.kind === 'MoveCall' && trans.target === `${config.ProtocolPackage}::incentive_v2::claim_reward_non_entry`,
+    );
+    if (claimTransaction) {
+      return false;
+    }
+    return transactions.length > 1;
   }
 
   private isEntryDepositTransaction() {
@@ -132,6 +148,33 @@ export class Decoder {
       intentionData: {
         amount,
         coinType: pool.coinType,
+      },
+    };
+  }
+
+  private decodeEntryMultiDeposit(): DecodeResult {
+    const list = [] as {
+      amount: number;
+      coinType: CoinType;
+    }[];
+    const target = `${config.ProtocolPackage}::incentive_v2::entry_deposit`;
+    this.transactions.forEach((trans) => {
+      if (trans.kind === 'MoveCall' && trans.target === target) {
+        const helper = new MoveCallHelper(trans, this.txb);
+        const assetId = helper.decodeInputU8(3);
+        const amount = helper.decodeInputU64(5);
+        const pool = this.findPoolByAssetId(assetId);
+        list.push({
+          coinType: pool.coinType,
+          amount,
+        });
+      }
+    });
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.EntryMultiDeposit,
+      intentionData: {
+        list,
       },
     };
   }
