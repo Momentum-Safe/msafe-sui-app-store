@@ -1,25 +1,24 @@
 import { SuiNetworks } from "@/types";
 import { Transaction } from "@mysten/sui/transactions";
 import { WalletAccount } from '@mysten/wallet-standard';
+import { buildLockedClaimTx } from "bucket-protocol-sdk";
 import { getBucketClient } from "./config";
-import { buildPsmTx } from "bucket-protocol-sdk";
 
-export interface PsmIntentionData {
+export interface LockClaimIntentionData {
     coinType: string;
-    amount: string;
+    lockedCount: number;
 }
 
-export const getPsmTx = async (
-    txbParams: PsmIntentionData,
+export const getLockClaimTx = async (
+    txbParams: LockClaimIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
-    isOut: boolean
 ): Promise<Transaction> => {
-    const { coinType, amount } = txbParams;
+    const { coinType, lockedCount } = txbParams;
 
     const tx = new Transaction();
     const client = getBucketClient(network, account);
-    await buildPsmTx(client, tx, coinType, amount, isOut, account.address);
+    await buildLockedClaimTx(client, tx, coinType, lockedCount, account.address);
 
     return tx;
 };

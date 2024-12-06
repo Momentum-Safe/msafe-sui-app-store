@@ -11,10 +11,37 @@ import { PsmOutIntention } from './intentions/psmOut';
 import { Decoder } from './decoder';
 import { TransactionSubType } from './types';
 import { PsmIntentionData } from './api/psm';
+import { BorrowIntention } from './intentions/borrow';
+import { WithdrawIntention } from './intentions/withdraw';
+import { RepayIntention } from './intentions/repay';
+import { CloseIntention } from './intentions/close';
+import { BorrowIntentionData } from './api/lending';
+import { WithdrawIntentionData } from './api/withdraw';
+import { RepayIntentionData } from './api/repay';
+import { CloseIntentionData } from './api/close';
+import { SBUCKClaimIntentionData, SBUCKDepositIntentionData, SBUCKUnstakeIntentionData, SBUCKWithdrawIntentionData } from './api/sbuck';
+import { SBUCKClaimIntention, SBUCKDepositIntention, SBUCKUnstakeIntention, SBUCKWithdrawIntention } from './intentions/sbuck';
 
-export type BucketIntention = PsmInIntention | PsmOutIntention;
+export type BucketIntention = PsmInIntention
+  | PsmOutIntention
+  | BorrowIntention
+  | WithdrawIntention
+  | RepayIntention
+  | CloseIntention
+  | SBUCKDepositIntention
+  | SBUCKWithdrawIntention
+  | SBUCKUnstakeIntention
+  | SBUCKClaimIntention;
 
-export type BucketIntentionData = PsmIntentionData;
+export type BucketIntentionData = PsmIntentionData
+  | BorrowIntentionData
+  | WithdrawIntentionData
+  | RepayIntentionData
+  | CloseIntentionData
+  | SBUCKDepositIntentionData
+  | SBUCKWithdrawIntention
+  | SBUCKUnstakeIntentionData
+  | SBUCKClaimIntentionData;
 
 export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
   application = 'bucket';
@@ -53,10 +80,34 @@ export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
     let intention: BucketIntention;
     switch (input.txSubType) {
       case TransactionSubType.PsmIn:
-        intention = PsmInIntention.fromData(input.intentionData);
+        intention = PsmInIntention.fromData(input.intentionData as PsmIntentionData);
         break;
       case TransactionSubType.PsmOut:
-        intention = PsmOutIntention.fromData(input.intentionData);
+        intention = PsmOutIntention.fromData(input.intentionData as PsmIntentionData);
+        break;
+      case TransactionSubType.Borrow:
+        intention = BorrowIntention.fromData(input.intentionData as BorrowIntentionData);
+        break;
+      case TransactionSubType.Withdraw:
+        intention = WithdrawIntention.fromData(input.intentionData as WithdrawIntentionData);
+        break;
+      case TransactionSubType.Repay:
+        intention = RepayIntention.fromData(input.intentionData as RepayIntentionData);
+        break;
+      case TransactionSubType.Close:
+        intention = CloseIntention.fromData(input.intentionData as CloseIntentionData);
+        break;
+      case TransactionSubType.SBUCKDeposit:
+        intention = SBUCKDepositIntention.fromData(input.intentionData as SBUCKDepositIntentionData);
+        break;
+      case TransactionSubType.SBUCKUnstake:
+        intention = SBUCKUnstakeIntention.fromData(input.intentionData as SBUCKUnstakeIntentionData);
+        break;
+      case TransactionSubType.SBUCKWithdraw:
+        intention = SBUCKWithdrawIntention.fromData(input.intentionData as SBUCKWithdrawIntentionData);
+        break;
+      case TransactionSubType.SBUCKClaim:
+        intention = SBUCKClaimIntention.fromData(input.intentionData as SBUCKClaimIntentionData);
         break;
       default:
         throw new Error('not implemented');
