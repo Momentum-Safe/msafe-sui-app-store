@@ -8,7 +8,6 @@ import { TransactionSubType } from '../types';
 export interface WithdrawIntentionData {
   xTokensAmount: string;
   poolName: PoolName;
-  amount: string;
 }
 
 export class WithdrawIntention extends BaseIntention<WithdrawIntentionData> {
