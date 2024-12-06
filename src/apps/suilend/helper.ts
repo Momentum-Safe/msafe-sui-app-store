@@ -12,7 +12,8 @@ import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';
 import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
-import { ClaimRewardsIntention, ClaimRewardsIntentionData } from './intentions/claimRewards';
+import { ClaimIntention, ClaimIntentionData } from './intentions/claim';
+import { ClaimAndDepositIntention, ClaimAndDepositIntentionData } from './intentions/claimAndDeposit';
 import { DepositIntention, DepositIntentionData } from './intentions/deposit';
 import { RepayIntention, RepayIntentionData } from './intentions/repay';
 import { WithdrawIntention, WithdrawIntentionData } from './intentions/withdraw';
@@ -50,14 +51,16 @@ export type SuilendIntention =
   | WithdrawIntention
   | BorrowIntention
   | RepayIntention
-  | ClaimRewardsIntention;
+  | ClaimIntention
+  | ClaimAndDepositIntention;
 
 export type SuilendIntentionData =
   | DepositIntentionData
   | WithdrawIntentionData
   | BorrowIntentionData
   | RepayIntentionData
-  | ClaimRewardsIntentionData;
+  | ClaimIntentionData
+  | ClaimAndDepositIntentionData;
 
 export type IntentionInput = {
   network: SuiNetworks;
@@ -134,8 +137,11 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       case TransactionSubType.REPAY:
         intention = RepayIntention.fromData(intentionData as RepayIntentionData);
         break;
-      case TransactionSubType.CLAIM_REWARDS:
-        intention = ClaimRewardsIntention.fromData(intentionData as ClaimRewardsIntentionData);
+      case TransactionSubType.CLAIM:
+        intention = ClaimIntention.fromData(intentionData as ClaimIntentionData);
+        break;
+      case TransactionSubType.CLAIM_AND_DEPOSIT:
+        intention = ClaimAndDepositIntention.fromData(intentionData as ClaimAndDepositIntentionData);
         break;
       default:
         throw new Error('not implemented');

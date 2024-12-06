@@ -42,20 +42,24 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
-  // is*
-  private isSuilendDepositTransaction() {
+  private hasSuilendDepositTransactionMoveCallCommands() {
     return (
       !!this.getMoveCallCommand('deposit_liquidity_and_mint_ctokens') &&
       !!this.getMoveCallCommand('deposit_ctokens_into_obligation')
     );
   }
 
+  private hasMintTransactionMoveCallCommands() {
+    return !!this.getMoveCallCommand('mint');
+  }
+
+  // is*
   private isMintTransaction() {
-    return !!this.getMoveCallCommand('mint') && !this.isSuilendDepositTransaction();
+    return this.hasMintTransactionMoveCallCommands() && !this.hasSuilendDepositTransactionMoveCallCommands();
   }
 
   private isMintAndDepositTransaction() {
-    return !!this.getMoveCallCommand('mint') && this.isSuilendDepositTransaction();
+    return this.hasMintTransactionMoveCallCommands() && this.hasSuilendDepositTransactionMoveCallCommands();
   }
 
   private isRedeemTransaction() {
@@ -81,19 +85,10 @@ export class Decoder {
   }
 
   private decodeMintAndDeposit(): DecodeResult {
-    const events = {
-      MintEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::MintEvent')),
-    };
-
-    const amount = (events.MintEvent.parsedJson as any).event.sui_amount_in as string;
-    console.log('Decoder.decodeMintAndDeposit', amount);
-
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.MINT_AND_DEPOSIT,
-      intentionData: {
-        amount,
-      } as MintAndDepositIntentionData,
+      intentionData: this.decodeMint().intentionData as MintAndDepositIntentionData,
     };
   }
 

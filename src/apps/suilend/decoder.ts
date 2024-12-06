@@ -1,11 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { fromB64, toHEX } from '@mysten/bcs';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
+import { maxU64 } from '@suilend/sdk';
+import BigNumber from 'bignumber.js';
 
 import { SuilendIntentionData } from './helper';
 import { BorrowIntentionData } from './intentions/borrow';
-import { ClaimRewardsIntentionData } from './intentions/claimRewards';
+import { ClaimIntentionData } from './intentions/claim';
+import { ClaimAndDepositIntentionData } from './intentions/claimAndDeposit';
 import { DepositIntentionData } from './intentions/deposit';
 import { RepayIntentionData } from './intentions/repay';
 import { WithdrawIntentionData } from './intentions/withdraw';
@@ -36,14 +40,23 @@ export class Decoder {
     if (this.isRepayTransaction()) {
       return this.decodeRepay();
     }
-    if (this.isClaimRewardsTransaction()) {
-      return this.decodeClaimRewards();
+    if (this.isClaimTransaction()) {
+      return this.decodeClaim();
+    }
+    if (this.isClaimAndDepositTransaction()) {
+      return this.decodeClaimAndDeposit();
     }
 
     throw new Error(`Unknown transaction type`);
   }
 
+  private get inputs() {
+    console.log('XXX this.transaction.getData().inputs', this.transaction.getData().inputs);
+    return this.transaction.getData().inputs;
+  }
+
   private get commands() {
+    console.log('XXX this.transaction.getData().commands', this.transaction.getData().commands);
     return this.transaction.getData().commands;
   }
 
@@ -51,31 +64,43 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
-  // is*
-  private isDepositTransaction() {
+  private hasDepositTransactionMoveCallCommands() {
     return (
       !!this.getMoveCallCommand('deposit_liquidity_and_mint_ctokens') &&
       !!this.getMoveCallCommand('deposit_ctokens_into_obligation')
     );
   }
 
+  private hasClaimTransactionMoveCallCommands() {
+    return !!this.getMoveCallCommand('claim_rewards');
+  }
+
+  // is*
+  private isDepositTransaction() {
+    return !this.hasClaimTransactionMoveCallCommands() && this.hasDepositTransactionMoveCallCommands();
+  }
+
   private isWithdrawTransaction() {
     return (
       !!this.getMoveCallCommand('withdraw_ctokens') &&
-      !!this.getMoveCallCommand('redeem_ctokens_and_withdraw_liquidity')
+      !!this.getMoveCallCommand('redeem_ctokens_and_withdraw_liquidity_request')
     );
   }
 
   private isBorrowTransaction() {
-    return !!this.getMoveCallCommand('borrow');
+    return !!this.getMoveCallCommand('borrow_request');
   }
 
   private isRepayTransaction() {
     return !!this.getMoveCallCommand('repay');
   }
 
-  private isClaimRewardsTransaction() {
-    return !!this.getMoveCallCommand('claim_rewards');
+  private isClaimTransaction() {
+    return this.hasClaimTransactionMoveCallCommands() && !this.hasDepositTransactionMoveCallCommands();
+  }
+
+  private isClaimAndDepositTransaction() {
+    return this.hasClaimTransactionMoveCallCommands() && this.hasDepositTransactionMoveCallCommands();
   }
 
   // decode*
@@ -99,13 +124,34 @@ export class Decoder {
   }
 
   private decodeWithdraw(): DecodeResult {
+    const commands = {
+      withdraw_ctokens: this.getMoveCallCommand('withdraw_ctokens'),
+    };
     const events = {
       RedeemEvent: this.simResult.events.find((event) => event.type.includes('lending_market::RedeemEvent')),
     };
 
     const coinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).coin_type.name as string);
-    const value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
+    let value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
     console.log('Decoder.decodeWithdraw', coinType, value);
+
+    const inputIndex = (commands.withdraw_ctokens.MoveCall.arguments[4] as any).Input as number;
+    const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
+
+    const isMax = inputValue === maxU64.toString();
+    console.log(
+      'XXX decodeWithdraw - isMax:',
+      isMax,
+      'inputIndex:',
+      inputIndex,
+      'inputValue:',
+      inputValue,
+      'maxU64.toString():',
+      maxU64.toString(),
+    );
+    if (isMax) {
+      value = maxU64.toString();
+    }
 
     return {
       txType: TransactionType.Other,
@@ -118,13 +164,34 @@ export class Decoder {
   }
 
   private decodeBorrow(): DecodeResult {
+    const commands = {
+      borrow_request: this.getMoveCallCommand('borrow_request'),
+    };
     const events = {
       BorrowEvent: this.simResult.events.find((event) => event.type.includes('lending_market::BorrowEvent')),
     };
 
     const coinType = normalizeStructTag((events.BorrowEvent.parsedJson as any).coin_type.name as string);
-    const value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
+    let value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
     console.log('Decoder.decodeBorrow', coinType, value);
+
+    const inputIndex = (commands.borrow_request.MoveCall.arguments[4] as any).Input as number;
+    const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
+
+    const isMax = inputValue === maxU64.toString();
+    console.log(
+      'XXX decodeBorrow - isMax:',
+      isMax,
+      'inputIndex:',
+      inputIndex,
+      'inputValue:',
+      inputValue,
+      'maxU64.toString():',
+      maxU64.toString(),
+    );
+    if (isMax) {
+      value = maxU64.toString();
+    }
 
     return {
       txType: TransactionType.Other,
@@ -155,7 +222,7 @@ export class Decoder {
     };
   }
 
-  private decodeClaimRewards(): DecodeResult {
+  private decodeClaim(): DecodeResult {
     const events = {
       ClaimReward: this.simResult.events.filter((event) => event.type.includes('lending_market::ClaimReward')),
     };
@@ -173,10 +240,18 @@ export class Decoder {
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.CLAIM_REWARDS,
+      type: TransactionSubType.CLAIM,
       intentionData: {
         value: result,
-      } as ClaimRewardsIntentionData,
+      } as ClaimIntentionData,
+    };
+  }
+
+  private decodeClaimAndDeposit(): DecodeResult {
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.CLAIM_AND_DEPOSIT,
+      intentionData: this.decodeClaim().intentionData as ClaimAndDepositIntentionData,
     };
   }
 }
