@@ -7,13 +7,13 @@ import { getBucketClient } from "./config";
 export interface SBUCKDepositIntentionData {
     coinType: string;
     amount: string;
-    isStaked: boolean;
+    isStake: boolean;
 }
 
 export interface SBUCKUnstakeIntentionData {
     stakeProofs: string[];
     amount: string;
-    isStaked: boolean;
+    isStake: boolean;
     toBuck: boolean;
 }
 
@@ -31,11 +31,11 @@ export const getSBUCKDepositTx = async (
     account: WalletAccount,
     network: SuiNetworks,
 ): Promise<Transaction> => {
-    const { coinType, amount, isStaked } = txbParams;
+    const { coinType, amount, isStake } = txbParams;
 
     const tx = new Transaction();
     const client = getBucketClient(network, account);
-    await buildSBUCKDepositTx(client, tx, coinType, amount, account.address, isStaked);
+    await buildSBUCKDepositTx(client, tx, coinType, amount, account.address, isStake);
 
     return tx;
 };
@@ -45,11 +45,11 @@ export const getSBUCKUnstakeTx = async (
     account: WalletAccount,
     network: SuiNetworks,
 ): Promise<Transaction> => {
-    const { stakeProofs, amount, isStaked, toBuck } = txbParams;
+    const { stakeProofs, amount, isStake, toBuck } = txbParams;
 
     const tx = new Transaction();
     const client = getBucketClient(network, account);
-    await buildSBUCKUnstakeTx(client, tx, stakeProofs, amount, account.address, isStaked, toBuck);
+    await buildSBUCKUnstakeTx(client, tx, stakeProofs, amount, account.address, isStake, toBuck);
 
     return tx;
 };

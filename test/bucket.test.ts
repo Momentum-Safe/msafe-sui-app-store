@@ -1,4 +1,4 @@
-import { BorrowIntentionData } from "@/apps/bucket/api/lending";
+import { BorrowIntentionData, RepayIntentionData, WithdrawIntentionData } from "@/apps/bucket/api/lending";
 import { LockClaimIntentionData } from "@/apps/bucket/api/lock";
 import { PsmIntentionData } from "@/apps/bucket/api/psm";
 import { SBUCKClaimIntentionData, SBUCKDepositIntentionData, SBUCKUnstakeIntentionData, SBUCKWithdrawIntentionData } from "@/apps/bucket/api/sbuck";
@@ -6,7 +6,9 @@ import { Decoder } from "@/apps/bucket/decoder";
 import { PsmInIntention } from "@/apps/bucket/intentions/psmIn";
 import { fromB64 } from "@mysten/bcs";
 import { Transaction } from "@mysten/sui/transactions";
-import { COINS_TYPE_LIST } from "bucket-protocol-sdk";
+import { BucketClient, buildBorrowTx, buildLockedClaimTx, buildRepayTx, buildSBUCKClaimTx, buildSBUCKDepositTx, buildSBUCKUnstakeTx, buildSBUCKWithdrawTx, buildWithdrawTx, COINS_TYPE_LIST } from "bucket-protocol-sdk";
+
+const address = "0x3662e00a85fdae17d5732770b8d0658105fe9c0ca91c259790e6fb1498686abc";
 
 describe('Bucket App', () => {
   it('Test Bucket intention serialization', () => {
@@ -48,62 +50,154 @@ describe('Bucket App', () => {
     expect(intentionData.amount).toBe('10000000000');
   });
 
-  // it('Test borrow deserialize', () => {
-  //   const transaction = Transaction.from(fromB64("AAALAQDe//UQ5ECYoUEDQfB1xYTmV3Wzgwzm8tPD4N0ZMC7/ka59uBgAAAAAIHyw2UTx25gIc2/Y2ShfrGTTtVviAMmCFhGsczzmieuvAQADSs/r1kgVL4rnozRAbxayZ6G2RpGfI8aAxVWldlf6u7g9kxgAAAAAIE0uqz/DJ3zJsakBXzhO+lfY8pzQoiK+JozzyA+WD0KZAAgAnikmCAAAAAEB9XjXP1SzBoFm1zwaHt1aEFzoL5f1qOoawX1T4BMqEHjq9E4AAAAAAAEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAQAAAAAAAAAAAQG8pHQTNjg1K6g8z3tckx1Q92SwlVDhZhLJ9w8eIfP1lJ15GAAAAAAAAAEBFe2nMwyPmcMOQwtNgv16sq8+rUrhcEb8siSqm605T2sXbmQYAAAAAAAACOCuDFsOAAAAAQGePasTISsn9UNEFpOdtd7GoxnRW4moT9B00D7OY1DT3xcjYQAAAAAAAQABAAAgNmLgCoX9rhfVcydwuNBlgQX+nAypHCWXkOb7FJhoarwIAwEAAAEBAQACAQAAAQECAADxv884I79BiHfAnp2uVOwOntr+u/VnrxWBLrPqEW+9Bw1idWNrZXRfb3JhY2xlHXVwZGF0ZV9wcmljZV9mcm9tX3N3aXRjaGJvYXJkAQcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgNzdWkDU1VJAAMBAwABBAABBQAAkV0RMg833bOGNn286BFU4bTPg+ajA53xg6xK54Exx4YJc3N1aV9ydWxlDHVwZGF0ZV9wcmljZQEHg1VokfSg8jPOewXP5/lX1AIEkqNPVAWyy5N30GC+9L8Kc3ByaW5nX3N1aQpTUFJJTkdfU1VJAAMBAwABBgABBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIEY29pbgxpbnRvX2JhbGFuY2UBB4NVaJH0oPIzznsFz+f5V9QCBJKjT1QFssuTd9BgvvS/CnNwcmluZ19zdWkKU1BSSU5HX1NVSQABAgEAAKHx6To5LwEcaRddkGT1xMtF7NRkaMHJ9TfT76HQIcuVEWJ1Y2tldF9vcGVyYXRpb25zC2hpZ2hfYm9ycm93AQeDVWiR9KDyM857Bc/n+VfUAgSSo09UBbLLk3fQYL70vwpzcHJpbmdfc3VpClNQUklOR19TVUkABgEIAAEDAAEEAAIEAAEHAAEJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgRjb2luDGZyb21fYmFsYW5jZQEHzn/3eoPqDLb9Ob2HSOLsiaP0Ho79w/TrEj4Mo3sYTbIEYnVjawRCVUNLAAECBQABAQIGAAEKADZi4AqF/a4X1XMncLjQZYEF/pwMqRwll5Dm+xSYaGq8AbYwmJKjDv3ycwogXfZoJ9I8XIBbPE6vOYcwLQl4dPArrn24GAAAAAAgzyhxuJmpK/tcZIBoT2nyx7H3XTZD3cN9KPDn2KevNDk2YuAKhf2uF9VzJ3C40GWBBf6cDKkcJZeQ5vsUmGhqvO4CAAAAAAAAGFyoAAAAAAAA"));
-  //   const decoder = new Decoder(transaction);
-  //   const result = decoder.decode();
+  it('Test borrow deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const collateralType = COINS_TYPE_LIST.SUI;
+    const collateralAmount = "10000000000";
+    const borrowAmount = "50000";
+    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
+    const strapId: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010002";
+    await buildBorrowTx(bucketClient, tx, collateralType, collateralAmount, borrowAmount, address, insertionPlace, strapId);
 
-  //   expect(result.type).toBe('borrow');
-  //   const intentionData = result.intentionData as BorrowIntentionData;
-  //   expect(intentionData.collateralType).toBe('0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI');
-  //   expect(intentionData.collateralAmount).toBe('35000000000');
-  //   expect(intentionData.borrowAmount).toBe('0');
-  //   expect(intentionData.strapId).toBe('');
-  // });
-
-  // it('Test repay (close) deserialize', () => {
-  //   const transaction = Transaction.from(fromB64("AAAHAQAdsVFJZRwxeLIUsY0WwnPw+b4JUazOjE2lFn8ShPoZ1EoFwRgAAAAAIOzrOltD6ZMcSw3ssQUZe2ztGGqj9fVnJ9A6fXDhdVYzAQAypbNPPZyNmklsCrNRT/hVF0YNO9U9jNx1uj1/IRVVnq59uBgAAAAAIGer28UX2wLZ0uoAdjxGnuSVYaNfBvmHCS+EVVHAWW33AQH1eNc/VLMGgWbXPBoe3VoQXOgvl/Wo6hrBfVPgEyoQeOr0TgAAAAAAAQEBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYBAAAAAAAAAAABAbykdBM2ODUrqDzPe1yTHVD3ZLCVUOFmEsn3Dx4h8/WUnXkYAAAAAAAAAQEV7aczDI+Zww5DC02C/Xqyrz6tSuFwRvyyJKqbrTlPaxduZBgAAAAAAAEBnj2rEyErJ/VDRBaTnbXexqMZ0VuJqE/QdNA+zmNQ098XI2EAAAAAAAEEAwEAAAEBAQAA8b/POCO/QYh3wJ6drlTsDp7a/rv1Z68VgS6z6hFvvQcNYnVja2V0X29yYWNsZR11cGRhdGVfcHJpY2VfZnJvbV9zd2l0Y2hib2FyZAEHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIDc3VpA1NVSQADAQIAAQMAAQQAAJFdETIPN92zhjZ9vOgRVOG0z4PmowOd8YOsSueBMceGCXNzdWlfcnVsZQx1cGRhdGVfcHJpY2UBB4NVaJH0oPIzznsFz+f5V9QCBJKjT1QFssuTd9BgvvS/CnNwcmluZ19zdWkKU1BSSU5HX1NVSQADAQIAAQUAAQMAAKHx6To5LwEcaRddkGT1xMtF7NRkaMHJ9TfT76HQIcuVEWJ1Y2tldF9vcGVyYXRpb25zC2Z1bGx5X3JlcGF5AQeDVWiR9KDyM857Bc/n+VfUAgSSo09UBbLLk3fQYL70vwpzcHJpbmdfc3VpClNQUklOR19TVUkAAwEGAAEAAAEDADZi4AqF/a4X1XMncLjQZYEF/pwMqRwll5Dm+xSYaGq8AbYwmJKjDv3ycwogXfZoJ9I8XIBbPE6vOYcwLQl4dPArSgXBGAAAAAAgxdsLd3il6322ehdr8Lr1tRNW84QK71UAWNo7A7g6LQs2YuAKhf2uF9VzJ3C40GWBBf6cDKkcJZeQ5vsUmGhqvO4CAAAAAAAAYOMWAAAAAAAA"));
-  //   const decoder = new Decoder(transaction);
-  //   const result = decoder.decode();
-
-  //   expect(result.type).toBe('repay');
-  //   const intentionData = result.intentionData as RepayIntentionData;
-  //   expect(intentionData.collateralType).toBe('0x83556891f4a0f233ce7b05cfe7f957d4020492a34f5405b2cb9377d060bef4bf::spring_sui::SPRING_SUI');
-  //   expect(intentionData.repayAmount).toBe('35000000000');
-  //   expect(intentionData.withdrawAmount).toBe('0');
-  //   expect(intentionData.strapId).toBe('');
-  // });
-
-  it('Test sbuck-deposit deserialize', () => {
-    const transaction = Transaction.from(fromB64("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"));
-    const decoder = new Decoder(transaction);
+    const decoder = new Decoder(tx);
     const result = decoder.decode();
 
-    expect(result.type).toBe('sbuck-deposit');
-    const intentionData = result.intentionData as SBUCKDepositIntentionData;
-    expect(intentionData.coinType).toBe('0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC');
-    expect(intentionData.amount).toBe('10000000');
+    expect(result.type).toBe('borrow');
+    const intentionData = result.intentionData as BorrowIntentionData;
+    expect(intentionData.collateralType).toBe(collateralType);
+    expect(intentionData.collateralAmount).toBe(collateralAmount);
+    expect(intentionData.borrowAmount).toBe(borrowAmount);
+    expect(intentionData.insertionPlace).toBe(insertionPlace);
+    expect(intentionData.strapId).toBe(strapId);
   });
 
-  // it('Test sbuck-unstake deserialize', () => {
-  //   const transaction = Transaction.from(fromB64("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"));
-  //   const decoder = new Decoder(transaction);
-  //   const result = decoder.decode();
+  it('Test withdraw deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const collateralType = COINS_TYPE_LIST.SUI;
+    const withdrawAmount = "50000";
+    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
+    const strapId: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010002";
+    await buildWithdrawTx(bucketClient, tx, collateralType, withdrawAmount, address, insertionPlace, strapId);
 
-  //   expect(result.type).toBe('sbuck-unstake');
-  //   const intentionData = result.intentionData as SBUCKUnstakeIntentionData;
-  //   expect(intentionData.amount).toBe('10000000000');
-  // });
-
-  it('Test sbuck-lock-claim deserialize', () => {
-    const transaction = Transaction.from(fromB64("AAAFAQHwrAB/NTLAYSqZGDFg9LwNKkHumpgBProZSddTwtf2tTSSGxQAAAAAAQEBvfkfVYwrYWYuWDnbYAGY7aZtUC5MEMT8XGg/nKyhM1ncHDIFAAAAAAEBAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAQAAAAAAAAAAAAgAAAAAAAAAAAAgNmLgCoX9rhfVcydwuNBlgQX+nAypHCWXkOb7FJhoarwEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACBGNvaW4EemVybwEHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIDc3VpA1NVSQAAAJxyiTQeB9vrCbv4Ba3mY6Up6hLUgmpj1Gf2MmuP0ME+CnByb29mX3J1bGUFY2xhaW0BBxeY+E7nIXYRTdv1UlptlkxfjqGzc40I1Q0NPeTPWEiEBXNidWNrBVNCVUNLAAQBAAABAQABAgABAwADAgAAAQMBAAAAAQECAAABBAA2YuAKhf2uF9VzJ3C40GWBBf6cDKkcJZeQ5vsUmGhqvAH3BelX3LBFpCF8FjLdsVdIRhYPCMFst+9eEODlFidR0uXQxxkAAAAAIIJqtKE93LhDmtjh3Pex5YJ9T60gdN92b7ntgq6h9/SQNmLgCoX9rhfVcydwuNBlgQX+nAypHCWXkOb7FJhoarzuAgAAAAAAAIx6NgAAAAAAAA=="));
-    const decoder = new Decoder(transaction);
+    const decoder = new Decoder(tx);
     const result = decoder.decode();
 
+    expect(result.type).toBe('withdraw');
+    const intentionData = result.intentionData as WithdrawIntentionData;
+    expect(intentionData.collateralType).toBe(collateralType);
+    expect(intentionData.withdrawAmount).toBe(withdrawAmount);
+    expect(intentionData.insertionPlace).toBe(insertionPlace);
+    expect(intentionData.strapId).toBe(strapId);
+  });
+
+  it('Test repay deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const collateralType = COINS_TYPE_LIST.SUI;
+    const repayAmount = "10000000000";
+    const withdrawAmount = "50000";
+    const isSurplus = false;
+    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
+    const strapId: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010002";
+    await buildRepayTx(bucketClient, tx, collateralType, repayAmount, withdrawAmount, address, isSurplus, insertionPlace, strapId);
+
+    // const decoder = new Decoder(tx);
+    // const result = decoder.decode();
+    // expect(result.type).toBe('repay');
+    // const intentionData = result.intentionData as RepayIntentionData;
+    // expect(intentionData.collateralType).toBe(collateralType);
+    // expect(intentionData.repayAmount).toBe(repayAmount);
+    // expect(intentionData.withdrawAmount).toBe(withdrawAmount);
+    // expect(intentionData.strapId).toBe('');
+  });
+
+  it('Test sbuck-deposit deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.BUCK;
+    const amount = "10000000000";
+    const isStake = true;
+    await buildSBUCKDepositTx(bucketClient, tx, coinType, amount, address, isStake);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+    expect(result.type).toBe('sbuck-deposit');
+    const intentionData = result.intentionData as SBUCKDepositIntentionData;
+    expect(intentionData.coinType).toBe(coinType);
+    expect(intentionData.amount).toBe(amount);
+    expect(intentionData.isStake).toBe(isStake);
+  });
+
+  it('Test sbuck-unstake deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const amount = '1000000000';
+    const isStake = true;
+    const toBuck = true;
+    const stakeProofs: string[] = [
+      "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000000000000000000000000000003"
+    ];
+    await buildSBUCKUnstakeTx(bucketClient, tx, stakeProofs, amount, address, isStake, toBuck);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+    expect(result.type).toBe('sbuck-unstake');
+    const intentionData = result.intentionData as SBUCKUnstakeIntentionData;
+    expect(intentionData.amount).toBe(amount);
+    expect(intentionData.isStake).toBe(isStake);
+    expect(intentionData.toBuck).toBe(toBuck);
+    expect(intentionData.stakeProofs.length).toBe(stakeProofs.length);
+    expect(intentionData.stakeProofs[0]).toBe(stakeProofs[0]);
+  });
+
+  it('Test sbuck-withdraw deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const amount = '1000000000';
+    await buildSBUCKWithdrawTx(bucketClient, tx, amount, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+    expect(result.type).toBe('sbuck-withdraw');
+    const intentionData = result.intentionData as SBUCKWithdrawIntentionData;
+    expect(intentionData.amount).toBe(amount);
+  });
+
+  it('Test sbuck-claim deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const stakeProofs: string[] = [
+      "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "0x0000000000000000000000000000000000000000000000000000000000000002",
+      "0x0000000000000000000000000000000000000000000000000000000000000003"
+    ];
+    await buildSBUCKClaimTx(bucketClient, tx, stakeProofs, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+    expect(result.type).toBe('sbuck-claim');
+    const intentionData = result.intentionData as SBUCKClaimIntentionData;
+    expect(intentionData.stakeProofs.length).toBe(stakeProofs.length);
+    expect(intentionData.stakeProofs[0]).toBe(stakeProofs[0]);
+  });
+
+  it('Test sbuck-lock-claim deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.sBUCK;
+    const proofCount = 5;
+    await buildLockedClaimTx(bucketClient, tx, COINS_TYPE_LIST.sBUCK, 5, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
     expect(result.type).toBe('lock-claim');
     const intentionData = result.intentionData as LockClaimIntentionData;
-    expect(intentionData.coinType).toBe(COINS_TYPE_LIST.sBUCK);
-    expect(intentionData.lockedCount).toBe(1);
+    expect(intentionData.coinType).toBe(coinType);
+    expect(intentionData.proofCount).toBe(proofCount);
   });
 
 });

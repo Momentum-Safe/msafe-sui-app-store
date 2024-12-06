@@ -15,7 +15,6 @@ export interface BorrowIntentionData {
 export interface WithdrawIntentionData {
     collateralType: string,
     withdrawAmount: string,
-    recipient: string,
     insertionPlace?: string,
     strapId?: string,
 }
@@ -55,11 +54,11 @@ export const getWithdrawTx = async (
     account: WalletAccount,
     network: SuiNetworks,
 ): Promise<Transaction> => {
-    const { collateralType, withdrawAmount, recipient, insertionPlace, strapId } = txbParams;
+    const { collateralType, withdrawAmount, insertionPlace, strapId } = txbParams;
 
     const tx = new Transaction();
     const client = getBucketClient(network, account);
-    await buildWithdrawTx(client, tx, collateralType, withdrawAmount, recipient, insertionPlace, strapId);
+    await buildWithdrawTx(client, tx, collateralType, withdrawAmount, account.address, insertionPlace, strapId);
 
     return tx;
 };

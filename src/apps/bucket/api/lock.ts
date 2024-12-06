@@ -6,7 +6,7 @@ import { getBucketClient } from "./config";
 
 export interface LockClaimIntentionData {
     coinType: string;
-    lockedCount: number;
+    proofCount: number;
 }
 
 export const getLockClaimTx = async (
@@ -14,11 +14,11 @@ export const getLockClaimTx = async (
     account: WalletAccount,
     network: SuiNetworks,
 ): Promise<Transaction> => {
-    const { coinType, lockedCount } = txbParams;
+    const { coinType, proofCount } = txbParams;
 
     const tx = new Transaction();
     const client = getBucketClient(network, account);
-    await buildLockedClaimTx(client, tx, coinType, lockedCount, account.address);
+    await buildLockedClaimTx(client, tx, coinType, proofCount, account.address);
 
     return tx;
 };
