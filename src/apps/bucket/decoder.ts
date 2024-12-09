@@ -58,11 +58,8 @@ export class Decoder {
     // }
 
     // Check PSM commands
-    if (this.isPsmInTransaction()) {
-      return this.decodePsmIn();
-    }
-    else if (this.isPsmOutTransaction()) {
-      return this.decodePsmOut();
+    if (this.isPsmTransaction()) {
+      return this.decodePsm();
     }
 
     throw new Error(`Unknown transaction type`);
@@ -111,11 +108,9 @@ export class Decoder {
     return this.commands.filter((command) => command.$kind === 'TransferObjects');
   }
 
-  private isPsmInTransaction() {
-    return !!this.getMoveCallCommand('charge_reservoir');
-  }
-  private isPsmOutTransaction() {
-    return !!this.getMoveCallCommand('discharge_reservoir');
+  private isPsmTransaction() {
+    return !!this.getMoveCallCommand('charge_reservoir')
+      || !!this.getMoveCallCommand('discharge_reservoir');
   }
 
   private isStrapNewTransaction() {
@@ -158,44 +153,40 @@ export class Decoder {
       || !!this.getMoveCallModuleCommand('lst_proof_rule', 'claim');
   }
 
-  private decodePsmIn(): DecodeResult {
-    let amount = "0";
-    const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
-    if (inputCoinObject.$kind == "Input") {
-      amount = this.getPureInputU64(inputCoinObject.Input);
-    }
-
-    const psmCommand = this.getMoveCallCommand('charge_reservoir').MoveCall;
-    const coinType = psmCommand.typeArguments[0];
-    console.log('Decoder.decodePsmIn', coinType, amount);
-
-    return {
-      txType: TransactionType.Other,
-      type: TransactionSubType.PsmIn,
-      intentionData: {
-        coinType,
-        amount,
-      } as PsmIntentionData,
-    };
+  private isLstUnlockTransaction() {
+    return !!this.getMoveCallModuleCommand('lst_proof_rule', 'unlock');
   }
 
-  private decodePsmOut(): DecodeResult {
+  private decodePsm(): DecodeResult {
+    let coinType;
+    let buckToCoin;
+
     let amount = "0";
     const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
     if (inputCoinObject.$kind == "Input") {
       amount = this.getPureInputU64(inputCoinObject.Input);
     }
 
-    const psmCommand = this.getMoveCallCommand('discharge_reservoir').MoveCall;
-    const coinType = psmCommand.typeArguments[0];
-    console.log('Decoder.decodePsmOut', coinType, amount);
+    if (!!this.getMoveCallCommand('charge_reservoir')) {
+      const psmCommand = this.getMoveCallCommand('charge_reservoir').MoveCall;
+      coinType = psmCommand.typeArguments[0];
+      buckToCoin = false;
+    }
+    else {
+      const psmCommand = this.getMoveCallCommand('discharge_reservoir').MoveCall;
+      coinType = psmCommand.typeArguments[0];
+      buckToCoin = true;
+    }
+
+    console.log('Decoder.decodePsm', coinType, amount, buckToCoin);
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.PsmOut,
+      type: TransactionSubType.Psm,
       intentionData: {
         coinType,
         amount,
+        buckToCoin,
       } as PsmIntentionData,
     };
   }
@@ -204,7 +195,7 @@ export class Decoder {
     let collateralType = "";
     let borrowAmount = "0";
     let insertionPlace: string | undefined = undefined;
-    let strapId: string | undefined = undefined;
+    const strapId: string | undefined = this.getStrapId();
 
     let collateralAmount = "0";
     const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
@@ -212,13 +203,14 @@ export class Decoder {
       collateralAmount = this.getPureInputU64(inputCoinObject.Input);
     }
 
-    if (this.isStrapNewTransaction()) {
-      strapId = "new";
-    }
-
     if (!!this.getMoveCallCommand('high_top_up')) {
       const command = this.getMoveCallCommand('high_top_up').MoveCall;
       collateralType = command.typeArguments[0];
+
+      const buckAmount = command.arguments[1];
+      if (buckAmount.$kind == "Input") {
+        borrowAmount = this.getPureInputU64(buckAmount.Input);
+      }
 
       const insertPlaceArg = command.arguments[3];
       if (insertPlaceArg.$kind == "Input") {
@@ -249,11 +241,9 @@ export class Decoder {
       const command = this.getMoveCallCommand('high_borrow_with_strap').MoveCall;
       collateralType = command.typeArguments[0];
 
-      if (strapId != "new") {
-        const strapArg = command.arguments[2];
-        if (strapArg.$kind == "Input") {
-          strapId = this.inputs[strapArg.Input].UnresolvedObject.objectId;
-        }
+      const buckOutput = command.arguments[5];
+      if (buckOutput.$kind == "Input") {
+        borrowAmount = this.getPureInputU64(buckOutput.Input);
       }
 
       const insertPlaceArg = command.arguments[6];
@@ -284,7 +274,7 @@ export class Decoder {
     let withdrawAmount = "0";
     let isSurplus = false;
     let insertionPlace: string | undefined = undefined;
-    let strapId: string | undefined = undefined;
+    const strapId: string | undefined = this.getStrapId();
 
     if (!!this.getMoveCallCommand('fully_repay')) {
       const repayCommand = this.getMoveCallCommand('fully_repay').MoveCall;
@@ -293,32 +283,46 @@ export class Decoder {
     else if (!!this.getMoveCallCommand('fully_repay_with_strap')) {
       const repayCommand = this.getMoveCallCommand('fully_repay_with_strap').MoveCall;
       collateralType = repayCommand.typeArguments[0];
-      const buckInput = repayCommand.arguments[2];
-      if (buckInput.$kind == "Input") {
-        console.log(this.getPureInputU64(buckInput.Input));
-      }
     }
     else if (!!this.getMoveCallCommand('repay_and_withdraw')) {
-      const repayCommand = this.getMoveCallCommand('repay_and_withdraw').MoveCall;
-      collateralType = repayCommand.typeArguments[0];
-      const buckAmount = repayCommand.arguments[4];
-      if (buckAmount.$kind == "Input") {
-        console.log(this.getPureInputU64(buckAmount.Input));
+      const command = this.getMoveCallCommand('repay_and_withdraw').MoveCall;
+      collateralType = command.typeArguments[0];
+      const withdrawArg = command.arguments[4];
+      if (withdrawArg.$kind == "Input") {
+        withdrawAmount = this.getPureInputU64(withdrawArg.Input);
+      }
+      const insertPlaceArg = command.arguments[5];
+      if (insertPlaceArg.$kind == "Input") {
+        const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
+        if (insertionPlaces.length == 1) {
+          insertionPlace = insertionPlaces[0];
+        }
+      }
+
+      const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
+      if (inputCoinObject.$kind == "Input") {
+        repayAmount = this.getPureInputU64(inputCoinObject.Input);
       }
     }
     else if (!!this.getMoveCallCommand('repay_and_withdraw_with_strap')) {
-      const repayCommand = this.getMoveCallCommand('repay_and_withdraw_with_strap').MoveCall;
-      collateralType = repayCommand.typeArguments[0];
-      const buckAmount = repayCommand.arguments[4];
-      if (buckAmount.$kind == "Input") {
-        console.log(this.getPureInputU64(buckAmount.Input));
+      const command = this.getMoveCallCommand('repay_and_withdraw_with_strap').MoveCall;
+      collateralType = command.typeArguments[0];
+      const withdrawArg = command.arguments[5];
+      if (withdrawArg.$kind == "Input") {
+        withdrawAmount = this.getPureInputU64(withdrawArg.Input);
       }
-    }
+      const insertPlaceArg = command.arguments[6];
+      if (insertPlaceArg.$kind == "Input") {
+        const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
+        if (insertionPlaces.length == 1) {
+          insertionPlace = insertionPlaces[0];
+        }
+      }
 
-    let collateralAmount = "0";
-    const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
-    if (inputCoinObject.$kind == "Input") {
-      collateralAmount = this.getPureInputU64(inputCoinObject.Input);
+      const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
+      if (inputCoinObject.$kind == "Input") {
+        repayAmount = this.getPureInputU64(inputCoinObject.Input);
+      }
     }
 
     return {
@@ -339,16 +343,11 @@ export class Decoder {
     let collateralType = "";
     let withdrawAmount = "0";
     let insertionPlace: string | undefined = undefined;
-    let strapId: string | undefined = undefined;
+    const strapId: string | undefined = this.getStrapId();
 
     if (!!this.getMoveCallCommand('withdraw_with_strap')) {
       const command = this.getMoveCallCommand('withdraw_with_strap').MoveCall;
       collateralType = command.typeArguments[0];
-
-      const strapArg = command.arguments[2];
-      if (strapArg.$kind == "Input") {
-        strapId = this.inputs[strapArg.Input].UnresolvedObject.objectId;
-      }
 
       const withdrawArg = command.arguments[4];
       if (withdrawArg.$kind == "Input") {
@@ -541,6 +540,30 @@ export class Decoder {
     if (input.$kind !== 'Object') {
       throw new Error('not Object argument');
     }
+  }
+
+  private getStrapId() {
+    let strapId: string | undefined = undefined;
+
+    if (this.isStrapNewTransaction()) {
+      strapId = "new";
+    }
+    else if (this.isLstUnlockTransaction()) {
+      strapId = "locked";
+    }
+
+    if (!strapId) {
+      const command = this.getMoveCallModuleCommand('fountain', 'unstake');
+      if (command) {
+        const strapArg = command.MoveCall.arguments[2];
+        if (strapArg.$kind == "Input") {
+          console.log(strapArg.Input, 'asdfasdfs');
+          strapId = this.inputs[strapArg.Input].UnresolvedObject.objectId;
+        }
+      }
+    }
+
+    return strapId;
   }
 
   private getPureInputU64(idx: number) {

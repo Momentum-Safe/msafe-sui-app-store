@@ -7,19 +7,19 @@ import { buildPsmTx } from "bucket-protocol-sdk";
 export interface PsmIntentionData {
     coinType: string;
     amount: string;
+    buckToCoin: boolean;
 }
 
 export const getPsmTx = async (
     txbParams: PsmIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
-    isOut: boolean
 ): Promise<Transaction> => {
-    const { coinType, amount } = txbParams;
+    const { coinType, amount, buckToCoin } = txbParams;
 
     const tx = new Transaction();
     const client = getBucketClient(network, account);
-    await buildPsmTx(client, tx, coinType, amount, isOut, account.address);
+    await buildPsmTx(client, tx, coinType, amount, buckToCoin, account.address);
 
     return tx;
 };

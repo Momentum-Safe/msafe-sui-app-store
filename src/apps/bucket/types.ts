@@ -1,6 +1,5 @@
 export enum TransactionSubType {
-  PsmIn = 'psm-in',
-  PsmOut = 'psm-out',
+  Psm = 'psm',
   
   TopUp = 'top-up',
   Borrow = 'borrow',
