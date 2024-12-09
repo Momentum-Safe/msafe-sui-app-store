@@ -110,11 +110,11 @@ export class Decoder {
   }
 
   private isDoubleAssetDepositEvent(eventData: EventType, poolName: PoolName) {
-    return eventData.event_type === 0 && poolInfo[poolName].numberOfAssets === 2;
+    return eventData.event_type === 0 && poolInfo[poolName].assetTypes.length === 2;
   }
 
   private isSingleAssetDepositEvent(eventData: EventType, poolName: PoolName) {
-    return eventData.event_type === 0 && poolInfo[poolName].numberOfAssets === 1;
+    return eventData.event_type === 0 && poolInfo[poolName].assetTypes.length === 1;
   }
 
   /**
