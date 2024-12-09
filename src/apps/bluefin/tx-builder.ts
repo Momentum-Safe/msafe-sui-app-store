@@ -1,13 +1,10 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable import/order */
+import { BN, ClmmPoolUtil, LiquidityInput } from '@firefly-exchange/library-sui';
+import { Pool } from '@firefly-exchange/library-sui/dist/src/spot/types';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { getBluefinSpotSDK } from './config';
 import { SuiNetworks } from './types';
-import { BN, ClmmPoolUtil, LiquidityInput, TickMath } from '@firefly-exchange/library-sui';
-import { Decimal } from 'turbos-clmm-sdk';
-import { Pool } from '@firefly-exchange/library-sui/dist/src/spot/types';
 
 export default class TxBuilder {
   static async openPositionAndAddLiquidity(
@@ -19,7 +16,7 @@ export default class TxBuilder {
 
     const pool = await sdk.queryChain.getPool(txbParams.pool);
 
-    const res = this.prototype.buildLiqInput(pool, txbParams);
+    const res = this.prototype.buildLiqInput(pool, { ...txbParams, slippage: 0 });
 
     const txb: Transaction = (await sdk.openPositionWithFixedAmount(
       pool,
@@ -115,18 +112,15 @@ export default class TxBuilder {
 
   /// Method to create the liquidity input payload
   private buildLiqInput(pool: Pool, params: any): LiquidityInput {
-    return ClmmPoolUtil.estLiquidityAndCoinAmountFromOneAmounts(
+    const res = ClmmPoolUtil.estLiquidityAndCoinAmountFromOneAmounts(
       params.lowerTick,
       params.upperTick,
-      new BN(
-        new Decimal(params.tokenAmount)
-          .mul(10 ** (params.isCoinA ? pool.coin_a.decimals : pool.coin_b.decimals))
-          .toFixed(0),
-      ),
+      new BN(params.tokenAmount),
       params.isCoinA,
       true,
-      params.slippage,
+      0,
       new BN(pool.current_sqrt_price),
     );
+    return { ...res, tokenMaxA: new BN(params.maxAmountTokenA), tokenMaxB: new BN(params.maxAmountTokenB) };
   }
 }
