@@ -20,6 +20,8 @@ import { FarmingUnstakeIntention } from './intentions/farming-unstake';
 import { IncreaseLiquidityIntention } from './intentions/increase-liquidity';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
 import { SwapIntention } from './intentions/swap';
+import { AddVaultsPositionIntention } from './intentions/vaults-add';
+import { RemoveVaultsPositionIntention } from './intentions/vaults-remove';
 import { VestingRedeemIntention } from './intentions/vesting-redeem';
 import { XcetusCancelIntention } from './intentions/xcetus-cancel';
 import { XcetusClaimingStakeRewardsIntention } from './intentions/xcetus-claim';
@@ -49,7 +51,9 @@ export type CetusIntention =
   | XcetusCancelIntention
   | XcetusRedeemIntention
   | VestingRedeemIntention
-  | SwapIntention;
+  | SwapIntention
+  | AddVaultsPositionIntention
+  | RemoveVaultsPositionIntention;
 
 export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
   application = 'cetus';
@@ -153,6 +157,12 @@ export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
         break;
       case TransactionSubType.Swap:
         intention = SwapIntention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.AddVaultsPosition:
+        intention = AddVaultsPositionIntention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.RemoveVaultsPosition:
+        intention = RemoveVaultsPositionIntention.fromData(input.intentionData);
         break;
       default:
         throw new Error('not implemented');
