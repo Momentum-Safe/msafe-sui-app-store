@@ -7,7 +7,7 @@ import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 import { TransactionSubType } from '../types';
-import { RepayIntentionData, getRepayTx } from '../api/repay';
+import { RepayIntentionData, getRepayTx } from '../api/lending';
 
 export class RepayIntention extends BaseIntention<RepayIntentionData> {
   txType = TransactionType.Other;

@@ -9,10 +9,10 @@ import { SuiNetworks } from '@/types';
 import { TransactionSubType } from '../types';
 import { getPsmTx, PsmIntentionData } from '../api/psm';
 
-export class PsmInIntention extends BaseIntention<PsmIntentionData> {
+export class PsmIntention extends BaseIntention<PsmIntentionData> {
   txType = TransactionType.Other;
 
-  txSubType = TransactionSubType.PsmIn;
+  txSubType = TransactionSubType.Psm;
 
   constructor(public readonly data: PsmIntentionData) {
     super(data);
@@ -20,11 +20,11 @@ export class PsmInIntention extends BaseIntention<PsmIntentionData> {
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    const tx = await getPsmTx(this.data, account, network, false);
+    const tx = await getPsmTx(this.data, account, network);
     return tx;
   }
 
   static fromData(data: PsmIntentionData) {
-    return new PsmInIntention(data);
+    return new PsmIntention(data);
   }
 }

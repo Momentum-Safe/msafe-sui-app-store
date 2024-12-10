@@ -1,21 +1,46 @@
-import { BorrowIntentionData, RepayIntentionData, WithdrawIntentionData } from "@/apps/bucket/api/lending";
-import { LockClaimIntentionData } from "@/apps/bucket/api/lock";
-import { PsmIntentionData } from "@/apps/bucket/api/psm";
-import { SBUCKClaimIntentionData, SBUCKDepositIntentionData, SBUCKUnstakeIntentionData, SBUCKWithdrawIntentionData } from "@/apps/bucket/api/sbuck";
-import { Decoder } from "@/apps/bucket/decoder";
-import { PsmInIntention } from "@/apps/bucket/intentions/psmIn";
-import { fromB64 } from "@mysten/bcs";
-import { Transaction } from "@mysten/sui/transactions";
-import { BucketClient, buildBorrowTx, buildLockedClaimTx, buildPsmTx, buildRepayTx, buildSBUCKClaimTx, buildSBUCKDepositTx, buildSBUCKUnstakeTx, buildSBUCKWithdrawTx, buildWithdrawTx, COINS_TYPE_LIST } from "bucket-protocol-sdk";
+import {
+  PsmIntentionData,
+  BorrowIntentionData,
+  RepayIntentionData,
+  WithdrawIntentionData,
+  SBUCKClaimIntentionData,
+  SBUCKDepositIntentionData,
+  SBUCKUnstakeIntentionData,
+  SBUCKWithdrawIntentionData,
+  LockClaimIntentionData,
+  CloseIntentionData,
+  TankDepositIntentionData,
+  TankClaimIntentionData,
+  TankWithdrawIntentionData,
+} from '@/apps/bucket/api';
+import { Decoder } from '@/apps/bucket/decoder';
+import { Transaction } from '@mysten/sui/transactions';
+import {
+  BucketClient,
+  buildBorrowTx,
+  buildCloseTx,
+  buildLockedClaimTx,
+  buildPsmTx,
+  buildRepayTx,
+  buildSBUCKClaimTx,
+  buildSBUCKDepositTx,
+  buildSBUCKUnstakeTx,
+  buildSBUCKWithdrawTx,
+  buildTankClaimTx,
+  buildTankDepositTx,
+  buildTankWithdrawTx,
+  buildWithdrawTx,
+  COINS_TYPE_LIST,
+} from 'bucket-protocol-sdk';
 
-const address = "0x3662e00a85fdae17d5732770b8d0658105fe9c0ca91c259790e6fb1498686abc";
+const address = '0x3662e00a85fdae17d5732770b8d0658105fe9c0ca91c259790e6fb1498686abc';
 
 describe('Bucket App', () => {
   it('Test psm-in deserialize', async () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.SUI;
-    const amount = "10000000000";
+    const amount = '10000000000';
     const buckToCoin = true;
     await buildPsmTx(bucketClient, tx, coinType, amount, buckToCoin, address);
 
@@ -33,7 +58,7 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.AUSD;
-    const amount = "10000000000";
+    const amount = '10000000000';
     const buckToCoin = false;
     await buildPsmTx(bucketClient, tx, coinType, amount, buckToCoin, address);
 
@@ -47,15 +72,70 @@ describe('Bucket App', () => {
     expect(intentionData.buckToCoin).toBe(buckToCoin);
   });
 
+  it('Test tank-deposit deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.AUSD;
+    const amount = '10000000000';
+    await buildTankDepositTx(bucketClient, tx, coinType, amount, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+
+    expect(result.type).toBe('tank-deposit');
+    const intentionData = result.intentionData as TankDepositIntentionData;
+    expect(intentionData.coinType).toBe(coinType);
+    expect(intentionData.amount).toBe(amount);
+  });
+
+  it('Test tank-withdraw deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.AUSD;
+    const amount = '10000000000';
+    await buildTankWithdrawTx(bucketClient, tx, coinType, amount, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+
+    expect(result.type).toBe('tank-withdraw');
+    const intentionData = result.intentionData as TankWithdrawIntentionData;
+    expect(intentionData.coinType).toBe(coinType);
+    expect(intentionData.amount).toBe(amount);
+  });
+
+  it('Test tank-claim deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.AUSD;
+    await buildTankClaimTx(bucketClient, tx, coinType, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+
+    expect(result.type).toBe('tank-claim');
+    const intentionData = result.intentionData as TankClaimIntentionData;
+    expect(intentionData.coinType).toBe(coinType);
+  });
+
   it('Test create LST position deserialize', async () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
-    const collateralAmount = "10000000000";
-    const borrowAmount = "150000";
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
-    const strapId: string | undefined = "new";
-    await buildBorrowTx(bucketClient, tx, collateralType, collateralAmount, borrowAmount, address, insertionPlace, strapId);
+    const collateralAmount = '10000000000';
+    const borrowAmount = '150000';
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
+    const strapId: string | undefined = 'new';
+    await buildBorrowTx(
+      bucketClient,
+      tx,
+      collateralType,
+      collateralAmount,
+      borrowAmount,
+      address,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -73,11 +153,20 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.CETUS;
-    const collateralAmount = "10000000000";
-    const borrowAmount = "50000";
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
+    const collateralAmount = '10000000000';
+    const borrowAmount = '50000';
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
     const strapId: string | undefined = undefined;
-    await buildBorrowTx(bucketClient, tx, collateralType, collateralAmount, borrowAmount, address, insertionPlace, strapId);
+    await buildBorrowTx(
+      bucketClient,
+      tx,
+      collateralType,
+      collateralAmount,
+      borrowAmount,
+      address,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -95,11 +184,20 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
-    const collateralAmount = "10000000000";
-    const borrowAmount = "50000";
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
-    const strapId: string | undefined = "locked";
-    await buildBorrowTx(bucketClient, tx, collateralType, collateralAmount, borrowAmount, address, insertionPlace, strapId);
+    const collateralAmount = '10000000000';
+    const borrowAmount = '50000';
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
+    const strapId: string | undefined = 'locked';
+    await buildBorrowTx(
+      bucketClient,
+      tx,
+      collateralType,
+      collateralAmount,
+      borrowAmount,
+      address,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -117,11 +215,20 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
-    const collateralAmount = "10000000000";
-    const borrowAmount = "50000";
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
-    const strapId: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010002";
-    await buildBorrowTx(bucketClient, tx, collateralType, collateralAmount, borrowAmount, address, insertionPlace, strapId);
+    const collateralAmount = '10000000000';
+    const borrowAmount = '50000';
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
+    const strapId: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010002';
+    await buildBorrowTx(
+      bucketClient,
+      tx,
+      collateralType,
+      collateralAmount,
+      borrowAmount,
+      address,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -139,8 +246,8 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.CETUS;
-    const withdrawAmount = "50000";
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
+    const withdrawAmount = '50000';
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
     const strapId: string | undefined = undefined;
     await buildWithdrawTx(bucketClient, tx, collateralType, withdrawAmount, address, insertionPlace, strapId);
 
@@ -159,9 +266,9 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
-    const withdrawAmount = "50000";
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
-    const strapId: string | undefined = "locked";
+    const withdrawAmount = '50000';
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
+    const strapId: string | undefined = 'locked';
     await buildWithdrawTx(bucketClient, tx, collateralType, withdrawAmount, address, insertionPlace, strapId);
 
     const decoder = new Decoder(tx);
@@ -179,9 +286,9 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
-    const withdrawAmount = "50000";
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
-    const strapId: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010002";
+    const withdrawAmount = '50000';
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
+    const strapId: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010002';
     await buildWithdrawTx(bucketClient, tx, collateralType, withdrawAmount, address, insertionPlace, strapId);
 
     const decoder = new Decoder(tx);
@@ -199,12 +306,22 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.SCA;
-    const repayAmount = "10000000000";
-    const withdrawAmount = "50000";
+    const repayAmount = '10000000000';
+    const withdrawAmount = '50000';
     const isSurplus = false;
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
     const strapId: string | undefined = undefined;
-    await buildRepayTx(bucketClient, tx, collateralType, repayAmount, withdrawAmount, address, isSurplus, insertionPlace, strapId);
+    await buildRepayTx(
+      bucketClient,
+      tx,
+      collateralType,
+      repayAmount,
+      withdrawAmount,
+      address,
+      isSurplus,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -221,12 +338,22 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
-    const repayAmount = "10000000000";
-    const withdrawAmount = "50000";
+    const repayAmount = '10000000000';
+    const withdrawAmount = '50000';
     const isSurplus = false;
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
-    const strapId: string | undefined = "locked";
-    await buildRepayTx(bucketClient, tx, collateralType, repayAmount, withdrawAmount, address, isSurplus, insertionPlace, strapId);
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
+    const strapId: string | undefined = 'locked';
+    await buildRepayTx(
+      bucketClient,
+      tx,
+      collateralType,
+      repayAmount,
+      withdrawAmount,
+      address,
+      isSurplus,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -243,12 +370,22 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
-    const repayAmount = "10000000000";
-    const withdrawAmount = "50000";
+    const repayAmount = '10000000000';
+    const withdrawAmount = '50000';
     const isSurplus = false;
-    const insertionPlace: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010001";
-    const strapId: string | undefined = "0x0000000000000000000000000000000000000000000000000000000000010002";
-    await buildRepayTx(bucketClient, tx, collateralType, repayAmount, withdrawAmount, address, isSurplus, insertionPlace, strapId);
+    const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
+    const strapId: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010002';
+    await buildRepayTx(
+      bucketClient,
+      tx,
+      collateralType,
+      repayAmount,
+      withdrawAmount,
+      address,
+      isSurplus,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -261,11 +398,26 @@ describe('Bucket App', () => {
     expect(intentionData.strapId).toBe(strapId);
   });
 
+  it('Test close deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const collateralType = COINS_TYPE_LIST.afSUI;
+    const strapId: string | undefined = 'locked';
+    await buildCloseTx(bucketClient, tx, collateralType, address, strapId);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+    expect(result.type).toBe('close');
+    const intentionData = result.intentionData as CloseIntentionData;
+    expect(intentionData.collateralType).toBe(collateralType);
+    expect(intentionData.strapId).toBe(strapId);
+  });
+
   it('Test sbuck-deposit deserialize', async () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.BUCK;
-    const amount = "10000000000";
+    const amount = '10000000000';
     const isStake = true;
     await buildSBUCKDepositTx(bucketClient, tx, coinType, amount, address, isStake);
 
@@ -285,9 +437,9 @@ describe('Bucket App', () => {
     const isStake = true;
     const toBuck = true;
     const stakeProofs: string[] = [
-      "0x0000000000000000000000000000000000000000000000000000000000000001",
-      "0x0000000000000000000000000000000000000000000000000000000000000002",
-      "0x0000000000000000000000000000000000000000000000000000000000000003"
+      '0x0000000000000000000000000000000000000000000000000000000000000001',
+      '0x0000000000000000000000000000000000000000000000000000000000000002',
+      '0x0000000000000000000000000000000000000000000000000000000000000003',
     ];
     await buildSBUCKUnstakeTx(bucketClient, tx, stakeProofs, amount, address, isStake, toBuck);
 
@@ -319,9 +471,9 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const stakeProofs: string[] = [
-      "0x0000000000000000000000000000000000000000000000000000000000000001",
-      "0x0000000000000000000000000000000000000000000000000000000000000002",
-      "0x0000000000000000000000000000000000000000000000000000000000000003"
+      '0x0000000000000000000000000000000000000000000000000000000000000001',
+      '0x0000000000000000000000000000000000000000000000000000000000000002',
+      '0x0000000000000000000000000000000000000000000000000000000000000003',
     ];
     await buildSBUCKClaimTx(bucketClient, tx, stakeProofs, address);
 
@@ -333,7 +485,7 @@ describe('Bucket App', () => {
     expect(intentionData.stakeProofs[0]).toBe(stakeProofs[0]);
   });
 
-  it('Test sbuck-lock-claim deserialize', async () => {
+  it('Test lock-claim deserialize', async () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.sBUCK;
@@ -347,5 +499,4 @@ describe('Bucket App', () => {
     expect(intentionData.coinType).toBe(coinType);
     expect(intentionData.proofCount).toBe(proofCount);
   });
-
 });

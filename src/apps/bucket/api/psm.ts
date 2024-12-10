@@ -1,8 +1,8 @@
 import { SuiNetworks } from "@/types";
 import { Transaction } from "@mysten/sui/transactions";
 import { WalletAccount } from '@mysten/wallet-standard';
-import { getBucketClient } from "./config";
 import { buildPsmTx } from "bucket-protocol-sdk";
+import { getBucketClient } from "./config";
 
 export interface PsmIntentionData {
     coinType: string;
