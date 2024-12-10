@@ -1,4 +1,3 @@
-import { TransactionType } from '@msafe/sui3-utils';
 import type { SerializedBcs } from '@mysten/bcs';
 import { ObjectArg, SharedObjectRef } from '@mysten/sui.js/bcs';
 import type { SuiObjectRef } from '@mysten/sui.js/client';
