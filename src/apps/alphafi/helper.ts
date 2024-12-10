@@ -10,6 +10,7 @@ import { WithdrawAlphaIntention, WithdrawAlphaIntentionData } from './intentions
 import { WithdrawIntention, WithdrawIntentionData } from './intentions/withdraw';
 import { ClaimRewardIntention, EmptyIntentionData } from './intentions/claim-reward';
 import { SuiNetworks } from '@/types';
+import { Decoder } from './decoder';
 
 export type AlphaFiIntention =
   | DepositDoubleAssetIntention
@@ -30,7 +31,6 @@ export class AlphaFiHelper implements IAppHelperInternal<AlphaFiIntentionData> {
 
   supportSDK = '@mysten/sui' as const;
 
-  // TODO: Please refer to the documentation and move the `action` and `txbParams` params into the `appContext` structure.
   async deserialize(input: {
     transaction: Transaction;
     chain: IdentifierString;
@@ -39,15 +39,20 @@ export class AlphaFiHelper implements IAppHelperInternal<AlphaFiIntentionData> {
     account: WalletAccount;
     appContext?: any;
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: AlphaFiIntentionData }> {
-    const { txbParams, action } = input.appContext;
+    const { transaction, suiClient, account } = input;
+
+    const simResult = await suiClient.devInspectTransactionBlock({
+      sender: account.address,
+      transactionBlock: transaction,
+    });
+
+    const decoder = new Decoder(transaction, simResult);
+    const result = decoder.decode();
 
     return {
       txType: TransactionType.Other,
-      txSubType: action,
-      intentionData: {
-        txbParams: { ...txbParams },
-        action,
-      },
+      txSubType: result.type,
+      intentionData: result.intentionData,
     };
   }
 
