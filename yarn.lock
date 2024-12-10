@@ -4636,10 +4636,10 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
-bucket-protocol-sdk@0.9.33-alpha2:
-  version "0.9.33-alpha2"
-  resolved "https://registry.yarnpkg.com/bucket-protocol-sdk/-/bucket-protocol-sdk-0.9.33-alpha2.tgz#7f1066f8ddd033cb7c51d9b5b21e9e146b01a707"
-  integrity sha512-y5pvNczsoRuXVJObkUp6KiVEcwxF0kXu9Y+Mvn0oitxvdicgMHlVpEOmFM3cga4F9gWD0aCQJGTfYgKez+bJ8A==
+bucket-protocol-sdk@^0.10.17:
+  version "0.10.17"
+  resolved "https://registry.yarnpkg.com/bucket-protocol-sdk/-/bucket-protocol-sdk-0.10.17.tgz#527284a5b381eaea60b8105256244c5aaf423032"
+  integrity sha512-sBRytVTp3Hj2t0UKKMATDTcW9yIKfKZd/8EQaF01VC+gjvizg+Myoe4vtXBY3QCCX5Te8ehV6mkamQ4/Yf9VAQ==
   dependencies:
     "@mysten/sui" "^1.8.0"
     "@types/superstruct" "^0.8.2"
