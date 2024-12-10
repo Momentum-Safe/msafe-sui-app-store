@@ -5,6 +5,7 @@ import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
 
+import { Decoder } from './decoder';
 import { ClosePosition } from './intentions/close-position';
 import { CollectFee } from './intentions/collect-fee';
 import { CollectFeeAndRewards } from './intentions/collect-fee-and-rewards';
@@ -37,15 +38,16 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     txbParams?: any;
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BluefinIntentionData }> {
     console.log('Bluefin helper deserialize input: ', input);
-    const { txbParams, action } = input;
+    const { transaction } = input;
+
+    const decoder = new Decoder(transaction);
+
+    const result = decoder.decode();
 
     return {
       txType: TransactionType.Other,
-      txSubType: action,
-      intentionData: {
-        txbParams: { ...txbParams },
-        action,
-      },
+      txSubType: result.type,
+      intentionData: result.intentionData,
     };
   }
 

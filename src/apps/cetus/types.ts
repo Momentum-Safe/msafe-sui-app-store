@@ -27,4 +27,6 @@ export enum TransactionSubType {
   xCETUSCancelRedeem = 'xCETUSCancelRedeem',
   xCETUSRedeem = 'xCETUSRedeem',
   VestingRedeem = 'VestingRedeem',
+  AddVaultsPosition = 'AddVaultsPosition',
+  RemoveVaultsPosition = 'RemoveVaultsPosition',
 }
