@@ -107,7 +107,7 @@ describe('Bucket App', () => {
   it('Test tank-claim deserialize', async () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
-    const coinType = COINS_TYPE_LIST.AUSD;
+    const coinType = COINS_TYPE_LIST.SCA;
     await buildTankClaimTx(bucketClient, tx, coinType, address);
 
     const decoder = new Decoder(tx);
