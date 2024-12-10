@@ -7,7 +7,7 @@ import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 import { TransactionSubType } from '../types';
-import { WithdrawIntentionData, getWithdrawTx } from '../api/withdraw';
+import { WithdrawIntentionData, getWithdrawTx } from '../api/lending';
 
 export class WithdrawIntention extends BaseIntention<WithdrawIntentionData> {
   txType = TransactionType.Other;

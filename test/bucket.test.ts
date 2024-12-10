@@ -1,7 +1,24 @@
+import {
+  PsmIntentionData,
+  BorrowIntentionData,
+  RepayIntentionData,
+  WithdrawIntentionData,
+  SBUCKClaimIntentionData,
+  SBUCKDepositIntentionData,
+  SBUCKUnstakeIntentionData,
+  SBUCKWithdrawIntentionData,
+  LockClaimIntentionData,
+  CloseIntentionData,
+  TankDepositIntentionData,
+  TankClaimIntentionData,
+  TankWithdrawIntentionData,
+} from '@/apps/bucket/api';
+import { Decoder } from '@/apps/bucket/decoder';
 import { Transaction } from '@mysten/sui/transactions';
 import {
   BucketClient,
   buildBorrowTx,
+  buildCloseTx,
   buildLockedClaimTx,
   buildPsmTx,
   buildRepayTx,
@@ -9,20 +26,12 @@ import {
   buildSBUCKDepositTx,
   buildSBUCKUnstakeTx,
   buildSBUCKWithdrawTx,
+  buildTankClaimTx,
+  buildTankDepositTx,
+  buildTankWithdrawTx,
   buildWithdrawTx,
   COINS_TYPE_LIST,
 } from 'bucket-protocol-sdk';
-
-import { BorrowIntentionData, RepayIntentionData, WithdrawIntentionData } from '@/apps/bucket/api/lending';
-import { LockClaimIntentionData } from '@/apps/bucket/api/lock';
-import { PsmIntentionData } from '@/apps/bucket/api/psm';
-import {
-  SBUCKClaimIntentionData,
-  SBUCKDepositIntentionData,
-  SBUCKUnstakeIntentionData,
-  SBUCKWithdrawIntentionData,
-} from '@/apps/bucket/api/sbuck';
-import { Decoder } from '@/apps/bucket/decoder';
 
 const address = '0x3662e00a85fdae17d5732770b8d0658105fe9c0ca91c259790e6fb1498686abc';
 
@@ -61,6 +70,52 @@ describe('Bucket App', () => {
     expect(intentionData.coinType).toBe(coinType);
     expect(intentionData.amount).toBe(amount);
     expect(intentionData.buckToCoin).toBe(buckToCoin);
+  });
+
+  it('Test tank-deposit deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.AUSD;
+    const amount = '10000000000';
+    await buildTankDepositTx(bucketClient, tx, coinType, amount, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+
+    expect(result.type).toBe('tank-deposit');
+    const intentionData = result.intentionData as TankDepositIntentionData;
+    expect(intentionData.coinType).toBe(coinType);
+    expect(intentionData.amount).toBe(amount);
+  });
+
+  it('Test tank-withdraw deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.AUSD;
+    const amount = '10000000000';
+    await buildTankWithdrawTx(bucketClient, tx, coinType, amount, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+
+    expect(result.type).toBe('tank-withdraw');
+    const intentionData = result.intentionData as TankWithdrawIntentionData;
+    expect(intentionData.coinType).toBe(coinType);
+    expect(intentionData.amount).toBe(amount);
+  });
+
+  it('Test tank-claim deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const coinType = COINS_TYPE_LIST.SCA;
+    await buildTankClaimTx(bucketClient, tx, coinType, address);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+
+    expect(result.type).toBe('tank-claim');
+    const intentionData = result.intentionData as TankClaimIntentionData;
+    expect(intentionData.coinType).toBe(coinType);
   });
 
   it('Test create LST position deserialize', async () => {
@@ -343,6 +398,21 @@ describe('Bucket App', () => {
     expect(intentionData.strapId).toBe(strapId);
   });
 
+  it('Test close deserialize', async () => {
+    const tx = new Transaction();
+    const bucketClient = new BucketClient();
+    const collateralType = COINS_TYPE_LIST.afSUI;
+    const strapId: string | undefined = 'locked';
+    await buildCloseTx(bucketClient, tx, collateralType, address, strapId);
+
+    const decoder = new Decoder(tx);
+    const result = decoder.decode();
+    expect(result.type).toBe('close');
+    const intentionData = result.intentionData as CloseIntentionData;
+    expect(intentionData.collateralType).toBe(collateralType);
+    expect(intentionData.strapId).toBe(strapId);
+  });
+
   it('Test sbuck-deposit deserialize', async () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
@@ -415,7 +485,7 @@ describe('Bucket App', () => {
     expect(intentionData.stakeProofs[0]).toBe(stakeProofs[0]);
   });
 
-  it('Test sbuck-lock-claim deserialize', async () => {
+  it('Test lock-claim deserialize', async () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.sBUCK;

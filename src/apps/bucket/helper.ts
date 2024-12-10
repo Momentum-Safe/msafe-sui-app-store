@@ -6,42 +6,70 @@ import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
-import { PsmInIntention } from './intentions/psmIn';
-import { PsmOutIntention } from './intentions/psmOut';
 import { Decoder } from './decoder';
 import { TransactionSubType } from './types';
-import { PsmIntentionData } from './api/psm';
-import { BorrowIntention } from './intentions/borrow';
-import { WithdrawIntention } from './intentions/withdraw';
-import { RepayIntention } from './intentions/repay';
-import { CloseIntention } from './intentions/close';
-import { BorrowIntentionData } from './api/lending';
-import { WithdrawIntentionData } from './api/withdraw';
-import { RepayIntentionData } from './api/repay';
-import { CloseIntentionData } from './api/close';
-import { SBUCKClaimIntentionData, SBUCKDepositIntentionData, SBUCKUnstakeIntentionData, SBUCKWithdrawIntentionData } from './api/sbuck';
-import { SBUCKClaimIntention, SBUCKDepositIntention, SBUCKUnstakeIntention, SBUCKWithdrawIntention } from './intentions/sbuck';
 
-export type BucketIntention = PsmInIntention
-  | PsmOutIntention
+import {
+  PsmIntention,
+  BorrowIntention,
+  WithdrawIntention,
+  RepayIntention,
+  CloseIntention,
+  TankDepositIntention,
+  TankWithdrawIntention,
+  TankClaimIntention,
+  SBUCKClaimIntention,
+  SBUCKDepositIntention,
+  SBUCKUnstakeIntention,
+  SBUCKWithdrawIntention,
+  LockClaimIntention,
+} from './intentions';
+
+import {
+  PsmIntentionData,
+  BorrowIntentionData,
+  CloseIntentionData,
+  RepayIntentionData,
+  WithdrawIntentionData,
+  TankDepositIntentionData,
+  TankWithdrawIntentionData,
+  TankClaimIntentionData,
+  SBUCKClaimIntentionData,
+  SBUCKDepositIntentionData,
+  SBUCKUnstakeIntentionData,
+  SBUCKWithdrawIntentionData,
+  LockClaimIntentionData,
+} from './api';
+
+export type BucketIntention =
+  | PsmIntention
   | BorrowIntention
   | WithdrawIntention
   | RepayIntention
   | CloseIntention
+  | TankDepositIntention
+  | TankWithdrawIntention
+  | TankClaimIntention
   | SBUCKDepositIntention
   | SBUCKWithdrawIntention
   | SBUCKUnstakeIntention
-  | SBUCKClaimIntention;
+  | SBUCKClaimIntention
+  | LockClaimIntention;
 
-export type BucketIntentionData = PsmIntentionData
+export type BucketIntentionData =
+  | PsmIntentionData
   | BorrowIntentionData
   | WithdrawIntentionData
   | RepayIntentionData
   | CloseIntentionData
+  | TankDepositIntentionData
+  | TankWithdrawIntentionData
+  | TankClaimIntentionData
   | SBUCKDepositIntentionData
-  | SBUCKWithdrawIntention
+  | SBUCKWithdrawIntentionData
   | SBUCKUnstakeIntentionData
-  | SBUCKClaimIntentionData;
+  | SBUCKClaimIntentionData
+  | LockClaimIntentionData;
 
 export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
   application = 'bucket';
@@ -79,11 +107,8 @@ export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
 
     let intention: BucketIntention;
     switch (input.txSubType) {
-      case TransactionSubType.PsmIn:
-        intention = PsmInIntention.fromData(input.intentionData as PsmIntentionData);
-        break;
-      case TransactionSubType.PsmOut:
-        intention = PsmOutIntention.fromData(input.intentionData as PsmIntentionData);
+      case TransactionSubType.Psm:
+        intention = PsmIntention.fromData(input.intentionData as PsmIntentionData);
         break;
       case TransactionSubType.Borrow:
         intention = BorrowIntention.fromData(input.intentionData as BorrowIntentionData);
@@ -97,6 +122,15 @@ export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
       case TransactionSubType.Close:
         intention = CloseIntention.fromData(input.intentionData as CloseIntentionData);
         break;
+      case TransactionSubType.TankDeposit:
+        intention = TankDepositIntention.fromData(input.intentionData as TankDepositIntentionData);
+        break;
+      case TransactionSubType.TankWithdraw:
+        intention = TankWithdrawIntention.fromData(input.intentionData as TankWithdrawIntentionData);
+        break;
+      case TransactionSubType.TankClaim:
+        intention = TankClaimIntention.fromData(input.intentionData as TankClaimIntentionData);
+        break;
       case TransactionSubType.SBUCKDeposit:
         intention = SBUCKDepositIntention.fromData(input.intentionData as SBUCKDepositIntentionData);
         break;
@@ -108,6 +142,9 @@ export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
         break;
       case TransactionSubType.SBUCKClaim:
         intention = SBUCKClaimIntention.fromData(input.intentionData as SBUCKClaimIntentionData);
+        break;
+      case TransactionSubType.LockClaim:
+        intention = LockClaimIntention.fromData(input.intentionData as LockClaimIntentionData);
         break;
       default:
         throw new Error('not implemented');

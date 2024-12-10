@@ -7,7 +7,7 @@ import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 import { TransactionSubType } from '../types';
-import { CloseIntentionData, getCloseTx } from '../api/close';
+import { CloseIntentionData, getCloseTx } from '../api/lending';
 
 export class CloseIntention extends BaseIntention<CloseIntentionData> {
   txType = TransactionType.Other;

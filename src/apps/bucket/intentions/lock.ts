@@ -7,24 +7,24 @@ import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 import { TransactionSubType } from '../types';
-import { getPsmTx, PsmIntentionData } from '../api/psm';
+import { LockClaimIntentionData, getLockClaimTx } from '../api';
 
-export class PsmOutIntention extends BaseIntention<PsmIntentionData> {
+export class LockClaimIntention extends BaseIntention<LockClaimIntentionData> {
   txType = TransactionType.Other;
 
-  txSubType = TransactionSubType.PsmOut;
+  txSubType = TransactionSubType.LockClaim;
 
-  constructor(public readonly data: PsmIntentionData) {
+  constructor(public readonly data: LockClaimIntentionData) {
     super(data);
   }
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    const tx = await getPsmTx(this.data, account, network, true);
+    const tx = await getLockClaimTx(this.data, account, network);
     return tx;
   }
 
-  static fromData(data: PsmIntentionData) {
-    return new PsmOutIntention(data);
+  static fromData(data: LockClaimIntentionData) {
+    return new LockClaimIntention(data);
   }
 }
