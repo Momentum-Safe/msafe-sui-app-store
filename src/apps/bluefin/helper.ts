@@ -6,28 +6,26 @@ import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-stan
 import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 
 import { Decoder } from './decoder';
-import { ClosePosition } from './intentions/close-position';
-import { CollectFee } from './intentions/collect-fee';
-import { CollectFeeAndRewards } from './intentions/collect-fee-and-rewards';
-import { CollectRewards } from './intentions/collect-rewards';
+// import { ClosePosition } from './intentions/close-position';
+// import { CollectFee } from './intentions/collect-fee';
+// import { CollectFeeAndRewards } from './intentions/collect-fee-and-rewards';
+// import { CollectRewards } from './intentions/collect-rewards';
 import { OpenAndAddLiquidity } from './intentions/open-position-with-liquidity';
-import { ProvideLiquidity } from './intentions/provide-liquidity';
-import { RemoveLiquidity } from './intentions/remove-liquidity';
+// import { ProvideLiquidity } from './intentions/provide-liquidity';
+// import { RemoveLiquidity } from './intentions/remove-liquidity';
 import { SuiNetworks, BluefinIntentionData, TransactionSubType } from './types';
 
-export type BluefinIntention =
-  | OpenAndAddLiquidity
-  | ProvideLiquidity
-  | RemoveLiquidity
-  | ClosePosition
-  | CollectFee
-  | CollectRewards
-  | CollectFeeAndRewards;
+export type BluefinIntention = OpenAndAddLiquidity;
+// | ProvideLiquidity
+// | RemoveLiquidity
+// | ClosePosition
+// | CollectFee
+// | CollectRewards
+// | CollectFeeAndRewards;
 export class BluefinHelper implements IAppHelperInternalLegacy<BluefinIntentionData> {
   application = 'bluefin';
 
   supportSDK = '@mysten/sui.js' as const;
-
 
   async deserialize(
     input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
@@ -63,27 +61,27 @@ export class BluefinHelper implements IAppHelperInternalLegacy<BluefinIntentionD
         intention = OpenAndAddLiquidity.fromData(input.intentionData);
         break;
 
-      case TransactionSubType.ProvideLiquidity:
-        intention = ProvideLiquidity.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.ProvideLiquidity:
+      //   intention = ProvideLiquidity.fromData(input.intentionData);
+      //   break;
 
-      case TransactionSubType.RemoveLiquidity:
-        intention = RemoveLiquidity.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.RemoveLiquidity:
+      //   intention = RemoveLiquidity.fromData(input.intentionData);
+      //   break;
 
-      case TransactionSubType.ClosePosition:
-        intention = ClosePosition.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.ClosePosition:
+      //   intention = ClosePosition.fromData(input.intentionData);
+      //   break;
 
-      case TransactionSubType.CollectFee:
-        intention = CollectFee.fromData(input.intentionData);
-        break;
-      case TransactionSubType.CollectRewards:
-        intention = CollectRewards.fromData(input.intentionData);
-        break;
-      case TransactionSubType.CollectFeeAndRewards:
-        intention = CollectFeeAndRewards.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.CollectFee:
+      //   intention = CollectFee.fromData(input.intentionData);
+      //   break;
+      // case TransactionSubType.CollectRewards:
+      //   intention = CollectRewards.fromData(input.intentionData);
+      //   break;
+      // case TransactionSubType.CollectFeeAndRewards:
+      //   intention = CollectFeeAndRewards.fromData(input.intentionData);
+      //   break;
       default:
         throw new Error('not implemented');
     }
