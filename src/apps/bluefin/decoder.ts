@@ -1,182 +1,87 @@
-import { asIntN } from '@cetusprotocol/cetus-sui-clmm-sdk';
-import { TransactionType } from '@msafe/sui3-utils';
-import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+/* eslint-disable prettier/prettier */
+import { asIntN } from "@cetusprotocol/cetus-sui-clmm-sdk";
+import { TransactionType } from "@msafe/sui3-utils";
+import { fromB64 } from "@mysten/bcs";
+import { bcs } from "@mysten/sui/bcs";
+import { Transaction } from "@mysten/sui/transactions";
 
-import { DecodeResult, TransactionSubType } from './types';
+import { DecodeResult, TransactionSubType } from "./types";
+
+
+
 
 export class Decoder {
-  constructor(public readonly txb: TransactionBlock) {}
+  constructor(public readonly transaction: Transaction) {}
 
   decode() {
+    
     if (this.isOpenPositionTx()) {
-      return this.decodeOpenPositionAndAddLiquidityTx();
+        return this.decodeOpenPositionAndAddLiquidityTx();
+    } 
+        throw new Error(`Unknown transaction type`);
+
     }
-    throw new Error(`Unknown transaction type`);
-  }
 
-  private decodeOpenPositionAndAddLiquidityTx(): DecodeResult {
-    const openPosTx = this.getMoveCallTransaction('open_position') as MoveCallHelper;
-    const addLiqTx = this.getMoveCallTransaction('provide_liquidity') as MoveCallHelper;
+    private decodeOpenPositionAndAddLiquidityTx(): DecodeResult {
 
-    return {
-      txType: TransactionType.Other,
-      type: TransactionSubType.OpenAndAddLiquidity,
-      intentionData: {
-        pool: openPosTx.decodeSharedObjectId(0),
-        lowerTick: Number(asIntN(BigInt(openPosTx.decodeInputU32(2))).toString()),
-        upperTick: Number(asIntN(BigInt(openPosTx.decodeInputU32(3))).toString()),
-        tokenAmount: addLiqTx.decodeInputU64(6),
-        maxAmountTokenA: addLiqTx.decodeInputU64(7),
-        maxAmountTokenB: addLiqTx.decodeInputU64(8),
-        isTokenAFixed: addLiqTx.decodeInputBool(9),
-      },
-    };
-  }
+        const openPosCommand = this.getMoveCallCommand("open_position");
+        const addLiqCommand = this.getMoveCallCommand("provide_liquidity_with_fixed_amount");
 
-  private get transactions() {
-    return this.txb.blockData.transactions;
-  }
-
-  private isOpenPositionTx() {
-    return !!this.getMoveCallTransaction(`open_position`);
-  }
-
-  private getMoveCallTransaction(target: string) {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.indexOf(target) !== -1,
-    ) as MoveCallTransaction;
-    if (moveCall) {
-      return new MoveCallHelper(moveCall, this.txb);
+        return {
+            txType: TransactionType.Other,
+            type: TransactionSubType.OpenAndAddLiquidity,
+            intentionData: {
+                pool: this.getObjectID(this.getInputIndex(openPosCommand, 1)),
+                lowerTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 2)))).toString()),
+                upperTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 3)))).toString()),
+                tokenAmount: this.getU64(this.getInputIndex(addLiqCommand, 6)),
+                maxAmountTokenA: this.getU64(this.getInputIndex(addLiqCommand, 7)),
+                maxAmountTokenB: this.getU64(this.getInputIndex(addLiqCommand, 8)),
+                isTokenAFixed: this.getBoolean(this.getInputIndex(addLiqCommand, 9)),
+            },
+        };
     }
-    return false;
-  }
-}
 
-export class MoveCallHelper {
-  constructor(
-    public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
-  ) {}
 
-  decodeSharedObjectId(argIndex: number) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getSharedObjectId(input);
-  }
-
-  getInputParam(argIndex: number) {
-    const arg = this.moveCall.arguments[argIndex];
-    if (arg.kind !== 'Input') {
-      throw new Error('not input type');
+    private get commands() {
+        return this.transaction
+          .getData()
+          .commands;
     }
-    return this.txb.blockData.inputs[arg.index];
-  }
 
-  decodeOwnedObjectId(argIndex: number) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getOwnedObjectId(input);
-  }
-
-  decodeInputU128(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u128');
-    return Number(strVal);
-  }
-
-  decodeInputU64(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u64');
-    return Number(strVal);
-  }
-
-  decodeInputU32(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u32');
-    return Number(strVal);
-  }
-
-  decodeInputU8(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u8');
-    return Number(strVal);
-  }
-
-  decodeInputAddress(argIndex: number) {
-    const input = this.decodePureArg<string>(argIndex, 'address');
-    return normalizeSuiAddress(input);
-  }
-
-  decodeInputString(argIndex: number) {
-    return this.decodePureArg<string>(argIndex, 'string');
-  }
-
-  decodeInputBool(argIndex: number) {
-    return this.decodePureArg<boolean>(argIndex, 'bool');
-  }
-
-  decodePureArg<T>(argIndex: number, bcsType: string) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getPureInputValue<T>(input, bcsType);
-  }
-
-  static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
+    private get inputs() {
+        return this.transaction.getData().inputs;
     }
-    if (typeof input.value === 'object' && 'Pure' in input.value) {
-      const bcsNums = input.value.Pure;
-      return bcs.de(bcsType, new Uint8Array(bcsNums)) as T;
-    }
-    return input.value as T;
-  }
 
-  static getOwnedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
-      throw new Error(`not object argument: ${JSON.stringify(input)}`);
+    private isOpenPositionTx() {
+        return !!this.getMoveCallCommand('open_position');
     }
-    if (typeof input.value === 'object') {
-      if (!('Object' in input.value) || !('ImmOrOwned' in input.value.Object)) {
-        throw new Error('not ImmOrOwned');
-      }
-      return normalizeSuiAddress(input.value.Object.ImmOrOwned.objectId as string);
-    }
-    return normalizeSuiAddress(input.value as string);
-  }
 
-  static getSharedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
-      throw new Error(`not object argument: ${JSON.stringify(input)}`);
+    private getMoveCallCommand(fn: string) {
+        return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
     }
-    if (typeof input.value !== 'object') {
-      return normalizeSuiAddress(input.value as string);
-    }
-    if (!('Object' in input.value) || !('Shared' in input.value.Object)) {
-      throw new Error('not Shared');
-    }
-    return normalizeSuiAddress(input.value.Object.Shared.objectId as string);
-  }
 
-  static getPureInput<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
+    private getObjectID(index: number): string {
+        return this.inputs[index].UnresolvedObject.objectId as string;
     }
-    if (typeof input.value !== 'object') {
-      return input.value as T;
+
+    private getU32(index: number): string {
+        return String(bcs.u32().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes))));
     }
-    if (!('Pure' in input.value)) {
-      throw new Error('Pure not in value');
+
+    private getU64(index: number): string {
+        return bcs.u64().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes)));
     }
-    const bcsVal = input.value.Pure;
-    return bcs.de(bcsType, new Uint8Array(bcsVal)) as T;
-  }
 
-  typeArg(index: number) {
-    return normalizeStructTag(this.moveCall.typeArguments[index]);
-  }
+    private getU128(index: number): string {
+        return bcs.u128().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes)));
+    } 
+    
+    private getBoolean(index: number): boolean {
+        return bcs.bool().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes)));
+    }   
 
-  shortTypeArg(index: number) {
-    return this.moveCall.typeArguments[index];
-  }
-
-  txArg(index: number) {
-    return this.moveCall.arguments[index];
-  }
+    private getInputIndex(command: any, index: number): number {
+        return command.MoveCall.arguments[index].Input
+    }
 }

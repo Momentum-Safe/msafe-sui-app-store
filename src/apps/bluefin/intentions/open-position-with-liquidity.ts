@@ -1,14 +1,14 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import TxBuilder from '../tx-builder';
 import { SuiNetworks, TransactionSubType, BluefinIntentionData } from '../types';
 
-export class OpenAndAddLiquidity extends BaseIntentionLegacy<BluefinIntentionData> {
+export class OpenAndAddLiquidity extends BaseIntention<BluefinIntentionData> {
   txType = TransactionType.Other;
 
   txSubType = TransactionSubType.OpenAndAddLiquidity;
@@ -17,14 +17,11 @@ export class OpenAndAddLiquidity extends BaseIntentionLegacy<BluefinIntentionDat
     super(data);
   }
 
-  async build(input: {
-    network: SuiNetworks;
-    suiClient: SuiClient;
-    account: WalletAccount;
-  }): Promise<TransactionBlock> {
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
     const { txbParams } = this.data;
-    return TxBuilder.openPositionAndAddLiquidity(txbParams, account, network);
+    const txb = await TxBuilder.openPositionAndAddLiquidity(txbParams, account, network);
+    return txb;
   }
 
   static fromData(data: BluefinIntentionData) {
