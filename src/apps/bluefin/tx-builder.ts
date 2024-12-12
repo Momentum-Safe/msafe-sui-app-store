@@ -1,6 +1,6 @@
-import { BN, ClmmPoolUtil, LiquidityInput } from '@firefly-exchange/library-sui';
+import { BN, ClmmPoolUtil, LiquidityInput, Transaction } from '@firefly-exchange/library-sui';
 import { Pool } from '@firefly-exchange/library-sui/dist/src/spot/types';
-import { Transaction } from '@mysten/sui/transactions';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { getBluefinSpotSDK } from './config';
@@ -11,34 +11,34 @@ export default class TxBuilder {
     txbParams: any,
     account: WalletAccount,
     network: SuiNetworks,
-  ): Promise<Transaction> {
+  ): Promise<TransactionBlock> {
     const sdk = getBluefinSpotSDK(network, account);
 
     const pool = await sdk.queryChain.getPool(txbParams.pool);
 
     const res = this.prototype.buildLiqInput(pool, { ...txbParams, slippage: 0 });
 
-    const txb: Transaction = (await sdk.openPositionWithFixedAmount(
-      pool,
-      txbParams.lowerTick,
-      txbParams.upperTick,
-      res,
-      { returnTx: true },
-    )) as any as Transaction;
+    const txb = (await sdk.openPositionWithFixedAmount(pool, txbParams.lowerTick, txbParams.upperTick, res, {
+      returnTx: true,
+    })) as any as TransactionBlock;
 
     return txb;
   }
 
-  static async provideLiquidity(txbParams: any, account: WalletAccount, network: SuiNetworks): Promise<Transaction> {
+  static async provideLiquidity(
+    txbParams: any,
+    account: WalletAccount,
+    network: SuiNetworks,
+  ): Promise<TransactionBlock> {
     const sdk = getBluefinSpotSDK(network, account);
 
     const pool = await sdk.queryChain.getPool(txbParams.pool);
 
     const res = this.prototype.buildLiqInput(pool, txbParams);
 
-    const txb: Transaction = (await sdk.provideLiquidityWithFixedAmount(pool, txbParams.position, res, {
+    const txb: TransactionBlock = (await sdk.provideLiquidityWithFixedAmount(pool, txbParams.position, res, {
       returnTx: true,
-    })) as any as Transaction;
+    })) as any as TransactionBlock;
 
     return txb;
   }

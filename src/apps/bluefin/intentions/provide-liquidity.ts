@@ -1,30 +1,33 @@
-import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
-import { Transaction } from '@mysten/sui/transactions';
-import { WalletAccount } from '@mysten/wallet-standard';
+// import { TransactionType } from '@msafe/sui3-utils';
+// import { SuiClient } from '@mysten/sui.js/client';
+// import { TransactionBlock } from '@mysten/sui.js/transactions';
+// import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
+// import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
-import TxBuilder from '../tx-builder';
-import { SuiNetworks, TransactionSubType, BluefinIntentionData } from '../types';
+// import TxBuilder from '../tx-builder';
+// import { SuiNetworks, TransactionSubType, BluefinIntentionData } from '../types';
 
-export class ProvideLiquidity extends BaseIntention<BluefinIntentionData> {
-  txType = TransactionType.Other;
+// export class ProvideLiquidity extends BaseIntentionLegacy<BluefinIntentionData> {
+//   txType = TransactionType.Other;
 
-  txSubType = TransactionSubType.ProvideLiquidity;
+//   txSubType = TransactionSubType.ProvideLiquidity;
 
-  constructor(public readonly data: BluefinIntentionData) {
-    super(data);
-  }
+//   constructor(public readonly data: BluefinIntentionData) {
+//     super(data);
+//   }
 
-  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
-    const { account, network } = input;
-    const { txbParams } = this.data;
-    const txb = await TxBuilder.provideLiquidity(txbParams, account, network);
-    return txb;
-  }
+//   async build(input: {
+//     network: SuiNetworks;
+//     suiClient: SuiClient;
+//     account: WalletAccount;
+//   }): Promise<TransactionBlock> {
+//     const { account, network } = input;
+//     const { txbParams } = this.data;
+//     return TxBuilder.provideLiquidity(txbParams, account, network);
+//   }
 
-  static fromData(data: BluefinIntentionData) {
-    return new ProvideLiquidity(data);
-  }
-}
+//   static fromData(data: BluefinIntentionData) {
+//     return new ProvideLiquidity(data);
+//   }
+// }

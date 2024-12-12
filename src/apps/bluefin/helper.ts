@@ -1,49 +1,43 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
-import { Transaction } from '@mysten/sui/transactions';
-import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
+import { SuiClient } from '@mysten/sui.js/client';
+import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternal } from '@/apps/interface/sui';
+import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 
 import { Decoder } from './decoder';
-import { ClosePosition } from './intentions/close-position';
-import { CollectFee } from './intentions/collect-fee';
-import { CollectFeeAndRewards } from './intentions/collect-fee-and-rewards';
-import { CollectRewards } from './intentions/collect-rewards';
+// import { ClosePosition } from './intentions/close-position';
+// import { CollectFee } from './intentions/collect-fee';
+// import { CollectFeeAndRewards } from './intentions/collect-fee-and-rewards';
+// import { CollectRewards } from './intentions/collect-rewards';
 import { OpenAndAddLiquidity } from './intentions/open-position-with-liquidity';
-import { ProvideLiquidity } from './intentions/provide-liquidity';
-import { RemoveLiquidity } from './intentions/remove-liquidity';
+// import { ProvideLiquidity } from './intentions/provide-liquidity';
+// import { RemoveLiquidity } from './intentions/remove-liquidity';
 import { SuiNetworks, BluefinIntentionData, TransactionSubType } from './types';
 
-export type BluefinIntention =
-  | OpenAndAddLiquidity
-  | ProvideLiquidity
-  | RemoveLiquidity
-  | ClosePosition
-  | CollectFee
-  | CollectRewards
-  | CollectFeeAndRewards;
-export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
+export type BluefinIntention = OpenAndAddLiquidity;
+// | ProvideLiquidity
+// | RemoveLiquidity
+// | ClosePosition
+// | CollectFee
+// | CollectRewards
+// | CollectFeeAndRewards;
+export class BluefinHelper implements IAppHelperInternalLegacy<BluefinIntentionData> {
   application = 'bluefin';
 
-  supportSDK = '@mysten/sui' as const;
+  supportSDK = '@mysten/sui.js' as const;
 
-  async deserialize(input: {
-    transaction: Transaction;
-    chain: IdentifierString;
-    network: SuiNetworks;
-    suiClient: SuiClient;
-    account: WalletAccount;
-    action?: string;
-    txbParams?: any;
-  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BluefinIntentionData }> {
+  async deserialize(
+    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+  ): Promise<{
+    txType: TransactionType;
+    txSubType: TransactionSubType;
+    intentionData: BluefinIntentionData;
+  }> {
     console.log('Bluefin helper deserialize input: ', input);
-    const { transaction } = input;
-
-    const decoder = new Decoder(transaction);
-
+    const { transactionBlock } = input;
+    const decoder = new Decoder(transactionBlock);
     const result = decoder.decode();
-
     return {
       txType: TransactionType.Other,
       txSubType: result.type,
@@ -58,7 +52,7 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<Transaction> {
+  }): Promise<TransactionBlock> {
     const { suiClient, account, network } = input;
 
     let intention: BluefinIntention;
@@ -67,27 +61,27 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
         intention = OpenAndAddLiquidity.fromData(input.intentionData);
         break;
 
-      case TransactionSubType.ProvideLiquidity:
-        intention = ProvideLiquidity.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.ProvideLiquidity:
+      //   intention = ProvideLiquidity.fromData(input.intentionData);
+      //   break;
 
-      case TransactionSubType.RemoveLiquidity:
-        intention = RemoveLiquidity.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.RemoveLiquidity:
+      //   intention = RemoveLiquidity.fromData(input.intentionData);
+      //   break;
 
-      case TransactionSubType.ClosePosition:
-        intention = ClosePosition.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.ClosePosition:
+      //   intention = ClosePosition.fromData(input.intentionData);
+      //   break;
 
-      case TransactionSubType.CollectFee:
-        intention = CollectFee.fromData(input.intentionData);
-        break;
-      case TransactionSubType.CollectRewards:
-        intention = CollectRewards.fromData(input.intentionData);
-        break;
-      case TransactionSubType.CollectFeeAndRewards:
-        intention = CollectFeeAndRewards.fromData(input.intentionData);
-        break;
+      // case TransactionSubType.CollectFee:
+      //   intention = CollectFee.fromData(input.intentionData);
+      //   break;
+      // case TransactionSubType.CollectRewards:
+      //   intention = CollectRewards.fromData(input.intentionData);
+      //   break;
+      // case TransactionSubType.CollectFeeAndRewards:
+      //   intention = CollectFeeAndRewards.fromData(input.intentionData);
+      //   break;
       default:
         throw new Error('not implemented');
     }
