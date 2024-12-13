@@ -8,6 +8,7 @@ import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-stan
 import { IAppHelper } from '@/apps/interface/common';
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { MSafeHTTPTransport } from '@/lib/MSafeHTTPTransport';
 import { SuiNetworks } from '@/types';
 
 export class MSafeApps {
@@ -68,8 +69,22 @@ export class SuiSdkAdapter implements IAppHelper<any> {
       account: WalletAccount;
     },
   ) {
-    const client = new SuiClient({ url: input.clientUrl });
-    const clientLegacy = new SuiClientLegacy({ url: input.clientUrl });
+    const client = new SuiClient({
+      transport: new MSafeHTTPTransport({
+        url: input.clientUrl,
+        rpc: {
+          url: input.clientUrl,
+        },
+      }),
+    });
+    const clientLegacy = new SuiClientLegacy({
+      transport: new MSafeHTTPTransport({
+        url: input.clientUrl,
+        rpc: {
+          url: input.clientUrl,
+        },
+      }),
+    });
     const build = await input.transactionBlock.build({ client: clientLegacy });
     const tx = Transaction.from(build);
     return this.helper.deserialize({ ...input, suiClient: client, transaction: tx });
