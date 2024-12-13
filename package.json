@@ -51,6 +51,7 @@
     "@firefly-exchange/library-sui": "^2.4.8",
     "@mysten/bcs": "^0.11.1",
     "@mysten/sui": "^1.8.0",
+    "@open-rpc/client-js": "^1.8.1",
     "@pythnetwork/pyth-sui-js": "^2.1.0",
     "@suilend/frontend-sui": "^0.1.81",
     "@suilend/sdk": "^1.1.24",
