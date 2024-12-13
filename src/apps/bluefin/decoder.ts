@@ -15,6 +15,9 @@ export class Decoder {
 
   decode() {
     
+    console.log(JSON.stringify(this.commands));
+    console.log(JSON.stringify(this.inputs));
+
     if (this.isOpenPositionTx()) {
         return this.decodeOpenPositionAndAddLiquidityTx();
     } 
