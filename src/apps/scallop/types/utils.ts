@@ -4,6 +4,7 @@ import type { SuiObjectRef } from '@mysten/sui.js/client';
 import type { TransactionArgument, TransactionObjectArgument } from '@mysten/sui.js/transactions';
 
 import type { SupportAssetCoins } from './constant';
+import { TransactionType } from '@msafe/sui3-utils';
 
 export type OptionalKeys<T> = {
   [K in keyof T]?: T[K];

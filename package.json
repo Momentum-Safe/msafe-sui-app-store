@@ -22,7 +22,7 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "yarn clean && tsup --platform browser --format cjs,esm --minify --dts",
+    "build": "yarn clean && vite build",
     "build-yalc": "yarn build && yalc publish --private",
     "test": "jest",
     "coverage": "jest --coverage",
@@ -59,11 +59,13 @@
     "bignumber.js": "^9.1.2",
     "bucket-protocol-sdk": "^0.10.17",
     "buffer": "^6.0.3",
-    "kriya-dex-sdk": "^1.1.69",
     "luxon": "^3.4.4",
     "nanoid": "3",
     "sort-keys-recursive": "^2.1.10",
-    "turbos-clmm-sdk": "^2.2.2"
+    "turbos-clmm-sdk": "^2.2.2",
+    "vite": "^6.0.3",
+    "vite-plugin-dts": "^4.3.0",
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "devDependencies": {
     "@msafe/sui3-utils": "^3.1.66",

@@ -21,7 +21,6 @@ export const appHelpers = MSafeApps.fromHelpers([
   new PlainTransactionHelper(),
   new CetusHelper(),
   new TURBOSAppHelper(),
-  // new KRIYAAppHelper(),
   new ScallopAppHelper(),
   new VoloAppHelper(),
   new BucketHelper(),
