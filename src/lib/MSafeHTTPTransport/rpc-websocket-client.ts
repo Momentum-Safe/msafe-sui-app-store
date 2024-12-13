@@ -96,9 +96,10 @@ export class WebsocketClient {
     this.endpoint = endpoint;
     this.options = { ...DEFAULT_CLIENT_OPTIONS, ...options };
 
-    if (!this.options.WebSocketConstructor) {
-      throw new Error('Missing WebSocket constructor');
-    }
+    // not support websocket in node currently
+    // if (!this.options.WebSocketConstructor) {
+    //   throw new Error('Missing WebSocket constructor');
+    // }
 
     if (this.endpoint.startsWith('http')) {
       this.endpoint = getWebsocketUrl(this.endpoint);
