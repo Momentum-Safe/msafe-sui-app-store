@@ -98,7 +98,14 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const client = new SuiClient({ url: input.clientUrl });
+    const client = new SuiClient({
+      transport: new MSafeHTTPTransport({
+        url: input.clientUrl,
+        rpc: {
+          url: input.clientUrl,
+        },
+      }),
+    });
     const tx = await this.helper.build({ ...input, suiClient: client });
     tx.setSender(input.account.address);
     const bytes = await tx.build({ client });
@@ -120,7 +127,14 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
       account: WalletAccount;
     },
   ) {
-    const client = new SuiClientLegacy({ url: input.clientUrl });
+    const client = new SuiClientLegacy({
+      transport: new MSafeHTTPTransport({
+        url: input.clientUrl,
+        rpc: {
+          url: input.clientUrl,
+        },
+      }),
+    });
     return this.helper.deserialize({ ...input, transactionBlock: input.transactionBlock, suiClient: client });
   }
 
@@ -132,7 +146,14 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<TransactionBlock> {
-    const client = new SuiClientLegacy({ url: input.clientUrl });
+    const client = new SuiClientLegacy({
+      transport: new MSafeHTTPTransport({
+        url: input.clientUrl,
+        rpc: {
+          url: input.clientUrl,
+        },
+      }),
+    });
     return this.helper.build({ ...input, suiClient: client });
   }
 }
