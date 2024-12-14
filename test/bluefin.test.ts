@@ -153,7 +153,7 @@ describe('Bluefin App', () => {
       const data = await helper.deserialize({ transaction: resolvedTx } as any);
 
       expect(JSON.stringify(data)).toBe(
-        `{"txType":"Other","txSubType":"OpenAndAddLiquidity","intentionData":{"pool":"0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f","lowerTick":-1000,"upperTick":32000,"tokenAmount":"500000","maxAmountTokenA":"500000","maxAmountTokenB":"500000","isTokenAFixed":true}}`,
+        `{"txType":"Other","txSubType":"OpenAndAddLiquidity","intentionData":{"txbParams":{"pool":"0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f","lowerTick":-1000,"upperTick":32000,"tokenAmount":"500000","maxAmountTokenA":"500000","maxAmountTokenB":"500000","isTokenAFixed":true},"action":"OpenAndAddLiquidity"}}`,
       );
     });
   });
