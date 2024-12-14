@@ -4,7 +4,7 @@ import { fromB64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { DecodeResult, TransactionSubType } from './types';
+import { BluefinIntentionData, DecodeResult, TransactionSubType } from './types';
 
 export class Decoder {
   constructor(public readonly transaction: Transaction) {}
@@ -37,7 +37,7 @@ export class Decoder {
           isTokenAFixed: this.getBoolean(this.getInputIndex(addLiqCommand, 9)),
         },
         action: TransactionSubType.OpenAndAddLiquidity,
-      },
+      } as BluefinIntentionData,
     };
   }
 
