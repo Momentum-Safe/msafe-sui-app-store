@@ -23,7 +23,7 @@ export default class TxBuilder {
       txbParams.lowerTick,
       txbParams.upperTick,
       res,
-      { returnTx: true },
+      { returnTx: true, sender: account.address },
     )) as any as Transaction;
 
     return txb;

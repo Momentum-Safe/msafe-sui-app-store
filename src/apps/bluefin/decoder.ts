@@ -27,7 +27,7 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.OpenAndAddLiquidity,
       intentionData: {
-        pool: this.getObjectID(this.getInputIndex(openPosCommand, 1)),
+        pool: this.getSharedObjectID(this.getInputIndex(openPosCommand, 1)),
         lowerTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 2)))).toString()),
         upperTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 3)))).toString()),
         tokenAmount: this.getU64(this.getInputIndex(addLiqCommand, 6)),
@@ -54,8 +54,12 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
-  private getObjectID(index: number): string {
-    return this.inputs[index].UnresolvedObject.objectId as string;
+  private getSharedObjectID(index: number): string {
+    return this.inputs[index].Object.SharedObject.objectId as string;
+  }
+
+  private getOwnedObjectID(index: number): string {
+    return this.inputs[index].Object.ImmOrOwnedObject.objectId as string;
   }
 
   private getU32(index: number): string {

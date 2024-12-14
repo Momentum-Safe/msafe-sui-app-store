@@ -1,5 +1,6 @@
-/* eslint-disable prettier/prettier */
+import { SuiClient } from '@firefly-exchange/library-sui';
 import { HexToUint8Array, TransactionType } from '@msafe/sui3-utils';
+import { Transaction } from '@mysten/sui/transactions';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 
 import { BluefinHelper } from '@/apps/bluefin/helper';
@@ -26,14 +27,13 @@ describe('Bluefin App', () => {
         isCoinA: true,
         maxAmountTokenA: 0.5e6,
         maxAmountTokenB: 0.5e6,
-        },
+      },
       action: TransactionSubType.OpenAndAddLiquidity,
     });
     expect(intention.serialize()).toBe(
       '{"action":"OpenAndAddLiquidity","txbParams":{"isCoinA":true,"lowerTick":1,"maxAmountTokenA":500000,"maxAmountTokenB":500000,"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","tokenAmount":500000,"upperTick":2}}',
     );
   });
-
 
   it('Test `ProvideLiquidity` intention serialization', () => {
     const intention = ProvideLiquidity.fromData({
@@ -123,8 +123,7 @@ describe('Bluefin App', () => {
     );
   });
 
-  describe('Deserialization', ()=>{
-
+  describe('Deserialization', () => {
     const testWallet: WalletAccount = {
       address: '0x37a8d55f29e5b4bdba0cb3fe0ba51a93db8c868fe0de649e1bf36bb42ea7d959',
       publicKey: HexToUint8Array('03490bfb7d9075281e00a98614abf162c76bc89be51c25d6cacd3005c2420ff209'),
@@ -133,11 +132,10 @@ describe('Bluefin App', () => {
     };
 
     const helper = new BluefinHelper();
+    const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
 
-
-    it("Deserialize OpenPositionAndProvideLiquidity transaction", async()=> {
-
-      const transaction =  await TxBuilder.openPositionAndAddLiquidity(
+    it('Deserialize OpenPositionAndProvideLiquidity transaction', async () => {
+      const unresolvedTx = await TxBuilder.openPositionAndAddLiquidity(
         {
           pool: '0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f',
           lowerTick: -1000,
@@ -148,18 +146,18 @@ describe('Bluefin App', () => {
           maxAmountTokenB: 0.5e6,
         },
         testWallet,
-        "sui:mainnet"
+        'sui:mainnet',
       );
-  
-      const data = await helper.deserialize({transaction} as any);
-  
-      expect(JSON.stringify(data)).toBe(`{"txType":"Other","txSubType":"OpenAndAddLiquidity","intentionData":{"pool":"0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f","lowerTick":-1000,"upperTick":32000,"tokenAmount":"500000","maxAmountTokenA":"500000","maxAmountTokenB":"500000","isTokenAFixed":true}}`);
 
-    })
+      const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
+      const data = await helper.deserialize({ transaction: resolvedTx } as any);
 
-
+      expect(JSON.stringify(data)).toBe(
+        `{"txType":"Other","txSubType":"OpenAndAddLiquidity","intentionData":{"pool":"0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f","lowerTick":-1000,"upperTick":32000,"tokenAmount":"500000","maxAmountTokenA":"500000","maxAmountTokenB":"500000","isTokenAFixed":true}}`,
+      );
+    });
   });
-  
+
   describe('Bluefin core main flow', () => {
     const testWallet: WalletAccount = {
       address: '0x37a8d55f29e5b4bdba0cb3fe0ba51a93db8c868fe0de649e1bf36bb42ea7d959',
@@ -172,13 +170,11 @@ describe('Bluefin App', () => {
 
     let ts: TestSuite<BluefinIntentionData>;
 
-
     beforeEach(() => {
       ts = new TestSuite(testWallet, 'sui:mainnet', helper);
     });
 
     it('build open position and provide liquidity transaction', async () => {
-  
       ts.setIntention({
         txType: TransactionType.Other,
         txSubType: TransactionSubType.OpenAndAddLiquidity,
@@ -196,13 +192,11 @@ describe('Bluefin App', () => {
         },
       });
 
-
       const txb = await ts.voteAndExecuteIntention();
 
       expect(txb).toBeDefined();
       expect(txb.tx.blockData.sender).toBe(testWallet.address);
       expect(txb.tx.blockData.version).toBe(1);
-
     });
   });
 });
