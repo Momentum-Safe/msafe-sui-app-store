@@ -20,6 +20,7 @@ export class OpenAndAddLiquidity extends BaseIntention<BluefinIntentionData> {
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
     const { txbParams } = this.data;
+    console.log(txbParams);
     const txb = await TxBuilder.openPositionAndAddLiquidity(txbParams, account, network);
     return txb;
   }

@@ -27,13 +27,16 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.OpenAndAddLiquidity,
       intentionData: {
-        pool: this.getSharedObjectID(this.getInputIndex(openPosCommand, 1)),
-        lowerTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 2)))).toString()),
-        upperTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 3)))).toString()),
-        tokenAmount: this.getU64(this.getInputIndex(addLiqCommand, 6)),
-        maxAmountTokenA: this.getU64(this.getInputIndex(addLiqCommand, 7)),
-        maxAmountTokenB: this.getU64(this.getInputIndex(addLiqCommand, 8)),
-        isTokenAFixed: this.getBoolean(this.getInputIndex(addLiqCommand, 9)),
+        txbParams: {
+          pool: this.getSharedObjectID(this.getInputIndex(openPosCommand, 1)),
+          lowerTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 2)))).toString()),
+          upperTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 3)))).toString()),
+          tokenAmount: this.getU64(this.getInputIndex(addLiqCommand, 6)),
+          maxAmountTokenA: this.getU64(this.getInputIndex(addLiqCommand, 7)),
+          maxAmountTokenB: this.getU64(this.getInputIndex(addLiqCommand, 8)),
+          isTokenAFixed: this.getBoolean(this.getInputIndex(addLiqCommand, 9)),
+        },
+        action: TransactionSubType.OpenAndAddLiquidity,
       },
     };
   }
