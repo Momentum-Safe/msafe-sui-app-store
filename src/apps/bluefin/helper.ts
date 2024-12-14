@@ -61,6 +61,7 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
   }): Promise<Transaction> {
     const { suiClient, account, network } = input;
 
+    console.log(input.txSubType);
     let intention: BluefinIntention;
     switch (input.txSubType) {
       case TransactionSubType.OpenAndAddLiquidity:
