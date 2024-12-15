@@ -20,8 +20,7 @@ export class RemoveLiquidity extends BaseIntention<BluefinIntentionData> {
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
     console.log(this.data);
-    const txb = await TxBuilder.removeLiquidity(this.data as RemoveLiquidityIntentionData, account, network);
-    return txb;
+    return TxBuilder.removeLiquidity(this.data as RemoveLiquidityIntentionData, account, network);
   }
 
   static fromData(data: BluefinIntentionData) {

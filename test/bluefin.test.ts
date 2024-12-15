@@ -146,6 +146,7 @@ describe('Bluefin App', () => {
     };
 
     const helper = new BluefinHelper();
+    const suiClient = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
 
     let ts: TestSuite<BluefinIntentionData>;
 
@@ -167,6 +168,34 @@ describe('Bluefin App', () => {
           maxAmountTokenB: String(0.05e6),
         },
       });
+
+      const txb = await ts.voteAndExecuteIntention();
+
+      expect(txb).toBeDefined();
+      expect(txb.tx.blockData.sender).toBe(testWallet.address);
+      expect(txb.tx.blockData.version).toBe(1);
+    });
+
+    it('should deserialize and build open position and provide liquidity transaction', async () => {
+      const unresolvedTx = await TxBuilder.openPositionAndAddLiquidity(
+        {
+          pool: '0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f',
+          lowerTick: -1000,
+          upperTick: 32000,
+          tokenAmount: toBigNumberStr(0.5, 6),
+          isTokenAFixed: true,
+          maxAmountTokenA: toBigNumberStr(0.5, 6),
+          maxAmountTokenB: toBigNumberStr(0.5, 6),
+        },
+        testWallet,
+        'sui:mainnet',
+      );
+
+      const resolvedTx = Transaction.from(await unresolvedTx.build({ client: suiClient }));
+      const intentionData = await helper.deserialize({ transaction: resolvedTx } as any);
+
+      console.dir(intentionData);
+      ts.setIntention(intentionData);
 
       const txb = await ts.voteAndExecuteIntention();
 

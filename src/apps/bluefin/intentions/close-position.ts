@@ -20,8 +20,7 @@ export class ClosePosition extends BaseIntention<BluefinIntentionData> {
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
     console.log(this.data);
-    const txb = await TxBuilder.closePosition(this.data as ClosePositionIntentionData, account, network);
-    return txb;
+    return TxBuilder.closePosition(this.data as ClosePositionIntentionData, account, network);
   }
 
   static fromData(data: BluefinIntentionData) {
