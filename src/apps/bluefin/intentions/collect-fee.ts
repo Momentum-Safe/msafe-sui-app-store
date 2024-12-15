@@ -6,7 +6,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntention } from '@/apps/interface/sui';
 
 import TxBuilder from '../tx-builder';
-import { SuiNetworks, TransactionSubType, BluefinIntentionData } from '../types';
+import { SuiNetworks, TransactionSubType, BluefinIntentionData, CollectFeeIntentionData } from '../types';
 
 export class CollectFee extends BaseIntention<BluefinIntentionData> {
   txType = TransactionType.Other;
@@ -19,8 +19,8 @@ export class CollectFee extends BaseIntention<BluefinIntentionData> {
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    const { txbParams } = this.data;
-    const txb = await TxBuilder.collectFee(txbParams, account, network);
+    console.log(this.data);
+    const txb = await TxBuilder.collectFee(this.data as CollectFeeIntentionData, account, network);
     return txb;
   }
 

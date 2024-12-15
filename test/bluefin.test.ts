@@ -1,4 +1,4 @@
-import { SuiClient } from '@firefly-exchange/library-sui';
+import { SuiClient, toBigNumberStr } from '@firefly-exchange/library-sui';
 import { HexToUint8Array, TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
@@ -19,107 +19,86 @@ import { TestSuite } from './testSuite';
 describe('Bluefin App', () => {
   it('Test `OpenAndAddLiquidity` intention serialization', () => {
     const intention = OpenAndAddLiquidity.fromData({
-      txbParams: {
-        pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
-        lowerTick: 1,
-        upperTick: 2,
-        tokenAmount: 0.5e6,
-        isCoinA: true,
-        maxAmountTokenA: 0.5e6,
-        maxAmountTokenB: 0.5e6,
-      },
-      action: TransactionSubType.OpenAndAddLiquidity,
+      pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
+      lowerTick: 1,
+      upperTick: 2,
+      tokenAmount: toBigNumberStr(0.5, 6),
+      isTokenAFixed: true,
+      maxAmountTokenA: toBigNumberStr(0.5, 6),
+      maxAmountTokenB: toBigNumberStr(0.5, 6),
     });
     expect(intention.serialize()).toBe(
-      '{"action":"OpenAndAddLiquidity","txbParams":{"isCoinA":true,"lowerTick":1,"maxAmountTokenA":500000,"maxAmountTokenB":500000,"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","tokenAmount":500000,"upperTick":2}}',
+      '{"isTokenAFixed":true,"lowerTick":1,"maxAmountTokenA":"500000","maxAmountTokenB":"500000","pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","tokenAmount":"500000","upperTick":2}',
     );
   });
 
   it('Test `ProvideLiquidity` intention serialization', () => {
     const intention = ProvideLiquidity.fromData({
-      txbParams: {
-        pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
-        position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
-        lowerTick: 1,
-        upperTick: 2,
-        tokenAmount: 0.5,
-        isCoinA: true,
-        slippage: 0.025,
-      },
-      action: TransactionSubType.ProvideLiquidity,
+      pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
+      position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
+      lowerTick: 1,
+      upperTick: 2,
+      tokenAmount: '0.5',
+      isTokenAFixed: true,
+      slippage: 0.025,
     });
     expect(intention.serialize()).toBe(
-      '{"action":"ProvideLiquidity","txbParams":{"isCoinA":true,"lowerTick":1,"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46","slippage":0.025,"tokenAmount":0.5,"upperTick":2}}',
+      '{"isTokenAFixed":true,"lowerTick":1,"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46","slippage":0.025,"tokenAmount":"0.5","upperTick":2}',
     );
   });
 
   it('Test `RemoveLiquidity` intention serialization', () => {
     const intention = RemoveLiquidity.fromData({
-      txbParams: {
-        pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
-        position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
-        lowerTick: 1,
-        upperTick: 2,
-        tokenAmount: 0.5,
-        isCoinA: true,
-        slippage: 0.025,
-      },
-      action: TransactionSubType.RemoveLiquidity,
+      pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
+      position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
+      lowerTick: 1,
+      upperTick: 2,
+      tokenAmount: '0.5',
+      isTokenAFixed: true,
+      slippage: 0.025,
     });
     expect(intention.serialize()).toBe(
-      '{"action":"RemoveLiquidity","txbParams":{"isCoinA":true,"lowerTick":1,"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46","slippage":0.025,"tokenAmount":0.5,"upperTick":2}}',
+      '{"isTokenAFixed":true,"lowerTick":1,"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46","slippage":0.025,"tokenAmount":"0.5","upperTick":2}',
     );
   });
 
   it('Test `ClosePosition` intention serialization', () => {
     const intention = ClosePosition.fromData({
-      txbParams: {
-        pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
-        position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
-      },
-      action: TransactionSubType.ClosePosition,
+      pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
+      position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
     });
     expect(intention.serialize()).toBe(
-      '{"action":"ClosePosition","txbParams":{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}}',
+      '{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}',
     );
   });
 
   it('Test `CollectFee` intention serialization', () => {
     const intention = CollectFee.fromData({
-      txbParams: {
-        pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
-        position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
-      },
-      action: TransactionSubType.CollectFee,
+      pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
+      position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
     });
     expect(intention.serialize()).toBe(
-      '{"action":"CollectFee","txbParams":{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}}',
+      '{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}',
     );
   });
 
   it('Test `CollectRewards` intention serialization', () => {
     const intention = CollectRewards.fromData({
-      txbParams: {
-        pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
-        position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
-      },
-      action: TransactionSubType.CollectRewards,
+      pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
+      position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
     });
     expect(intention.serialize()).toBe(
-      '{"action":"CollectRewards","txbParams":{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}}',
+      '{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}',
     );
   });
 
   it('Test `CollectFeeAndRewards` intention serialization', () => {
     const intention = CollectFeeAndRewards.fromData({
-      txbParams: {
-        pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
-        position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
-      },
-      action: TransactionSubType.CollectFeeAndRewards,
+      pool: '0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140',
+      position: '0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46',
     });
     expect(intention.serialize()).toBe(
-      '{"action":"CollectFeeAndRewards","txbParams":{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}}',
+      '{"pool":"0x0c89fd0320b406311c05f1ed8c4656b4ab7ed14999a992cc6c878c2fad405140","position":"0x56b4ab7ed14999a992cc6c878c2fad4051400c89fd0320b406311c05f1ed8c46"}',
     );
   });
 
@@ -140,10 +119,10 @@ describe('Bluefin App', () => {
           pool: '0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f',
           lowerTick: -1000,
           upperTick: 32000,
-          tokenAmount: 0.5e6,
-          isCoinA: true,
-          maxAmountTokenA: 0.5e6,
-          maxAmountTokenB: 0.5e6,
+          tokenAmount: toBigNumberStr(0.5, 6),
+          isTokenAFixed: true,
+          maxAmountTokenA: toBigNumberStr(0.5, 6),
+          maxAmountTokenB: toBigNumberStr(0.5, 6),
         },
         testWallet,
         'sui:mainnet',
@@ -153,7 +132,7 @@ describe('Bluefin App', () => {
       const data = await helper.deserialize({ transaction: resolvedTx } as any);
 
       expect(JSON.stringify(data)).toBe(
-        `{"txType":"Other","txSubType":"OpenAndAddLiquidity","intentionData":{"txbParams":{"pool":"0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f","lowerTick":-1000,"upperTick":32000,"tokenAmount":"500000","maxAmountTokenA":"500000","maxAmountTokenB":"500000","isTokenAFixed":true},"action":"OpenAndAddLiquidity"}}`,
+        `{"txType":"Other","txSubType":"OpenAndAddLiquidity","intentionData":{"pool":"0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f","lowerTick":-1000,"upperTick":32000,"tokenAmount":"500000","maxAmountTokenA":"500000","maxAmountTokenB":"500000","isTokenAFixed":true}}`,
       );
     });
   });
@@ -179,16 +158,13 @@ describe('Bluefin App', () => {
         txType: TransactionType.Other,
         txSubType: TransactionSubType.OpenAndAddLiquidity,
         intentionData: {
-          action: TransactionSubType.OpenAndAddLiquidity,
-          txbParams: {
-            pool: '0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f',
-            lowerTick: 1000,
-            upperTick: 2000,
-            tokenAmount: 0.05e6,
-            isCoinA: true,
-            maxAmountTokenA: 0.05e6,
-            maxAmountTokenB: 0.05e6,
-          },
+          pool: '0x0321b68a0fca8c990710d26986ba433d06b351deba9384017cd6175f20466a8f',
+          lowerTick: 1000,
+          upperTick: 2000,
+          tokenAmount: String(0.05e6),
+          isTokenAFixed: true,
+          maxAmountTokenA: String(0.05e6),
+          maxAmountTokenB: String(0.05e6),
         },
       });
 

@@ -4,90 +4,122 @@ import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { getBluefinSpotSDK } from './config';
-import { SuiNetworks } from './types';
+import {
+  ClosePositionIntentionData,
+  CollectFeeAndRewardsIntentionData,
+  CollectFeeIntentionData,
+  CollectRewardsIntentionData,
+  OpenAndAddLiquidityIntentionData,
+  ProvideLiquidityIntentionData,
+  RemoveLiquidityIntentionData,
+  SuiNetworks,
+} from './types';
 
 export default class TxBuilder {
   static async openPositionAndAddLiquidity(
-    txbParams: any,
+    txParams: OpenAndAddLiquidityIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
   ): Promise<Transaction> {
     const sdk = getBluefinSpotSDK(network, account);
 
-    const pool = await sdk.queryChain.getPool(txbParams.pool);
+    const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const res = this.prototype.buildLiqInput(pool, { ...txbParams, slippage: 0 });
+    const liquidityInput = this.prototype.buildLiqInput(pool, { ...txParams, slippage: 0 });
 
     const txb: Transaction = (await sdk.openPositionWithFixedAmount(
       pool,
-      txbParams.lowerTick,
-      txbParams.upperTick,
-      res,
-      { returnTx: true, sender: account.address },
-    )) as any as Transaction;
+      txParams.lowerTick,
+      txParams.upperTick,
+      liquidityInput,
+      {
+        returnTx: true,
+        sender: account.address,
+      },
+    )) as Transaction;
 
     return txb;
   }
 
-  static async provideLiquidity(txbParams: any, account: WalletAccount, network: SuiNetworks): Promise<Transaction> {
+  static async provideLiquidity(
+    txParams: ProvideLiquidityIntentionData,
+    account: WalletAccount,
+    network: SuiNetworks,
+  ): Promise<Transaction> {
     const sdk = getBluefinSpotSDK(network, account);
 
-    const pool = await sdk.queryChain.getPool(txbParams.pool);
+    const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const res = this.prototype.buildLiqInput(pool, txbParams);
+    const res = this.prototype.buildLiqInput(pool, txParams);
 
-    const txb: Transaction = (await sdk.provideLiquidityWithFixedAmount(pool, txbParams.position, res, {
+    const txb: Transaction = (await sdk.provideLiquidityWithFixedAmount(pool, txParams.position, res, {
       returnTx: true,
     })) as any as Transaction;
 
     return txb;
   }
 
-  static async removeLiquidity(txbParams: any, account: WalletAccount, network: SuiNetworks): Promise<Transaction> {
+  static async removeLiquidity(
+    txParams: RemoveLiquidityIntentionData,
+    account: WalletAccount,
+    network: SuiNetworks,
+  ): Promise<Transaction> {
     const sdk = getBluefinSpotSDK(network, account);
 
-    const pool = await sdk.queryChain.getPool(txbParams.pool);
+    const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const res = this.prototype.buildLiqInput(pool, txbParams);
+    const res = this.prototype.buildLiqInput(pool, txParams);
 
-    const txb: Transaction = (await sdk.removeLiquidity(pool, txbParams.position, res, {
+    const txb: Transaction = (await sdk.removeLiquidity(pool, txParams.position, res, {
       returnTx: true,
     })) as any as Transaction;
 
     return txb;
   }
 
-  static async closePosition(txbParams: any, account: WalletAccount, network: SuiNetworks): Promise<Transaction> {
+  static async closePosition(
+    txParams: ClosePositionIntentionData,
+    account: WalletAccount,
+    network: SuiNetworks,
+  ): Promise<Transaction> {
     const sdk = getBluefinSpotSDK(network, account);
 
-    const pool = await sdk.queryChain.getPool(txbParams.pool);
+    const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const txb: Transaction = (await sdk.closePosition(pool, txbParams.position, {
+    const txb: Transaction = (await sdk.closePosition(pool, txParams.position, {
       returnTx: true,
     })) as any as Transaction;
 
     return txb;
   }
 
-  static async collectRewards(txbParams: any, account: WalletAccount, network: SuiNetworks): Promise<Transaction> {
+  static async collectRewards(
+    txParams: CollectRewardsIntentionData,
+    account: WalletAccount,
+    network: SuiNetworks,
+  ): Promise<Transaction> {
     const sdk = getBluefinSpotSDK(network, account);
 
-    const pool = await sdk.queryChain.getPool(txbParams.pool);
+    const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const txb: Transaction = (await sdk.collectRewards(pool, txbParams.position, {
-      rewardCoinsType: txbParams.rewardCoinsType,
+    const txb: Transaction = (await sdk.collectRewards(pool, txParams.position, {
+      rewardCoinsType: txParams.rewardCoinsType,
       returnTx: true,
     })) as any as Transaction;
 
     return txb;
   }
 
-  static async collectFee(txbParams: any, account: WalletAccount, network: SuiNetworks): Promise<Transaction> {
+  static async collectFee(
+    txParams: CollectFeeIntentionData,
+    account: WalletAccount,
+    network: SuiNetworks,
+  ): Promise<Transaction> {
     const sdk = getBluefinSpotSDK(network, account);
 
-    const pool = await sdk.queryChain.getPool(txbParams.pool);
+    const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const txb: Transaction = (await sdk.collectFee(pool, txbParams.position, {
+    const txb: Transaction = (await sdk.collectFee(pool, txParams.position, {
       returnTx: true,
     })) as any as Transaction;
 
@@ -95,15 +127,15 @@ export default class TxBuilder {
   }
 
   static async collectFeeAndRewards(
-    txbParams: any,
+    txParams: CollectFeeAndRewardsIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
   ): Promise<Transaction> {
     const sdk = getBluefinSpotSDK(network, account);
 
-    const pool = await sdk.queryChain.getPool(txbParams.pool);
+    const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const txb: Transaction = (await sdk.collectFeeAndRewards(pool, txbParams.position, {
+    const txb: Transaction = (await sdk.collectFeeAndRewards(pool, txParams.position, {
       returnTx: true,
     })) as any as Transaction;
 
@@ -116,7 +148,7 @@ export default class TxBuilder {
       params.lowerTick,
       params.upperTick,
       new BN(params.tokenAmount),
-      params.isCoinA,
+      params.isTokenAFixed,
       true,
       0,
       new BN(pool.current_sqrt_price),
