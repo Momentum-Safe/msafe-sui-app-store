@@ -16,3 +16,9 @@ export enum TransactionSubType {
   SwapExactBaseForQuote = 'SwapExactBaseForQuote',
   SwapExactQuoteForBase = 'SwapExactQuoteForBase',
 }
+
+type DecodeResult = {
+  txType: TransactionType;
+  type: TransactionSubType;
+  intentionData: TURBOSIntentionData;
+};

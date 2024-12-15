@@ -6,7 +6,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntention } from '@/apps/interface/sui';
 
 import TxBuilder from '../tx-builder';
-import { SuiNetworks, TransactionSubType, BluefinIntentionData } from '../types';
+import { SuiNetworks, TransactionSubType, BluefinIntentionData, ProvideLiquidityIntentionData } from '../types';
 
 export class ProvideLiquidity extends BaseIntention<BluefinIntentionData> {
   txType = TransactionType.Other;
@@ -19,9 +19,8 @@ export class ProvideLiquidity extends BaseIntention<BluefinIntentionData> {
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    const { txbParams } = this.data;
-    const txb = await TxBuilder.provideLiquidity(txbParams, account, network);
-    return txb;
+    console.log(this.data);
+    return TxBuilder.provideLiquidity(this.data as ProvideLiquidityIntentionData, account, network);
   }
 
   static fromData(data: BluefinIntentionData) {
