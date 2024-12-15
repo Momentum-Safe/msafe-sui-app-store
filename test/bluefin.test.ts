@@ -172,8 +172,8 @@ describe('Bluefin App', () => {
       const txb = await ts.voteAndExecuteIntention();
 
       expect(txb).toBeDefined();
-      expect(txb.tx.blockData.sender).toBe(testWallet.address);
-      expect(txb.tx.blockData.version).toBe(1);
+      expect(txb.tx.getData().sender).toBe(testWallet.address);
+      expect(txb.tx.getData().version).toBe(2);
     });
 
     it('should deserialize and build open position and provide liquidity transaction', async () => {
@@ -200,8 +200,8 @@ describe('Bluefin App', () => {
       const txb = await ts.voteAndExecuteIntention();
 
       expect(txb).toBeDefined();
-      expect(txb.tx.blockData.sender).toBe(testWallet.address);
-      expect(txb.tx.blockData.version).toBe(1);
+      expect(txb.tx.getData().sender).toBe(testWallet.address);
+      expect(txb.tx.getData().version).toBe(2);
     });
   });
 });
