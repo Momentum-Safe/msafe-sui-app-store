@@ -8,8 +8,8 @@ import { IAppHelperInternal } from '@/apps/interface/sui';
 import { Decoder } from './decoder';
 import { ClosePosition } from './intentions/close-position';
 import { CollectFee } from './intentions/collect-fee';
-import { CollectFeeAndRewards } from './intentions/collect-fee-and-rewards';
 import { CollectRewards } from './intentions/collect-rewards';
+import { CollectRewardsAndFee } from './intentions/collect-rewards-and-fee';
 import { OpenAndAddLiquidity } from './intentions/open-position-with-liquidity';
 import { ProvideLiquidity } from './intentions/provide-liquidity';
 import { RemoveLiquidity } from './intentions/remove-liquidity';
@@ -22,7 +22,7 @@ export type BluefinIntention =
   | ClosePosition
   | CollectFee
   | CollectRewards
-  | CollectFeeAndRewards;
+  | CollectRewardsAndFee;
 export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
   application = 'bluefin';
 
@@ -64,7 +64,7 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     console.log(input.txSubType);
     let intention: BluefinIntention;
     switch (input.txSubType) {
-      case TransactionSubType.OpenAndAddLiquidity:
+      case TransactionSubType.OpenPosition:
         intention = OpenAndAddLiquidity.fromData(input.intentionData);
         break;
 
@@ -86,8 +86,8 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
       case TransactionSubType.CollectRewards:
         intention = CollectRewards.fromData(input.intentionData);
         break;
-      case TransactionSubType.CollectFeeAndRewards:
-        intention = CollectFeeAndRewards.fromData(input.intentionData);
+      case TransactionSubType.CollectRewardsAndFee:
+        intention = CollectRewardsAndFee.fromData(input.intentionData);
         break;
       default:
         throw new Error('not implemented');
