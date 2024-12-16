@@ -1,3 +1,4 @@
+import { AlphaFiHelper } from '@/apps/alphafi/helper';
 import { ClaimRewardIntention } from '@/apps/alphafi/intentions/claim-reward';
 import { DepositDoubleAssetIntention } from '@/apps/alphafi/intentions/deposit-double-asset';
 import { DepositSingleAssetIntention } from '@/apps/alphafi/intentions/deposit-single-asset';
@@ -47,4 +48,25 @@ describe('AlphaFi App', () => {
 
     expect(intention.serialize()).toBe('{}');
   });
+
+  // describe('Deserialization', () => {
+  //   const helper = new AlphaFiHelper();
+  //   const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
+
+  //   it('Deserialize DepositSingleAsset transaction', async () => {
+  //     const unresolvedTx = await depositSingleAssetTxb(
+  //       'NAVI-SUI',
+  //       '0xe136f0b6faf27ee707725f38f2aeefc51c6c31cc508222bee5cbc4f5fcf222c3',
+  //       '100000000',
+  //     );
+  //     unresolvedTx.setSender('0xe136f0b6faf27ee707725f38f2aeefc51c6c31cc508222bee5cbc4f5fcf222c3');
+
+  //     const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
+  //     const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
+
+  //     expect(JSON.stringify(data)).toBe(
+  //       `{\"txType\":\"Other\",\"txSubType\":\"depositSingleAsset\",\"intentionData\":{\"poolName\":\"NAVI-SUI\",\"amount\":\"100000000\"}}`,
+  //     );
+  //   });
+  // });
 });
