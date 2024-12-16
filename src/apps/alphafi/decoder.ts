@@ -51,6 +51,9 @@ export class Decoder {
     const poolId = eventData.pool_id;
     const poolName = poolIdPoolNameMap[poolId];
 
+    console.log('Decoder event data - ', eventData);
+    console.log('Decoder poolName - ', poolName);
+
     if (this.isWithdrawAlphaEvent(liquidityChangeEvent)) {
       return this.decodeWithdrawAlpha(eventData);
     }
@@ -135,6 +138,8 @@ export class Decoder {
   private decodeDoubleAssetDeposit(poolName: PoolName, eventData: EventType): DecodeResult {
     const { amount_a, amount_b } = eventData;
     const isAmountA = Number(amount_a) > 0;
+    console.log('Decoder.decodeDoubleAssetDeposit', amount_a, amount_b, isAmountA);
+
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.DEPOSIT_DOUBLE_ASSET,
@@ -148,6 +153,8 @@ export class Decoder {
 
   private decodeSingleAssetDeposit(poolName: PoolName, eventData: EventType): DecodeResult {
     const { amount } = eventData;
+    console.log('Decoder.decodeSingleAssetDeposit', amount);
+    
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.DEPOSIT_DOUBLE_ASSET,
@@ -160,6 +167,8 @@ export class Decoder {
 
   private decodeWithdraw(poolName: PoolName): DecodeResult {
     const xTokensAmount = this.extractXTokensAmount();
+    console.log('Decoder.decodeWithdraw', xTokensAmount);
+
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.DEPOSIT_DOUBLE_ASSET,
@@ -173,6 +182,8 @@ export class Decoder {
   private decodeWithdrawAlpha(eventData: EventType): DecodeResult {
     const xTokensAmount = this.extractXTokensAmount();
     const { amount_withdrawn_from_locked } = eventData;
+    console.log('Decoder.decodeWithdrawAlpha', xTokensAmount, amount_withdrawn_from_locked);
+
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.DEPOSIT_DOUBLE_ASSET,

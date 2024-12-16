@@ -45,6 +45,7 @@ export class AlphaFiHelper implements IAppHelperInternal<AlphaFiIntentionData> {
       sender: account.address,
       transactionBlock: transaction,
     });
+    console.log('AlphaFiHelper Sim result - ', simResult);
 
     const decoder = new Decoder(transaction, simResult);
     const result = decoder.decode();
@@ -65,7 +66,8 @@ export class AlphaFiHelper implements IAppHelperInternal<AlphaFiIntentionData> {
     network: SuiNetworks;
   }): Promise<Transaction> {
     const { account } = input;
-
+    console.log("AlphaFi build transaction type", input.txSubType);
+    
     let intention: AlphaFiIntention;
     switch (input.txSubType) {
       case TransactionSubType.DEPOSIT_SINGLE_ASSET:

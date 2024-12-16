@@ -27,6 +27,7 @@ export class WithdrawIntention extends BaseIntention<WithdrawIntentionData> {
   }
 
   static fromData(data: WithdrawIntentionData) {
+    console.log('WithdrawIntention.fromData', data);
     return new WithdrawIntention(data);
   }
 }
