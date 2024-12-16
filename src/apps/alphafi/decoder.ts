@@ -157,7 +157,7 @@ export class Decoder {
     
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.DEPOSIT_DOUBLE_ASSET,
+      type: TransactionSubType.DEPOSIT_SINGLE_ASSET,
       intentionData: {
         poolName,
         amount,
@@ -171,7 +171,7 @@ export class Decoder {
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.DEPOSIT_DOUBLE_ASSET,
+      type: TransactionSubType.WITHDRAW,
       intentionData: {
         poolName,
         xTokensAmount,
@@ -186,7 +186,7 @@ export class Decoder {
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.DEPOSIT_DOUBLE_ASSET,
+      type: TransactionSubType.WITHDRAW_ALPHA,
       intentionData: {
         withdrawFromLocked: Number(amount_withdrawn_from_locked) > 0,
         xTokensAmount,
