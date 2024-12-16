@@ -2097,7 +2097,7 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^2.4.8":
+"@firefly-exchange/library-sui@^2.4.11":
   version "2.4.11"
   resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.4.11.tgz#d0cb7923a33415dc828b52ee68b90eaecb089544"
   integrity sha512-BpU6HDTyZ5aHTlFKnZ2rHIEDpKgACqF2GlD8G0eVbxoXXmeTw7vquT3NK76AL7owFSWFjYCmKW2H5+jsCWVfPw==

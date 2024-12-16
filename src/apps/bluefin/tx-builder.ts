@@ -6,18 +6,18 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { getBluefinSpotSDK } from './config';
 import {
   ClosePositionIntentionData,
-  CollectFeeAndRewardsIntentionData,
+  CollectRewardsAndFeeIntentionData,
   CollectFeeIntentionData,
   CollectRewardsIntentionData,
-  OpenAndAddLiquidityIntentionData,
+  OpenPositionIntentionData,
   ProvideLiquidityIntentionData,
   RemoveLiquidityIntentionData,
   SuiNetworks,
 } from './types';
 
 export default class TxBuilder {
-  static async openPositionAndAddLiquidity(
-    txParams: OpenAndAddLiquidityIntentionData,
+  static async OpenPosition(
+    txParams: OpenPositionIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
   ): Promise<Transaction> {
@@ -52,8 +52,9 @@ export default class TxBuilder {
 
     const res = this.prototype.buildLiqInput(pool, txParams);
 
-    const txb: Transaction = (await sdk.provideLiquidityWithFixedAmount(pool, txParams.position, res, {
+    const txb = (await sdk.provideLiquidityWithFixedAmount(pool, txParams.position, res, {
       returnTx: true,
+      sender: account.address,
     })) as any as Transaction;
 
     return txb;
@@ -68,11 +69,19 @@ export default class TxBuilder {
 
     const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const res = this.prototype.buildLiqInput(pool, txParams);
-
-    const txb: Transaction = (await sdk.removeLiquidity(pool, txParams.position, res, {
-      returnTx: true,
-    })) as any as Transaction;
+    const txb = (await sdk.removeLiquidity(
+      pool,
+      txParams.position,
+      {
+        liquidityAmount: new BN(txParams.liquidity),
+        tokenMaxA: new BN(txParams.maxAmountTokenA),
+        tokenMaxB: new BN(txParams.maxAmountTokenB),
+      } as any as LiquidityInput,
+      {
+        returnTx: true,
+        sender: account.address,
+      },
+    )) as any as Transaction;
 
     return txb;
   }
@@ -86,8 +95,9 @@ export default class TxBuilder {
 
     const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    const txb: Transaction = (await sdk.closePosition(pool, txParams.position, {
+    const txb = (await sdk.closePosition(pool, txParams.position, {
       returnTx: true,
+      sender: account.address,
     })) as any as Transaction;
 
     return txb;
@@ -103,8 +113,9 @@ export default class TxBuilder {
     const pool = await sdk.queryChain.getPool(txParams.pool);
 
     const txb: Transaction = (await sdk.collectRewards(pool, txParams.position, {
-      rewardCoinsType: txParams.rewardCoinsType,
+      rewardCoinsType: txParams.collectRewardTokens,
       returnTx: true,
+      sender: account.address,
     })) as any as Transaction;
 
     return txb;
@@ -121,13 +132,14 @@ export default class TxBuilder {
 
     const txb: Transaction = (await sdk.collectFee(pool, txParams.position, {
       returnTx: true,
+      sender: account.address,
     })) as any as Transaction;
 
     return txb;
   }
 
-  static async collectFeeAndRewards(
-    txParams: CollectFeeAndRewardsIntentionData,
+  static async collectRewardsAndFee(
+    txParams: CollectRewardsAndFeeIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
   ): Promise<Transaction> {
@@ -135,8 +147,10 @@ export default class TxBuilder {
 
     const pool = await sdk.queryChain.getPool(txParams.pool);
 
+    console.log(txParams.position);
     const txb: Transaction = (await sdk.collectFeeAndRewards(pool, txParams.position, {
       returnTx: true,
+      sender: account.address,
     })) as any as Transaction;
 
     return txb;

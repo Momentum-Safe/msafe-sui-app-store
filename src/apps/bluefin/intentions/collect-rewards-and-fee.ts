@@ -6,12 +6,12 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntention } from '@/apps/interface/sui';
 
 import TxBuilder from '../tx-builder';
-import { SuiNetworks, TransactionSubType, BluefinIntentionData, CollectFeeAndRewardsIntentionData } from '../types';
+import { SuiNetworks, TransactionSubType, BluefinIntentionData, CollectRewardsAndFeeIntentionData } from '../types';
 
-export class CollectFeeAndRewards extends BaseIntention<BluefinIntentionData> {
+export class CollectRewardsAndFee extends BaseIntention<BluefinIntentionData> {
   txType = TransactionType.Other;
 
-  txSubType = TransactionSubType.CollectFeeAndRewards;
+  txSubType = TransactionSubType.CollectRewardsAndFee;
 
   constructor(public readonly data: BluefinIntentionData) {
     super(data);
@@ -20,10 +20,10 @@ export class CollectFeeAndRewards extends BaseIntention<BluefinIntentionData> {
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
     console.log(this.data);
-    return TxBuilder.collectFeeAndRewards(this.data as CollectFeeAndRewardsIntentionData, account, network);
+    return TxBuilder.collectRewardsAndFee(this.data as CollectRewardsAndFeeIntentionData, account, network);
   }
 
   static fromData(data: BluefinIntentionData) {
-    return new CollectFeeAndRewards(data);
+    return new CollectRewardsAndFee(data);
   }
 }
