@@ -2,15 +2,15 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { AlphaFiIntentionData } from './helper';
 import { TransactionSubType } from './types';
-import { poolIdPoolNameMap, poolInfo, PoolName } from '@alphafi/alphafi-sdk';
+import { coinsList, poolIdPoolNameMap, poolInfo, PoolName, singleAssetPoolCoinMap } from '@alphafi/alphafi-sdk';
 import { DevInspectResults } from '@mysten/sui/client';
-import BigNumber from 'bignumber.js';
-import { fromB64, toHEX } from '@mysten/sui/utils';
+import { fromB64 } from '@mysten/sui/utils';
 import { DepositSingleAssetIntentionData } from './intentions/deposit-single-asset';
 import { WithdrawIntentionData } from './intentions/withdraw';
 import { WithdrawAlphaIntentionData } from './intentions/withdraw-alpha';
 import { DepositDoubleAssetIntentionData } from './intentions/deposit-double-asset';
 import { EmptyIntentionData } from './intentions/claim-reward';
+import { bcs } from '@mysten/bcs';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -130,7 +130,7 @@ export class Decoder {
     }
 
     const bytes = inputWithPure.Pure.bytes;
-    return new BigNumber(toHEX(fromB64(bytes)), 16).toString();
+    return bcs.u128().parse(fromB64(bytes));
   }
 
   // ---- Decode Methods ----
@@ -152,9 +152,14 @@ export class Decoder {
   }
 
   private decodeSingleAssetDeposit(poolName: PoolName, eventData: EventType): DecodeResult {
-    const { amount } = eventData;
+    let { amount } = eventData;
     console.log('Decoder.decodeSingleAssetDeposit', amount);
-    
+    const liquidityChangeEvent = this.getLiquidityChangeEvent();
+    if (liquidityChangeEvent.type.includes('alphafi_navi_pool')) {
+      const coin = singleAssetPoolCoinMap[poolName].coin;
+      const expo = coinsList[coin].expo;
+      amount = Math.floor(Number(amount) / 10 ** (9 - expo)).toString();
+    }
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.DEPOSIT_SINGLE_ASSET,
