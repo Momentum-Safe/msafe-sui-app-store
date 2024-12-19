@@ -10,9 +10,20 @@ Due to Sui blockchain version limitations, multisig account can't propose multip
 
 ## Demos
 
-https://msafe-sui-web-v3.vercel.app/
-
 We provide a demo dApp for MSafe app store integration. please refer below GitHub repository: https://github.com/Momentum-Safe/msafe-sui-app-arbitrary-transaction
+
+In this demo, we implement a dApp that allows users to execute arbitrary transaction on Sui.
+
+You can see how to implement with `@msafe/sui-app-store` in this demo.
+
+Including:
+- Initiate MSafe Wallet
+- Connect to MSafe Wallet using `@mysten/dapp-kit`
+- Sign transaction with MSafe Wallet (also using `@msafe/dapp-kit`)
+
+The main logic is implemented in `src/App.tsx`
+
+Demo dApp: https://sui-ptx.m-safe.io/
 
 ## How to contribute
 
