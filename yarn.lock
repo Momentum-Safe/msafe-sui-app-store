@@ -2097,15 +2097,15 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^2.4.11":
-  version "2.4.11"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.4.11.tgz#d0cb7923a33415dc828b52ee68b90eaecb089544"
-  integrity sha512-BpU6HDTyZ5aHTlFKnZ2rHIEDpKgACqF2GlD8G0eVbxoXXmeTw7vquT3NK76AL7owFSWFjYCmKW2H5+jsCWVfPw==
+"@firefly-exchange/library-sui@^2.4.16":
+  version "2.4.16"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.4.16.tgz#592eeaa16bc6e73e3f3b910debbc5507f669c90e"
+  integrity sha512-EODYgwAWnLbkDHfRjfxbMQF7CBEjheD9nqaeNfey3U0RB39G1ASFkg9+7BD+mv0+5PXMx6qsd+SHLaMPDQc+7g==
   dependencies:
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/bcs" "^1.1.0"
     "@mysten/dapp-kit" "^0.14.25"
-    "@mysten/sui" "^1.12.0"
+    "@mysten/sui" "^1.17.0"
     "@mysten/wallet-standard" "^0.13.7"
     "@mysten/zklogin" "^0.7.22"
     "@noble/hashes" "^1.2.0"
@@ -2697,7 +2697,7 @@
     tweetnacl "^1.0.3"
     valibot "^0.36.0"
 
-"@mysten/sui@1.17.0", "@mysten/sui@^1.12.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.3.0", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
+"@mysten/sui@1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.3.0", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.17.0.tgz#af0ce6b72380c4e939e4dd72617a35a5d80831b9"
   integrity sha512-vL6QrH3l10dTatimPmz/feqMbYfEjvh8MPf3Xwn5tjuwDwBCS0ha1kdN+4vUpu6t0aCFviK+Df/vanORS8cbGQ==
@@ -2716,6 +2716,26 @@
     jose "^5.6.3"
     poseidon-lite "^0.2.0"
     tweetnacl "^1.0.3"
+    valibot "^0.36.0"
+
+"@mysten/sui@^1.17.0":
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.18.0.tgz#9f7b4a456d0d2530b1eb569b8ebe32313ac7f619"
+  integrity sha512-cFh5LxXZrXb/ZAD1dkKeQxzhgRYFXreyFGmI7w/JQWwdl+/0FrHJBwaWyTmGxJ/6ZC9SlaOPOk63flN7DbUurg==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@mysten/bcs" "1.2.0"
+    "@noble/curves" "^1.4.2"
+    "@noble/hashes" "^1.4.0"
+    "@scure/bip32" "^1.4.0"
+    "@scure/bip39" "^1.3.0"
+    "@simplewebauthn/typescript-types" "^7.4.0"
+    "@suchipi/femver" "^1.0.0"
+    bech32 "^2.0.0"
+    gql.tada "^1.8.2"
+    graphql "^16.9.0"
+    jose "^5.6.3"
+    poseidon-lite "^0.2.0"
     valibot "^0.36.0"
 
 "@mysten/wallet-standard@0.11.6":
