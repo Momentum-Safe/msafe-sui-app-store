@@ -8,6 +8,7 @@ import { ObjectTransferIntention, ObjectTransferIntentionData } from '@/apps/msa
 
 import { Account } from './config';
 import { TestSuiteLegacy } from './testSuite';
+import { appHelpers } from '@/index';
 
 const COIN_TRANSFER_TEST_INTENTION_DATA = {
   amount: '1000',
@@ -38,7 +39,7 @@ describe('MSafe Core main flow', () => {
   describe('Coin transfer', () => {
     it('build throw error', async () => {
       const txb = await ts.appHelper.build({
-        network: 'sui:devnet',
+        network: 'sui:mainnet',
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.coin.send,
         suiClient: new SuiClient({ url: getFullnodeUrl('mainnet') }),
@@ -77,6 +78,35 @@ describe('MSafe Core main flow', () => {
       expect(txb).toBeDefined();
       expect(txb.txb.blockData.sender).toBe(testWallet.address);
       expect(txb.txb.blockData.version).toBe(1);
+    });
+  });
+
+  describe('Gas fee balance check', () => {
+    it('transaction build gas fee balance check', async () => {
+      const insufficientBalanceWallet: WalletAccount = {
+        // this address mainnet sui balance is lower than 0.1 SUI
+        address: '0x3d0861752f307fd725713bccb3308bab2ee7de20c6cb4f4606953d18f8c4be0a',
+        publicKey: HexToUint8Array('247029c4869f5914da1f3d0766fcd83309c3ae15d069a959aa3da83be8165291'),
+        chains: [SUI_MAINNET_CHAIN],
+        features: [],
+      };
+      const helper = appHelpers.getAppHelper('msafe-core');
+
+      expect(async () => {
+        await helper.build({
+          network: 'sui:mainnet',
+          txType: TransactionType.Assets,
+          txSubType: TransactionSubTypes.assets.object.send,
+          clientUrl: getFullnodeUrl('mainnet'),
+          account: insufficientBalanceWallet,
+          intentionData: {
+            objectType:
+              '0x830fe26674dc638af7c3d84030e2575f44a2bdc1baa1f4757cfe010a4b106b6a::movescription::Movescription',
+            objectId: '0x01ddc370b11d259ab21b147ef26dddbc385637c4646fa0bcb7f1a1c0179ee071',
+            receiver: '0xa9743028e574b7abe4f0af88b08eb5a700a34ea3b1adc667d8d67dcdfa2b5233',
+          } as ObjectTransferIntentionData,
+        });
+      }).rejects.toThrow('Insufficient gas fee');
     });
   });
 

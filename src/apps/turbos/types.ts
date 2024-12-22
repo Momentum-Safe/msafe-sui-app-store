@@ -1,3 +1,6 @@
+import { TransactionType } from '@msafe/sui3-utils';
+import { TURBOSIntentionData } from './helper';
+
 export type SuiNetworks = 'sui:devnet' | 'sui:testnet' | 'sui:localnet' | 'sui:mainnet';
 
 export enum TransactionSubType {
