@@ -128,7 +128,7 @@ export class Decoder {
       throw new Error('Unable to extract xTokensAmount from inputs');
     }
     const bytes = inputWithPure.Pure.bytes;
-    console.log(bytes.length);
+    
     let res;
     if (bytes.length === 12) res = bcs.u64().parse(fromB64(bytes));
     else if (bytes.length === 24) res = bcs.u128().parse(fromB64(bytes));
