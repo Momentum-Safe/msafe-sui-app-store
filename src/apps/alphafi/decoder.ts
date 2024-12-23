@@ -160,7 +160,7 @@ export class Decoder {
     let { amount } = eventData;
     console.log('Decoder.decodeSingleAssetDeposit', amount);
     const liquidityChangeEvent = this.getLiquidityChangeEvent();
-    if (liquidityChangeEvent.type.includes('alphafi_navi_pool')) {
+    if (liquidityChangeEvent.type.includes(':alphafi_navi_pool:')) {
       const coin = singleAssetPoolCoinMap[poolName].coin;
       const expo = coinsList[coin].expo;
       amount = Math.floor(Number(amount) / 10 ** (9 - expo)).toString();
