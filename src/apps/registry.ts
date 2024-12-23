@@ -106,6 +106,11 @@ export class SuiSdkAdapter implements IAppHelper<any> {
         },
       }),
     });
+    // fetch account sui balance, check if sui balance is greater or equal to 0.1 SUI
+    const accountSuiBalance = await client.getBalance({ owner: input.account.address });
+    if (Number(accountSuiBalance.totalBalance) < 100000000) {
+      throw new Error('Insufficient gas fee');
+    }
     const tx = await this.helper.build({ ...input, suiClient: client });
     tx.setSender(input.account.address);
     const bytes = await tx.build({ client });
@@ -154,6 +159,11 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
         },
       }),
     });
+    // fetch account sui balance, check if sui balance is greater or equal to 0.1 SUI
+    const accountSuiBalance = await client.getBalance({ owner: input.account.address });
+    if (Number(accountSuiBalance.totalBalance) < 100000000) {
+      throw new Error('Insufficient gas fee');
+    }
     return this.helper.build({ ...input, suiClient: client });
   }
 }
