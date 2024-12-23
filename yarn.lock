@@ -15,11 +15,17 @@
     "@gql.tada/internal" "^1.0.0"
     graphql "^15.5.0 || ^16.0.0 || ^17.0.0"
 
-"@alphafi/alphafi-sdk@^0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.40.tgz#f1895c5964988b5ef98b6ccf4b2d90785921a7a8"
-  integrity sha512-xCNkiCho7ftpmc5EaiRWAqG9s4h2V40zWBsgxqNCfJaTr3WbUtYmsbbmwxuJf+lAiekffZwreIbZMAnNQmBbdQ==
+"@7kprotocol/sdk-ts@^2.1.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.2.0.tgz#b06d69a8d66e9b32f298828c0352036fbf405509"
+  integrity sha512-thDiO8pv83YFwoTfIK1e/fYIyxbwLeKhfXwYbXMicKB6hsZkUPq9wIX+QWeONgTRMM7O7MX5lT+q3EAjdtcUyA==
+
+"@alphafi/alphafi-sdk@^0.0.42":
+  version "0.0.42"
+  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.42.tgz#523f3c603b47ef657313562800338b1bd4f3fc7f"
+  integrity sha512-rODNapqk7Cw7lbLSVuUZJQJ0eOF5LZXhVw3db1UqwbJLGbh4li4XD0scJaMDR5jYs3ukMg31jO3h08eFah0bZQ==
   dependencies:
+    "@7kprotocol/sdk-ts" "^2.1.0"
     "@apollo/client" "^3.11.4"
     "@cetusprotocol/cetus-sui-clmm-sdk" "5.1.6"
     "@hop.ag/sdk" "^3.3.0"

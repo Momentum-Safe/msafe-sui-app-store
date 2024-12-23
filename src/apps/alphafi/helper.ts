@@ -42,7 +42,7 @@ export class AlphaFiHelper implements IAppHelperInternal<AlphaFiIntentionData> {
     const { transaction, suiClient, account } = input;
 
     const simResult = await suiClient.devInspectTransactionBlock({
-      sender: account.address,
+      sender: transaction.getData().sender,
       transactionBlock: transaction,
     });
     console.log('AlphaFiHelper Sim result - ', simResult);

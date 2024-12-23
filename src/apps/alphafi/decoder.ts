@@ -10,7 +10,7 @@ import { WithdrawIntentionData } from './intentions/withdraw';
 import { WithdrawAlphaIntentionData } from './intentions/withdraw-alpha';
 import { DepositDoubleAssetIntentionData } from './intentions/deposit-double-asset';
 import { EmptyIntentionData } from './intentions/claim-reward';
-import { bcs } from '@mysten/bcs';
+import { bcs } from '@mysten/sui/bcs';
 
 type DecodeResult = {
   txType: TransactionType;
