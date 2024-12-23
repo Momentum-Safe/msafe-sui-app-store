@@ -4,13 +4,12 @@ import { AlphaFiIntentionData } from './helper';
 import { TransactionSubType } from './types';
 import { coinsList, poolIdPoolNameMap, poolInfo, PoolName, singleAssetPoolCoinMap } from '@alphafi/alphafi-sdk';
 import { DevInspectResults } from '@mysten/sui/client';
-import { fromB64 } from '@mysten/sui/utils';
 import { DepositSingleAssetIntentionData } from './intentions/deposit-single-asset';
 import { WithdrawIntentionData } from './intentions/withdraw';
 import { WithdrawAlphaIntentionData } from './intentions/withdraw-alpha';
 import { DepositDoubleAssetIntentionData } from './intentions/deposit-double-asset';
 import { EmptyIntentionData } from './intentions/claim-reward';
-import { bcs } from '@mysten/sui/bcs';
+import { bcs, fromB64 } from '@mysten/bcs';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -128,9 +127,15 @@ export class Decoder {
     if (!inputWithPure || !inputWithPure.Pure?.bytes) {
       throw new Error('Unable to extract xTokensAmount from inputs');
     }
-
     const bytes = inputWithPure.Pure.bytes;
-    return bcs.u128().parse(fromB64(bytes));
+    console.log(bytes.length);
+    let res;
+    if (bytes.length === 12) res = bcs.u64().parse(fromB64(bytes));
+    else if (bytes.length === 24) res = bcs.u128().parse(fromB64(bytes));
+    else if (bytes.length === 44) res = bcs.u256().parse(fromB64(bytes));
+    else res = res = bcs.u64().parse(fromB64(bytes));
+
+    return res;
   }
 
   // ---- Decode Methods ----
