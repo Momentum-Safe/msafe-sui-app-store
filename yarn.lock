@@ -20,12 +20,13 @@
   resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.2.0.tgz#b06d69a8d66e9b32f298828c0352036fbf405509"
   integrity sha512-thDiO8pv83YFwoTfIK1e/fYIyxbwLeKhfXwYbXMicKB6hsZkUPq9wIX+QWeONgTRMM7O7MX5lT+q3EAjdtcUyA==
 
-"@alphafi/alphafi-sdk@^0.0.42":
-  version "0.0.42"
-  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.42.tgz#523f3c603b47ef657313562800338b1bd4f3fc7f"
-  integrity sha512-rODNapqk7Cw7lbLSVuUZJQJ0eOF5LZXhVw3db1UqwbJLGbh4li4XD0scJaMDR5jYs3ukMg31jO3h08eFah0bZQ==
+"@alphafi/alphafi-sdk@^0.0.46":
+  version "0.0.46"
+  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.46.tgz#f877df9b4810e6b36eff12d8004c32ac1d546379"
+  integrity sha512-gQfEF/DWYojM319OiQ2k47w6dUXkwyWmhe9r6mXSpYj0B/iq6978XaUsn+Z1wD0sQbXJROjeD5u+J+iz35dL9Q==
   dependencies:
     "@7kprotocol/sdk-ts" "^2.1.0"
+    "@alphafi/stsui-sdk" "^0.0.5"
     "@apollo/client" "^3.11.4"
     "@cetusprotocol/cetus-sui-clmm-sdk" "5.1.6"
     "@hop.ag/sdk" "^3.3.0"
@@ -34,6 +35,17 @@
     decimal.js "^10.4.3"
     graphql "^16.9.0"
     react "^18.3.1"
+
+"@alphafi/stsui-sdk@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.5.tgz#aad55b0cb57c2d08a865429fbdb30f618bba097d"
+  integrity sha512-WiQ+1RMFL5wAxZBdQNDG7Kk0ITANM1npDPo9RskzCFPqchg4LqFOQVyqk/n86LI5j+HaRmG0KOSWydzkmHPP9w==
+  dependencies:
+    "@mysten/sui" "1.15.0"
+    "@types/bn.js" "^5.1.6"
+    decimal.js "^10.4.3"
+    jest "^29.7.0"
+    ts-jest "^29.2.5"
 
 "@ampproject/remapping@^2.2.0":
   version "2.3.0"
@@ -2685,6 +2697,24 @@
     tweetnacl "^1.0.3"
     valibot "^0.36.0"
 
+"@mysten/sui@1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.15.0.tgz#b0c19ed711513e2a1c07b9f927234679fb37ab4c"
+  integrity sha512-vuyKtb3dY3X6HYzSz/DjoNMQs0zqIWscR2W0lbcYyPOFQZ4lHpzLZszgQor+OGb6uMr7M4COIWKVaIJ82Bbt8w==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@mysten/bcs" "1.1.0"
+    "@noble/curves" "^1.4.2"
+    "@noble/hashes" "^1.4.0"
+    "@scure/bip32" "^1.4.0"
+    "@scure/bip39" "^1.3.0"
+    "@suchipi/femver" "^1.0.0"
+    bech32 "^2.0.0"
+    gql.tada "^1.8.2"
+    graphql "^16.9.0"
+    tweetnacl "^1.0.3"
+    valibot "^0.36.0"
+
 "@mysten/sui@1.15.1":
   version "1.15.1"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.15.1.tgz#24c23f37e2975ea5e83183257d631aae483a4b12"
@@ -3795,7 +3825,7 @@
   dependencies:
     "@babel/types" "^7.20.7"
 
-"@types/bn.js@5.1.6", "@types/bn.js@^5.1.0", "@types/bn.js@^5.1.1":
+"@types/bn.js@5.1.6", "@types/bn.js@^5.1.0", "@types/bn.js@^5.1.1", "@types/bn.js@^5.1.6":
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.6.tgz#9ba818eec0c85e4d3c679518428afdf611d03203"
   integrity sha512-Xh8vSwUeMKeYYrj3cX4lGQgFSF/N03r+tv4AiLl1SucqV+uTQpxRcnM8AkXKHwYP9ZPXOYXRr2KPXpVlIvqh9w==
@@ -8690,7 +8720,7 @@ ts-invariant@^0.10.3:
   dependencies:
     tslib "^2.1.0"
 
-ts-jest@^29.0.3, ts-jest@^29.1.3:
+ts-jest@^29.0.3, ts-jest@^29.1.3, ts-jest@^29.2.5:
   version "29.2.5"
   resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-29.2.5.tgz#591a3c108e1f5ebd013d3152142cb5472b399d63"
   integrity sha512-KD8zB2aAZrcKIdGk4OwpJggeLcH1FgrICqDSROWqlnJXGCXK4Mn6FcdK2B6670Xr73lHMG1kHw8R87A0ecZ+vA==
