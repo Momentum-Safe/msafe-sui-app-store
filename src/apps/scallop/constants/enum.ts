@@ -25,6 +25,9 @@ export const coinDecimals: SupportCoinDecimals = {
   afsui: 9,
   hasui: 9,
   vsui: 9,
+  fud: 5,
+  deep: 6,
+  fdusd: 6,
   sweth: 8,
   swbtc: 8,
   susdc: 6,
@@ -38,6 +41,9 @@ export const coinDecimals: SupportCoinDecimals = {
   shasui: 9,
   svsui: 9,
   ssca: 9,
+  sdeep: 6,
+  sfud: 5,
+  sfdusd: 6,
 };
 
 export const assetCoins: AssetCoins = {
@@ -54,6 +60,13 @@ export const assetCoins: AssetCoins = {
   hasui: 'hasui',
   vsui: 'vsui',
   sca: 'sca',
+  fud: 'fud',
+  deep: 'deep',
+  fdusd: 'fdusd',
+  sdeep: 'sdeep',
+  sfud: 'sfud',
+  ssca: 'ssca',
+  ssui: 'ssui',
 };
 
 export const marketCoins: MarketCoins = {
@@ -70,6 +83,9 @@ export const marketCoins: MarketCoins = {
   svsui: 'svsui',
   ssca: 'ssca',
   susdc: 'susdc',
+  sfdusd: 'sfdusd',
+  sdeep: 'sdeep',
+  sfud: 'sfud',
 };
 
 export const stakeMarketCoins: StakeMarketCoins = {
@@ -108,6 +124,9 @@ export const borrowIncentiveRewardCoins: BorrowIncentiveRewardCoins = {
   wbtc: ['sui', 'sca'],
   wsol: ['sui', 'sca'],
   usdc: ['sui', 'sca'],
+  fud: ['sui', 'sca', 'sfud', 'ssui'],
+  deep: ['sui', 'sca', 'sdeep', 'ssui'],
+  fdusd: ['sui', 'sca'],
 };
 
 export const coinIds: AssetCoinIds = {
@@ -124,6 +143,13 @@ export const coinIds: AssetCoinIds = {
   vsui: '0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55',
   sca: '0x7016aae72cfc67f2fadf55769c0a7dd54291a583b63051a5ed71081cce836ac6',
   usdc: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7',
+  fud: '0x76cb819b01abed502bee8a702b4c2d547532c12f25001c9dea795a5e631c26f1',
+  deep: '0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270',
+  fdusd: '0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a',
+  sdeep: '0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0ae614608f',
+  sfud: '0xe56d5167f427cbe597da9e8150ef5c337839aaf46891d62468dcf80bdd8e10d1',
+  ssca: '0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e',
+  ssui: '0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b',
 };
 
 export const wormholeCoinIds: WormholeCoinIds = {
@@ -158,4 +184,7 @@ export const sCoinIds: SCoinIds = {
   swsol:
     '0x1392650f2eca9e3f6ffae3ff89e42a3590d7102b80e2b430f674730bc30d3259::scallop_wormhole_sol::SCALLOP_WORMHOLE_SOL',
   susdc: '0x854950aa624b1df59fe64e630b2ba7c550642e9342267a33061d59fb31582da5::scallop_usdc::SCALLOP_USDC',
+  sfdusd: '0x6711551c1e7652a270d9fbf0eee25d99594c157cde3cb5fbb49035eb59b1b001::scallop_fdusd::SCALLOP_FDUSD',
+  sdeep: '0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0ae614608f::scallop_deep::SCALLOP_DEEP',
+  sfud: '0xe56d5167f427cbe597da9e8150ef5c337839aaf46891d62468dcf80bdd8e10d1::scallop_fud::SCALLOP_FUD',
 } as const;

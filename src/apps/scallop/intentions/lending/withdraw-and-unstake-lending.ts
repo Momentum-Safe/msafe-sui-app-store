@@ -7,7 +7,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { SuiNetworks } from '@/types';
 
 import { Scallop } from '../../models';
-import { SupportAssetCoins, TransactionSubType } from '../../types';
+import { SupportAssetCoins, SupportPoolCoins, TransactionSubType } from '../../types';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface WithdrawAndUnstakeLendingIntentionData {
@@ -32,7 +32,7 @@ export class WithdrawAndUnstakeLendingIntention extends ScallopCoreBaseIntention
     scallop: Scallop;
   }): Promise<TransactionBlock> {
     return input.scallop.client.unstakeAndWithdraw(
-      this.data.coinName,
+      this.data.coinName as SupportPoolCoins,
       Number(this.data.amount),
       this.data.stakeAccountId,
     );

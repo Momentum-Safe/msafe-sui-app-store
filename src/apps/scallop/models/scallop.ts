@@ -1,5 +1,6 @@
 import { ScallopAddress } from './scallopAddress';
 import { ScallopBuilder } from './scallopBuilder';
+// eslint-disable-next-line import/no-cycle
 import { ScallopClient } from './scallopClient';
 import { ScallopQuery } from './scallopQuery';
 import { ScallopUtils } from './scallopUtils';

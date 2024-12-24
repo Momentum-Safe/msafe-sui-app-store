@@ -7,7 +7,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { SuiNetworks } from '@/types';
 
 import { Scallop } from '../../models';
-import { SupportAssetCoins, TransactionSubType } from '../../types';
+import { SupportAssetCoins, SupportPoolCoins, TransactionSubType } from '../../types';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface SupplyAndStakeLendingIntentionData {
@@ -32,7 +32,7 @@ export class SupplyAndStakeLendingIntention extends ScallopCoreBaseIntention<Sup
     scallop: Scallop;
   }): Promise<TransactionBlock> {
     return input.scallop.client.supplyAndStake(
-      this.data.coinName,
+      this.data.coinName as SupportPoolCoins,
       Number(this.data.amount),
       this.data.stakeAccountId,
       input.account.address,

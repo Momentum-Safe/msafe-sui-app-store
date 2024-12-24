@@ -677,9 +677,20 @@ export class ScallopClient {
     const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
-    const rewardCoins: { sui: TransactionResult[]; sca: TransactionResult[] } = {
+    const rewardCoins: {
+      sui: TransactionResult[];
+      sca: TransactionResult[];
+      ssui: TransactionResult[];
+      ssca: TransactionResult[];
+      sdeep: TransactionResult[];
+      sfud: TransactionResult[];
+    } = {
       sui: [],
       sca: [],
+      ssui: [],
+      ssca: [],
+      sdeep: [],
+      sfud: [],
     };
 
     for (let i = 0; i < lendingIncentive.length; i++) {
