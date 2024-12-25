@@ -44,6 +44,10 @@ export const coinDecimals: SupportCoinDecimals = {
   sdeep: 6,
   sfud: 5,
   sfdusd: 6,
+  scallop_deep: 6,
+  scallop_fud: 5,
+  scallop_sca: 9,
+  scallop_sui: 9,
 };
 
 export const assetCoins: AssetCoins = {
@@ -63,10 +67,10 @@ export const assetCoins: AssetCoins = {
   fud: 'fud',
   deep: 'deep',
   fdusd: 'fdusd',
-  sdeep: 'sdeep',
-  sfud: 'sfud',
-  ssca: 'ssca',
-  ssui: 'ssui',
+  scallop_deep: 'scallop_deep',
+  scallop_fud: 'scallop_fud',
+  scallop_sca: 'scallop_sca',
+  scallop_sui: 'scallop_sui',
 };
 
 export const marketCoins: MarketCoins = {
@@ -113,20 +117,20 @@ export const spoolRewardCoins: StakeRewardCoins = {
 };
 
 export const borrowIncentiveRewardCoins: BorrowIncentiveRewardCoins = {
-  sui: ['sui', 'sca'],
-  wusdc: ['sui', 'sca'],
-  wusdt: ['sui', 'sca'],
-  afsui: ['sui', 'sca'],
-  hasui: ['sui', 'sca'],
-  vsui: ['sui', 'sca'],
-  sca: ['sui', 'sca'],
-  weth: ['sui', 'sca'],
-  wbtc: ['sui', 'sca'],
-  wsol: ['sui', 'sca'],
-  usdc: ['sui', 'sca'],
-  fud: ['sui', 'sca', 'sfud', 'ssui'],
-  deep: ['sui', 'sca', 'sdeep', 'ssui'],
-  fdusd: ['sui', 'sca'],
+  sui: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  wusdc: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  wusdt: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  afsui: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  hasui: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  vsui: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  sca: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  weth: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  wbtc: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  wsol: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  usdc: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
+  fud: ['sui', 'sca', 'scallop_fud', 'scallop_sui', 'scallop_sca'],
+  deep: ['sui', 'sca', 'scallop_deep', 'scallop_sui', 'scallop_sca'],
+  fdusd: ['sui', 'sca', 'scallop_sca', 'scallop_sui'],
 };
 
 export const coinIds: AssetCoinIds = {
@@ -146,10 +150,10 @@ export const coinIds: AssetCoinIds = {
   fud: '0x76cb819b01abed502bee8a702b4c2d547532c12f25001c9dea795a5e631c26f1',
   deep: '0xdeeb7a4662eec9f2f3def03fb937a663dddaa2e215b8078a284d026b7946c270',
   fdusd: '0xf16e6b723f242ec745dfd7634ad072c42d5c1d9ac9d62a39c381303eaa57693a',
-  sdeep: '0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0ae614608f',
-  sfud: '0xe56d5167f427cbe597da9e8150ef5c337839aaf46891d62468dcf80bdd8e10d1',
-  ssca: '0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e',
-  ssui: '0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b',
+  scallop_deep: '0xeb7a05a3224837c5e5503575aed0be73c091d1ce5e43aa3c3e716e0ae614608f',
+  scallop_fud: '0xe56d5167f427cbe597da9e8150ef5c337839aaf46891d62468dcf80bdd8e10d1',
+  scallop_sca: '0x5ca17430c1d046fae9edeaa8fd76c7b4193a00d764a0ecfa9418d733ad27bc1e',
+  scallop_sui: '0xaafc4f740de0dd0dde642a31148fb94517087052f19afb0f7bed1dc41a50c77b',
 };
 
 export const wormholeCoinIds: WormholeCoinIds = {

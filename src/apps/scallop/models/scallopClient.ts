@@ -677,20 +677,13 @@ export class ScallopClient {
     const sender = walletAddress || this.params.walletAddress;
     txBlock.setSender(sender);
 
-    const rewardCoins: {
-      sui: TransactionResult[];
-      sca: TransactionResult[];
-      ssui: TransactionResult[];
-      ssca: TransactionResult[];
-      sdeep: TransactionResult[];
-      sfud: TransactionResult[];
-    } = {
+    const rewardCoins: Record<string, TransactionResult[]> = {
       sui: [],
       sca: [],
-      ssui: [],
-      ssca: [],
-      sdeep: [],
-      sfud: [],
+      scallop_sui: [],
+      scallop_sca: [],
+      scallop_deep: [],
+      scallop_fud: [],
     };
 
     for (let i = 0; i < lendingIncentive.length; i++) {
@@ -719,18 +712,14 @@ export class ScallopClient {
       rewardCoins[rewardCoinName].push(rewardCoin);
     }
 
-    if (rewardCoins.sui.length > 0) {
-      if (rewardCoins.sui.length > 1) {
-        txBlock.mergeCoins(rewardCoins.sui[0], rewardCoins.sui.slice(1));
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key in rewardCoins) {
+      if (rewardCoins[key].length > 0) {
+        if (rewardCoins[key].length > 1) {
+          txBlock.mergeCoins(rewardCoins[key][0], rewardCoins[key].slice(1));
+        }
+        txBlock.transferObjects([rewardCoins[key][0]], txBlock.pure(sender));
       }
-      txBlock.transferObjects([rewardCoins.sui[0]], txBlock.pure(sender));
-    }
-
-    if (rewardCoins.sca.length > 0) {
-      if (rewardCoins.sca.length > 1) {
-        txBlock.mergeCoins(rewardCoins.sca[0], rewardCoins.sca.slice(1));
-      }
-      txBlock.transferObjects([rewardCoins.sca[0]], txBlock.pure(sender));
     }
     return txBlock;
   }

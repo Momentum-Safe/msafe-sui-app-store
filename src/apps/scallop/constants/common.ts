@@ -117,7 +117,14 @@ export const SUPPORT_BORROW_INCENTIVE_POOLS = [
   'fud',
 ] as const;
 
-export const SUPPORT_BORROW_INCENTIVE_REWARDS = ['sui', 'sca', 'ssui', 'ssca', 'sdeep', 'sfud'] as const;
+export const SUPPORT_BORROW_INCENTIVE_REWARDS = [
+  'sui',
+  'sca',
+  'scallop_sui',
+  'scallop_sca',
+  'scallop_deep',
+  'scallop_fud',
+] as const;
 export const SUPPORT_ORACLES = ['supra', 'switchboard', 'pyth'] as const;
 
 export const SUPPORT_PACKAGES = [
