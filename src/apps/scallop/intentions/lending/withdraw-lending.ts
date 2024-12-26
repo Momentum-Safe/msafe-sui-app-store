@@ -4,7 +4,7 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { Scallop } from '../../models';
-import { SupportAssetCoins } from '../../types';
+import { SupportAssetCoins, SupportPoolCoins } from '../../types';
 import { SuiNetworks, TransactionSubType } from '../../types/utils';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
@@ -28,7 +28,11 @@ export class WithdrawLendingIntention extends ScallopCoreBaseIntention<WithdrawL
     network: SuiNetworks;
     scallop: Scallop;
   }): Promise<TransactionBlock> {
-    return input.scallop.client.withdraw(this.data.coinName, Number(this.data.amount), input.account.address);
+    return input.scallop.client.withdraw(
+      this.data.coinName as SupportPoolCoins,
+      Number(this.data.amount),
+      input.account.address,
+    );
   }
 
   static fromData(data: WithdrawLendingIntentionData): WithdrawLendingIntention {
