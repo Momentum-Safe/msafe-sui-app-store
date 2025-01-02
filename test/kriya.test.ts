@@ -1,95 +1,66 @@
-import { AddLiquidityIntention } from '@/apps/kriya/intentions/add-liquidity';
-import { AddLiquiditySingleSideIntention } from '@/apps/kriya/intentions/add-liquiditySingleSided';
-import { ClaimRewardsIntention } from '@/apps/kriya/intentions/claim-rewards';
-import { RemoveLiquidityIntention } from '@/apps/kriya/intentions/remove-liquidity';
-import { StakeLiquidityIntention } from '@/apps/kriya/intentions/stake-liquidity';
-import { UnstakeLiquidityIntention } from '@/apps/kriya/intentions/unstake-liquidity';
+import sortKeysRecursive from 'sort-keys-recursive';
 
-describe('KRIYA App', () => {
+import { AddLiquidityIntention } from '@/apps/kriya/intentions/v2/add-liquidity';
+import { TransactionSubType } from '@/apps/kriya/types';
+
+const testData = {
+  address: '0x69994bce41891b4d4c07276b0edd66e25b2e9fcbb77e8990ee92c7997374dd09',
+  amountA: '0.01',
+  amountB: '0.02',
+  pool: {
+    poolId: '0xf385dee283495bb70500f5f8491047cd5a2ef1b7ff5f410e6dfe8a3c3ba58716',
+    tokenXType: '0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT',
+    tokenYType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
+    lspType:
+      '0x2::balance::Supply<0xa0eba10b173538c8fecca1dff298e488402cc9ff374f8a12ca7758eebe830b66::spot_dex::LSP<0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT, 0x2::sui::SUI>>',
+    lpFeesPercent: '75',
+    protocolFeesPercent: '25',
+    isStable: false,
+    tokenXReserve: '3025668495914240',
+    tokenYReserve: '5162890505425404',
+    lpSupply: '4086488326024544',
+    tvl: '35322899.44443315',
+    volume: '5000000',
+    fees: '0',
+    apy: '0',
+    feeApy: '0.38749650270165276',
+    timestamp: '2024-12-26T14:07:30.203Z',
+    tokenX: {
+      coinType: '0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT',
+      name: 'voloSUI',
+      ticker: 'vSUI',
+      iconUrl: 'https://kriya-assets.s3.ap-southeast-1.amazonaws.com/assets/voloSUI.webp',
+      decimals: 9,
+      description: 'Liquid Staked SUI',
+      isVerified: true,
+      isKriyaWhitelisted: true,
+      tokenType: '0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT',
+      price: '4.41133394',
+    },
+    tokenY: {
+      coinType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
+      name: 'SUI',
+      ticker: 'SUI',
+      iconUrl: 'https://hop.ag/tokens/SUI.svg',
+      decimals: 9,
+      description: '',
+      isVerified: true,
+      isKriyaWhitelisted: true,
+      tokenType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
+      price: '4.25693775',
+    },
+  },
+};
+
+describe('Kriya App', () => {
   it('Test AddLiquidity intention serialization', () => {
     const intention = AddLiquidityIntention.fromData({
-      objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-      tokenXType: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
-      tokenYType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      amountX: '1000',
-      amountY: '500',
-      minAddAmountX: '100',
-      minAddAmountY: '100',
-      coinX: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      coinY: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
+      params: testData,
+      action: TransactionSubType.AddLiquidity,
     });
 
     expect(intention.serialize()).toBe(
-      '{"amountX":"1000","amountY":"500","coinX":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","coinY":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","minAddAmountX":"100","minAddAmountY":"100","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
-    );
-  });
-
-  it('Test AddLiquiditySingleSide intention serialization', () => {
-    const intention = AddLiquiditySingleSideIntention.fromData({
-      objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-      tokenXType: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
-      tokenYType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      inputCoinType: 'sui',
-      inputCoinAmount: '500',
-      inputCoin: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-    });
-
-    expect(intention.serialize()).toBe(
-      '{"inputCoin":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI","inputCoinAmount":"500","inputCoinType":"sui","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
-    );
-  });
-
-  it('Test ClaimRewards intention serialization', () => {
-    const intention = ClaimRewardsIntention.fromData({
-      objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-      tokenXType: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
-      tokenYType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      positionObjectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-    });
-
-    expect(intention.serialize()).toBe(
-      '{"objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","positionObjectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
-    );
-  });
-
-  it('Test RemoveLiquidity intention serialization', () => {
-    const intention = RemoveLiquidityIntention.fromData({
-      objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-      tokenXType: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
-      tokenYType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      amount: '500',
-      kriyaLpToken: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-    });
-
-    expect(intention.serialize()).toBe(
-      '{"amount":"500","kriyaLpToken":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
-    );
-  });
-
-  it('Test StakeLiquidity intention serialization', () => {
-    const intention = StakeLiquidityIntention.fromData({
-      objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-      tokenXType: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
-      tokenYType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      lpObject: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-      lockTime: '1000',
-    });
-
-    expect(intention.serialize()).toBe(
-      '{"lockTime":"1000","lpObject":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
-    );
-  });
-
-  it('Test UnstakeLiquidity intention serialization', () => {
-    const intention = UnstakeLiquidityIntention.fromData({
-      objectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-      tokenXType: '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN',
-      tokenYType: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      positionObjectId: '0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305',
-    });
-
-    expect(intention.serialize()).toBe(
-      '{"objectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","positionObjectId":"0x5af4976b871fa1813362f352fa4cada3883a96191bb7212db1bd5d13685ae305","tokenXType":"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN","tokenYType":"0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI"}',
+      `{"action":"AddLiquidity","params":${JSON.stringify(sortKeysRecursive(testData))}}`,
     );
   });
 });
