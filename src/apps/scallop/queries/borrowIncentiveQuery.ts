@@ -85,7 +85,9 @@ export const queryBorrowIncentivePools = async (query: ScallopQuery, coinNames?:
 
   for (let i = 0; i < borrowIncentivePoolsQueryData.incentive_pools.length; i++) {
     const pool = borrowIncentivePoolsQueryData.incentive_pools[i];
-    const borrowIncentivePoolPoints: OptionalKeys<Record<'sui' | 'sca', BorrowIncentivePoolPoints>> = {};
+    const borrowIncentivePoolPoints: OptionalKeys<
+      Record<'sui' | 'sca' | 'scallop_sui' | 'scallop_sca' | 'scallop_deep' | 'scallop_fud', BorrowIncentivePoolPoints>
+    > = {};
     const parsedBorrowIncentivePoolData = parseOriginBorrowIncentivePoolData(pool);
     const poolCoinType = normalizeStructTag(pool.pool_type.name);
     const poolCoinName = query.utils.parseCoinNameFromType<SupportBorrowIncentiveCoins>(poolCoinType);

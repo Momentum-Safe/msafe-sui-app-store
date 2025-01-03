@@ -1,11 +1,16 @@
 import { SUPPORT_POOLS, SUPPORT_COLLATERALS, SUPPORT_SPOOLS_REWARDS, MAX_LOCK_DURATION } from '../constants';
-import type { SupportAssetCoins, SupportCoins, SupportMarketCoins } from '../types';
+import type { SupportAssetCoins, SupportCoins, SupportMarketCoins, SupportPoolCoins } from '../types';
 
 export const isMarketCoin = (coinName: SupportCoins): coinName is SupportMarketCoins => {
-  const assetCoinName = coinName.slice(1).toLowerCase() as SupportAssetCoins;
+  const assetCoinName = coinName.slice(1).toLowerCase() as Omit<
+    SupportAssetCoins,
+    'scallop_sca' | 'scallop_sui' | 'scallop_deep' | 'scallop_fud'
+  >;
   return (
     coinName.charAt(0).toLowerCase() === 's' &&
-    [...new Set([...SUPPORT_POOLS, ...SUPPORT_COLLATERALS, ...SUPPORT_SPOOLS_REWARDS])].includes(assetCoinName)
+    [...new Set([...SUPPORT_POOLS, ...SUPPORT_COLLATERALS, ...SUPPORT_SPOOLS_REWARDS])].includes(
+      assetCoinName as SupportPoolCoins,
+    )
   );
 };
 

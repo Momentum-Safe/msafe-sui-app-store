@@ -8,11 +8,13 @@ import { PlainTransactionHelper } from '@/apps/plain-transaction/helper';
 import { MSafeApps } from '@/apps/registry';
 import { ScallopAppHelper } from '@/apps/scallop/helper';
 import { SpringSuiAppHelper } from '@/apps/springSui/helper';
+import { StSuiHelper } from '@/apps/stsui/helper';
 import { SuilendAppHelper } from '@/apps/suilend/helper';
 import { TURBOSAppHelper } from '@/apps/turbos/helper';
 import { VoloAppHelper } from '@/apps/volo/helper';
 
 import { BluefinHelper } from './apps/bluefin/helper';
+import { KRIYAAppHelper } from './apps/kriya/helper';
 
 export const appHelpers = MSafeApps.fromHelpers([
   new CoreHelper(),
@@ -21,7 +23,7 @@ export const appHelpers = MSafeApps.fromHelpers([
   new PlainTransactionHelper(),
   new CetusHelper(),
   new TURBOSAppHelper(),
-  // new KRIYAAppHelper(),
+  new KRIYAAppHelper(),
   new ScallopAppHelper(),
   new VoloAppHelper(),
   new BucketHelper(),
@@ -29,4 +31,5 @@ export const appHelpers = MSafeApps.fromHelpers([
   new SpringSuiAppHelper(),
   new AlphaFiHelper(),
   new BluefinHelper(),
+  new StSuiHelper(),
 ]);

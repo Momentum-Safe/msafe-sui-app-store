@@ -1,58 +1,56 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
-import { Decoder } from './decoder';
-import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
-import {
-  AddLiquiditySingleSideIntention,
-  AddLiquiditySingleSidedIntentionData,
-} from './intentions/add-liquiditySingleSided';
-import { ClaimRewardsIntention, ClaimRewardsIntentionData } from './intentions/claim-rewards';
-import { RemoveLiquidityIntention, RemoveLiquidityIntentionData } from './intentions/remove-liquidity';
-import { StakeLiquidityIntention, StakeLiquidityIntentionData } from './intentions/stake-liquidity';
-import { UnstakeLiquidityIntention, UnstakeLiquidityIntentionData } from './intentions/unstake-liquidity';
-import { TransactionSubType } from './types';
+import { AddLiquidityIntention } from './intentions/v2/add-liquidity';
+import { AddLiquiditySingleSideIntention } from './intentions/v2/add-liquidity-single-side';
+import { ClaimRewardsIntention } from './intentions/v2/claim-rewards';
+import { RemoveLiquidityIntention } from './intentions/v2/remove-liquidity';
+import { AddLiquiditySingleSideV3Intention } from './intentions/v3/add-liquidity-single-side-v3';
+import { AddLiquidityV3Intention } from './intentions/v3/add-liquidity-v3';
+import { ClaimV3MayaRewardsIntention } from './intentions/v3/claim-maya-rewards';
+import { ClaimRewardsV3Intention } from './intentions/v3/claim-rewards';
+import { RemoveLiquidityV3Intention } from './intentions/v3/remove-liquidity';
+import { KRIYAIntentionData, TransactionSubType } from './types';
 
 export type KRIYAIntention =
   | AddLiquidityIntention
   | AddLiquiditySingleSideIntention
   | ClaimRewardsIntention
   | RemoveLiquidityIntention
-  | StakeLiquidityIntention
-  | UnstakeLiquidityIntention;
+  | AddLiquidityV3Intention
+  | AddLiquiditySingleSideV3Intention
+  | RemoveLiquidityV3Intention
+  | ClaimRewardsV3Intention
+  | ClaimV3MayaRewardsIntention;
 
-export type KRIYAIntentionData =
-  | AddLiquidityIntentionData
-  | AddLiquiditySingleSidedIntentionData
-  | ClaimRewardsIntentionData
-  | RemoveLiquidityIntentionData
-  | StakeLiquidityIntentionData
-  | UnstakeLiquidityIntentionData;
-
-export class KRIYAAppHelper implements IAppHelperInternalLegacy<KRIYAIntentionData> {
+export class KRIYAAppHelper implements IAppHelperInternal<KRIYAIntentionData> {
   application = 'kriya';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui' as const;
 
   async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
+    input: SuiSignTransactionBlockInput & {
+      network: SuiNetworks;
+      suiClient: SuiClient;
+      account: WalletAccount;
+      transaction: Transaction;
+      appContext: KRIYAIntentionData;
+    },
   ): Promise<{
     txType: TransactionType;
     txSubType: TransactionSubType;
     intentionData: KRIYAIntentionData;
   }> {
-    const { transactionBlock } = input;
-    const decoder = new Decoder(transactionBlock);
-    const result = decoder.decode();
+    const { appContext } = input;
     return {
       txType: TransactionType.Other,
-      txSubType: result.type,
-      intentionData: result.intentionData,
+      txSubType: appContext.action,
+      intentionData: appContext,
     };
   }
 
@@ -63,33 +61,39 @@ export class KRIYAAppHelper implements IAppHelperInternalLegacy<KRIYAIntentionDa
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
-    const { suiClient, account, network } = input;
+  }): Promise<Transaction> {
     let intention: KRIYAIntention;
     switch (input.txSubType) {
       case TransactionSubType.AddLiquidity:
-        intention = AddLiquidityIntention.fromData(input.intentionData as AddLiquidityIntentionData);
+        intention = AddLiquidityIntention.fromData(input.intentionData);
         break;
       case TransactionSubType.AddLiquiditySingleSided:
-        intention = AddLiquiditySingleSideIntention.fromData(
-          input.intentionData as AddLiquiditySingleSidedIntentionData,
-        );
+        intention = AddLiquiditySingleSideIntention.fromData(input.intentionData);
         break;
       case TransactionSubType.RemoveLiquidity:
-        intention = RemoveLiquidityIntention.fromData(input.intentionData as RemoveLiquidityIntentionData);
+        intention = RemoveLiquidityIntention.fromData(input.intentionData);
         break;
       case TransactionSubType.ClaimRewards:
-        intention = ClaimRewardsIntention.fromData(input.intentionData as ClaimRewardsIntentionData);
+        intention = ClaimRewardsIntention.fromData(input.intentionData);
         break;
-      case TransactionSubType.StakeLiquidity:
-        intention = StakeLiquidityIntention.fromData(input.intentionData as StakeLiquidityIntentionData);
+      case TransactionSubType.ClaimRewardsV3:
+        intention = ClaimRewardsV3Intention.fromData(input.intentionData);
         break;
-      case TransactionSubType.UnstakeLiquidity:
-        intention = UnstakeLiquidityIntention.fromData(input.intentionData as UnstakeLiquidityIntentionData);
+      case TransactionSubType.ClaimV3MayaRewards:
+        intention = ClaimV3MayaRewardsIntention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.AddLiquidityV3:
+        intention = AddLiquidityV3Intention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.AddLiquiditySingleSideV3:
+        intention = AddLiquiditySingleSideV3Intention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.RemoveLiquidityV3:
+        intention = RemoveLiquidityV3Intention.fromData(input.intentionData);
         break;
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account, network });
+    return intention.build();
   }
 }

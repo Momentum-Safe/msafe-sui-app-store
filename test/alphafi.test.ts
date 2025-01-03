@@ -4,6 +4,9 @@ import { DepositDoubleAssetIntention } from '@/apps/alphafi/intentions/deposit-d
 import { DepositSingleAssetIntention } from '@/apps/alphafi/intentions/deposit-single-asset';
 import { WithdrawIntention } from '@/apps/alphafi/intentions/withdraw';
 import { WithdrawAlphaIntention } from '@/apps/alphafi/intentions/withdraw-alpha';
+import { withdrawTxb } from '@alphafi/alphafi-sdk';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 
 describe('AlphaFi App', () => {
   it('Test AlphaFi Double Asset intention serialization', () => {
@@ -53,20 +56,59 @@ describe('AlphaFi App', () => {
   //   const helper = new AlphaFiHelper();
   //   const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
 
-  //   it('Deserialize DepositSingleAsset transaction', async () => {
-  //     const unresolvedTx = await depositSingleAssetTxb(
-  //       'NAVI-SUI',
-  //       '0xe136f0b6faf27ee707725f38f2aeefc51c6c31cc508222bee5cbc4f5fcf222c3',
-  //       '100000000',
+  //   it('Deserialize withdraw BLUEFIN-SUI-USDC transaction', async () => {
+  //     const unresolvedTx = await withdrawTxb(
+  //       '15543029',
+  //       'BLUEFIN-SUI-USDC',
+  //       '0xd239cf3655b8465545f36c5d8d6f63fa9d00f1f199646ae7296068328db4de54',
   //     );
-  //     unresolvedTx.setSender('0xe136f0b6faf27ee707725f38f2aeefc51c6c31cc508222bee5cbc4f5fcf222c3');
 
   //     const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
   //     const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
 
   //     expect(JSON.stringify(data)).toBe(
-  //       `{\"txType\":\"Other\",\"txSubType\":\"depositSingleAsset\",\"intentionData\":{\"poolName\":\"NAVI-SUI\",\"amount\":\"100000000\"}}`,
+  //       `{\"txType\":\"Other\",\"txSubType\":\"withdraw\",\"intentionData\":{\"poolName\":\"BLUEFIN-SUI-USDC\",\"xTokensAmount\":\"15543029\"}}`,
   //     );
   //   });
   // });
 });
+
+// describe('Deserialization', () => {
+//   const helper = new AlphaFiHelper();
+//   const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
+
+//   it('Deserialize withdraw NAVI-LOOP-HASUI-SUI transaction', async () => {
+//     const unresolvedTx = await withdrawTxb(
+//       '10748437',
+//       'NAVI-LOOP-HASUI-SUI',
+//       '0xd239cf3655b8465545f36c5d8d6f63fa9d00f1f199646ae7296068328db4de54',
+//     );
+
+//     const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
+//     const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
+
+//     expect(JSON.stringify(data)).toBe(
+//       `{\"txType\":\"Other\",\"txSubType\":\"withdraw\",\"intentionData\":{\"poolName\":\"NAVI-LOOP-HASUI-SUI\",\"xTokensAmount\":\"10748437\"}}`,
+//     );
+//   });
+
+//   describe('Deserialization', () => {
+//     const helper = new AlphaFiHelper();
+//     const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
+
+//     it('Deserialize withdraw NAVI-LOOP-USDC-USDT transaction', async () => {
+//       const unresolvedTx = await withdrawTxb(
+//         '30811777',
+//         'NAVI-LOOP-USDC-USDT',
+//         '0xe136f0b6faf27ee707725f38f2aeefc51c6c31cc508222bee5cbc4f5fcf222c3',
+//       );
+
+//       const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
+//       const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
+
+//       expect(JSON.stringify(data)).toBe(
+//         `{\"txType\":\"Other\",\"txSubType\":\"withdraw\",\"intentionData\":{\"poolName\":\"NAVI-LOOP-USDC-USDT\",\"xTokensAmount\":\"30811777\"}}`,
+//       );
+//     });
+//   });
+// });

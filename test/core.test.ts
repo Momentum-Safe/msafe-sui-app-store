@@ -5,10 +5,10 @@ import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { CoreIntentionData, CoreHelper } from '@/apps/msafe-core/helper';
 import { ObjectTransferIntention, ObjectTransferIntentionData } from '@/apps/msafe-core/object-transfer';
+import { appHelpers } from '@/index';
 
 import { Account } from './config';
 import { TestSuiteLegacy } from './testSuite';
-import { appHelpers } from '@/index';
 
 const COIN_TRANSFER_TEST_INTENTION_DATA = {
   amount: '1000',

@@ -7,7 +7,7 @@ export const USE_TEST_ADDRESS = false;
 
 // export const ADDRESSES_ID = '';
 export const ADDRESSES_ID =
-  IS_VE_SCA_TEST || USE_TEST_ADDRESS ? ('65fb07c39c845425d71d7b18' as const) : ('66f8e7ed9bb9e07fdfb86bbb' as const);
+  IS_VE_SCA_TEST || USE_TEST_ADDRESS ? ('65fb07c39c845425d71d7b18' as const) : ('675c65cd301dd817ea262e76' as const);
 // : ('6601955b8b0024600a917079' as const);
 // : ('6462a088a7ace142bb6d7e9b' as const);
 
@@ -44,6 +44,9 @@ export const SUPPORT_POOLS = [
   'vsui',
   'sca',
   'usdc',
+  'fdusd',
+  'deep',
+  'fud',
 ] as const;
 
 export const SUPPORT_COLLATERALS = [
@@ -60,6 +63,7 @@ export const SUPPORT_COLLATERALS = [
   'vsui',
   'sca',
   'usdc',
+  'fdusd',
 ] as const;
 
 export const SUPPORT_SPOOLS = [
@@ -87,6 +91,9 @@ export const SUPPORT_SCOIN = [
   'swbtc',
   'swsol',
   'susdc',
+  'sfdusd',
+  'sdeep',
+  'sfud',
 ] as const;
 
 export const UNSUPPORT_SCOIN = ['btc', 'sol'] as const;
@@ -105,9 +112,19 @@ export const SUPPORT_BORROW_INCENTIVE_POOLS = [
   'wbtc',
   'wsol',
   'usdc',
+  'fdusd',
+  'deep',
+  'fud',
 ] as const;
 
-export const SUPPORT_BORROW_INCENTIVE_REWARDS = ['sui', 'sca'] as const;
+export const SUPPORT_BORROW_INCENTIVE_REWARDS = [
+  'sui',
+  'sca',
+  'scallop_sui',
+  'scallop_sca',
+  'scallop_deep',
+  'scallop_fud',
+] as const;
 export const SUPPORT_ORACLES = ['supra', 'switchboard', 'pyth'] as const;
 
 export const SUPPORT_PACKAGES = [
