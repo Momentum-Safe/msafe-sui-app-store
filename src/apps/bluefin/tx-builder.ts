@@ -36,7 +36,7 @@ export default class TxBuilder {
         returnTx: true,
         sender: account.address,
       },
-    )) as Transaction;
+    )) as unknown as Transaction;
 
     return txb;
   }
