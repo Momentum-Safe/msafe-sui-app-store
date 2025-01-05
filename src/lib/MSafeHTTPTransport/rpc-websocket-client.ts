@@ -101,7 +101,7 @@ export class WebsocketClient {
     //   throw new Error('Missing WebSocket constructor');
     // }
 
-    if (this.endpoint.startsWith('http')) {
+    if (this.endpoint && this.endpoint.startsWith('http')) {
       this.endpoint = getWebsocketUrl(this.endpoint);
     }
   }
