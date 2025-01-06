@@ -121,8 +121,8 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.STAKE,
       intentionData: {
-        outCoinType,
         amount,
+        outCoinType,
       } as StakeIntentionData,
     };
   }
@@ -140,8 +140,8 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.STAKE_AND_DEPOSIT,
       intentionData: {
-        outCoinType,
         amount,
+        outCoinType,
       } as StakeAndDepositIntentionData,
     };
   }
@@ -161,9 +161,9 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.CONVERT,
       intentionData: {
+        amount,
         inCoinType,
         outCoinType,
-        amount,
       } as ConvertIntentionData,
     };
   }
@@ -183,9 +183,9 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.CONVERT_AND_DEPOSIT,
       intentionData: {
+        amount,
         inCoinType,
         outCoinType,
-        amount,
       } as ConvertAndDepositIntentionData,
     };
   }
@@ -203,8 +203,8 @@ export class Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.UNSTAKE,
       intentionData: {
-        inCoinType,
         amount,
+        inCoinType,
       } as UnstakeIntentionData,
     };
   }

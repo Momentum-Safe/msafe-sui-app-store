@@ -8,9 +8,9 @@ import { TransactionSubType } from '../types';
 import { SpringSuiBaseIntention } from './springSuiBaseIntention';
 
 export interface ConvertIntentionData {
+  amount: string;
   inCoinType: string;
   outCoinType: string;
-  amount: string;
 }
 
 export class ConvertIntention extends SpringSuiBaseIntention<ConvertIntentionData> {

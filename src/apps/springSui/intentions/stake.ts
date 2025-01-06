@@ -7,8 +7,8 @@ import { TransactionSubType } from '../types';
 import { SpringSuiBaseIntention } from './springSuiBaseIntention';
 
 export interface StakeIntentionData {
-  outCoinType: string;
   amount: string;
+  outCoinType: string;
 }
 
 export class StakeIntention extends SpringSuiBaseIntention<StakeIntentionData> {

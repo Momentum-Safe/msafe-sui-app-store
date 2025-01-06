@@ -61,6 +61,7 @@
     "bignumber.js": "^9.1.2",
     "bucket-protocol-sdk": "^0.10.17",
     "buffer": "^6.0.3",
+    "date-fns": "^4.1.0",
     "kriya-dex-sdk": "^1.1.69",
     "luxon": "^3.4.4",
     "nanoid": "3",
