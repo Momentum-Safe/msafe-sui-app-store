@@ -6,9 +6,9 @@ import { normalizeStructTag } from '@mysten/sui/utils';
 import { SpringSuiIntentionData } from './helper';
 import { ConvertIntentionData } from './intentions/convert';
 import { ConvertAndDepositIntentionData } from './intentions/convertAndDeposit';
-import { StakeIntentionData } from './intentions/mint';
-import { StakeAndDepositIntentionData } from './intentions/mintAndDeposit';
-import { UnstakeIntentionData } from './intentions/redeem';
+import { StakeIntentionData } from './intentions/stake';
+import { StakeAndDepositIntentionData } from './intentions/stakeAndDeposit';
+import { UnstakeIntentionData } from './intentions/unstake';
 import { TransactionSubType } from './types';
 
 type DecodeResult = {

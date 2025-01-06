@@ -1,4 +1,4 @@
-import { StakeIntention } from '@/apps/springSui/intentions/mint';
+import { StakeIntention } from '@/apps/springSui/intentions/stake';
 
 describe('SpringSui', () => {
   it('Test Stake intention serialization', () => {
