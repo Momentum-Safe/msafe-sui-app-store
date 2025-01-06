@@ -1,35 +1,52 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
+import { LstClient } from '@suilend/springsui-sdk';
 
 import { IntentionInput } from '../helper';
 import { TransactionSubType } from '../types';
 import { SpringSuiBaseIntention } from './springSuiBaseIntention';
 
-export interface MintIntentionData {
+export interface StakeIntentionData {
+  outCoinType: string;
   amount: string;
 }
 
-export class MintIntention extends SpringSuiBaseIntention<MintIntentionData> {
+export class StakeIntention extends SpringSuiBaseIntention<StakeIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.MINT;
+  txSubType: TransactionSubType.STAKE;
 
-  constructor(public readonly data: MintIntentionData) {
+  constructor(public readonly data: StakeIntentionData) {
     super(data);
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
-    const { suiClient, account, lstClient, suilendClient, obligationOwnerCap, obligation } = input;
-    console.log('MintIntention.build', suiClient, account, lstClient, suilendClient, obligationOwnerCap, obligation);
+    const { suiClient, account, suilendClient, LIQUID_STAKING_INFO_MAP, obligationOwnerCap, obligation } = input;
+    console.log(
+      'StakeIntention.build',
+      suiClient,
+      account,
+      suilendClient,
+      LIQUID_STAKING_INFO_MAP,
+      obligationOwnerCap,
+      obligation,
+    );
+
+    const outLstClient = await LstClient.initialize(
+      suiClient as any,
+      Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.outCoinType),
+    );
+
+    //
 
     const transaction = new Transaction();
-    lstClient.mintAndRebalanceAndSendToUser(transaction as any, account.address, this.data.amount);
+    outLstClient.mintAmountAndRebalanceAndSendToUser(transaction as any, account.address, this.data.amount);
 
     return transaction;
   }
 
-  static fromData(data: MintIntentionData) {
-    console.log('MintIntention.fromData', data);
-    return new MintIntention(data);
+  static fromData(data: StakeIntentionData) {
+    console.log('StakeIntention.fromData', data);
+    return new StakeIntention(data);
   }
 }

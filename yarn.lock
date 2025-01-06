@@ -2638,13 +2638,6 @@
   dependencies:
     bs58 "^5.0.0"
 
-"@mysten/bcs@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.1.0.tgz#dee28e8e4d1671f694afad471b644020b227102a"
-  integrity sha512-yy9/1Y4d0FlRywS1+9ze/T7refCbrvwFwJIOKs9M3QBK1njbcHZp+LkVeLqBvIJA5eZ3ZCzmhQ1Xq4Sed5mEBA==
-  dependencies:
-    bs58 "^6.0.0"
-
 "@mysten/bcs@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.1.1.tgz#29e6f8ccc6d040668dab53e29b80f3de829f36e4"
@@ -2693,24 +2686,6 @@
     graphql "^16.8.1"
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
-
-"@mysten/sui@1.14.3":
-  version "1.14.3"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.14.3.tgz#e8ad11ddfaa4543b52ec6e87eb9d49f92eb2e41f"
-  integrity sha512-5vhOnbSAT/9daMIDPYOp7q9j+6DXqjPAYEJy7ZbR9viBsyAx4UMChCwaLyjoYcJKvhrkDn4LTdDTJEUvpj7TTg==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.1.0"
-    "@noble/curves" "^1.4.2"
-    "@noble/hashes" "^1.4.0"
-    "@scure/bip32" "^1.4.0"
-    "@scure/bip39" "^1.3.0"
-    "@suchipi/femver" "^1.0.0"
-    bech32 "^2.0.0"
-    gql.tada "^1.8.2"
-    graphql "^16.9.0"
-    tweetnacl "^1.0.3"
-    valibot "^0.36.0"
 
 "@mysten/sui@1.15.1":
   version "1.15.1"
@@ -3756,23 +3731,22 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/frontend-sui@^0.1.81":
-  version "0.1.99"
-  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.1.99.tgz#0894adc607ff944e76294e9e07fb0064259b520a"
-  integrity sha512-H85y6OlHL26YlmY/Q9ojdTYawmdVaDITHYtE3C5W8FUPwzc+Y2S4cIrw5eO5DarFjxI5QUXgI1h9zFoPsrbENA==
+"@suilend/frontend-sui@^0.2.20":
+  version "0.2.20"
+  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.20.tgz#0cf831a90e42de6b00a5ee48b5b2e2ca7ffbc029"
+  integrity sha512-CgDX3lOzbCxX2uzhp1QrwbWmXoXoymEhzMj3XHMhrRKOu61nfPGmfaPi4SeUcGGeG7sVUyqRRdHgig50CLzz4w==
   dependencies:
-    "@mysten/sui" "1.14.3"
+    "@mysten/sui" "1.17.0"
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
-    date-fns "^4.1.0"
     lodash "^4.17.21"
     mixpanel-browser "^2.56.0"
     next "^15.0.3"
 
-"@suilend/sdk@1.1.25":
-  version "1.1.25"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.25.tgz#891d7a594d6dac51f9c2465ff63ec47cf9855b9f"
-  integrity sha512-PwLM5qSF1aDgkQdqVwDecDawZQ0ilHiAPB9DaBDZAM3p11kHk/tOXXEkkQ6HxDO/G8/jM05rsCOskOS36Tj6pQ==
+"@suilend/sdk@1.1.27":
+  version "1.1.27"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.27.tgz#b9eea2ee5add6c54ff8354a3431b3b16da81b741"
+  integrity sha512-DVTr4UMqEq6Kbw0Kf427w6RaLC+UDIy8QVdEG4C4trPgyq+utBEsWu5IIpNJ2SWmuE2rq2xN8l6gCoggGy+UKg==
   dependencies:
     "@mysten/bcs" "1.2.0"
     "@mysten/sui" "1.17.0"
@@ -3781,10 +3755,10 @@
     p-limit "3.1.0"
     uuid "^11.0.3"
 
-"@suilend/springsui-sdk@^1.0.12":
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.14.tgz#cc7f218159543879f92c2d755cb058ba8ca4eeb0"
-  integrity sha512-M4P8ptqj172IJHs/h61afa+1J9byMc9Q55iwaEXj8FmrvJwspzLUVJd54lf/sVZwHqfXJXuvRpz1FEa7Rt0JHw==
+"@suilend/springsui-sdk@^1.0.16":
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.16.tgz#31cce40415688c74e8de9461946c650e461c6a90"
+  integrity sha512-mDtjylDZ7S7Yh9fLhcybaVc7taUuKVglU8VYexVMZ3lgJ6lnkVHPfkWpN/D45PIRAP3NYEi4vQHz/FnGoyEWCg==
   dependencies:
     "@mysten/bcs" "1.2.0"
     "@mysten/sui" "1.17.0"
@@ -5069,11 +5043,6 @@ data-view-byte-offset@^1.0.1:
     call-bound "^1.0.2"
     es-errors "^1.3.0"
     is-data-view "^1.0.1"
-
-date-fns@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-4.1.0.tgz#64b3d83fff5aa80438f5b1a633c2e83b8a1c2d14"
-  integrity sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==
 
 debug@^3.2.7:
   version "3.2.7"

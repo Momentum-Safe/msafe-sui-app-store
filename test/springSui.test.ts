@@ -1,8 +1,8 @@
-import { MintIntention } from '@/apps/springSui/intentions/mint';
+import { StakeIntention } from '@/apps/springSui/intentions/mint';
 
 describe('SpringSui', () => {
-  it('Test Mint intention serialization', () => {
-    const intention = MintIntention.fromData({
+  it('Test Stake intention serialization', () => {
+    const intention = StakeIntention.fromData({
       amount: '10000',
     });
 

@@ -1,29 +1,31 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
+import { convertLstsAndSendToUser } from '@suilend/frontend-sui/lib/springsui';
 import { LstClient } from '@suilend/springsui-sdk';
 
 import { IntentionInput } from '../helper';
 import { TransactionSubType } from '../types';
 import { SpringSuiBaseIntention } from './springSuiBaseIntention';
 
-export interface UnstakeIntentionData {
+export interface ConvertIntentionData {
   inCoinType: string;
+  outCoinType: string;
   amount: string;
 }
 
-export class UnstakeIntention extends SpringSuiBaseIntention<UnstakeIntentionData> {
+export class ConvertIntention extends SpringSuiBaseIntention<ConvertIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.UNSTAKE;
+  txSubType: TransactionSubType.CONVERT;
 
-  constructor(public readonly data: UnstakeIntentionData) {
+  constructor(public readonly data: ConvertIntentionData) {
     super(data);
   }
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, LIQUID_STAKING_INFO_MAP, obligationOwnerCap, obligation } = input;
     console.log(
-      'UnstakeIntention.build',
+      'ConvertIntention.build',
       suiClient,
       account,
       suilendClient,
@@ -36,17 +38,21 @@ export class UnstakeIntention extends SpringSuiBaseIntention<UnstakeIntentionDat
       suiClient as any,
       Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.inCoinType),
     );
+    const outLstClient = await LstClient.initialize(
+      suiClient as any,
+      Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.outCoinType),
+    );
 
     //
 
     const transaction = new Transaction();
-    inLstClient.redeemAmountAndSendToUser(transaction as any, account.address, this.data.amount);
+    convertLstsAndSendToUser(inLstClient, outLstClient, transaction as any, account.address, this.data.amount);
 
     return transaction;
   }
 
-  static fromData(data: UnstakeIntentionData) {
-    console.log('UnstakeIntention.fromData', data);
-    return new UnstakeIntention(data);
+  static fromData(data: ConvertIntentionData) {
+    console.log('ConvertIntention.fromData', data);
+    return new ConvertIntention(data);
   }
 }

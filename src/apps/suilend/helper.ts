@@ -97,7 +97,7 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       sender: account.address,
       transactionBlock: transaction,
     });
-    
+
     console.log('SuilendAppHelper.deserialize', simResult);
 
     const decoder = new Decoder(transaction, simResult);
