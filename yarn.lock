@@ -3731,10 +3731,10 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/frontend-sui@^0.2.20":
-  version "0.2.20"
-  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.20.tgz#0cf831a90e42de6b00a5ee48b5b2e2ca7ffbc029"
-  integrity sha512-CgDX3lOzbCxX2uzhp1QrwbWmXoXoymEhzMj3XHMhrRKOu61nfPGmfaPi4SeUcGGeG7sVUyqRRdHgig50CLzz4w==
+"@suilend/frontend-sui@^0.2.21":
+  version "0.2.21"
+  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.21.tgz#e0612607e10ad43d35fa413826a40cfccd27f514"
+  integrity sha512-/7xwSTdYGl1VYDCaHe/VNtNiOrGX7C+yVcbVVkpger7Rbg1c6Ixoip8/PqKxp7mpU6cy4fqZkiwDWlgMEQ9lyQ==
   dependencies:
     "@mysten/sui" "1.17.0"
     "@pythnetwork/pyth-sui-js" "^2.1.0"
@@ -3743,10 +3743,10 @@
     mixpanel-browser "^2.56.0"
     next "^15.0.3"
 
-"@suilend/sdk@1.1.27":
-  version "1.1.27"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.27.tgz#b9eea2ee5add6c54ff8354a3431b3b16da81b741"
-  integrity sha512-DVTr4UMqEq6Kbw0Kf427w6RaLC+UDIy8QVdEG4C4trPgyq+utBEsWu5IIpNJ2SWmuE2rq2xN8l6gCoggGy+UKg==
+"@suilend/sdk@1.1.29":
+  version "1.1.29"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.29.tgz#c5711b59e1d5efe6a6c9eae3472d388892c80b81"
+  integrity sha512-Mq6/6f0ebg0VX2RQzW+nRfaTILqrk0RAyK8N09iDIDgIO4pRYQEbGc0Pzx9uITHpx+nJU9nxxhYJT5Jne7QjvQ==
   dependencies:
     "@mysten/bcs" "1.2.0"
     "@mysten/sui" "1.17.0"
