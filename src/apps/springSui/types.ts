@@ -1,5 +1,7 @@
 export enum TransactionSubType {
-  MINT = 'mint',
-  MINT_AND_DEPOSIT = 'mintAndDeposit',
-  REDEEM = 'redeem',
+  STAKE = 'stake',
+  STAKE_AND_DEPOSIT = 'stakeAndDeposit',
+  CONVERT = 'convert',
+  CONVERT_AND_DEPOSIT = 'convertAndDeposit',
+  UNSTAKE = 'unstake',
 }

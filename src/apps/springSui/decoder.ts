@@ -1,11 +1,14 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag } from '@mysten/sui/utils';
 
 import { SpringSuiIntentionData } from './helper';
-import { MintIntentionData } from './intentions/mint';
-import { MintAndDepositIntentionData } from './intentions/mintAndDeposit';
-import { RedeemIntentionData } from './intentions/redeem';
+import { ConvertIntentionData } from './intentions/convert';
+import { ConvertAndDepositIntentionData } from './intentions/convertAndDeposit';
+import { StakeIntentionData } from './intentions/stake';
+import { StakeAndDepositIntentionData } from './intentions/stakeAndDeposit';
+import { UnstakeIntentionData } from './intentions/unstake';
 import { TransactionSubType } from './types';
 
 type DecodeResult = {
@@ -21,14 +24,20 @@ export class Decoder {
   ) {}
 
   decode() {
-    if (this.isMintTransaction()) {
-      return this.decodeMint();
+    if (this.isStakeTransaction()) {
+      return this.decodeStake();
     }
-    if (this.isMintAndDepositTransaction()) {
-      return this.decodeMintAndDeposit();
+    if (this.isStakeAndDepositTransaction()) {
+      return this.decodeStakeAndDeposit();
     }
-    if (this.isRedeemTransaction()) {
-      return this.decodeRedeem();
+    if (this.isConvertTransaction()) {
+      return this.decodeConvert();
+    }
+    if (this.isConvertAndDepositTransaction()) {
+      return this.decodeConvertAndDeposit();
+    }
+    if (this.isUnstakeTransaction()) {
+      return this.decodeUnstake();
     }
 
     throw new Error(`Unknown transaction type`);
@@ -49,63 +58,154 @@ export class Decoder {
     );
   }
 
-  private hasMintTransactionMoveCallCommands() {
+  private hasMintMoveCallCommands() {
     return !!this.getMoveCallCommand('mint');
   }
 
-  // is*
-  private isMintTransaction() {
-    return this.hasMintTransactionMoveCallCommands() && !this.hasSuilendDepositTransactionMoveCallCommands();
-  }
-
-  private isMintAndDepositTransaction() {
-    return this.hasMintTransactionMoveCallCommands() && this.hasSuilendDepositTransactionMoveCallCommands();
-  }
-
-  private isRedeemTransaction() {
+  private hasRedeemMoveCallCommands() {
     return !!this.getMoveCallCommand('redeem');
   }
 
+  // is*
+  private isStakeTransaction() {
+    return (
+      this.hasMintMoveCallCommands() &&
+      !this.hasRedeemMoveCallCommands() &&
+      !this.hasSuilendDepositTransactionMoveCallCommands()
+    );
+  }
+
+  private isStakeAndDepositTransaction() {
+    return (
+      this.hasMintMoveCallCommands() &&
+      !this.hasRedeemMoveCallCommands() &&
+      this.hasSuilendDepositTransactionMoveCallCommands()
+    );
+  }
+
+  private isConvertTransaction() {
+    return (
+      this.hasMintMoveCallCommands() &&
+      this.hasRedeemMoveCallCommands() &&
+      !this.hasSuilendDepositTransactionMoveCallCommands()
+    );
+  }
+
+  private isConvertAndDepositTransaction() {
+    return (
+      this.hasMintMoveCallCommands() &&
+      this.hasRedeemMoveCallCommands() &&
+      this.hasSuilendDepositTransactionMoveCallCommands()
+    );
+  }
+
+  private isUnstakeTransaction() {
+    return (
+      !this.hasMintMoveCallCommands() &&
+      this.hasRedeemMoveCallCommands() &&
+      !this.hasSuilendDepositTransactionMoveCallCommands()
+    );
+  }
+
   // decode*
-  private decodeMint(): DecodeResult {
+  private decodeStake(): DecodeResult {
     const events = {
       MintEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::MintEvent')),
     };
 
+    const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
     const amount = (events.MintEvent.parsedJson as any).event.sui_amount_in as string;
-    console.log('Decoder.decodeMint', amount);
+    console.log('Decoder.decodeStake', amount);
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.MINT,
+      type: TransactionSubType.STAKE,
       intentionData: {
         amount,
-      } as MintIntentionData,
+        outCoinType,
+      } as StakeIntentionData,
     };
   }
 
-  private decodeMintAndDeposit(): DecodeResult {
+  private decodeStakeAndDeposit(): DecodeResult {
+    const events = {
+      MintEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::MintEvent')),
+    };
+
+    const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
+    const amount = (events.MintEvent.parsedJson as any).event.sui_amount_in as string;
+    console.log('Decoder.decodeStakeAndDeposit', amount);
+
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.MINT_AND_DEPOSIT,
-      intentionData: this.decodeMint().intentionData as MintAndDepositIntentionData,
+      type: TransactionSubType.STAKE_AND_DEPOSIT,
+      intentionData: {
+        amount,
+        outCoinType,
+      } as StakeAndDepositIntentionData,
     };
   }
 
-  private decodeRedeem(): DecodeResult {
+  private decodeConvert(): DecodeResult {
+    const events = {
+      RedeemEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::RedeemEvent')),
+      MintEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::MintEvent')),
+    };
+
+    const inCoinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).event.typename.name as string);
+    const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
+    const amount = (events.RedeemEvent.parsedJson as any).event.lst_amount_in as string;
+    console.log('Decoder.decodeConvert', amount);
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.CONVERT,
+      intentionData: {
+        amount,
+        inCoinType,
+        outCoinType,
+      } as ConvertIntentionData,
+    };
+  }
+
+  private decodeConvertAndDeposit(): DecodeResult {
+    const events = {
+      RedeemEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::RedeemEvent')),
+      MintEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::MintEvent')),
+    };
+
+    const inCoinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).event.typename.name as string);
+    const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
+    const amount = (events.RedeemEvent.parsedJson as any).event.lst_amount_in as string;
+    console.log('Decoder.decodeConvertAndDeposit', amount);
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.CONVERT_AND_DEPOSIT,
+      intentionData: {
+        amount,
+        inCoinType,
+        outCoinType,
+      } as ConvertAndDepositIntentionData,
+    };
+  }
+
+  private decodeUnstake(): DecodeResult {
     const events = {
       RedeemEvent: this.simResult.events.find((event) => event.type.includes('liquid_staking::RedeemEvent')),
     };
 
+    const inCoinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).event.typename.name as string);
     const amount = (events.RedeemEvent.parsedJson as any).event.lst_amount_in as string;
-    console.log('Decoder.decodeRedeem', amount);
+    console.log('Decoder.decodeUnstake', amount);
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.REDEEM,
+      type: TransactionSubType.UNSTAKE,
       intentionData: {
         amount,
-      } as RedeemIntentionData,
+        inCoinType,
+      } as UnstakeIntentionData,
     };
   }
 }
