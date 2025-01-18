@@ -15,18 +15,18 @@
     "@gql.tada/internal" "^1.0.0"
     graphql "^15.5.0 || ^16.0.0 || ^17.0.0"
 
-"@7kprotocol/sdk-ts@^2.1.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.2.1.tgz#70cc141b4e9de27e5844be23d3542f10370d40f7"
-  integrity sha512-Sg5l+4VLHCDXvjRmJzkftg+d2ECmNskZRDOfaMAuYarnCdGzpxw3Wn9gMGF22Bcgq+tmK6I8lTN21SFD5EVueA==
+"@7kprotocol/sdk-ts@^2.2.2":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.3.1.tgz#371588439277905b8f0c80694506b7954be2c942"
+  integrity sha512-NLhOHW9gC/fUYLQGsbCEHO/suVi37AdcielXn94SyvX/6bCgaWJGICA3NSv+8Vn3bDVQUKtWqYvAC7CAhrIOXg==
 
-"@alphafi/alphafi-sdk@^0.0.47":
-  version "0.0.47"
-  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.47.tgz#70648a8977614ebe88ffa2ca1134931a2b47629c"
-  integrity sha512-zlwIdqRwfk/i9AwwLFeq/wOhM1AYQA2gBctwMnPRVbJwwwtDF4ivvGXh95YKzdMs1GjHiBhCxtaC23359C3o+g==
+"@alphafi/alphafi-sdk@^0.0.55":
+  version "0.0.55"
+  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.55.tgz#05c9ea6a5e8619a71075248c7e096c29401840ec"
+  integrity sha512-hAh+77kc8CuljdkmjZpINDYdgp5YpLOqkT+fk83VLhza+S/Ujx5JxVDJe7YDoUGMZKt969U3ABb+Y6TC8f3oKw==
   dependencies:
-    "@7kprotocol/sdk-ts" "^2.1.0"
-    "@alphafi/stsui-sdk" "^0.0.11"
+    "@7kprotocol/sdk-ts" "^2.2.2"
+    "@alphafi/stsui-sdk" "^0.0.12"
     "@apollo/client" "^3.11.4"
     "@cetusprotocol/cetus-sui-clmm-sdk" "5.1.6"
     "@hop.ag/sdk" "^3.3.0"
@@ -36,10 +36,21 @@
     graphql "^16.9.0"
     react "^18.3.1"
 
-"@alphafi/stsui-sdk@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.11.tgz#858b42d5311b1976384feccb751c95f928aae4f2"
-  integrity sha512-XWPwaKxWmY1OSPCEv3wNOuDRT1bs1WGEoc1iy8gairhmBjS9h5nChHY/TWNkn4qt0dZZ+l4on+0Fe3C7AoF50w==
+"@alphafi/stsui-sdk@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.12.tgz#c0e262882e238c5159d7bd94902e4933b7a0417b"
+  integrity sha512-VtEyFkxPIbjtf/djkRM/kV3b/yCyU1RJU7wWdyYCa8za393eUbrIOPUVx+BB3qa9itGAsvxjnMlw5zd34OWFFw==
+  dependencies:
+    "@types/bn.js" "^5.1.6"
+    decimal.js "^10.4.3"
+    jest "^29.7.0"
+    ts-jest "^29.2.5"
+    typedoc "^0.27.5"
+
+"@alphafi/stsui-sdk@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.15.tgz#40b582046362e0cdccc90956189a0b73da95ef21"
+  integrity sha512-cvgV1wMRMfni6X/WP8H0g5miZVvHrb0oQv7dMYEHBb1z6y3kIHg1hJCjewdACSSSoIx5QTxYY6dfV7YHxUpe/A==
   dependencies:
     "@types/bn.js" "^5.1.6"
     decimal.js "^10.4.3"
