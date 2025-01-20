@@ -151,7 +151,7 @@ export const peripheryConfig: PeripherySdkOptions = {
       vaults_pool_handle: '0x9036bcc5aa7fd2cceec1659a6a1082871f45bc400c743f50063363457d1738bd',
       haedal: {
         package_id: '0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d',
-        published_at: '0x1d56b8ec33c3fae897eb7bb1acb79914e8152faed614868928e684c25c8b198d',
+        published_at: '0xaabf0856070391df81fad9240049d69c5a51c3d376cc0885eeedd516526cc79b',
         version: 1,
         config: {
           staking_id: '0x47b224762220393057ebf4f70501b6e657c3e56684737568439a04f80849b2ca',
