@@ -1,6 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+import { toHex } from '@mysten/sui/utils';
 import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
@@ -10,6 +11,8 @@ import { IAppHelperInternal } from '@/apps/interface/sui';
 import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { MSafeHTTPTransport } from '@/lib/MSafeHTTPTransport';
 import { SuiNetworks } from '@/types';
+
+import { PlainTransactionType } from './plain-transaction/helper';
 
 export class MSafeApps {
   apps: Map<string, IAppHelper<any>>;
@@ -87,7 +90,18 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     });
     const build = await input.transactionBlock.build({ client: clientLegacy });
     const tx = Transaction.from(build);
-    return this.helper.deserialize({ ...input, suiClient: client, transaction: tx });
+    try {
+      return await this.helper.deserialize({ ...input, suiClient: client, transaction: tx });
+    } catch {
+      // Fallback to plain transaction
+      const intention = {
+        txType: TransactionType.Other,
+        txSubType: PlainTransactionType,
+        intentionData: { content: toHex(build) },
+      };
+      console.log('🚀 ~ SuiSdkAdapter ~ Fallback:', intention);
+      return intention;
+    }
   }
 
   async build(input: {
@@ -140,7 +154,21 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
         },
       }),
     });
-    return this.helper.deserialize({ ...input, transactionBlock: input.transactionBlock, suiClient: client });
+
+    const build = await input.transactionBlock.build({ client });
+
+    try {
+      return await this.helper.deserialize({ ...input, transactionBlock: input.transactionBlock, suiClient: client });
+    } catch {
+      // Fallback to plain transaction
+      const intention = {
+        txType: TransactionType.Other,
+        txSubType: PlainTransactionType,
+        intentionData: { content: toHex(build) },
+      };
+      console.log('🚀 ~ SuiSdkAdapter ~ Fallback:', intention);
+      return intention;
+    }
   }
 
   async build(input: {
