@@ -3,8 +3,7 @@ import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { LENDING_MARKET_ID, LENDING_MARKET_TYPE, SuilendClient } from '@suilend/sdk';
-import { phantom } from '@suilend/sdk/_generated/_framework/reified';
-import { LendingMarket, ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-market/structs';
+import { ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-market/structs';
 import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
@@ -26,15 +25,12 @@ export type Utils = {
 };
 
 export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
-  const suilendClient = await SuilendClient.initializeWithLendingMarket(
-    await LendingMarket.fetch(suiClient as any, phantom(LENDING_MARKET_TYPE), LENDING_MARKET_ID),
-    suiClient as any,
-  );
+  const suilendClient = await SuilendClient.initialize(LENDING_MARKET_ID, LENDING_MARKET_TYPE, suiClient);
 
   const obligationOwnerCaps = await SuilendClient.getObligationOwnerCaps(
     account.address,
     suilendClient.lendingMarket.$typeArgs,
-    suiClient as any,
+    suiClient,
   );
 
   const obligations = await Promise.all(
@@ -151,14 +147,6 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
     const obligationId = window.localStorage.getItem('obligationId');
     const obligation = this.utils.obligations?.find((o) => o.id === obligationId) ?? this.utils.obligations?.[0];
     const obligationOwnerCap = this.utils.obligationOwnerCaps?.find((o) => o.obligationId === obligation?.id);
-    console.log(
-      'XXX obligationId:',
-      obligationId,
-      'obligations:',
-      this.utils.obligations,
-      'obligationOwnerCaps:',
-      this.utils.obligationOwnerCaps,
-    );
 
     return intention.build({
       network,

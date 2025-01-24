@@ -34,7 +34,7 @@ export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionDat
       obligation.id,
       this.data.coinType,
       this.data.value,
-      transaction as any,
+      transaction,
     );
 
     return transaction;

@@ -28,7 +28,7 @@ export class DepositIntention extends SuilendBaseIntention<DepositIntentionData>
       account.address,
       this.data.coinType,
       this.data.value,
-      transaction as any,
+      transaction,
       obligationOwnerCap?.id,
     );
 

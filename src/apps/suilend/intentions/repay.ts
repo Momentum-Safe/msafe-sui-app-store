@@ -33,7 +33,7 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
       obligation.id,
       this.data.coinType,
       this.data.value,
-      transaction as any,
+      transaction,
     );
 
     return transaction;

@@ -33,14 +33,14 @@ export class StakeIntention extends SpringSuiBaseIntention<StakeIntentionData> {
     );
 
     const outLstClient = await LstClient.initialize(
-      suiClient as any,
+      suiClient,
       Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.outCoinType),
     );
 
     //
 
     const transaction = new Transaction();
-    outLstClient.mintAmountAndRebalanceAndSendToUser(transaction as any, account.address, this.data.amount);
+    outLstClient.mintAmountAndRebalanceAndSendToUser(transaction, account.address, this.data.amount);
 
     return transaction;
   }
