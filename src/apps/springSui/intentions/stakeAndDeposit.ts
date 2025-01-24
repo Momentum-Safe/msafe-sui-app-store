@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
-import { createObligationIfNoneExists, sendObligationToUser } from '@suilend/frontend-sui';
+import { createObligationIfNoneExists, sendObligationToUser } from '@suilend/sdk';
 import { LstClient } from '@suilend/springsui-sdk';
 
 import { IntentionInput } from '../helper';
@@ -34,7 +34,7 @@ export class StakeAndDepositIntention extends SpringSuiBaseIntention<StakeAndDep
     );
 
     const outLstClient = await LstClient.initialize(
-      suiClient as any,
+      suiClient,
       Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.outCoinType),
     );
 
@@ -44,15 +44,15 @@ export class StakeAndDepositIntention extends SpringSuiBaseIntention<StakeAndDep
 
     const { obligationOwnerCapId, didCreate } = createObligationIfNoneExists(
       suilendClient,
-      transaction as any,
+      transaction,
       obligationOwnerCap,
     );
 
-    const lstCoin = outLstClient.mintAmountAndRebalance(transaction as any, account.address, this.data.amount);
-    suilendClient.deposit(lstCoin, this.data.outCoinType, obligationOwnerCapId, transaction as any);
+    const lstCoin = outLstClient.mintAmountAndRebalance(transaction, account.address, this.data.amount);
+    suilendClient.deposit(lstCoin, this.data.outCoinType, obligationOwnerCapId, transaction);
 
     if (didCreate) {
-      sendObligationToUser(obligationOwnerCapId, account.address, transaction as any);
+      sendObligationToUser(obligationOwnerCapId, account.address, transaction);
     }
 
     return transaction;

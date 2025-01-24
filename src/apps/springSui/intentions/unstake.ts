@@ -33,14 +33,14 @@ export class UnstakeIntention extends SpringSuiBaseIntention<UnstakeIntentionDat
     );
 
     const inLstClient = await LstClient.initialize(
-      suiClient as any,
+      suiClient,
       Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.inCoinType),
     );
 
     //
 
     const transaction = new Transaction();
-    inLstClient.redeemAmountAndSendToUser(transaction as any, account.address, this.data.amount);
+    inLstClient.redeemAmountAndSendToUser(transaction, account.address, this.data.amount);
 
     return transaction;
   }

@@ -32,7 +32,7 @@ export class ClaimIntention extends SuilendBaseIntention<ClaimIntentionData> {
       account.address,
       obligationOwnerCap.id,
       getRewards(suilendClient, obligation),
-      transaction as any,
+      transaction,
     );
 
     return transaction;

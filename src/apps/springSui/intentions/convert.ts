@@ -1,7 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
-import { convertLstsAndSendToUser } from '@suilend/frontend-sui/lib/springsui';
-import { LstClient } from '@suilend/springsui-sdk';
+import { LstClient, convertLstsAndSendToUser } from '@suilend/springsui-sdk';
 
 import { IntentionInput } from '../helper';
 import { TransactionSubType } from '../types';
@@ -35,18 +34,18 @@ export class ConvertIntention extends SpringSuiBaseIntention<ConvertIntentionDat
     );
 
     const inLstClient = await LstClient.initialize(
-      suiClient as any,
+      suiClient,
       Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.inCoinType),
     );
     const outLstClient = await LstClient.initialize(
-      suiClient as any,
+      suiClient,
       Object.values(LIQUID_STAKING_INFO_MAP).find((info) => info.type === this.data.outCoinType),
     );
 
     //
 
     const transaction = new Transaction();
-    convertLstsAndSendToUser(inLstClient, outLstClient, transaction as any, account.address, this.data.amount);
+    convertLstsAndSendToUser(inLstClient, outLstClient, transaction, account.address, this.data.amount);
 
     return transaction;
   }

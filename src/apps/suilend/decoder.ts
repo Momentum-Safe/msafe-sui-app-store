@@ -51,12 +51,12 @@ export class Decoder {
   }
 
   private get inputs() {
-    console.log('XXX this.transaction.getData().inputs', this.transaction.getData().inputs);
+    console.log('this.transaction.getData().inputs', this.transaction.getData().inputs);
     return this.transaction.getData().inputs;
   }
 
   private get commands() {
-    console.log('XXX this.transaction.getData().commands', this.transaction.getData().commands);
+    console.log('this.transaction.getData().commands', this.transaction.getData().commands);
     return this.transaction.getData().commands;
   }
 
@@ -140,7 +140,7 @@ export class Decoder {
 
     const isMax = inputValue === maxU64.toString();
     console.log(
-      'XXX decodeWithdraw - isMax:',
+      'decodeWithdraw - isMax:',
       isMax,
       'inputIndex:',
       inputIndex,
@@ -180,7 +180,7 @@ export class Decoder {
 
     const isMax = inputValue === maxU64.toString();
     console.log(
-      'XXX decodeBorrow - isMax:',
+      'decodeBorrow - isMax:',
       isMax,
       'inputIndex:',
       inputIndex,

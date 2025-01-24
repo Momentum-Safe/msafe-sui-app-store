@@ -34,7 +34,7 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
       obligation.id,
       this.data.coinType,
       this.data.value,
-      transaction as any,
+      transaction,
     );
 
     return transaction;
