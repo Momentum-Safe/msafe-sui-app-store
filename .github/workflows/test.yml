@@ -29,5 +29,5 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      - name: Test with MySql
+      - name: Test
         run: yarn test
