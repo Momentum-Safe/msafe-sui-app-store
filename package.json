@@ -54,6 +54,9 @@
     "@mysten/sui": "^1.8.0",
     "@open-rpc/client-js": "^1.8.1",
     "@pythnetwork/pyth-sui-js": "^2.1.0",
+    "@suilend/frontend-sui": "^0.2.35",
+    "@suilend/sdk": "^1.1.36",
+    "@suilend/springsui-sdk": "^1.0.17",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
     "bucket-protocol-sdk": "^0.10.17",
@@ -92,9 +95,6 @@
   "peerDependencies": {
     "@msafe/sui3-utils": ">3.0.0",
     "@mysten/sui.js": ">0.50.0",
-    "@mysten/wallet-standard": ">0.11.0",
-    "@suilend/frontend-sui": "^0.2.33",
-    "@suilend/sdk": "^1.1.36",
-    "@suilend/springsui-sdk": "^1.0.17"
+    "@mysten/wallet-standard": ">0.11.0"
   }
 }
