@@ -1,14 +1,11 @@
-import { BaseIntention } from '@/apps/interface/sui';
+import { withdrawAlphaTxb } from '@alphafi/alphafi-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { withdrawAlphaTxb } from '@alphafi/alphafi-sdk';
-import { TransactionSubType } from '../types';
 
-export interface WithdrawAlphaIntentionData {
-  xTokensAmount: string;
-  withdrawFromLocked: boolean;
-}
+import { BaseIntention } from '@/apps/interface/sui';
+
+import { TransactionSubType, WithdrawAlphaIntentionData } from '../types';
 
 export class WithdrawAlphaIntention extends BaseIntention<WithdrawAlphaIntentionData> {
   txType: TransactionType.Other;
@@ -27,7 +24,7 @@ export class WithdrawAlphaIntention extends BaseIntention<WithdrawAlphaIntention
   }
 
   static fromData(data: WithdrawAlphaIntentionData) {
-    console.log("WithdrawAlphaIntention.fromData", data);
+    console.log('WithdrawAlphaIntention.fromData', data);
     return new WithdrawAlphaIntention(data);
   }
 }

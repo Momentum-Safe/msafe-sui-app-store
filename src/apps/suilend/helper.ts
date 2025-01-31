@@ -7,15 +7,25 @@ import { ObligationOwnerCap } from '@suilend/sdk/_generated/suilend/lending-mark
 import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
+import {
+  BorrowIntentionData,
+  ClaimAndDepositIntentionData,
+  ClaimIntentionData,
+  DepositIntentionData,
+  RepayIntentionData,
+  SuilendIntentionData,
+  WithdrawIntentionData,
+} from '@/apps/suilend/types/helper';
+import { IntentionInput } from '@/apps/suilend/types/intention';
 import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';
-import { BorrowIntention, BorrowIntentionData } from './intentions/borrow';
-import { ClaimIntention, ClaimIntentionData } from './intentions/claim';
-import { ClaimAndDepositIntention, ClaimAndDepositIntentionData } from './intentions/claimAndDeposit';
-import { DepositIntention, DepositIntentionData } from './intentions/deposit';
-import { RepayIntention, RepayIntentionData } from './intentions/repay';
-import { WithdrawIntention, WithdrawIntentionData } from './intentions/withdraw';
+import { BorrowIntention } from './intentions/borrow';
+import { ClaimIntention } from './intentions/claim';
+import { ClaimAndDepositIntention } from './intentions/claimAndDeposit';
+import { DepositIntention } from './intentions/deposit';
+import { RepayIntention } from './intentions/repay';
+import { WithdrawIntention } from './intentions/withdraw';
 import { TransactionSubType } from './types';
 
 export type Utils = {
@@ -49,24 +59,6 @@ export type SuilendIntention =
   | RepayIntention
   | ClaimIntention
   | ClaimAndDepositIntention;
-
-export type SuilendIntentionData =
-  | DepositIntentionData
-  | WithdrawIntentionData
-  | BorrowIntentionData
-  | RepayIntentionData
-  | ClaimIntentionData
-  | ClaimAndDepositIntentionData;
-
-export type IntentionInput = {
-  network: SuiNetworks;
-  suiClient: SuiClient;
-  account: WalletAccount;
-
-  suilendClient: SuilendClient;
-  obligationOwnerCap: ObligationOwnerCap<string> | undefined;
-  obligation: Obligation<string> | undefined;
-};
 
 export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData> {
   application = 'Suilend';

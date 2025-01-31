@@ -1,10 +1,8 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { Transaction } from '@mysten/sui/transactions';
 import { DevInspectResults } from '@mysten/sui/client';
-import { TransactionSubType } from './types';
-import { StSuiIntentionData } from './helper';
-import { MintIntentionData } from './intentions/mint';
-import { RedeemIntentionData } from './intentions/redeem';
+import { Transaction } from '@mysten/sui/transactions';
+
+import { MintIntentionData, RedeemIntentionData, StSuiIntentionData, TransactionSubType } from './types';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -76,7 +74,7 @@ export class Decoder {
     return this.simResult.events.find((event) => this.isLiquidityChangeEventType(event.type, arg));
   }
 
-  //is*
+  // is*
 
   private isLiquidityChangeEventType(eventType: string, arg: string) {
     return eventType.includes(arg);

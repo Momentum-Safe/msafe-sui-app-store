@@ -6,13 +6,16 @@ import { normalizeStructTag } from '@mysten/sui/utils';
 import { maxU64 } from '@suilend/sdk';
 import BigNumber from 'bignumber.js';
 
-import { SuilendIntentionData } from './helper';
-import { BorrowIntentionData } from './intentions/borrow';
-import { ClaimIntentionData } from './intentions/claim';
-import { ClaimAndDepositIntentionData } from './intentions/claimAndDeposit';
-import { DepositIntentionData } from './intentions/deposit';
-import { RepayIntentionData } from './intentions/repay';
-import { WithdrawIntentionData } from './intentions/withdraw';
+import {
+  BorrowIntentionData,
+  ClaimAndDepositIntentionData,
+  ClaimIntentionData,
+  DepositIntentionData,
+  RepayIntentionData,
+  SuilendIntentionData,
+  WithdrawIntentionData,
+} from '@/apps/suilend/types/helper';
+
 import { TransactionSubType } from './types';
 
 type DecodeResult = {

@@ -3,11 +3,12 @@ import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
+import { BorrowIntentionData } from '@/apps/bucket/types/api';
 import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
+import { getBorrowTx } from '../api/lending';
 import { TransactionSubType } from '../types';
-import { BorrowIntentionData, getBorrowTx } from '../api/lending';
 
 export class BorrowIntention extends BaseIntention<BorrowIntentionData> {
   txType = TransactionType.Other;

@@ -2,15 +2,25 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
+
 import { IAppHelperInternal } from '@/apps/interface/sui';
-import { TransactionSubType } from './types';
-import { DepositDoubleAssetIntention, DepositDoubleAssetIntentionData } from './intentions/deposit-double-asset';
-import { DepositSingleAssetIntention, DepositSingleAssetIntentionData } from './intentions/deposit-single-asset';
-import { WithdrawAlphaIntention, WithdrawAlphaIntentionData } from './intentions/withdraw-alpha';
-import { WithdrawIntention, WithdrawIntentionData } from './intentions/withdraw';
-import { ClaimRewardIntention, EmptyIntentionData } from './intentions/claim-reward';
 import { SuiNetworks } from '@/types';
+
 import { Decoder } from './decoder';
+import { ClaimRewardIntention } from './intentions/claim-reward';
+import { DepositDoubleAssetIntention } from './intentions/deposit-double-asset';
+import { DepositSingleAssetIntention } from './intentions/deposit-single-asset';
+import { WithdrawIntention } from './intentions/withdraw';
+import { WithdrawAlphaIntention } from './intentions/withdraw-alpha';
+import {
+  AlphaFiIntentionData,
+  DepositDoubleAssetIntentionData,
+  DepositSingleAssetIntentionData,
+  EmptyIntentionData,
+  TransactionSubType,
+  WithdrawAlphaIntentionData,
+  WithdrawIntentionData,
+} from './types';
 
 export type AlphaFiIntention =
   | DepositDoubleAssetIntention
@@ -18,13 +28,6 @@ export type AlphaFiIntention =
   | WithdrawAlphaIntention
   | WithdrawIntention
   | ClaimRewardIntention;
-
-export type AlphaFiIntentionData =
-  | DepositDoubleAssetIntentionData
-  | DepositSingleAssetIntentionData
-  | WithdrawAlphaIntentionData
-  | WithdrawIntentionData
-  | EmptyIntentionData;
 
 export class AlphaFiHelper implements IAppHelperInternal<AlphaFiIntentionData> {
   application = 'alphafi';
@@ -66,8 +69,8 @@ export class AlphaFiHelper implements IAppHelperInternal<AlphaFiIntentionData> {
     network: SuiNetworks;
   }): Promise<Transaction> {
     const { account } = input;
-    console.log("AlphaFi build transaction type", input.txSubType);
-    
+    console.log('AlphaFi build transaction type', input.txSubType);
+
     let intention: AlphaFiIntention;
     switch (input.txSubType) {
       case TransactionSubType.DEPOSIT_SINGLE_ASSET:

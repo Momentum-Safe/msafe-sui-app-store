@@ -6,7 +6,6 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
-import { TransactionSubType } from '../types';
 import {
   getTankClaimTx,
   getTankDepositTx,
@@ -15,6 +14,7 @@ import {
   TankDepositIntentionData,
   TankWithdrawIntentionData,
 } from '../api';
+import { TransactionSubType } from '../types';
 
 export class TankDepositIntention extends BaseIntention<TankDepositIntentionData> {
   txType = TransactionType.Other;

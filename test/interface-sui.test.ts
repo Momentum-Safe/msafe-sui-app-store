@@ -15,6 +15,7 @@ export class EmptyAppHelper implements IAppHelperInternal<EmptyIntentionData> {
 
   supportSDK = '@mysten/sui' as const;
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   async deserialize(input: {
     transaction: Transaction;
     chain: IdentifierString;
@@ -62,6 +63,7 @@ export class EmptyIntention extends BaseIntention<EmptyIntentionData> {
     super(data);
   }
 
+  // eslint-disable-next-line unused-imports/no-unused-vars
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     return new Transaction();
   }

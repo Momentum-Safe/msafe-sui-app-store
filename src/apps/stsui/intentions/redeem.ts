@@ -1,13 +1,11 @@
-import { BaseIntention } from '@/apps/interface/sui';
+import { redeem } from '@alphafi/stsui-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { TransactionSubType } from '../types';
-import { redeem } from '@alphafi/stsui-sdk';
 
-export interface RedeemIntentionData {
-  amount: string;
-}
+import { BaseIntention } from '@/apps/interface/sui';
+
+import { RedeemIntentionData, TransactionSubType } from '../types';
 
 export class RedeemIntention extends BaseIntention<RedeemIntentionData> {
   txType: TransactionType.Other;

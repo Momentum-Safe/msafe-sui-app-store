@@ -1,6 +1,7 @@
 import { PaginatedCoins } from '@mysten/sui.js/client';
 import { TransactionBlock, TransactionObjectArgument } from '@mysten/sui.js/transactions';
 import { TurbosSdk, unstable_getObjectId } from 'turbos-clmm-sdk';
+
 import { deepbookConfig } from '../config';
 
 type CoinData = PaginatedCoins['data'];
@@ -27,11 +28,10 @@ export class SuiKit {
       .some((object) => {
         if (currentBalance >= amount) {
           return true;
-        } else {
-          currentBalance += Number(object.balance);
-          resultCoinObjects.push(object);
-          return false;
         }
+        currentBalance += Number(object.balance);
+        resultCoinObjects.push(object);
+        return false;
       });
     return resultCoinObjects;
   }
@@ -78,7 +78,7 @@ export class SuiKit {
   }
 
   createAccount(txb: TransactionBlock): TransactionObjectArgument {
-    let [cap] = txb.moveCall({
+    const [cap] = txb.moveCall({
       typeArguments: [],
       target: `${deepbookConfig.PackageId}::clob_v2::create_account`,
       arguments: [],

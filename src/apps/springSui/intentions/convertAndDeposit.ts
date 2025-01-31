@@ -1,17 +1,12 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { createObligationIfNoneExists, sendObligationToUser } from '@suilend/sdk';
-import { LstClient, convertLsts } from '@suilend/springsui-sdk';
+import { convertLsts, LstClient } from '@suilend/springsui-sdk';
 
-import { IntentionInput } from '../helper';
-import { TransactionSubType } from '../types';
+import { ConvertAndDepositIntentionData } from '@/apps/springSui/types/intention';
+
 import { SpringSuiBaseIntention } from './springSuiBaseIntention';
-
-export interface ConvertAndDepositIntentionData {
-  amount: string;
-  inCoinType: string;
-  outCoinType: string;
-}
+import { IntentionInput, TransactionSubType } from '../types/helper';
 
 export class ConvertAndDepositIntention extends SpringSuiBaseIntention<ConvertAndDepositIntentionData> {
   txType: TransactionType.Other;

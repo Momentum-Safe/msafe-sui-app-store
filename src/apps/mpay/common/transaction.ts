@@ -37,6 +37,7 @@ export class ResultRef {
 
         // Support destructuring:
         if (property === Symbol.iterator) {
+          // eslint-disable-next-line func-names
           return function* () {
             let i = 0;
             while (true) {

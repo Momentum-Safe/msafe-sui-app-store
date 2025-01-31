@@ -1,14 +1,12 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { IntentionInput } from '../helper';
+import { ClaimIntentionData } from '@/apps/suilend/types/helper';
+import { IntentionInput } from '@/apps/suilend/types/intention';
+
 import { TransactionSubType } from '../types';
 import { SuilendBaseIntention } from './suilendBaseIntention';
 import getRewards from '../utils/getRewards';
-
-export interface ClaimIntentionData {
-  value: Record<string, string>;
-}
 
 export class ClaimIntention extends SuilendBaseIntention<ClaimIntentionData> {
   txType: TransactionType.Other;

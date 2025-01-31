@@ -1,14 +1,11 @@
-import { BaseIntention } from '@/apps/interface/sui';
+import { depositSingleAssetTxb } from '@alphafi/alphafi-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { depositSingleAssetTxb, PoolName } from '@alphafi/alphafi-sdk';
-import { TransactionSubType } from '../types';
 
-export interface DepositSingleAssetIntentionData {
-  poolName: PoolName;
-  amount: string;
-}
+import { BaseIntention } from '@/apps/interface/sui';
+
+import { DepositSingleAssetIntentionData, TransactionSubType } from '../types';
 
 export class DepositSingleAssetIntention extends BaseIntention<DepositSingleAssetIntentionData> {
   txType: TransactionType.Other;
@@ -27,7 +24,7 @@ export class DepositSingleAssetIntention extends BaseIntention<DepositSingleAsse
   }
 
   static fromData(data: DepositSingleAssetIntentionData) {
-    console.log("DepositSingleAssetIntention.fromData", data);
+    console.log('DepositSingleAssetIntention.fromData', data);
     return new DepositSingleAssetIntention(data);
   }
 }

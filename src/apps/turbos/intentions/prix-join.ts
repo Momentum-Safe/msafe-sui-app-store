@@ -6,9 +6,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { prixConfig } from '../config';
-import { SuiNetworks, TransactionSubType } from '../types';
-
-export interface PrixJoinIntentionData {}
+import { PrixJoinIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
 export class PrixJoinIntention extends BaseIntentionLegacy<PrixJoinIntentionData> {
   txType!: TransactionType.Other;

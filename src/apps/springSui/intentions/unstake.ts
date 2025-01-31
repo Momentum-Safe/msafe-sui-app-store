@@ -2,14 +2,10 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { LstClient } from '@suilend/springsui-sdk';
 
-import { IntentionInput } from '../helper';
-import { TransactionSubType } from '../types';
-import { SpringSuiBaseIntention } from './springSuiBaseIntention';
+import { UnstakeIntentionData } from '@/apps/springSui/types/intention';
 
-export interface UnstakeIntentionData {
-  amount: string;
-  inCoinType: string;
-}
+import { SpringSuiBaseIntention } from './springSuiBaseIntention';
+import { IntentionInput, TransactionSubType } from '../types/helper';
 
 export class UnstakeIntention extends SpringSuiBaseIntention<UnstakeIntentionData> {
   txType: TransactionType.Other;

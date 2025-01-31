@@ -6,8 +6,8 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
-import { TransactionSubType } from '../types';
 import { LockClaimIntentionData, getLockClaimTx } from '../api';
+import { TransactionSubType } from '../types';
 
 export class LockClaimIntention extends BaseIntention<LockClaimIntentionData> {
   txType = TransactionType.Other;

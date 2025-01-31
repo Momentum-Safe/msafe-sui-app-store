@@ -26,7 +26,9 @@
     "build-yalc": "yarn build && yalc publish --private",
     "test": "jest",
     "coverage": "jest --coverage",
-    "prerelease": "yarn build && chmod +x ./scripts/prerelease.sh && ./scripts/prerelease.sh"
+    "prerelease": "yarn build && chmod +x ./scripts/prerelease.sh && ./scripts/prerelease.sh",
+    "lint": "npx eslint . --ext .js,.ts,.jsx,.tsx",
+    "lint:fix": "npx eslint . --ext .js,.ts,.jsx,.tsx --fix"
   },
   "repository": {
     "type": "git",

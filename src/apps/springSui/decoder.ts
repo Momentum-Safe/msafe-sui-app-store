@@ -3,19 +3,15 @@ import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
 
-import { SpringSuiIntentionData } from './helper';
-import { ConvertIntentionData } from './intentions/convert';
-import { ConvertAndDepositIntentionData } from './intentions/convertAndDeposit';
-import { StakeIntentionData } from './intentions/stake';
-import { StakeAndDepositIntentionData } from './intentions/stakeAndDeposit';
-import { UnstakeIntentionData } from './intentions/unstake';
-import { TransactionSubType } from './types';
+import {
+  ConvertAndDepositIntentionData,
+  ConvertIntentionData,
+  StakeAndDepositIntentionData,
+  StakeIntentionData,
+  UnstakeIntentionData,
+} from '@/apps/springSui/types/intention';
 
-type DecodeResult = {
-  txType: TransactionType;
-  type: TransactionSubType;
-  intentionData: SpringSuiIntentionData;
-};
+import { DecodeResult, TransactionSubType } from './types/helper';
 
 export class Decoder {
   constructor(

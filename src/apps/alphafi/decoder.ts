@@ -1,30 +1,19 @@
-import { TransactionType } from '@msafe/sui3-utils';
-import { Transaction } from '@mysten/sui/transactions';
-import { AlphaFiIntentionData } from './helper';
-import { TransactionSubType } from './types';
 import { coinsList, poolIdPoolNameMap, poolInfo, PoolName, singleAssetPoolCoinMap } from '@alphafi/alphafi-sdk';
-import { DevInspectResults } from '@mysten/sui/client';
-import { DepositSingleAssetIntentionData } from './intentions/deposit-single-asset';
-import { WithdrawIntentionData } from './intentions/withdraw';
-import { WithdrawAlphaIntentionData } from './intentions/withdraw-alpha';
-import { DepositDoubleAssetIntentionData } from './intentions/deposit-double-asset';
-import { EmptyIntentionData } from './intentions/claim-reward';
+import { TransactionType } from '@msafe/sui3-utils';
 import { bcs, fromB64 } from '@mysten/bcs';
+import { DevInspectResults } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 
-type DecodeResult = {
-  txType: TransactionType;
-  type: TransactionSubType;
-  intentionData: AlphaFiIntentionData;
-};
-
-type EventType = {
-  pool_id: string;
-  event_type: number;
-  amount_a: string;
-  amount_b: string;
-  amount: string;
-  amount_withdrawn_from_locked: string;
-};
+import {
+  DecodeResult,
+  DepositDoubleAssetIntentionData,
+  DepositSingleAssetIntentionData,
+  EmptyIntentionData,
+  EventType,
+  TransactionSubType,
+  WithdrawAlphaIntentionData,
+  WithdrawIntentionData,
+} from './types';
 
 export class Decoder {
   constructor(
@@ -90,7 +79,7 @@ export class Decoder {
     return this.simResult.events.find((event) => this.isLiquidityChangeEventType(event.type));
   }
 
-  //is*
+  // is*
   private isClaimRewardTransaction() {
     return !!this.getMoveCallCommand('get_user_rewards_all');
   }
@@ -127,13 +116,18 @@ export class Decoder {
     if (!inputWithPure || !inputWithPure.Pure?.bytes) {
       throw new Error('Unable to extract xTokensAmount from inputs');
     }
-    const bytes = inputWithPure.Pure.bytes;
-    
+    const { bytes } = inputWithPure.Pure;
+
     let res;
-    if (bytes.length === 12) res = bcs.u64().parse(fromB64(bytes));
-    else if (bytes.length === 24) res = bcs.u128().parse(fromB64(bytes));
-    else if (bytes.length === 44) res = bcs.u256().parse(fromB64(bytes));
-    else res = res = bcs.u64().parse(fromB64(bytes));
+    if (bytes.length === 12) {
+      res = bcs.u64().parse(fromB64(bytes));
+    } else if (bytes.length === 24) {
+      res = bcs.u128().parse(fromB64(bytes));
+    } else if (bytes.length === 44) {
+      res = bcs.u256().parse(fromB64(bytes));
+    } else {
+      res = bcs.u64().parse(fromB64(bytes));
+    }
 
     return res;
   }
@@ -161,8 +155,8 @@ export class Decoder {
     console.log('Decoder.decodeSingleAssetDeposit', amount);
     const liquidityChangeEvent = this.getLiquidityChangeEvent();
     if (liquidityChangeEvent.type.includes(':alphafi_navi_pool:')) {
-      const coin = singleAssetPoolCoinMap[poolName].coin;
-      const expo = coinsList[coin].expo;
+      const { coin } = singleAssetPoolCoinMap[poolName];
+      const { expo } = coinsList[coin];
       amount = Math.floor(Number(amount) / 10 ** (9 - expo)).toString();
     }
     return {

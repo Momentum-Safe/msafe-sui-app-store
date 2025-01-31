@@ -2,19 +2,12 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { TurbosSdk, Network } from 'turbos-clmm-sdk';
+import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
 import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { swap_exact_quote_for_base } from '../api/deepbook';
-import { SuiNetworks, TransactionSubType } from '../types';
-
-export interface SwapExactQuoteForBaseIntentionData {
-  token1: string;
-  token2: string;
-  poolId: string;
-  amountIn: number;
-}
+import { SuiNetworks, SwapExactQuoteForBaseIntentionData, TransactionSubType } from '../types';
 
 export class SwapExactQuoteForBaseIntention extends BaseIntentionLegacy<SwapExactQuoteForBaseIntentionData> {
   txType!: TransactionType.Other;
