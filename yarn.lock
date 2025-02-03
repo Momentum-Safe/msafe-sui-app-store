@@ -3728,10 +3728,10 @@
     p-limit "3.1.0"
     uuid "^11.0.3"
 
-"@suilend/springsui-sdk@^1.0.12", "@suilend/springsui-sdk@^1.0.18":
-  version "1.0.18"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.18.tgz#c6178167fb5619ccb3825a8367d573147a484a07"
-  integrity sha512-IJNcAcHsUQsLu+5weXMwZnTuos9y11IWqLi7n5syaJcqzPeTQECjiGTFdpE1P4S3DnxR2oMhCS6xCBkbRF+uFg==
+"@suilend/springsui-sdk@^1.0.12", "@suilend/springsui-sdk@^1.0.19":
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.19.tgz#cf541a18a197465d9727d21d41be632676b9f691"
+  integrity sha512-KTPkP4DhgWR4SgPDnSCboQNhZdr//NjyEAdIMVX+NUPhLXJwuRNNkRoJZaCTAjIpCPh+w6YGzec0oU07xw1u3Q==
   dependencies:
     bignumber.js "^9.1.2"
 
