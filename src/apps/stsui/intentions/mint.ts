@@ -1,13 +1,11 @@
-import { BaseIntention } from '@/apps/interface/sui';
+import { mint } from '@alphafi/stsui-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { TransactionSubType } from '../types';
-import { mint } from '@alphafi/stsui-sdk';
 
-export interface MintIntentionData {
-  amount: string;
-}
+import { BaseIntention } from '@/apps/interface/sui';
+
+import { MintIntentionData, TransactionSubType } from '../types';
 
 export class MintIntention extends BaseIntention<MintIntentionData> {
   txType: TransactionType.Other;

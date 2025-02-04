@@ -2,32 +2,25 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
-import { LiquidStakingObjectInfo } from '@suilend/springsui-sdk';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
+import {
+  ConvertAndDepositIntentionData,
+  ConvertIntentionData,
+  SpringSuiIntentionData,
+  StakeAndDepositIntentionData,
+  StakeIntentionData,
+  UnstakeIntentionData,
+} from '@/apps/springSui/types/intention';
 import { SuiNetworks } from '@/types';
 
-import { ASSETS_URL } from './constants';
 import { Decoder } from './decoder';
-import { ConvertIntention, ConvertIntentionData } from './intentions/convert';
-import { ConvertAndDepositIntention, ConvertAndDepositIntentionData } from './intentions/convertAndDeposit';
-import { StakeIntention, StakeIntentionData } from './intentions/stake';
-import { StakeAndDepositIntention, StakeAndDepositIntentionData } from './intentions/stakeAndDeposit';
-import { UnstakeIntention, UnstakeIntentionData } from './intentions/unstake';
-import { TransactionSubType } from './types';
-import { getUtils as getSuilendUtils, Utils as SuilendUtils } from '../suilend/helper';
-
-type Utils = {
-  LIQUID_STAKING_INFO_MAP: Record<string, LiquidStakingObjectInfo>;
-} & SuilendUtils;
-
-const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
-  const suilendUtils = await getSuilendUtils(suiClient, account);
-
-  const LIQUID_STAKING_INFO_MAP = await (await fetch(`${ASSETS_URL}/liquid-staking-info-map.json`)).json();
-
-  return { ...suilendUtils, LIQUID_STAKING_INFO_MAP };
-};
+import { ConvertIntention } from './intentions/convert';
+import { ConvertAndDepositIntention } from './intentions/convertAndDeposit';
+import { StakeIntention } from './intentions/stake';
+import { StakeAndDepositIntention } from './intentions/stakeAndDeposit';
+import { UnstakeIntention } from './intentions/unstake';
+import { Utils, TransactionSubType, getUtils, IntentionInput } from './types/helper';
 
 export type SpringSuiIntention =
   | StakeIntention
@@ -35,24 +28,6 @@ export type SpringSuiIntention =
   | ConvertIntention
   | ConvertAndDepositIntention
   | UnstakeIntention;
-
-export type SpringSuiIntentionData =
-  | StakeIntentionData
-  | StakeAndDepositIntentionData
-  | ConvertIntentionData
-  | ConvertAndDepositIntentionData
-  | UnstakeIntentionData;
-
-export type IntentionInput = {
-  network: SuiNetworks;
-  suiClient: SuiClient;
-  account: WalletAccount;
-
-  suilendClient: Utils['suilendClient'];
-  LIQUID_STAKING_INFO_MAP: Utils['LIQUID_STAKING_INFO_MAP'];
-  obligationOwnerCap: Utils['obligationOwnerCaps'][0] | undefined;
-  obligation: Utils['obligations'][0] | undefined;
-};
 
 export class SpringSuiAppHelper implements IAppHelperInternal<SpringSuiIntentionData> {
   application = 'SpringSui';

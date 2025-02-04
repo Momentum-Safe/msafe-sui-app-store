@@ -1,11 +1,11 @@
-import { BaseIntention } from '@/apps/interface/sui';
+import { claimRewardTxb } from '@alphafi/alphafi-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { claimRewardTxb } from '@alphafi/alphafi-sdk';
-import { TransactionSubType } from '../types';
 
-export interface EmptyIntentionData {}
+import { BaseIntention } from '@/apps/interface/sui';
+
+import { EmptyIntentionData, TransactionSubType } from '../types';
 
 export class ClaimRewardIntention extends BaseIntention<EmptyIntentionData> {
   txType: TransactionType.Other;

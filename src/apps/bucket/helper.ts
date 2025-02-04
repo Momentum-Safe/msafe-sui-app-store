@@ -3,43 +3,42 @@ import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
+import { BucketIntentionData } from '@/apps/bucket/types/helper';
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
-import { Decoder } from './decoder';
-import { TransactionSubType } from './types';
-
 import {
-  PsmIntention,
-  BorrowIntention,
-  WithdrawIntention,
-  RepayIntention,
-  CloseIntention,
-  TankDepositIntention,
-  TankWithdrawIntention,
-  TankClaimIntention,
-  SBUCKClaimIntention,
-  SBUCKDepositIntention,
-  SBUCKUnstakeIntention,
-  SBUCKWithdrawIntention,
-  LockClaimIntention,
-} from './intentions';
-
-import {
-  PsmIntentionData,
   BorrowIntentionData,
   CloseIntentionData,
+  LockClaimIntentionData,
+  PsmIntentionData,
   RepayIntentionData,
-  WithdrawIntentionData,
-  TankDepositIntentionData,
-  TankWithdrawIntentionData,
-  TankClaimIntentionData,
   SBUCKClaimIntentionData,
   SBUCKDepositIntentionData,
   SBUCKUnstakeIntentionData,
   SBUCKWithdrawIntentionData,
-  LockClaimIntentionData,
+  TankClaimIntentionData,
+  TankDepositIntentionData,
+  TankWithdrawIntentionData,
+  WithdrawIntentionData,
 } from './api';
+import { Decoder } from './decoder';
+import {
+  BorrowIntention,
+  CloseIntention,
+  LockClaimIntention,
+  PsmIntention,
+  RepayIntention,
+  SBUCKClaimIntention,
+  SBUCKDepositIntention,
+  SBUCKUnstakeIntention,
+  SBUCKWithdrawIntention,
+  TankClaimIntention,
+  TankDepositIntention,
+  TankWithdrawIntention,
+  WithdrawIntention,
+} from './intentions';
+import { TransactionSubType } from './types';
 
 export type BucketIntention =
   | PsmIntention
@@ -55,21 +54,6 @@ export type BucketIntention =
   | SBUCKUnstakeIntention
   | SBUCKClaimIntention
   | LockClaimIntention;
-
-export type BucketIntentionData =
-  | PsmIntentionData
-  | BorrowIntentionData
-  | WithdrawIntentionData
-  | RepayIntentionData
-  | CloseIntentionData
-  | TankDepositIntentionData
-  | TankWithdrawIntentionData
-  | TankClaimIntentionData
-  | SBUCKDepositIntentionData
-  | SBUCKWithdrawIntentionData
-  | SBUCKUnstakeIntentionData
-  | SBUCKClaimIntentionData
-  | LockClaimIntentionData;
 
 export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
   application = 'bucket';

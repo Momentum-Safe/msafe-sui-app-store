@@ -1,14 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { IntentionInput } from '../helper';
+import { WithdrawIntentionData } from '@/apps/suilend/types/helper';
+import { IntentionInput } from '@/apps/suilend/types/intention';
+
 import { TransactionSubType } from '../types';
 import { SuilendBaseIntention } from './suilendBaseIntention';
-
-export interface WithdrawIntentionData {
-  coinType: string;
-  value: string;
-}
 
 export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionData> {
   txType: TransactionType.Other;

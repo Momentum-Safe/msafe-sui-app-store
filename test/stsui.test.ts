@@ -1,9 +1,10 @@
-import { StSuiHelper } from '@/apps/stsui/helper';
-import { MintIntention } from '@/apps/stsui/intentions/mint';
-import { RedeemIntention } from '@/apps/stsui/intentions/redeem';
 import { mint, redeem } from '@alphafi/stsui-sdk';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+
+import { StSuiHelper } from '@/apps/stsui/helper';
+import { MintIntention } from '@/apps/stsui/intentions/mint';
+import { RedeemIntention } from '@/apps/stsui/intentions/redeem';
 
 describe('StSui App', () => {
   it('Test StSui Mint intention serialization', () => {
@@ -34,9 +35,7 @@ describe('StSui App', () => {
       const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
       const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
 
-      expect(JSON.stringify(data)).toBe(
-        `{\"txType\":\"Other\",\"txSubType\":\"mint\",\"intentionData\":{\"amount\":\"10000000\"}}`,
-      );
+      expect(JSON.stringify(data)).toBe(`{"txType":"Other","txSubType":"mint","intentionData":{"amount":"10000000"}}`);
     });
   });
 
@@ -53,7 +52,7 @@ describe('StSui App', () => {
       const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
 
       expect(JSON.stringify(data)).toBe(
-        `{\"txType\":\"Other\",\"txSubType\":\"redeem\",\"intentionData\":{\"amount\":\"10000000\"}}`,
+        `{"txType":"Other","txSubType":"redeem","intentionData":{"amount":"10000000"}}`,
       );
     });
   });

@@ -1,31 +1,24 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { Transaction } from '@mysten/sui/transactions';
-
-import { TransactionSubType } from './types';
-import { SBUCK_FOUNTAIN_PACKAGE_ID } from 'bucket-protocol-sdk';
-import { BucketIntentionData } from './helper';
 import { bcs } from '@mysten/sui/bcs';
+import { Transaction } from '@mysten/sui/transactions';
+import { SBUCK_FOUNTAIN_PACKAGE_ID } from 'bucket-protocol-sdk';
+
 import {
-  PsmIntentionData,
   BorrowIntentionData,
-  RepayIntentionData,
   CloseIntentionData,
-  WithdrawIntentionData,
+  LockClaimIntentionData,
+  PsmIntentionData,
+  RepayIntentionData,
   SBUCKClaimIntentionData,
   SBUCKDepositIntentionData,
   SBUCKUnstakeIntentionData,
   SBUCKWithdrawIntentionData,
-  LockClaimIntentionData,
+  TankClaimIntentionData,
   TankDepositIntentionData,
   TankWithdrawIntentionData,
-  TankClaimIntentionData,
+  WithdrawIntentionData,
 } from './api';
-
-type DecodeResult = {
-  txType: TransactionType;
-  type: TransactionSubType;
-  intentionData: BucketIntentionData;
-};
+import { DecodeResult, TransactionSubType } from './types';
 
 export class Decoder {
   constructor(public readonly transaction: Transaction) {}
@@ -40,11 +33,14 @@ export class Decoder {
     // Check sBUCK commands
     if (this.isSBUCKDepositTransaction()) {
       return this.decodeSBUCKDeposit();
-    } else if (this.isSBUCKUnstakeTransaction()) {
+    }
+    if (this.isSBUCKUnstakeTransaction()) {
       return this.decodeSBUCKUnstake();
-    } else if (this.isSBUCKWithdrawTransaction()) {
+    }
+    if (this.isSBUCKWithdrawTransaction()) {
       return this.decodeSBUCKWithdraw();
-    } else if (this.isSBUCKClaimTransaction()) {
+    }
+    if (this.isSBUCKClaimTransaction()) {
       return this.decodeSBUCKClaim();
     }
 
@@ -56,20 +52,25 @@ export class Decoder {
     // Check borrow commands
     if (this.isBorrowTransaction()) {
       return this.decodeBorrow();
-    } else if (this.isRepayTransaction()) {
+    }
+    if (this.isRepayTransaction()) {
       return this.decodeRepay();
-    } else if (this.isWithdrawTransaction()) {
+    }
+    if (this.isWithdrawTransaction()) {
       return this.decodeWithdraw();
-    } else if (this.isCloseTransaction()) {
+    }
+    if (this.isCloseTransaction()) {
       return this.decodeClose();
     }
 
     // Get tank commands
     if (this.isTankDepositTransaction()) {
       return this.decodeTankDeposit();
-    } else if (this.isTankWithdrawTransaction()) {
+    }
+    if (this.isTankWithdrawTransaction()) {
       return this.decodeTankWithdraw();
-    } else if (this.isTankClaimTransaction()) {
+    }
+    if (this.isTankClaimTransaction()) {
       return this.decodeTankClaim();
     }
 
@@ -132,6 +133,7 @@ export class Decoder {
   private isStrapNewTransaction() {
     return !!this.getMoveCallModuleCommand('strap', 'new');
   }
+
   private isBorrowTransaction() {
     return (
       !!this.getMoveCallModuleCommand('bucket_operations', 'high_top_up') ||
@@ -139,6 +141,7 @@ export class Decoder {
       !!this.getMoveCallModuleCommand('bucket_operations', 'high_borrow_with_strap')
     );
   }
+
   private isRepayTransaction() {
     return (
       !!this.getMoveCallModuleCommand('bucket_operations', 'fully_repay') ||
@@ -147,12 +150,14 @@ export class Decoder {
       !!this.getMoveCallModuleCommand('bucket_operations', 'repay_and_withdraw_with_strap')
     );
   }
+
   private isWithdrawTransaction() {
     return (
       !!this.getMoveCallModuleCommand('buck', 'withdraw') ||
       !!this.getMoveCallModuleCommand('buck', 'withdraw_with_strap')
     );
   }
+
   private isCloseTransaction() {
     return !!this.getMoveCallModuleCommand('bucket_operations', 'destroy_empty_strap');
   }
@@ -160,9 +165,11 @@ export class Decoder {
   private isTankDepositTransaction() {
     return !!this.getMoveCallModuleCommand('tank_operations', 'deposit');
   }
+
   private isTankWithdrawTransaction() {
     return !!this.getMoveCallModuleCommand('tank_operations', 'withdraw');
   }
+
   private isTankClaimTransaction() {
     return !!this.getMoveCallModuleCommand('tank_operations', 'claim');
   }
@@ -170,15 +177,19 @@ export class Decoder {
   private isSBUCKDepositTransaction() {
     return !!this.getMoveCallModuleCommand('buck', 'buck_to_sbuck');
   }
+
   private isSBUCKWithdrawTransaction() {
     return !!this.getMoveCallModuleCommand('buck', 'sbuck_to_buck');
   }
+
   private isSBUCKStakeTransaction() {
     return !!this.getMoveCallPackageModuleCommand(SBUCK_FOUNTAIN_PACKAGE_ID, 'fountain_core', 'stake');
   }
+
   private isSBUCKUnstakeTransaction() {
     return !!this.getMoveCallPackageModuleCommand(SBUCK_FOUNTAIN_PACKAGE_ID, 'fountain_core', 'force_unstake');
   }
+
   private isSBUCKClaimTransaction() {
     return !!this.getMoveCallPackageModuleCommand(SBUCK_FOUNTAIN_PACKAGE_ID, 'fountain_core', 'claim');
   }
@@ -200,17 +211,17 @@ export class Decoder {
 
     let amount = '0';
     const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
-    if (inputCoinObject.$kind == 'Input') {
+    if (inputCoinObject.$kind === 'Input') {
       amount = this.getPureInputU64(inputCoinObject.Input);
     }
 
-    if (!!this.getMoveCallCommand('charge_reservoir')) {
+    if (this.getMoveCallCommand('charge_reservoir')) {
       const psmCommand = this.getMoveCallCommand('charge_reservoir').MoveCall;
-      coinType = psmCommand.typeArguments[0];
+      [coinType] = psmCommand.typeArguments;
       buckToCoin = false;
     } else {
       const psmCommand = this.getMoveCallCommand('discharge_reservoir').MoveCall;
-      coinType = psmCommand.typeArguments[0];
+      [coinType] = psmCommand.typeArguments;
       buckToCoin = true;
     }
 
@@ -230,61 +241,61 @@ export class Decoder {
   private decodeBorrow(): DecodeResult {
     let collateralType = '';
     let borrowAmount = '0';
-    let insertionPlace: string | undefined = undefined;
+    let insertionPlace: string | undefined;
     const strapId: string | undefined = this.getStrapId();
 
     let collateralAmount = '0';
     const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
-    if (inputCoinObject.$kind == 'Input') {
+    if (inputCoinObject.$kind === 'Input') {
       collateralAmount = this.getPureInputU64(inputCoinObject.Input);
     }
 
-    if (!!this.getMoveCallCommand('high_top_up')) {
+    if (this.getMoveCallCommand('high_top_up')) {
       const command = this.getMoveCallCommand('high_top_up').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
 
       const buckAmount = command.arguments[1];
-      if (buckAmount.$kind == 'Input') {
+      if (buckAmount.$kind === 'Input') {
         borrowAmount = this.getPureInputU64(buckAmount.Input);
       }
 
       const insertPlaceArg = command.arguments[3];
-      if (insertPlaceArg.$kind == 'Input') {
+      if (insertPlaceArg.$kind === 'Input') {
         const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
-        if (insertionPlaces.length == 1) {
-          insertionPlace = insertionPlaces[0];
+        if (insertionPlaces.length === 1) {
+          [insertionPlace] = insertionPlaces;
         }
       }
-    } else if (!!this.getMoveCallCommand('high_borrow')) {
+    } else if (this.getMoveCallCommand('high_borrow')) {
       const command = this.getMoveCallCommand('high_borrow').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
 
       const buckAmount = command.arguments[4];
-      if (buckAmount.$kind == 'Input') {
+      if (buckAmount.$kind === 'Input') {
         borrowAmount = this.getPureInputU64(buckAmount.Input);
       }
 
       const insertPlaceArg = command.arguments[5];
-      if (insertPlaceArg.$kind == 'Input') {
+      if (insertPlaceArg.$kind === 'Input') {
         const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
-        if (insertionPlaces.length == 1) {
-          insertionPlace = insertionPlaces[0];
+        if (insertionPlaces.length === 1) {
+          [insertionPlace] = insertionPlaces;
         }
       }
-    } else if (!!this.getMoveCallCommand('high_borrow_with_strap')) {
+    } else if (this.getMoveCallCommand('high_borrow_with_strap')) {
       const command = this.getMoveCallCommand('high_borrow_with_strap').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
 
       const buckOutput = command.arguments[5];
-      if (buckOutput.$kind == 'Input') {
+      if (buckOutput.$kind === 'Input') {
         borrowAmount = this.getPureInputU64(buckOutput.Input);
       }
 
       const insertPlaceArg = command.arguments[6];
-      if (insertPlaceArg.$kind == 'Input') {
+      if (insertPlaceArg.$kind === 'Input') {
         const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
-        if (insertionPlaces.length == 1) {
-          insertionPlace = insertionPlaces[0];
+        if (insertionPlaces.length === 1) {
+          [insertionPlace] = insertionPlaces;
         }
       }
     }
@@ -306,52 +317,52 @@ export class Decoder {
     let collateralType = '';
     let repayAmount = '0';
     let withdrawAmount = '0';
-    let isSurplus = false;
-    let insertionPlace: string | undefined = undefined;
+    const isSurplus = false;
+    let insertionPlace: string | undefined;
     const strapId: string | undefined = this.getStrapId();
 
-    if (!!this.getMoveCallCommand('fully_repay')) {
+    if (this.getMoveCallCommand('fully_repay')) {
       const repayCommand = this.getMoveCallCommand('fully_repay').MoveCall;
-      collateralType = repayCommand.typeArguments[0];
-    } else if (!!this.getMoveCallCommand('fully_repay_with_strap')) {
+      [collateralType] = repayCommand.typeArguments;
+    } else if (this.getMoveCallCommand('fully_repay_with_strap')) {
       const repayCommand = this.getMoveCallCommand('fully_repay_with_strap').MoveCall;
-      collateralType = repayCommand.typeArguments[0];
-    } else if (!!this.getMoveCallCommand('repay_and_withdraw')) {
+      [collateralType] = repayCommand.typeArguments;
+    } else if (this.getMoveCallCommand('repay_and_withdraw')) {
       const command = this.getMoveCallCommand('repay_and_withdraw').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
       const withdrawArg = command.arguments[4];
-      if (withdrawArg.$kind == 'Input') {
+      if (withdrawArg.$kind === 'Input') {
         withdrawAmount = this.getPureInputU64(withdrawArg.Input);
       }
       const insertPlaceArg = command.arguments[5];
-      if (insertPlaceArg.$kind == 'Input') {
+      if (insertPlaceArg.$kind === 'Input') {
         const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
-        if (insertionPlaces.length == 1) {
-          insertionPlace = insertionPlaces[0];
+        if (insertionPlaces.length === 1) {
+          [insertionPlace] = insertionPlaces;
         }
       }
 
       const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
-      if (inputCoinObject.$kind == 'Input') {
+      if (inputCoinObject.$kind === 'Input') {
         repayAmount = this.getPureInputU64(inputCoinObject.Input);
       }
-    } else if (!!this.getMoveCallCommand('repay_and_withdraw_with_strap')) {
+    } else if (this.getMoveCallCommand('repay_and_withdraw_with_strap')) {
       const command = this.getMoveCallCommand('repay_and_withdraw_with_strap').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
       const withdrawArg = command.arguments[5];
-      if (withdrawArg.$kind == 'Input') {
+      if (withdrawArg.$kind === 'Input') {
         withdrawAmount = this.getPureInputU64(withdrawArg.Input);
       }
       const insertPlaceArg = command.arguments[6];
-      if (insertPlaceArg.$kind == 'Input') {
+      if (insertPlaceArg.$kind === 'Input') {
         const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
-        if (insertionPlaces.length == 1) {
-          insertionPlace = insertionPlaces[0];
+        if (insertionPlaces.length === 1) {
+          [insertionPlace] = insertionPlaces;
         }
       }
 
       const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins.amounts[0];
-      if (inputCoinObject.$kind == 'Input') {
+      if (inputCoinObject.$kind === 'Input') {
         repayAmount = this.getPureInputU64(inputCoinObject.Input);
       }
     }
@@ -373,39 +384,39 @@ export class Decoder {
   private decodeWithdraw(): DecodeResult {
     let collateralType = '';
     let withdrawAmount = '0';
-    let insertionPlace: string | undefined = undefined;
+    let insertionPlace: string | undefined;
     const strapId: string | undefined = this.getStrapId();
 
-    if (!!this.getMoveCallCommand('withdraw_with_strap')) {
+    if (this.getMoveCallCommand('withdraw_with_strap')) {
       const command = this.getMoveCallCommand('withdraw_with_strap').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
 
       const withdrawArg = command.arguments[4];
-      if (withdrawArg.$kind == 'Input') {
+      if (withdrawArg.$kind === 'Input') {
         withdrawAmount = this.getPureInputU64(withdrawArg.Input);
       }
 
       const insertPlaceArg = command.arguments[5];
-      if (insertPlaceArg.$kind == 'Input') {
+      if (insertPlaceArg.$kind === 'Input') {
         const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
-        if (insertionPlaces.length == 1) {
-          insertionPlace = insertionPlaces[0];
+        if (insertionPlaces.length === 1) {
+          [insertionPlace] = insertionPlaces;
         }
       }
-    } else if (!!this.getMoveCallCommand('withdraw')) {
+    } else if (this.getMoveCallCommand('withdraw')) {
       const command = this.getMoveCallCommand('withdraw').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
 
       const withdrawArg = command.arguments[3];
-      if (withdrawArg.$kind == 'Input') {
+      if (withdrawArg.$kind === 'Input') {
         withdrawAmount = this.getPureInputU64(withdrawArg.Input);
       }
 
       const insertPlaceArg = command.arguments[4];
-      if (insertPlaceArg.$kind == 'Input') {
+      if (insertPlaceArg.$kind === 'Input') {
         const insertionPlaces = this.getPureAddresses(insertPlaceArg.Input);
-        if (insertionPlaces.length == 1) {
-          insertionPlace = insertionPlaces[0];
+        if (insertionPlaces.length === 1) {
+          [insertionPlace] = insertionPlaces;
         }
       }
     }
@@ -426,9 +437,9 @@ export class Decoder {
     let collateralType = '';
     const strapId: string | undefined = this.getStrapId();
 
-    if (!!this.getMoveCallCommand('destroy_empty_strap')) {
+    if (this.getMoveCallCommand('destroy_empty_strap')) {
       const command = this.getMoveCallCommand('destroy_empty_strap').MoveCall;
-      collateralType = command.typeArguments[0];
+      [collateralType] = command.typeArguments;
     }
 
     return {
@@ -448,7 +459,7 @@ export class Decoder {
     let amount = '0';
     const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins;
     const inputAmount = inputCoinObject.amounts[0];
-    if (inputAmount.$kind == 'Input') {
+    if (inputAmount.$kind === 'Input') {
       amount = this.getPureInputU64(inputAmount.Input);
     }
 
@@ -473,23 +484,25 @@ export class Decoder {
     if (isStake) {
       const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins;
       const inputAmount = inputCoinObject.amounts[0];
-      if (inputAmount.$kind == 'Input') {
+      if (inputAmount.$kind === 'Input') {
         amount = this.getPureInputU64(inputAmount.Input);
       }
     }
 
-    let stakeProofs: string[] = [];
+    const stakeProofs: string[] = [];
     const unlockCommands = this.getMoveCallModuleCommands('proof_rule', 'unlock');
     if (unlockCommands.length > 0) {
-      for (const command of unlockCommands) {
+      for (let i = 0; i < unlockCommands.length; i++) {
+        const command = unlockCommands[i];
         stakeProofs.push('');
       }
     } else {
       const unstakeCommands = this.getMoveCallModuleCommands('fountain_core', 'force_unstake');
-      for (const command of unstakeCommands) {
+      for (let i = 0; i < unstakeCommands.length; i++) {
+        const command = unstakeCommands[i];
         const argument = command.MoveCall.arguments[2];
-        if (argument.$kind == 'Input') {
-          const objectId = this.inputs[argument.Input].UnresolvedObject.objectId;
+        if (argument.$kind === 'Input') {
+          const { objectId } = this.inputs[argument.Input].UnresolvedObject;
           stakeProofs.push(objectId);
         }
       }
@@ -517,7 +530,7 @@ export class Decoder {
 
     const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins;
     const inputAmount = inputCoinObject.amounts[0];
-    if (inputAmount.$kind == 'Input') {
+    if (inputAmount.$kind === 'Input') {
       amount = this.getPureInputU64(inputAmount.Input);
     }
 
@@ -533,13 +546,14 @@ export class Decoder {
   }
 
   private decodeSBUCKClaim(): DecodeResult {
-    let stakeProofs: string[] = [];
+    const stakeProofs: string[] = [];
 
     const commands = this.getMoveCallModuleCommands('fountain_core', 'claim');
-    for (const command of commands) {
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
       const argument = command.MoveCall.arguments[2];
-      if (argument.$kind == 'Input') {
-        const objectId = this.inputs[argument.Input].UnresolvedObject.objectId;
+      if (argument.$kind === 'Input') {
+        const { objectId } = this.inputs[argument.Input].UnresolvedObject;
         stakeProofs.push(objectId);
       }
     }
@@ -559,7 +573,7 @@ export class Decoder {
     let amount = '0';
     const inputCoinObject = this.getSplitCoinsCommands()[0].SplitCoins;
     const inputAmount = inputCoinObject.amounts[0];
-    if (inputAmount.$kind == 'Input') {
+    if (inputAmount.$kind === 'Input') {
       amount = this.getPureInputU64(inputAmount.Input);
     }
 
@@ -584,7 +598,7 @@ export class Decoder {
 
     let amount = '0';
     const amountArg = command.arguments[5];
-    if (amountArg.$kind == 'Input') {
+    if (amountArg.$kind === 'Input') {
       amount = this.getPureInputU64(amountArg.Input);
     }
 
@@ -620,14 +634,16 @@ export class Decoder {
     let proofCount = 0;
 
     const sbuckClaimCommands = this.getMoveCallModuleCommands('proof_rule', 'claim');
-    for (const command of sbuckClaimCommands) {
-      coinType = command.MoveCall.typeArguments[0];
+    for (let i = 0; i < sbuckClaimCommands.length; i++) {
+      const command = sbuckClaimCommands[i];
+      [coinType] = command.MoveCall.typeArguments;
       proofCount++;
     }
 
     const lstClaimCommands = this.getMoveCallModuleCommands('lst_proof_rule', 'claim');
-    for (const command of lstClaimCommands) {
-      coinType = command.MoveCall.typeArguments[0];
+    for (let i = 0; i < lstClaimCommands.length; i++) {
+      const command = lstClaimCommands[i];
+      [coinType] = command.MoveCall.typeArguments;
       proofCount++;
     }
     console.log('Decoder.decodeLockedClaim', coinType, proofCount);
@@ -651,7 +667,7 @@ export class Decoder {
   }
 
   private getStrapId() {
-    let strapId: string | undefined = undefined;
+    let strapId: string | undefined;
 
     if (this.isStrapNewTransaction()) {
       strapId = 'new';
@@ -663,7 +679,7 @@ export class Decoder {
       const command = this.getMoveCallModuleCommand('fountain', 'unstake');
       if (command) {
         const strapArg = command.MoveCall.arguments[2];
-        if (strapArg.$kind == 'Input') {
+        if (strapArg.$kind === 'Input') {
           strapId = this.inputs[strapArg.Input].UnresolvedObject.objectId;
         }
       }

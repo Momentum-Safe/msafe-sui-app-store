@@ -1,3 +1,7 @@
+import { TransactionType } from '@msafe/sui3-utils';
+
+import { BucketIntentionData } from '@/apps/bucket/types/helper';
+
 export enum TransactionSubType {
   Psm = 'psm',
 
@@ -17,3 +21,9 @@ export enum TransactionSubType {
 
   LockClaim = 'lock-claim',
 }
+
+export type DecodeResult = {
+  txType: TransactionType;
+  type: TransactionSubType;
+  intentionData: BucketIntentionData;
+};

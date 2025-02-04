@@ -1,22 +1,11 @@
-import { SuiNetworks } from '@/types';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { getBucketClient } from './config';
 import { buildTankClaimTx, buildTankDepositTx, buildTankWithdrawTx } from 'bucket-protocol-sdk';
 
-export interface TankDepositIntentionData {
-  coinType: string;
-  amount: string;
-}
+import { TankClaimIntentionData, TankDepositIntentionData, TankWithdrawIntentionData } from '@/apps/bucket/types/api';
+import { SuiNetworks } from '@/types';
 
-export interface TankWithdrawIntentionData {
-  coinType: string;
-  amount: string;
-}
-
-export interface TankClaimIntentionData {
-  coinType: string;
-}
+import { getBucketClient } from './config';
 
 export const getTankDepositTx = async (
   txbParams: TankDepositIntentionData,

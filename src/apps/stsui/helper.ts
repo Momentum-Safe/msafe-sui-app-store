@@ -2,16 +2,16 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
+
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
-import { TransactionSubType } from './types';
+
 import { Decoder } from './decoder';
-import { MintIntention, MintIntentionData } from './intentions/mint';
-import { RedeemIntention, RedeemIntentionData } from './intentions/redeem';
+import { MintIntention } from './intentions/mint';
+import { RedeemIntention } from './intentions/redeem';
+import { MintIntentionData, RedeemIntentionData, StSuiIntentionData, TransactionSubType } from './types';
 
 export type StSuiIntention = MintIntention | RedeemIntention;
-
-export type StSuiIntentionData = MintIntentionData | RedeemIntentionData;
 
 export class StSuiHelper implements IAppHelperInternal<StSuiIntentionData> {
   application = 'stsui';

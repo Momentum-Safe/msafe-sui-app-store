@@ -3,11 +3,17 @@ import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
+import {
+  SBUCKClaimIntentionData,
+  SBUCKDepositIntentionData,
+  SBUCKUnstakeIntentionData,
+  SBUCKWithdrawIntentionData,
+} from '@/apps/bucket/types/api';
 import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
+import { getSBUCKClaimTx, getSBUCKDepositTx, getSBUCKUnstakeTx, getSBUCKWithdrawTx } from '../api/sbuck';
 import { TransactionSubType } from '../types';
-import { getSBUCKClaimTx, getSBUCKDepositTx, getSBUCKUnstakeTx, getSBUCKWithdrawTx, SBUCKClaimIntentionData, SBUCKDepositIntentionData, SBUCKUnstakeIntentionData, SBUCKWithdrawIntentionData } from '../api/sbuck';
 
 export class SBUCKDepositIntention extends BaseIntention<SBUCKDepositIntentionData> {
   txType = TransactionType.Other;
@@ -68,7 +74,6 @@ export class SBUCKWithdrawIntention extends BaseIntention<SBUCKWithdrawIntention
     return new SBUCKWithdrawIntention(data);
   }
 }
-
 
 export class SBUCKClaimIntention extends BaseIntention<SBUCKClaimIntentionData> {
   txType = TransactionType.Other;

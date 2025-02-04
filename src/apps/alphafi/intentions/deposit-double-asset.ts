@@ -1,15 +1,11 @@
-import { BaseIntention } from '@/apps/interface/sui';
+import { depositDoubleAssetTxb } from '@alphafi/alphafi-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { depositDoubleAssetTxb, PoolName } from '@alphafi/alphafi-sdk';
-import { TransactionSubType } from '../types';
 
-export interface DepositDoubleAssetIntentionData {
-  poolName: PoolName;
-  amount: string;
-  isAmountA: boolean;
-}
+import { BaseIntention } from '@/apps/interface/sui';
+
+import { DepositDoubleAssetIntentionData, TransactionSubType } from '../types';
 
 export class DepositDoubleAssetIntention extends BaseIntention<DepositDoubleAssetIntentionData> {
   txType: TransactionType.Other;

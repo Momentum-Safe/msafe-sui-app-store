@@ -6,9 +6,7 @@ import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig, prixConfig } from './config';
-// eslint-disable-next-line import/no-cycle
-import { TURBOSIntentionData } from './helper';
-import { TransactionSubType } from './types';
+import { TransactionSubType, TURBOSIntentionData } from './types';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -69,7 +67,7 @@ export class Decoder {
 
   async decode(address: string) {
     if (this.isSwapTransaction()) {
-      return await this.decodeSwap();
+      return this.decodeSwap();
     }
 
     if (this.isAddLiquidityTransaction()) {
@@ -205,12 +203,14 @@ export class Decoder {
       };
     });
 
+    // eslint-disable-next-line no-nested-ternary
     const coinTypeA = atob[0]
       ? moveCall.typeArguments[0]
       : layer === 1
         ? moveCall.typeArguments[0]
         : moveCall.typeArguments[1];
     const coinTypeB =
+      // eslint-disable-next-line no-nested-ternary
       layer === 1 ? moveCall.typeArguments[4] : atob[0] ? moveCall.typeArguments[1] : moveCall.typeArguments[0];
 
     const address = this.helper.decodeInputAddress(6 + 2 * layer);

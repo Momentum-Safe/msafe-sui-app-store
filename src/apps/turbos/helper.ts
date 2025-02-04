@@ -8,26 +8,37 @@ import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 
 import { Decoder } from './decoder';
-import { AddLiquidityIntention, AddLiquidityIntentionData } from './intentions/add-liquidity';
-import { BurnIntention, BurnIntentionData } from './intentions/burn';
-import { CollectFeeIntention, CollectFeeIntentionData } from './intentions/collect-fee';
-import { CollectRewardIntention, CollectRewardIntentionData } from './intentions/collect-reward';
-import { CreatePoolIntention, CreatePoolIntentionData } from './intentions/create-pool';
-import { DecreaseLiquidityIntention, DecreaseLiquidityIntentionData } from './intentions/decrease-liquidity';
-import { IncreaseLiquidityIntention, IncreaseLiquidityIntentionData } from './intentions/increase-liquidity';
-import { PrixClaimIntention, PrixClaimIntentionData } from './intentions/prix-claim';
-import { PrixJoinIntention, PrixJoinIntentionData } from './intentions/prix-join';
-import { RemoveLiquidityIntention, RemoveLiquidityIntentionData } from './intentions/remove-liquidity';
-import { SwapIntention, SwapIntentionData } from './intentions/swap';
+import { AddLiquidityIntention } from './intentions/add-liquidity';
+import { BurnIntention } from './intentions/burn';
+import { CollectFeeIntention } from './intentions/collect-fee';
+import { CollectRewardIntention } from './intentions/collect-reward';
+import { CreatePoolIntention } from './intentions/create-pool';
+import { DecreaseLiquidityIntention } from './intentions/decrease-liquidity';
+import { IncreaseLiquidityIntention } from './intentions/increase-liquidity';
+import { PrixClaimIntention } from './intentions/prix-claim';
+import { PrixJoinIntention } from './intentions/prix-join';
+import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
+import { SwapIntention } from './intentions/swap';
+import { SwapExactBaseForQuoteIntention } from './intentions/swap-exact-base-for-quote';
+import { SwapExactQuoteForBaseIntention } from './intentions/swap-exact-quote-for-base';
 import {
-  SwapExactBaseForQuoteIntention,
+  AddLiquidityIntentionData,
+  BurnIntentionData,
+  CollectFeeIntentionData,
+  CollectRewardIntentionData,
+  CreatePoolIntentionData,
+  DecreaseLiquidityIntentionData,
+  IncreaseLiquidityIntentionData,
+  PrixClaimIntentionData,
+  PrixJoinIntentionData,
+  RemoveLiquidityIntentionData,
+  SuiNetworks,
   SwapExactBaseForQuoteIntentionData,
-} from './intentions/swap-exact-base-for-quote';
-import {
-  SwapExactQuoteForBaseIntention,
   SwapExactQuoteForBaseIntentionData,
-} from './intentions/swap-exact-quote-for-base';
-import { SuiNetworks, TransactionSubType } from './types';
+  SwapIntentionData,
+  TransactionSubType,
+  TURBOSIntentionData,
+} from './types';
 
 export type TURBOSIntention =
   | CreatePoolIntention
@@ -43,21 +54,6 @@ export type TURBOSIntention =
   | PrixJoinIntention
   | SwapExactQuoteForBaseIntention
   | SwapExactBaseForQuoteIntention;
-
-export type TURBOSIntentionData =
-  | CreatePoolIntentionData
-  | AddLiquidityIntentionData
-  | IncreaseLiquidityIntentionData
-  | DecreaseLiquidityIntentionData
-  | CollectFeeIntentionData
-  | CollectRewardIntentionData
-  | RemoveLiquidityIntentionData
-  | BurnIntentionData
-  | SwapIntentionData
-  | PrixJoinIntentionData
-  | PrixClaimIntentionData
-  | SwapExactQuoteForBaseIntentionData
-  | SwapExactBaseForQuoteIntentionData;
 
 export class TURBOSAppHelper implements IAppHelperInternalLegacy<TURBOSIntentionData> {
   application = 'turbos';

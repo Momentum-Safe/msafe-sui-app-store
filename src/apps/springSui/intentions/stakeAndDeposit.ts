@@ -3,14 +3,10 @@ import { Transaction } from '@mysten/sui/transactions';
 import { createObligationIfNoneExists, sendObligationToUser } from '@suilend/sdk';
 import { LstClient } from '@suilend/springsui-sdk';
 
-import { IntentionInput } from '../helper';
-import { TransactionSubType } from '../types';
-import { SpringSuiBaseIntention } from './springSuiBaseIntention';
+import { StakeAndDepositIntentionData } from '@/apps/springSui/types/intention';
 
-export interface StakeAndDepositIntentionData {
-  amount: string;
-  outCoinType: string;
-}
+import { SpringSuiBaseIntention } from './springSuiBaseIntention';
+import { IntentionInput, TransactionSubType } from '../types/helper';
 
 export class StakeAndDepositIntention extends SpringSuiBaseIntention<StakeAndDepositIntentionData> {
   txType: TransactionType.Other;

@@ -1,12 +1,8 @@
-import { AlphaFiHelper } from '@/apps/alphafi/helper';
 import { ClaimRewardIntention } from '@/apps/alphafi/intentions/claim-reward';
 import { DepositDoubleAssetIntention } from '@/apps/alphafi/intentions/deposit-double-asset';
 import { DepositSingleAssetIntention } from '@/apps/alphafi/intentions/deposit-single-asset';
 import { WithdrawIntention } from '@/apps/alphafi/intentions/withdraw';
 import { WithdrawAlphaIntention } from '@/apps/alphafi/intentions/withdraw-alpha';
-import { withdrawTxb } from '@alphafi/alphafi-sdk';
-import { SuiClient } from '@mysten/sui/client';
-import { Transaction } from '@mysten/sui/transactions';
 
 describe('AlphaFi App', () => {
   it('Test AlphaFi Double Asset intention serialization', () => {

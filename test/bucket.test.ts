@@ -1,19 +1,3 @@
-import {
-  PsmIntentionData,
-  BorrowIntentionData,
-  RepayIntentionData,
-  WithdrawIntentionData,
-  SBUCKClaimIntentionData,
-  SBUCKDepositIntentionData,
-  SBUCKUnstakeIntentionData,
-  SBUCKWithdrawIntentionData,
-  LockClaimIntentionData,
-  CloseIntentionData,
-  TankDepositIntentionData,
-  TankClaimIntentionData,
-  TankWithdrawIntentionData,
-} from '@/apps/bucket/api';
-import { Decoder } from '@/apps/bucket/decoder';
 import { Transaction } from '@mysten/sui/transactions';
 import {
   BucketClient,
@@ -26,12 +10,27 @@ import {
   buildSBUCKDepositTx,
   buildSBUCKUnstakeTx,
   buildSBUCKWithdrawTx,
-  buildTankClaimTx,
   buildTankDepositTx,
   buildTankWithdrawTx,
   buildWithdrawTx,
   COINS_TYPE_LIST,
 } from 'bucket-protocol-sdk';
+
+import {
+  PsmIntentionData,
+  BorrowIntentionData,
+  RepayIntentionData,
+  WithdrawIntentionData,
+  SBUCKClaimIntentionData,
+  SBUCKDepositIntentionData,
+  SBUCKUnstakeIntentionData,
+  SBUCKWithdrawIntentionData,
+  LockClaimIntentionData,
+  CloseIntentionData,
+  TankDepositIntentionData,
+  TankWithdrawIntentionData,
+} from '@/apps/bucket/api';
+import { Decoder } from '@/apps/bucket/decoder';
 
 const address = '0x3662e00a85fdae17d5732770b8d0658105fe9c0ca91c259790e6fb1498686abc';
 

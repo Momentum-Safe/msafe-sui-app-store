@@ -7,9 +7,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { prixConfig } from '../config';
-import { SuiNetworks, TransactionSubType } from '../types';
-
-export interface PrixClaimIntentionData {}
+import { PrixClaimIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
 export class PrixClaimIntention extends BaseIntentionLegacy<PrixClaimIntentionData> {
   txType!: TransactionType.Other;
@@ -20,6 +18,7 @@ export class PrixClaimIntention extends BaseIntentionLegacy<PrixClaimIntentionDa
     super(data);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async build(input: {
     suiClient: SuiClient;
     account: WalletAccount;

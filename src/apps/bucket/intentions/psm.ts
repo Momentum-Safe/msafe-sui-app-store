@@ -3,11 +3,12 @@ import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
+import { PsmIntentionData } from '@/apps/bucket/types/api';
 import { BaseIntention } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
+import { getPsmTx } from '../api/psm';
 import { TransactionSubType } from '../types';
-import { getPsmTx, PsmIntentionData } from '../api/psm';
 
 export class PsmIntention extends BaseIntention<PsmIntentionData> {
   txType = TransactionType.Other;

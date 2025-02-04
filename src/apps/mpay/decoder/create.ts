@@ -3,6 +3,7 @@ import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactio
 
 import { CreateStreamHelper } from '../builder/CreateStreamHelper';
 import { Globals } from '../common';
+import { MoveCallHelper } from './moveCall';
 import { FeeContract } from '../contract/FeeContract';
 import { StreamContract } from '../contract/StreamContract';
 import { InvalidInputError } from '../error/InvalidInputError';
@@ -11,7 +12,6 @@ import { decodeMetadata } from '../stream/metadata';
 import { isSameTarget } from '../sui/utils';
 import { CreateStreamInfo, RecipientWithAmount } from '../types/client';
 import { DecodedCreateStream, StreamTransactionType } from '../types/decode';
-import { MoveCallHelper } from './moveCall';
 
 export class CreateStreamDecodeHelper {
   constructor(

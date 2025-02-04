@@ -1,14 +1,11 @@
-import { BaseIntention } from '@/apps/interface/sui';
+import { withdrawTxb } from '@alphafi/alphafi-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { PoolName, withdrawTxb } from '@alphafi/alphafi-sdk';
-import { TransactionSubType } from '../types';
 
-export interface WithdrawIntentionData {
-  xTokensAmount: string;
-  poolName: PoolName;
-}
+import { BaseIntention } from '@/apps/interface/sui';
+
+import { TransactionSubType, WithdrawIntentionData } from '../types';
 
 export class WithdrawIntention extends BaseIntention<WithdrawIntentionData> {
   txType: TransactionType.Other;
