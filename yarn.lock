@@ -15,17 +15,17 @@
     "@gql.tada/internal" "^1.0.0"
     graphql "^15.5.0 || ^16.0.0 || ^17.0.0"
 
-"@7kprotocol/sdk-ts@^2.2.2":
+"@7kprotocol/sdk-ts@^2.3.4":
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.3.4.tgz#bfaffd6487212fcbb334ca940ce4157dd72182eb"
   integrity sha512-zoRPgPrSWwb8Bya/YN611TZ21uKLKuK2JkDxhz1ocrLJzQzIEb8HEaEmZLYszGiXTrapVQiiDWngQiF774DcBw==
 
-"@alphafi/alphafi-sdk@^0.0.55":
-  version "0.0.55"
-  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.55.tgz#05c9ea6a5e8619a71075248c7e096c29401840ec"
-  integrity sha512-hAh+77kc8CuljdkmjZpINDYdgp5YpLOqkT+fk83VLhza+S/Ujx5JxVDJe7YDoUGMZKt969U3ABb+Y6TC8f3oKw==
+"@alphafi/alphafi-sdk@^0.0.65":
+  version "0.0.65"
+  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.65.tgz#b0d1258b83ae451082415a38014c03b9bfa9f238"
+  integrity sha512-m1xMXkAUv53eqwCUe+bc5xTVmBOxRGyUG8sy5fHDUtRzI7ywOGFxzBAjksnH6DFCJMi72hkkJe7fJSvogG53jw==
   dependencies:
-    "@7kprotocol/sdk-ts" "^2.2.2"
+    "@7kprotocol/sdk-ts" "^2.3.4"
     "@alphafi/stsui-sdk" "^0.0.12"
     "@apollo/client" "^3.11.4"
     "@cetusprotocol/cetus-sui-clmm-sdk" "5.1.6"
@@ -47,10 +47,10 @@
     ts-jest "^29.2.5"
     typedoc "^0.27.5"
 
-"@alphafi/stsui-sdk@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.15.tgz#40b582046362e0cdccc90956189a0b73da95ef21"
-  integrity sha512-cvgV1wMRMfni6X/WP8H0g5miZVvHrb0oQv7dMYEHBb1z6y3kIHg1hJCjewdACSSSoIx5QTxYY6dfV7YHxUpe/A==
+"@alphafi/stsui-sdk@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.21.tgz#0d8457a10fc99d4963a9d02f5634c391d1b651cf"
+  integrity sha512-qWDjcBFhgd3K4T/keZbG3yBVq9aj8PMmWKlMb15lyW6GWg9imBJZMs58ireJtharKF+4nLNzvO0F4M9F+ck6kg==
   dependencies:
     "@types/bn.js" "^5.1.6"
     decimal.js "^10.4.3"
