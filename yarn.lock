@@ -3669,10 +3669,10 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/frontend-sui@^0.2.37":
-  version "0.2.37"
-  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.37.tgz#d6f98e223bf170cd4be6599e04eabf75ba68d177"
-  integrity sha512-AIJww+AVBmp4HKW8ZyhUjpl1mhOumNZDAnw7MZVB4lK4lX3N0aLBVQJRVxd2b/WGEl/dieVLkdUAY1OsVPahhQ==
+"@suilend/frontend-sui@^0.2.43":
+  version "0.2.43"
+  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.43.tgz#a07c26426ed14226e8c33b62e9a8c42419157cb8"
+  integrity sha512-VGV7HXoZFSMINhnJ30T1rPRzc95GQ92gviJSUnyFBnNL2LadUVMINzM1v73XV8SX/p8bgC7J9mqDPjwkkfH2zg==
   dependencies:
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
@@ -3680,10 +3680,10 @@
     mixpanel-browser "^2.56.0"
     next "^15.0.3"
 
-"@suilend/sdk@^1.1.38":
-  version "1.1.38"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.38.tgz#5ac1ebb9ee55372652d8bc930e69dbd755d9c432"
-  integrity sha512-IzFt7VGNzyvB59QFkDEeK7SdxK+J2j8JhEq5jARW3jZgBiiFwIt8usSx967pA07H8ONnRzDdhewI9ZMg1Uk3sg==
+"@suilend/sdk@^1.1.39":
+  version "1.1.39"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.39.tgz#2cc088193cebf80d61562393749bdb3bbd9894db"
+  integrity sha512-juAqEF1WDDL6fj+rZmGM6gE0ttUigdvzDiV4esmhT8V52D/9xO+ZivEFL24Y39bYeMuekxBbr6+SwbUbrLRhSA==
   dependencies:
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
