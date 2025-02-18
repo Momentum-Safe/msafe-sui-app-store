@@ -18,20 +18,9 @@ export const getAddLiquidityTxb = async (txbParams: any, account: WalletAccount)
   return txb;
 };
 
-export const getOpenAddLiquidityWithProtectionTxb = async (
-  txbParams: any,
-  account: WalletAccount,
-): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(account);
-  const txb: Transaction = await clmmSdk.Position.openPositionWithLiquidityByFixCoinWithProtection(
-    txbParams?.parameter,
-  );
-  return txb;
-};
-
 export const getAddLiquidityWithProtection = async (txbParams: any, account: WalletAccount): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(account);
-  const txb: Transaction = await clmmSdk.Position.addLiquidityByFixCoinWithProtection(txbParams?.parameter);
+  const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenWithProtectionPayload(txbParams?.parameter);
   return txb;
 };
 

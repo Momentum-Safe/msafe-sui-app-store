@@ -4,11 +4,7 @@ import { WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntention } from '@/apps/interface/sui';
 
-import {
-  getAddLiquidityTxb,
-  getOpenAddLiquidityWithProtectionTxb,
-  getAddLiquidityWithProtection,
-} from '../api/position';
+import { getAddLiquidityTxb, getAddLiquidityWithProtection } from '../api/position';
 import { MagmaIntentionData, TransactionSubType } from '../types';
 
 export class AddLiquidityIntention extends BaseIntention<MagmaIntentionData> {
@@ -29,27 +25,6 @@ export class AddLiquidityIntention extends BaseIntention<MagmaIntentionData> {
 
   static fromData(data: MagmaIntentionData) {
     return new AddLiquidityIntention(data);
-  }
-}
-
-export class OpenAddLiquidityWithProtectionIntention extends BaseIntention<MagmaIntentionData> {
-  txType = TransactionType.Other;
-
-  txSubType = TransactionSubType.OpenAndAddLiquidityWithProtection;
-
-  constructor(public readonly data: MagmaIntentionData) {
-    super(data);
-  }
-
-  async build(input: { account: WalletAccount }): Promise<Transaction> {
-    const { account } = input;
-    const { txbParams } = this.data;
-    const txb = await getOpenAddLiquidityWithProtectionTxb(txbParams, account);
-    return txb;
-  }
-
-  static fromData(data: MagmaIntentionData) {
-    return new OpenAddLiquidityWithProtectionIntention(data);
   }
 }
 

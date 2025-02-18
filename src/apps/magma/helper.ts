@@ -8,7 +8,6 @@ import { IAppHelperInternal } from '@/apps/interface/sui';
 import {
   AddLiquidityIntention,
   AddLiquidityWithProtectionIntention,
-  OpenAddLiquidityWithProtectionIntention,
   RemoveLiquidityIntention,
   BatchCollectRewardIntention,
   ClosePositionIntention,
@@ -21,7 +20,6 @@ import { SuiNetworks, MagmaIntentionData, TransactionSubType } from './types';
 export type MagmaIntention =
   | AddLiquidityIntention
   | AddLiquidityWithProtectionIntention
-  | OpenAddLiquidityWithProtectionIntention
   | BatchCollectRewardIntention
   | ClosePositionIntention
   | CollectRewarderIntention
@@ -85,9 +83,6 @@ export class MagmaAppHelper implements IAppHelperInternal<MagmaIntentionData> {
         break;
       case TransactionSubType.OpenAndAddLiquidity:
         intention = AddLiquidityIntention.fromData(input.intentionData);
-        break;
-      case TransactionSubType.OpenAndAddLiquidityWithProtection:
-        intention = OpenAddLiquidityWithProtectionIntention.fromData(input.intentionData);
         break;
       case TransactionSubType.AddLiquidityWithProtection:
         intention = AddLiquidityWithProtectionIntention.fromData(input.intentionData);

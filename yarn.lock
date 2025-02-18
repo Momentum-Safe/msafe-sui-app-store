@@ -2601,10 +2601,10 @@
     ts-jest "^29.1.3"
     typescript "^5.4.5"
 
-"@magmaprotocol/magma-clmm-sdk@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@magmaprotocol/magma-clmm-sdk/-/magma-clmm-sdk-0.5.0.tgz#b6ea4de5cf76f0563114aa75342b2f27a2f1c514"
-  integrity sha512-hzbHBFgCueVhSxJkvD+IGCto8Qf6cz/BKHAjT8ey6oWjrJpG5moBMrwsELMJ4LThFMYNEfY5yQXuZLDYsssqNg==
+"@magmaprotocol/magma-clmm-sdk@^0.5.6":
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/@magmaprotocol/magma-clmm-sdk/-/magma-clmm-sdk-0.5.6.tgz#f7167915126fc113244003b964ffea041496c54b"
+  integrity sha512-+eit52EgZkdEOxWc31wGT8EtXuxupb9teYVWG1YuG0scFIaSKYsWanaAJSp94K2a8zCMzhLelY3ETF1RlvtZqw==
   dependencies:
     "@suchipi/femver" "^1.0.0"
     "@syntsugar/cc-graph" "^0.1.1"

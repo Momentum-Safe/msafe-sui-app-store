@@ -12,7 +12,6 @@ export enum TransactionSubType {
   CreatePool = 'CreatePool',
   FastRouterSwap = 'FastRouterSwap',
   OpenAndAddLiquidity = 'OpenAndAddLiquidity',
-  OpenAndAddLiquidityWithProtection = 'OpenAndAddLiquidityWithProtection',
   AddLiquidityWithProtection = 'AddLiquidityWithProtection',
   RemoveLiquidity = 'RemoveLiquidity',
 }
