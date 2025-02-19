@@ -2581,10 +2581,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@magmaprotocol/aggregator-sdk@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@magmaprotocol/aggregator-sdk/-/aggregator-sdk-0.1.1.tgz#9000ffbf15155a7a3bf7a19ed047465ead09b0ae"
-  integrity sha512-8jxWv4uKbugHuqDmUfPZd1JgR73a84gvVv9ZIX3JIQ/6yGZsq4ra4GQ6VQQsQtj2WCPwVVGmYMyMvFJtFsNlxA==
+"@magmaprotocol/aggregator-sdk@^0.1.2":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@magmaprotocol/aggregator-sdk/-/aggregator-sdk-0.1.3.tgz#dd76900e6ef9a77d99c6d881aa6426ff69152145"
+  integrity sha512-wTfr+7gJiaQL0SzH+uUW7RBw00PclVnLdzjHmtsEEFcINupAI0w4BJNycPPyd6Kqe+a6JTOGzRipq9Imuc8vlQ==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
@@ -2601,10 +2601,10 @@
     ts-jest "^29.1.3"
     typescript "^5.4.5"
 
-"@magmaprotocol/magma-clmm-sdk@^0.5.6":
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/@magmaprotocol/magma-clmm-sdk/-/magma-clmm-sdk-0.5.6.tgz#f7167915126fc113244003b964ffea041496c54b"
-  integrity sha512-+eit52EgZkdEOxWc31wGT8EtXuxupb9teYVWG1YuG0scFIaSKYsWanaAJSp94K2a8zCMzhLelY3ETF1RlvtZqw==
+"@magmaprotocol/magma-clmm-sdk@^0.5.7":
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/@magmaprotocol/magma-clmm-sdk/-/magma-clmm-sdk-0.5.7.tgz#d648a028c333ca9821e339b9a85789be0b698dcd"
+  integrity sha512-R5FQRERaTlg2Dl6+wNww9sFhs7xH4eMEmvS9FoXt4NOMI6xBE8w1xnpBLz/BCR9EBuac0M8t8sXUu0yGEz071Q==
   dependencies:
     "@suchipi/femver" "^1.0.0"
     "@syntsugar/cc-graph" "^0.1.1"
