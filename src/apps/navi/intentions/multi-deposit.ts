@@ -51,7 +51,7 @@ export class EntryMultiDepositIntention extends BaseIntentionLegacy<EntryMultiDe
       if (tokenInfo.data.length >= 2) {
         let j = 1;
         while (j < tokenInfo.data.length) {
-          tx.mergeCoins(coinObj, [tokenInfo.data[i].coinObjectId]);
+          tx.mergeCoins(coinObj, [tokenInfo.data[j].coinObjectId]);
           j++;
         }
       }
