@@ -15,7 +15,6 @@ import { VoloAppHelper } from '@/apps/volo/helper';
 
 import { BluefinHelper } from './apps/bluefin/helper';
 import { KRIYAAppHelper } from './apps/kriya/helper';
-import { MagmaAppHelper } from './apps/magma/helper';
 
 export const appHelpers = MSafeApps.fromHelpers([
   new CoreHelper(),
@@ -33,5 +32,4 @@ export const appHelpers = MSafeApps.fromHelpers([
   new AlphaFiHelper(),
   new BluefinHelper(),
   new StSuiHelper(),
-  new MagmaAppHelper(),
 ]);

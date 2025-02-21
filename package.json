@@ -59,8 +59,6 @@
     "@suilend/frontend-sui": "^0.2.43",
     "@suilend/sdk": "^1.1.39",
     "@suilend/springsui-sdk": "^1.0.19",
-    "@magmaprotocol/magma-clmm-sdk": "^0.5.7",
-    "@magmaprotocol/aggregator-sdk": "^0.1.2",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
     "bucket-protocol-sdk": "^0.10.17",
