@@ -15,18 +15,18 @@
     "@gql.tada/internal" "^1.0.0"
     graphql "^15.5.0 || ^16.0.0 || ^17.0.0"
 
-"@7kprotocol/sdk-ts@^2.2.2":
+"@7kprotocol/sdk-ts@^2.3.4":
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.3.4.tgz#bfaffd6487212fcbb334ca940ce4157dd72182eb"
   integrity sha512-zoRPgPrSWwb8Bya/YN611TZ21uKLKuK2JkDxhz1ocrLJzQzIEb8HEaEmZLYszGiXTrapVQiiDWngQiF774DcBw==
 
-"@alphafi/alphafi-sdk@^0.0.55":
-  version "0.0.55"
-  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.55.tgz#05c9ea6a5e8619a71075248c7e096c29401840ec"
-  integrity sha512-hAh+77kc8CuljdkmjZpINDYdgp5YpLOqkT+fk83VLhza+S/Ujx5JxVDJe7YDoUGMZKt969U3ABb+Y6TC8f3oKw==
+"@alphafi/alphafi-sdk@^0.0.67":
+  version "0.0.67"
+  resolved "https://registry.yarnpkg.com/@alphafi/alphafi-sdk/-/alphafi-sdk-0.0.67.tgz#4d36adab5b06faf419f04d2bad1711173403b423"
+  integrity sha512-ku8OrXfQRfQzDYBWcnZvM8kh186KxNUdkU63oEq4fBBvYw9tdZMd/wLSjKwzCjOmfHU0/zZnMsN5GsOZlEaMpQ==
   dependencies:
-    "@7kprotocol/sdk-ts" "^2.2.2"
-    "@alphafi/stsui-sdk" "^0.0.12"
+    "@7kprotocol/sdk-ts" "^2.3.4"
+    "@alphafi/stsui-sdk" "^0.0.21"
     "@apollo/client" "^3.11.4"
     "@cetusprotocol/cetus-sui-clmm-sdk" "5.1.6"
     "@hop.ag/sdk" "^3.3.0"
@@ -36,21 +36,10 @@
     graphql "^16.9.0"
     react "^18.3.1"
 
-"@alphafi/stsui-sdk@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.12.tgz#c0e262882e238c5159d7bd94902e4933b7a0417b"
-  integrity sha512-VtEyFkxPIbjtf/djkRM/kV3b/yCyU1RJU7wWdyYCa8za393eUbrIOPUVx+BB3qa9itGAsvxjnMlw5zd34OWFFw==
-  dependencies:
-    "@types/bn.js" "^5.1.6"
-    decimal.js "^10.4.3"
-    jest "^29.7.0"
-    ts-jest "^29.2.5"
-    typedoc "^0.27.5"
-
-"@alphafi/stsui-sdk@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.15.tgz#40b582046362e0cdccc90956189a0b73da95ef21"
-  integrity sha512-cvgV1wMRMfni6X/WP8H0g5miZVvHrb0oQv7dMYEHBb1z6y3kIHg1hJCjewdACSSSoIx5QTxYY6dfV7YHxUpe/A==
+"@alphafi/stsui-sdk@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@alphafi/stsui-sdk/-/stsui-sdk-0.0.21.tgz#0d8457a10fc99d4963a9d02f5634c391d1b651cf"
+  integrity sha512-qWDjcBFhgd3K4T/keZbG3yBVq9aj8PMmWKlMb15lyW6GWg9imBJZMs58ireJtharKF+4nLNzvO0F4M9F+ck6kg==
   dependencies:
     "@types/bn.js" "^5.1.6"
     decimal.js "^10.4.3"
