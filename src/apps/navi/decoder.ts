@@ -112,7 +112,7 @@ export class Decoder {
   }
 
   private isEntryWithdrawTransaction(): boolean {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::entry_withdraw`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::withdraw`);
   }
 
   private findPoolByAssetId(assetId: number) {
