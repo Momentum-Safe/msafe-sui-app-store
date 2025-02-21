@@ -6,13 +6,13 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { depositToken } from '../api/incentiveV2';
-import config from '../config';
-import { CoinType, TransactionSubType } from '../types';
+import { TransactionSubType } from '../types';
 import { getTokenObjs } from '../utils/token';
+import { getPoolConfigByAssetId } from '../utils/tools';
 
 export interface EntryDepositIntentionData {
   amount: number;
-  coinType: CoinType;
+  assetId: number;
 }
 
 export class EntryDepositIntention extends BaseIntentionLegacy<EntryDepositIntentionData> {
@@ -26,19 +26,16 @@ export class EntryDepositIntention extends BaseIntentionLegacy<EntryDepositInten
 
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { suiClient, account } = input;
-    const { coinType, amount } = this.data;
+    const { assetId, amount } = this.data;
     const tx = new TransactionBlock();
     console.log('build', this.data);
 
-    if (coinType === 'sui') {
+    const pool = getPoolConfigByAssetId(assetId);
+
+    if (assetId === 0) {
       const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
-      return depositToken(tx, config.pool.sui, toDeposit, amount);
-    }
-
-    const pool = config.pool[coinType];
-
-    if (!pool) {
-      throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
+      const txb = await depositToken(tx, pool, toDeposit, amount);
+      return txb;
     }
 
     const tokenInfo = await getTokenObjs(suiClient, account.address, pool.type);
@@ -56,7 +53,8 @@ export class EntryDepositIntention extends BaseIntentionLegacy<EntryDepositInten
       }
     }
 
-    return depositToken(tx, pool, tx.object(coinObj), amount);
+    const txb = await depositToken(tx, pool, tx.object(coinObj), amount);
+    return txb;
   }
 
   static fromData(data: EntryDepositIntentionData) {

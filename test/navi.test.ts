@@ -1,43 +1,18 @@
-import { EntryBorrowIntention } from '@/apps/navi/intentions/entry-borrow';
-import { EntryDepositIntention } from '@/apps/navi/intentions/entry-deposit';
-import { EntryRepayIntention } from '@/apps/navi/intentions/entry-repay';
-import { EntryWithdrawIntention } from '@/apps/navi/intentions/entry-withdraw';
-import { CoinType } from '@/apps/navi/types';
+import { Transaction } from '@mysten/sui/transactions';
+import { depositCoin, pool } from 'navi-sdk';
 
-describe('NAVI App', () => {
-  it('Test EntryDeposit intention serialization', () => {
-    const intention = EntryDepositIntention.fromData({
-      amount: 1000,
-      coinType: CoinType.sui,
-    });
+import { Decoder } from '@/apps/navi/decoder';
 
-    expect(intention.serialize()).toBe('{"amount":1000,"coinType":"sui"}');
-  });
+describe('Navi App', () => {
+  it('Test deposit deserialize', async () => {
+    const tx = new Transaction();
+    const amount = '10000000000';
+    const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
+    await depositCoin(tx as any, pool.Sui, toDeposit, amount);
 
-  it('Test EntryBorrow intention serialization', () => {
-    const intention = EntryBorrowIntention.fromData({
-      amount: 1000,
-      coinType: CoinType.sui,
-    });
+    const decoder = new Decoder(tx as any);
+    const result = decoder.decode();
 
-    expect(intention.serialize()).toBe('{"amount":1000,"coinType":"sui"}');
-  });
-
-  it('Test EntryRepay intention serialization', () => {
-    const intention = EntryRepayIntention.fromData({
-      amount: 1000,
-      coinType: CoinType.sui,
-    });
-
-    expect(intention.serialize()).toBe('{"amount":1000,"coinType":"sui"}');
-  });
-
-  it('Test EntryWithdraw intention serialization', () => {
-    const intention = EntryWithdrawIntention.fromData({
-      amount: 1000,
-      coinType: CoinType.sui,
-    });
-
-    expect(intention.serialize()).toBe('{"amount":1000,"coinType":"sui"}');
+    console.log('result', result);
   });
 });

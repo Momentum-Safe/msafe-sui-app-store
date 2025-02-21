@@ -5,12 +5,12 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { borrowToken } from '../api/incentiveV2';
-import config from '../config';
-import { CoinType, TransactionSubType } from '../types';
+import { TransactionSubType } from '../types';
+import { getPoolConfigByAssetId } from '../utils/tools';
 
 export interface EntryBorrowIntentionData {
   amount: number;
-  coinType: CoinType;
+  assetId: number;
 }
 
 export class EntryBorrowIntention extends BaseIntentionLegacy<EntryBorrowIntentionData> {
@@ -23,17 +23,14 @@ export class EntryBorrowIntention extends BaseIntentionLegacy<EntryBorrowIntenti
   }
 
   async build(input: { account: WalletAccount }): Promise<TransactionBlock> {
-    const { coinType, amount } = this.data;
+    const { assetId, amount } = this.data;
     const tx = new TransactionBlock();
     console.log('build', this.data);
 
-    const pool = config.pool[coinType];
+    const pool = getPoolConfigByAssetId(assetId);
 
-    if (!pool) {
-      throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
-    }
-
-    return borrowToken(tx, pool, amount, input.account.address);
+    const txb = await borrowToken(tx, pool, amount, input.account.address);
+    return txb;
   }
 
   static fromData(data: EntryBorrowIntentionData) {

@@ -67,6 +67,7 @@
     "kriya-dev-sdk": "1.0.6",
     "luxon": "^3.4.4",
     "nanoid": "3",
+    "navi-sdk": "1.5.1",
     "sort-keys-recursive": "^2.1.10",
     "turbos-clmm-sdk": "^2.2.2"
   },
