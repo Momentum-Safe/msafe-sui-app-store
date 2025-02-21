@@ -3,7 +3,7 @@ import { fromB64, toHEX } from '@mysten/bcs';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
-import { maxU64 } from '@suilend/sdk';
+import { MAX_U64 } from '@suilend/frontend-sui';
 import BigNumber from 'bignumber.js';
 
 import {
@@ -141,7 +141,7 @@ export class Decoder {
     const inputIndex = (commands.withdraw_ctokens.MoveCall.arguments[4] as any).Input as number;
     const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
 
-    const isMax = inputValue === maxU64.toString();
+    const isMax = inputValue === MAX_U64.toString();
     console.log(
       'decodeWithdraw - isMax:',
       isMax,
@@ -149,11 +149,11 @@ export class Decoder {
       inputIndex,
       'inputValue:',
       inputValue,
-      'maxU64.toString():',
-      maxU64.toString(),
+      'MAX_U64.toString():',
+      MAX_U64.toString(),
     );
     if (isMax) {
-      value = maxU64.toString();
+      value = MAX_U64.toString();
     }
 
     return {
@@ -181,7 +181,7 @@ export class Decoder {
     const inputIndex = (commands.borrow_request.MoveCall.arguments[4] as any).Input as number;
     const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
 
-    const isMax = inputValue === maxU64.toString();
+    const isMax = inputValue === MAX_U64.toString();
     console.log(
       'decodeBorrow - isMax:',
       isMax,
@@ -189,11 +189,11 @@ export class Decoder {
       inputIndex,
       'inputValue:',
       inputValue,
-      'maxU64.toString():',
-      maxU64.toString(),
+      'MAX_U64.toString():',
+      MAX_U64.toString(),
     );
     if (isMax) {
-      value = maxU64.toString();
+      value = MAX_U64.toString();
     }
 
     return {
