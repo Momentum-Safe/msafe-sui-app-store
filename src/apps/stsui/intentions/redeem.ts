@@ -1,4 +1,4 @@
-import { LST, LstParams, redeem } from '@alphafi/stsui-sdk';
+import { LST, LstParams } from '@alphafi/stsui-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';

@@ -1,4 +1,4 @@
-import { LST, LstParams, mint, redeem } from '@alphafi/stsui-sdk';
+import { LST, LstParams } from '@alphafi/stsui-sdk';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 
