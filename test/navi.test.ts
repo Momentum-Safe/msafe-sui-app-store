@@ -1,14 +1,14 @@
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
-import { depositCoin, pool, borrowCoin, repayDebt, withdrawCoin, claimAllRewardsPTB, claimAllRewardsResupplyPTB } from 'navi-sdk';
+import { depositCoin, pool, borrowCoin, repayDebt, withdrawCoin, claimAllRewardsPTB } from 'navi-sdk';
 
 import { Decoder } from '@/apps/navi/decoder';
-import { EntryDepositIntentionData } from '@/apps/navi/intentions/entry-deposit';
+import { ClaimRewardIntentionData } from '@/apps/navi/intentions/claim-reward';
 import { EntryBorrowIntentionData } from '@/apps/navi/intentions/entry-borrow';
+import { EntryDepositIntentionData } from '@/apps/navi/intentions/entry-deposit';
 import { EntryRepayIntentionData } from '@/apps/navi/intentions/entry-repay';
 import { EntryWithdrawIntentionData } from '@/apps/navi/intentions/entry-withdraw';
 import { EntryMultiDepositIntentionData } from '@/apps/navi/intentions/multi-deposit';
-import { ClaimRewardIntentionData } from '@/apps/navi/intentions/claim-reward';
 import { TransactionSubType } from '@/apps/navi/types';
 
 const address = '0xfaba86400d9cc1d144bbc878bc45c4361d53a16c942202b22db5d26354801e8e';
@@ -98,9 +98,7 @@ describe('Navi App', () => {
     const result = decoder.decode();
     const intentionData = result.intentionData as ClaimRewardIntentionData;
 
-
     expect(result.type).toBe(TransactionSubType.ClaimReward);
     expect(intentionData.type).toBe('claim_reward');
   });
-
 });
