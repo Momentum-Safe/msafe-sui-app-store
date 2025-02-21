@@ -5,7 +5,7 @@ import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transact
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
 
 import config from './config';
-import { CoinType, TransactionSubType } from './types';
+import { TransactionSubType } from './types';
 
 export function isSameCoinType(type1: string, type2: string) {
   return normalizeStructTag(type1) === normalizeStructTag(type2);
@@ -47,6 +47,9 @@ export class Decoder {
     if (this.isEntryWithdrawTransaction()) {
       return this.decodeEntryWithdraw();
     }
+    if (this.isEntryClaimAndDepositTransaction()) {
+      return this.decodeEntryClaimAndDeposit();
+    }
     throw new Error(`Unknown transaction type`);
   }
 
@@ -59,23 +62,28 @@ export class Decoder {
   }
 
   private isClaimRewardTransaction() {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::claim_reward`);
+    const claimTrans = this.transactions.find((trans) => {
+      if (trans.kind === 'MoveCall' && trans.target.includes('claim_reward')) {
+        return true;
+      }
+      return false;
+    });
+    return !!claimTrans;
   }
 
   private isEntryBorrowTransaction() {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_borrow`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::entry_borrow`);
   }
 
   private isEntryBorrowWithFeeTransaction() {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::borrow`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::borrow`);
   }
 
   private isEntryMultiDepositTransaction() {
-    const target = `${config.ProtocolPackage}::incentive_v2::entry_deposit`;
+    const target = `${config.ProtocolPackage}::incentive_v3::entry_deposit`;
     const transactions = this.transactions.filter((trans) => trans.kind === 'MoveCall' && trans.target === target);
     const claimTransaction = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${config.ProtocolPackage}::incentive_v2::claim_reward_non_entry`,
+      (trans) => trans.kind === 'MoveCall' && trans.target.includes('claim_reward'),
     );
     if (claimTransaction) {
       return false;
@@ -83,16 +91,28 @@ export class Decoder {
     return transactions.length > 1;
   }
 
+  private isEntryClaimAndDepositTransaction() {
+    const target = `${config.ProtocolPackage}::incentive_v3::entry_deposit`;
+    const transactions = this.transactions.filter((trans) => trans.kind === 'MoveCall' && trans.target === target);
+    const claimTransaction = this.transactions.find(
+      (trans) => trans.kind === 'MoveCall' && trans.target.includes('claim_reward'),
+    );
+    if (claimTransaction && transactions.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   private isEntryDepositTransaction() {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_deposit`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::entry_deposit`);
   }
 
   private isEntryRepayTransaction(): boolean {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_repay`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::entry_repay`);
   }
 
   private isEntryWithdrawTransaction(): boolean {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v2::entry_withdraw`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::withdraw`);
   }
 
   private findPoolByAssetId(assetId: number) {
@@ -103,37 +123,23 @@ export class Decoder {
     return findPool;
   }
 
+  private decodeEntryClaimAndDeposit(): DecodeResult {
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.EntryClaimAndDeposit,
+      intentionData: {
+        type: 'entry_claim_and_deposit',
+      },
+    };
+  }
+
   private decodeClaimReward(): DecodeResult {
-    const claims = [] as {
-      coinType: CoinType;
-      option: number;
-      poolId: string;
-      assetId: number;
-      typeArguments: string[];
-    }[];
-    this.transactions.forEach((trans) => {
-      if (trans.kind === 'MoveCall' && trans.target === `${config.ProtocolPackage}::incentive_v2::claim_reward`) {
-        const helper = new MoveCallHelper(trans, this.txb);
-        const assetId = helper.decodeInputU8(4);
-        const optionId = helper.decodeInputU8(5);
-        const poolId = helper.decodeSharedObjectId(2);
-        const pool = this.findPoolByAssetId(assetId);
-        const typeArguments = [...trans.typeArguments];
-        claims.push({
-          coinType: pool.coinType,
-          option: optionId,
-          typeArguments,
-          assetId,
-          poolId,
-        });
-      }
-    });
-    console.log('decode claims', claims);
+    console.log('decode claims');
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.ClaimReward,
       intentionData: {
-        claims,
+        type: 'claim_reward',
       },
     };
   }
@@ -141,13 +147,12 @@ export class Decoder {
   private decodeEntryBorrow(): DecodeResult {
     const assetId = this.helper.decodeInputU8(4);
     const amount = this.helper.decodeInputU64(5);
-    const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.EntryBorrow,
       intentionData: {
         amount,
-        coinType: pool.coinType,
+        assetId,
       },
     };
   }
@@ -155,17 +160,16 @@ export class Decoder {
   private decodeEntryMultiDeposit(): DecodeResult {
     const list = [] as {
       amount: number;
-      coinType: CoinType;
+      assetId: number;
     }[];
-    const target = `${config.ProtocolPackage}::incentive_v2::entry_deposit`;
+    const target = `${config.ProtocolPackage}::incentive_v3::entry_deposit`;
     this.transactions.forEach((trans) => {
       if (trans.kind === 'MoveCall' && trans.target === target) {
         const helper = new MoveCallHelper(trans, this.txb);
         const assetId = helper.decodeInputU8(3);
         const amount = helper.decodeInputU64(5);
-        const pool = this.findPoolByAssetId(assetId);
         list.push({
-          coinType: pool.coinType,
+          assetId,
           amount,
         });
       }
@@ -182,13 +186,12 @@ export class Decoder {
   private decodeEntryDeposit(): DecodeResult {
     const assetId = this.helper.decodeInputU8(3);
     const amount = this.helper.decodeInputU64(5);
-    const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.EntryDeposit,
       intentionData: {
         amount,
-        coinType: pool.coinType,
+        assetId,
       },
     };
   }
@@ -196,13 +199,12 @@ export class Decoder {
   private decodeEntryRepay(): DecodeResult {
     const assetId = this.helper.decodeInputU8(4);
     const amount = this.helper.decodeInputU64(6);
-    const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.EntryRepay,
       intentionData: {
         amount,
-        coinType: pool.coinType,
+        assetId,
       },
     };
   }
@@ -210,13 +212,12 @@ export class Decoder {
   private decodeEntryWithdraw(): DecodeResult {
     const assetId = this.helper.decodeInputU8(4);
     const amount = this.helper.decodeInputU64(5);
-    const pool = this.findPoolByAssetId(assetId);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.EntryWithdraw,
       intentionData: {
         amount,
-        coinType: pool.coinType,
+        assetId,
       },
     };
   }

@@ -9,6 +9,7 @@ import { SuiNetworks } from '@/types';
 import { updatePackageId } from './config';
 import { Decoder } from './decoder';
 import { ClaimRewardIntention, ClaimRewardIntentionData } from './intentions/claim-reward';
+import { ClaimSupplyIntention, ClaimSupplyIntentionData } from './intentions/claim-supply';
 import { EntryBorrowIntention, EntryBorrowIntentionData } from './intentions/entry-borrow';
 import { EntryDepositIntention, EntryDepositIntentionData } from './intentions/entry-deposit';
 import { EntryRepayIntention, EntryRepayIntentionData } from './intentions/entry-repay';
@@ -22,7 +23,8 @@ export type NAVIIntention =
   | EntryRepayIntention
   | EntryWithdrawIntention
   | EntryMultiDepositIntention
-  | ClaimRewardIntention;
+  | ClaimRewardIntention
+  | ClaimSupplyIntention;
 
 export type NAVIIntentionData =
   | EntryDepositIntentionData
@@ -30,7 +32,8 @@ export type NAVIIntentionData =
   | EntryRepayIntentionData
   | EntryWithdrawIntentionData
   | EntryMultiDepositIntentionData
-  | ClaimRewardIntentionData;
+  | ClaimRewardIntentionData
+  | ClaimSupplyIntentionData;
 
 export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData> {
   application = 'navi';
@@ -79,6 +82,9 @@ export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData
         break;
       case TransactionSubType.ClaimReward:
         intention = ClaimRewardIntention.fromData(input.intentionData as ClaimRewardIntentionData);
+        break;
+      case TransactionSubType.EntryClaimAndDeposit:
+        intention = ClaimSupplyIntention.fromData(input.intentionData as ClaimSupplyIntentionData);
         break;
       default:
         throw new Error('not implemented');
