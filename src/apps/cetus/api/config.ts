@@ -245,7 +245,7 @@ export const xcetusConfig: XcetusSdkOptions = {
       dividend_admin_id: '0x682ba823134f156eac2bcfb27d85a284954a0e61998dc628c40b9bcb4a46ff30',
       dividend_settle_id: '0xade40abe9f6dd10b83b11085be18f07b63b681cf1c169b041fa16854403388c5',
       venft_dividends_id: '0x9dcdb97b4307684bedaeaf803d381b12321a31ecbb9dad7df2cd5f64384f9456',
-      venft_dividends_id_v2: '0xaa21fbc1707786d56302952f8327362f4eb9a431a5bc574834e6d46125390de3'
+      venft_dividends_id_v2: '0xaa21fbc1707786d56302952f8327362f4eb9a431a5bc574834e6d46125390de3',
     },
   },
   cetus_faucet: {
