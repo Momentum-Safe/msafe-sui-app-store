@@ -4,16 +4,15 @@ import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
 
-import { getPeripherySdk } from './config';
+import { getXcetusSdk } from './config';
 
 export const getXcetusConvertTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
-  const tx = new Transaction();
-  const txb: Transaction = await peripherySdk.XCetusModule.convertPayload(txbParams, tx);
+  const xcetusSdk = getXcetusSdk(network, account);
+  const txb: Transaction = await xcetusSdk.XCetusModule.convertPayload(txbParams);
   return txb;
 };
 
@@ -22,8 +21,8 @@ export const getXcetusRedeemLockTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
-  const txb: Transaction = await peripherySdk.XCetusModule.redeemLockPayload(txbParams);
+  const xcetusSdk = getXcetusSdk(network, account);
+  const txb: Transaction = await xcetusSdk.XCetusModule.redeemLockPayload(txbParams);
   return txb;
 };
 
@@ -32,13 +31,10 @@ export const getXcetusClaimingStakeRewardsTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
-  const txb: Transaction = await peripherySdk.XCetusModule.redeemDividendV3Payload(
-    txbParams.phases,
-    txbParams.venft_id,
-    txbParams.bonus_types,
-    txbParams.bonus_types_v2,
-    txbParams.xTokenType,
+  const xcetusSdk = getXcetusSdk(network, account);
+  const txb: Transaction = await xcetusSdk.XCetusModule.redeemDividendV3Payload(
+    txbParams.veNftId,
+    txbParams.rewardList,
   );
   return txb;
 };
@@ -48,8 +44,8 @@ export const getXcetusCancelRedeemTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
-  const txb: Transaction = await peripherySdk.XCetusModule.cancelRedeemPayload(txbParams);
+  const xcetusSdk = getXcetusSdk(network, account);
+  const txb: Transaction = await xcetusSdk.XCetusModule.cancelRedeemPayload(txbParams);
   return txb;
 };
 
@@ -58,7 +54,7 @@ export const getXcetusRedeemTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
-  const txb: Transaction = await peripherySdk.XCetusModule.redeemPayload(txbParams);
+  const xcetusSdk = getXcetusSdk(network, account);
+  const txb: Transaction = await xcetusSdk.XCetusModule.redeemPayload(txbParams);
   return txb;
 };
