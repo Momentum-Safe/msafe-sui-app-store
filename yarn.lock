@@ -1442,10 +1442,31 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cetusprotocol/aggregator-sdk@^0.3.29":
-  version "0.3.29"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.29.tgz#e9e0efae4cda07014365f754d83a671e8af3fcff"
-  integrity sha512-gNze5BDemKVcFA33JupbWrNqIoUU7FxOtEsFr8Tj2tTGj/tTm5Jty+em6yb7yhGID7QgQhwD0v6ojAkjJXm1FQ==
+"@cetusprotocol/aggregator-sdk@0.3.30":
+  version "0.3.30"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.30.tgz#a324354d81dd89fba06d22667b613c8d42df8c1d"
+  integrity sha512-tLx73FgBxPCnfZHjvmyejvHrcGUrzUKQr/+gQ6PRq9otI+w732ecV3FHXRrF6Cjg10uWUKvQuB/YsccB9Em1yw==
+  dependencies:
+    "@babel/core" "^7.24.5"
+    "@babel/preset-env" "^7.24.5"
+    "@babel/preset-typescript" "^7.24.1"
+    "@jest/globals" "^29.7.0"
+    "@mysten/sui" "^1.6.0"
+    "@pythnetwork/pyth-sui-js" "^2.1.0"
+    "@types/jest" "^29.5.12"
+    "@types/node" "^20.12.12"
+    babel-jest "^29.7.0"
+    bip39 "^3.1.0"
+    dotenv "^16.4.5"
+    jest "^29.7.0"
+    node-fetch "^3.3.2"
+    ts-jest "^29.1.3"
+    typescript "^5.4.5"
+
+"@cetusprotocol/aggregator-sdk@^0.3.30":
+  version "0.3.31"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.31.tgz#07919ccf871333c9b4089fe345d093cdf7f6bf57"
+  integrity sha512-1nykVSJkapbYNeOStfJOeHBNUQy04rasZWLNoDMM5eu8O++3jE7CN9aFou6nSt5fTmO667FHCcYX4ijEGlKriw==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
@@ -1542,12 +1563,12 @@
     tiny-invariant "^1.1.0"
     tweetnacl "^1.0.3"
 
-"@cetusprotocol/vaults-sdk@^0.1.11":
-  version "0.1.11"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-0.1.11.tgz#9bfd3f4e7668255d6532bd6c37211b30dc300f8d"
-  integrity sha512-pyw+QkV1DCN320XSqxzS18kbqb7QkUsPCvV1NFCGmxg7np/ghwhpxpdSRWcwXUh7tGytBBGQ83Z/mnJL8UVyLw==
+"@cetusprotocol/vaults-sdk@0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-0.1.12.tgz#1493e3639d3541f60c5eab08ffeb6e6a907355c4"
+  integrity sha512-lyLJ1LgbLhtXrezjgo4KV8pGP6hbDz2jdJSWyG1bTO+jcyoWaD5Q3ps2qy1BBfy0J5LYmUSrJHddcmulVNYHug==
   dependencies:
-    "@cetusprotocol/aggregator-sdk" "^0.3.29"
+    "@cetusprotocol/aggregator-sdk" "^0.3.30"
     "@suchipi/femver" "^1.0.0"
     "@types/bn.js" "^5.1.1"
     axios "^1.4.0"
