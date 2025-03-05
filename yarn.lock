@@ -1442,31 +1442,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cetusprotocol/aggregator-sdk@0.3.30":
-  version "0.3.30"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.30.tgz#a324354d81dd89fba06d22667b613c8d42df8c1d"
-  integrity sha512-tLx73FgBxPCnfZHjvmyejvHrcGUrzUKQr/+gQ6PRq9otI+w732ecV3FHXRrF6Cjg10uWUKvQuB/YsccB9Em1yw==
-  dependencies:
-    "@babel/core" "^7.24.5"
-    "@babel/preset-env" "^7.24.5"
-    "@babel/preset-typescript" "^7.24.1"
-    "@jest/globals" "^29.7.0"
-    "@mysten/sui" "^1.6.0"
-    "@pythnetwork/pyth-sui-js" "^2.1.0"
-    "@types/jest" "^29.5.12"
-    "@types/node" "^20.12.12"
-    babel-jest "^29.7.0"
-    bip39 "^3.1.0"
-    dotenv "^16.4.5"
-    jest "^29.7.0"
-    node-fetch "^3.3.2"
-    ts-jest "^29.1.3"
-    typescript "^5.4.5"
-
-"@cetusprotocol/aggregator-sdk@^0.3.30":
-  version "0.3.31"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.31.tgz#07919ccf871333c9b4089fe345d093cdf7f6bf57"
-  integrity sha512-1nykVSJkapbYNeOStfJOeHBNUQy04rasZWLNoDMM5eu8O++3jE7CN9aFou6nSt5fTmO667FHCcYX4ijEGlKriw==
+"@cetusprotocol/aggregator-sdk@^0.3.32":
+  version "0.3.32"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.3.32.tgz#367a05c7f2c84f2343acf9c0da8a55a949c2df7a"
+  integrity sha512-R8omT92xtUC0Yuh3z2bLeveaal2IUlwXScXztDCJ/GgERh4Pbmim1fFo5eRrLopv0lEpOoI2Hh2RRTM9gs010Q==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
@@ -1524,10 +1503,10 @@
     tweetnacl "^1.0.3"
     uuid "^9.0.0"
 
-"@cetusprotocol/cetus-sui-clmm-sdk@^5.3.1":
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.3.1.tgz#3896e2306ab5a716ff0d16a9db4590d970081e87"
-  integrity sha512-zlNwlBvXrLKufT08s8x6qiIZd+OUSfjquJdztssFIPU9H57rDcoS6FhhL6RYQplJH9yYj1XZIaFAnCp5q476KQ==
+"@cetusprotocol/cetus-sui-clmm-sdk@^5.3.4":
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.3.4.tgz#71fb2012ef8845d92f8f72e3e5b8cf638fe446bd"
+  integrity sha512-FbuWkhr+ash1MY/NODqCS/dyE/R0kZbiKqd0FcRCqWidpYnFKZhEaCv/tYd0ExKzZrnDxi+aaoYy/9FwirSwSg==
   dependencies:
     "@suchipi/femver" "^1.0.0"
     "@syntsugar/cc-graph" "^0.1.1"
@@ -1563,12 +1542,12 @@
     tiny-invariant "^1.1.0"
     tweetnacl "^1.0.3"
 
-"@cetusprotocol/vaults-sdk@0.1.12":
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-0.1.12.tgz#1493e3639d3541f60c5eab08ffeb6e6a907355c4"
-  integrity sha512-lyLJ1LgbLhtXrezjgo4KV8pGP6hbDz2jdJSWyG1bTO+jcyoWaD5Q3ps2qy1BBfy0J5LYmUSrJHddcmulVNYHug==
+"@cetusprotocol/vaults-sdk@^0.1.15":
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-0.1.15.tgz#c2393d8a018058578366c54924e8919d9703c40a"
+  integrity sha512-DvUdYhlKXrwrGwmWoB7/evB1X7rNwJ+7ZEXO/YCCR8IyX/UeqRysq7nn7pzLu/6JBL6G6ucjy4aAmZrkLL19bQ==
   dependencies:
-    "@cetusprotocol/aggregator-sdk" "^0.3.30"
+    "@cetusprotocol/aggregator-sdk" "^0.3.32"
     "@suchipi/femver" "^1.0.0"
     "@types/bn.js" "^5.1.1"
     axios "^1.4.0"
