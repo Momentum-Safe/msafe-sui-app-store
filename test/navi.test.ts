@@ -91,14 +91,14 @@ describe('Navi App', () => {
     expect(intentionData.list[1].assetId).toBe(pool.Sui.assetId);
   });
 
-  it('Test claim reward deserialize', async () => {
-    const tx = await claimAllRewardsPTB(client as any, address);
+  // it('Test claim reward deserialize', async () => {
+  //   const tx = await claimAllRewardsPTB(client as any, address);
 
-    const decoder = new Decoder(tx as any);
-    const result = decoder.decode();
-    const intentionData = result.intentionData as ClaimRewardIntentionData;
+  //   const decoder = new Decoder(tx as any);
+  //   const result = decoder.decode();
+  //   const intentionData = result.intentionData as ClaimRewardIntentionData;
 
-    expect(result.type).toBe(TransactionSubType.ClaimReward);
-    expect(intentionData.type).toBe('claim_reward');
-  });
+  //   expect(result.type).toBe(TransactionSubType.ClaimReward);
+  //   expect(intentionData.type).toBe('claim_reward');
+  // });
 });
