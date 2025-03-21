@@ -1,9 +1,8 @@
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
-import { depositCoin, pool, borrowCoin, repayDebt, withdrawCoin, claimAllRewardsPTB } from 'navi-sdk';
+import { depositCoin, pool, borrowCoin, repayDebt, withdrawCoin } from 'navi-sdk';
 
 import { Decoder } from '@/apps/navi/decoder';
-import { ClaimRewardIntentionData } from '@/apps/navi/intentions/claim-reward';
 import { EntryBorrowIntentionData } from '@/apps/navi/intentions/entry-borrow';
 import { EntryDepositIntentionData } from '@/apps/navi/intentions/entry-deposit';
 import { EntryRepayIntentionData } from '@/apps/navi/intentions/entry-repay';
