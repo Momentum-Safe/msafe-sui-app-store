@@ -26,7 +26,14 @@ export class BorrowWithReferralIntention extends ScallopCoreBaseIntention<Borrow
     super(data);
   }
 
-  async borrowWithReferral(client: ScallopClient, data: BorrowWithReferralIntentionData, walletAddress?: string) {
+  async borrowWithReferral({
+    account,
+    scallopClient: client,
+  }: {
+    account: WalletAccount;
+    scallopClient: ScallopClient;
+  }) {
+    const walletAddress = account.address;
     const { obligationId, obligationKey, veScaKey, coinName: poolCoinName, amount } = this.data;
     const txb = await this.buildTxWithRefreshObligation(
       client,
@@ -59,7 +66,7 @@ export class BorrowWithReferralIntention extends ScallopCoreBaseIntention<Borrow
     network: SuiNetworks;
     scallopClient: ScallopClient;
   }): Promise<Transaction> {
-    return this.borrowWithReferral(input.scallopClient, this.data, input.account.address);
+    return this.borrowWithReferral(input);
   }
 
   static fromData(data: BorrowWithReferralIntentionData): BorrowWithReferralIntention {

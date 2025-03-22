@@ -25,6 +25,24 @@ export class RepayIntention extends ScallopCoreBaseIntention<RepayIntentionData>
     super(data);
   }
 
+  async repay({ account, scallopClient: client }: { account: WalletAccount; scallopClient: ScallopClient }) {
+    const sender = account.address;
+    const { coinName, amount, obligationId, obligationKey } = this.data;
+
+    const tx = await this.buildTxWithRefreshObligation(
+      client,
+      {
+        walletAddress: sender,
+        obligationId,
+        obligationKey,
+      },
+      async (_, innerTx) => {
+        await innerTx.repayQuick(+amount, coinName, obligationId);
+      },
+    );
+    return tx.txBlock;
+  }
+
   async build(input: {
     suiClient: SuiClient;
     account: WalletAccount;
