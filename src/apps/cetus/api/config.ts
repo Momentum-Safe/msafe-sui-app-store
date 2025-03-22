@@ -1,14 +1,15 @@
 import { AggregatorClient, Env } from '@cetusprotocol/aggregator-sdk';
 import { CetusPeripherySDK, SdkOptions as PeripherySdkOptions } from '@cetusprotocol/cetus-periphery-sdk';
 import { CetusClmmSDK, SdkOptions } from '@cetusprotocol/cetus-sui-clmm-sdk';
+import { CetusXcetusSDK, SdkOptions as XcetusSdkOptions } from '@cetusprotocol/cetus-xcetus-sdk';
 import CetusVaultsSDK from '@cetusprotocol/vaults-sdk';
-import { SuiClient } from '@mysten/sui/client';
+import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '../types';
 
 export const clmmConfig: SdkOptions = {
-  fullRpcUrl: 'https://fullnode.mainnet.sui.io/',
+  fullRpcUrl: getFullnodeUrl('mainnet'),
   simulationAccount: {
     address: '0x326ce9894f08dcaa337fa232641cc34db957aec9ff6614c1186bc9a7508df0bb',
   },
@@ -28,7 +29,7 @@ export const clmmConfig: SdkOptions = {
   },
   clmm_pool: {
     package_id: '0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb',
-    published_at: '0xdc67d6de3f00051c505da10d8f6fbab3b3ec21ec65f0dc22a2f36c13fc102110',
+    published_at: '0xc6faf3703b0e8ba9ed06b7851134bbbe7565eb35ff823fd78432baa4cbeaa12e',
     version: 4,
     config: {
       pools_id: '0xf699e7f2276f5c9a75944b37a0c5b5d9ddfd2471bf6242483b03ab2887d198d0',
@@ -39,7 +40,7 @@ export const clmmConfig: SdkOptions = {
   },
   integrate: {
     package_id: '0x996c4d9480708fb8b92aa7acf819fb0497b5ec8e65ba06601cae2fb6db3312c3',
-    published_at: '0x3a5aa90ffa33d09100d7b6941ea1c0ffe6ab66e77062ddd26320c1b073aabb10',
+    published_at: '0x2d8c2e0fc6dd25b0214b3fa747e0fd27fd54608142cd2e4f64c1cd350cc4add4',
     version: 6,
   },
   deepbook: {
@@ -221,6 +222,38 @@ export const peripheryConfig: PeripherySdkOptions = {
   },
 };
 
+export const xcetusConfig: XcetusSdkOptions = {
+  fullRpcUrl: getFullnodeUrl('mainnet'),
+  simulationAccount: {
+    address: '0x326ce9894f08dcaa337fa232641cc34db957aec9ff6614c1186bc9a7508df0bb',
+  },
+  xcetus: {
+    package_id: '0x9e69acc50ca03bc943c4f7c5304c2a6002d507b51c11913b247159c60422c606',
+    published_at: '0x9e69acc50ca03bc943c4f7c5304c2a6002d507b51c11913b247159c60422c606',
+    config: {
+      xcetus_manager_id: '0x838b3dbade12b1e602efcaf8c8b818fae643e43176462bf14fd196afa59d1d9d',
+      lock_manager_id: '0x288b59d9dedb51d0bb6cb5e13bfb30885ecf44f8c9076b6f5221c5ef6644fd28',
+      lock_handle_id: '0x7c534bb7b8a2cc21538d0dbedd2437cc64f47106cb4c259b9ff921b5c3cb1a49',
+    },
+  },
+  xcetus_dividends: {
+    package_id: '0x785248249ac457dfd378bdc6d2fbbfec9d1daf65e9d728b820eb4888c8da2c10',
+    published_at: '0x5aa58e1623885bd93de2331d05c29bf4930e54e56beeabcab8fe5385de2d31dc',
+    version: 4,
+    config: {
+      dividend_manager_id: '0x721c990bfc031d074341c6059a113a59c1febfbd2faeb62d49dcead8408fa6b5',
+      dividend_admin_id: '0x682ba823134f156eac2bcfb27d85a284954a0e61998dc628c40b9bcb4a46ff30',
+      dividend_settle_id: '0xade40abe9f6dd10b83b11085be18f07b63b681cf1c169b041fa16854403388c5',
+      venft_dividends_id: '0x9dcdb97b4307684bedaeaf803d381b12321a31ecbb9dad7df2cd5f64384f9456',
+      venft_dividends_id_v2: '0xaa21fbc1707786d56302952f8327362f4eb9a431a5bc574834e6d46125390de3',
+    },
+  },
+  cetus_faucet: {
+    package_id: '0x6864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b',
+    published_at: '0x6864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b',
+  },
+};
+
 export const getClmmSdk = (network: SuiNetworks, account: WalletAccount) => {
   const config = clmmConfig;
   const clmmSdk = new CetusClmmSDK(config);
@@ -251,7 +284,7 @@ const vaultsSDKOptions = {
   },
   clmm_pool: {
     package_id: '0x1eabed72c53feb3805120a081dc15963c204dc8d091542592abaf7a35689b2fb',
-    published_at: '0xdc67d6de3f00051c505da10d8f6fbab3b3ec21ec65f0dc22a2f36c13fc102110',
+    published_at: '0xc6faf3703b0e8ba9ed06b7851134bbbe7565eb35ff823fd78432baa4cbeaa12e',
     config: {
       pools_id: '0xf699e7f2276f5c9a75944b37a0c5b5d9ddfd2471bf6242483b03ab2887d198d0',
       global_config_id: '0xdaa46292632c3c4d8f31f23ea0f9b36a28ff3677e9684980e4438403a67a3d8f',
@@ -261,7 +294,7 @@ const vaultsSDKOptions = {
   },
   integrate: {
     package_id: '0x996c4d9480708fb8b92aa7acf819fb0497b5ec8e65ba06601cae2fb6db3312c3',
-    published_at: '0x3a5aa90ffa33d09100d7b6941ea1c0ffe6ab66e77062ddd26320c1b073aabb10',
+    published_at: '0x2d8c2e0fc6dd25b0214b3fa747e0fd27fd54608142cd2e4f64c1cd350cc4add4',
   },
   frams: {
     package_id: '0x11ea791d82b5742cc8cab0bf7946035c97d9001d7c3803a93f119753da66f526',
@@ -282,7 +315,7 @@ const vaultsSDKOptions = {
       vaults_pool_handle: '0x9036bcc5aa7fd2cceec1659a6a1082871f45bc400c743f50063363457d1738bd',
       haedal: {
         package_id: '0xbde4ba4c2e274a60ce15c1cfff9e5c42e41654ac8b6d906a57efa4bd3c29f47d',
-        published_at: '0x1d56b8ec33c3fae897eb7bb1acb79914e8152faed614868928e684c25c8b198d',
+        published_at: '0xaabf0856070391df81fad9240049d69c5a51c3d376cc0885eeedd516526cc79b',
         version: 1,
         config: {
           staking_id: '0x47b224762220393057ebf4f70501b6e657c3e56684737568439a04f80849b2ca',
@@ -338,4 +371,10 @@ export const getVaultsSdk = (network: SuiNetworks, account: WalletAccount) => {
   const vaultsSDK: any = new CetusVaultsSDK(vaultsSDKOptions);
   vaultsSDK.senderAddress = account.address;
   return vaultsSDK;
+};
+
+export const getXcetusSdk = (network: SuiNetworks, account: WalletAccount) => {
+  const xcetusSDk: any = new CetusXcetusSDK(xcetusConfig);
+  xcetusSDk.senderAddress = account.address;
+  return xcetusSDk;
 };
