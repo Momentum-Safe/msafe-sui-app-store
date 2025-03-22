@@ -35,6 +35,7 @@ export enum TransactionSubType {
   EntryWithdraw = 'EntryWithdraw',
   EntryMultiDeposit = 'EntryMultiDeposit',
   ClaimReward = 'ClaimReward',
+  EntryClaimAndDeposit = 'EntryClaimAndDeposit',
 }
 
 export enum OptionType {

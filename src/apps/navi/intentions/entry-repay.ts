@@ -6,13 +6,13 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
 import { repayToken } from '../api/incentiveV2';
-import config from '../config';
-import { CoinType, TransactionSubType } from '../types';
+import { TransactionSubType } from '../types';
 import { getTokenObjs } from '../utils/token';
+import { getPoolConfigByAssetId } from '../utils/tools';
 
 export interface EntryRepayIntentionData {
   amount: number;
-  coinType: CoinType;
+  assetId: number;
 }
 
 export class EntryRepayIntention extends BaseIntentionLegacy<EntryRepayIntentionData> {
@@ -26,19 +26,15 @@ export class EntryRepayIntention extends BaseIntentionLegacy<EntryRepayIntention
 
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { suiClient, account } = input;
-    const { coinType, amount } = this.data;
+    const { assetId, amount } = this.data;
     const tx = new TransactionBlock();
     console.log('build', this.data);
 
-    if (coinType === 'sui') {
+    const pool = getPoolConfigByAssetId(assetId);
+
+    if (assetId === 0) {
       const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
-      return repayToken(tx, config.pool.sui, toDeposit, amount);
-    }
-
-    const pool = config.pool[coinType];
-
-    if (!pool) {
-      throw new Error(`${coinType} not support, please use ${Object.keys(config.pool).join(', ')}.`);
+      return repayToken(tx, pool, toDeposit, amount);
     }
 
     const tokenInfo = await getTokenObjs(suiClient, account.address, pool.type);

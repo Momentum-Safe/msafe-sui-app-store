@@ -5,30 +5,30 @@ import { WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
 
-import { claimReward } from '../api/incentiveV2';
+import { claimSupply } from '../api/incentiveV2';
 import { TransactionSubType } from '../types';
 
-export interface ClaimRewardIntentionData {
+export interface ClaimSupplyIntentionData {
   type: string;
 }
 
-export class ClaimRewardIntention extends BaseIntentionLegacy<ClaimRewardIntentionData> {
+export class ClaimSupplyIntention extends BaseIntentionLegacy<ClaimSupplyIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.ClaimReward;
+  txSubType: TransactionSubType.EntryClaimAndDeposit;
 
-  constructor(public readonly data: ClaimRewardIntentionData) {
+  constructor(public readonly data: ClaimSupplyIntentionData) {
     super(data);
   }
 
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
     const { type } = this.data;
-    console.log('claim reward', type);
-    const txb = await claimReward(input.suiClient, input.account.address);
+    console.log('claim reward and supply', type);
+    const txb = await claimSupply(input.suiClient, input.account.address);
     return txb;
   }
 
-  static fromData(data: ClaimRewardIntentionData) {
-    return new ClaimRewardIntention(data);
+  static fromData(data: ClaimSupplyIntentionData) {
+    return new ClaimSupplyIntention(data);
   }
 }

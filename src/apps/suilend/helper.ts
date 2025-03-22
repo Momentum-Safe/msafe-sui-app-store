@@ -45,7 +45,7 @@ export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Pr
 
   const obligations = await Promise.all(
     obligationOwnerCaps.map((ownerCap) =>
-      SuilendClient.getObligation(ownerCap.obligationId, suilendClient.lendingMarket.$typeArgs, suiClient as any),
+      SuilendClient.getObligation(ownerCap.obligationId, suilendClient.lendingMarket.$typeArgs, suiClient),
     ),
   );
 

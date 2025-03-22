@@ -1,4 +1,4 @@
-import { mint, redeem } from '@alphafi/stsui-sdk';
+import { LST, LstParams } from '@alphafi/stsui-sdk';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 
@@ -27,10 +27,16 @@ describe('StSui App', () => {
     const helper = new StSuiHelper();
     const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
 
-    it('Deserialize withdraw BLUEFIN-SUI-USDC transaction', async () => {
-      const unresolvedTx = await mint('10000000', {
-        address: '0xe136f0b6faf27ee707725f38f2aeefc51c6c31cc508222bee5cbc4f5fcf222c3',
-      });
+    it('Deserialize mint transaction', async () => {
+      const lstParams: LstParams = {
+        lstInfo: '0x1adb343ab351458e151bc392fbf1558b3332467f23bda45ae67cd355a57fd5f5',
+        lstCointype: '0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI',
+      };
+      const lst = new LST(lstParams);
+      const unresolvedTx = await lst.mint(
+        '10000000',
+        '0x29983e1d6fca1af83eebd74ded9a3f96cafa71db25016b20ba3a3dfbd63ffb01',
+      );
 
       const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
       const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
@@ -43,10 +49,16 @@ describe('StSui App', () => {
     const helper = new StSuiHelper();
     const client = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
 
-    it('Deserialize withdraw BLUEFIN-SUI-USDC transaction', async () => {
-      const unresolvedTx = await redeem('10000000', {
-        address: '0xe136f0b6faf27ee707725f38f2aeefc51c6c31cc508222bee5cbc4f5fcf222c3',
-      });
+    it('Deserialize redeem transaction', async () => {
+      const lstParams: LstParams = {
+        lstInfo: '0x1adb343ab351458e151bc392fbf1558b3332467f23bda45ae67cd355a57fd5f5',
+        lstCointype: '0xd1b72982e40348d069bb1ff701e634c117bb5f741f44dff91e472d3b01461e55::stsui::STSUI',
+      };
+      const lst = new LST(lstParams);
+      const unresolvedTx = await lst.redeem(
+        '10000000',
+        '0x29983e1d6fca1af83eebd74ded9a3f96cafa71db25016b20ba3a3dfbd63ffb01',
+      );
 
       const resolvedTx = Transaction.from(await unresolvedTx.build({ client }));
       const data = await helper.deserialize({ transaction: resolvedTx, suiClient: client } as any);
