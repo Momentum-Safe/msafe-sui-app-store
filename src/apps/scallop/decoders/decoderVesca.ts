@@ -3,7 +3,7 @@ import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '@scallop-io/sui-scallop-sdk';
 
 import { Decoder } from './decoder';
 import { DecodeResult } from '../types';
-import { SplitCoinTransactionType } from '../types/sui';
+import { MoveCallCommand, SplitCoinTransactionType } from '../types/sui';
 import { TransactionSubType } from '../types/utils';
 import { MoveCallHelper, SplitCoinHelper } from '../utils';
 

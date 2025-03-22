@@ -356,6 +356,7 @@ export class DecoderLending extends Decoder {
 
   private decodeWithdrawLendingScoin(): DecodeResult {
     const coinName = this.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
+    console.log({ coinName });
     const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinTransactionType>(1);
     const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
       .getAmountInput()
