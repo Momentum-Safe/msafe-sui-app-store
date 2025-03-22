@@ -49,6 +49,15 @@ export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Pr
     ),
   );
 
+  console.log(
+    'XXX getUtils - suilendClient:',
+    suilendClient,
+    'obligations:',
+    obligations,
+    'obligationOwnerCaps:',
+    obligationOwnerCaps,
+  );
+
   return { suilendClient, obligationOwnerCaps, obligations };
 };
 
@@ -86,7 +95,7 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       transactionBlock: transaction,
     });
 
-    console.log('SuilendAppHelper.deserialize', simResult);
+    console.log('SuilendAppHelper.deserialize - simResult:', simResult, 'utils:', this.utils, 'suiClient:', suiClient);
 
     const decoder = new Decoder(transaction, simResult);
     const result = decoder.decode();
