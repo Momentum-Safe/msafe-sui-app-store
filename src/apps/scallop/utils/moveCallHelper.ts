@@ -15,17 +15,19 @@ class MoveCallHelper {
   private cmdIdx: number;
 
   constructor(
-    public readonly moveCall: TransactionCommand,
+    public readonly moveCall: TransactionCommand | undefined,
     public readonly transaction: Transaction,
   ) {
-    this.cmdIdx = transaction.getData().commands.findIndex((t) => {
-      if (t.$kind === 'MoveCall') {
-        const target = `${t.MoveCall.package}::${t.MoveCall.module}::${t.MoveCall.function}`;
-        const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
-        return target === moveCallTarget;
-      }
-      return false;
-    });
+    this.cmdIdx = moveCall?.MoveCall
+      ? transaction.getData().commands.findIndex((t) => {
+          if (t.$kind === 'MoveCall') {
+            const target = `${t.MoveCall.package}::${t.MoveCall.module}::${t.MoveCall.function}`;
+            const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
+            return target === moveCallTarget;
+          }
+          return false;
+        })
+      : -1;
   }
 
   get txBlockTransactions(): MoveCallTransactionType {

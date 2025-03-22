@@ -23,7 +23,7 @@ export class Decoder {
     this.movecallsAsSet = new Set(
       this.commands
         .filter(this.isMoveCall)
-        .map((command) => `${command.MoveCall.package}::${command.MoveCall.module}::${command.MoveCall.function}`),
+        .map((command) => `${command.MoveCall!.package}::${command.MoveCall!.module}::${command.MoveCall!.function}`),
     );
   }
 
@@ -52,12 +52,16 @@ export class Decoder {
 
   protected matchMoveCallCommand(moveCall: MoveCallCommand, target: string) {
     const { address, module, name } = parseStructTag(target);
-
+    if (!moveCall) {
+      return false;
+    }
     return moveCall.package === address && moveCall.module === module && moveCall.function === name;
   }
 
-  private isMoveCall(command: TransactionCommand): command is typeof command & { MoveCall: MoveCallCommand } {
-    return command.$kind === 'MoveCall';
+  private isMoveCall(
+    command: TransactionCommand,
+  ): command is typeof command & NonNullable<{ MoveCall: MoveCallCommand }> {
+    return command.$kind === 'MoveCall' && !!command.MoveCall;
   }
 
   protected filterMoveCallCommands(command: TransactionCommand, target: string) {
@@ -76,7 +80,7 @@ export class Decoder {
 
     const moveCallCommands: MoveCallCommand[] = [];
     this.commands.forEach((command) => {
-      if (this.isMoveCall(command) && targetSet.has(command.MoveCall.package)) {
+      if (this.isMoveCall(command) && command.MoveCall && targetSet.has(command.MoveCall.package)) {
         moveCallCommands[targetToIdxMap[command.MoveCall.package]] = command.MoveCall;
       }
     });

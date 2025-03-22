@@ -72,7 +72,7 @@ export class DecoderReferral extends Decoder {
   }
 
   private decodeBindReferral(): DecodeResult {
-    const veScaKey = this.helperBindReferral.decodePureArg(1, 'address');
+    const veScaKey = this.helperBindReferral.decodePureArg(1, 'Address');
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.BindReferral,

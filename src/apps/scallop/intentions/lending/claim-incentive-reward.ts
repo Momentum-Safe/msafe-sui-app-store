@@ -7,23 +7,16 @@ import { Lending, ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { SuiNetworks } from '@/types';
 
-import { BorrowIncentiveParams, SpoolIncentiveParams } from '../../types';
 import { TransactionSubType } from '../../types/utils';
 import { isObligationMigrated, OldBorrowIncentiveTxBuilder } from '../../utils';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
-export interface ClaimIncentiveRewardIntentionData {
-  lendingIncentive: SpoolIncentiveParams[];
-  borrowIncentiveV2: BorrowIncentiveParams[];
-  borrowIncentive: BorrowIncentiveParams[];
-}
-
-export class ClaimIncentiveRewardIntention extends ScallopCoreBaseIntention<ClaimIncentiveRewardIntentionData> {
+export class ClaimIncentiveRewardIntention extends ScallopCoreBaseIntention<any> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.ClaimIncentiveReward;
 
-  constructor(public readonly data: ClaimIncentiveRewardIntentionData) {
+  constructor(data = {}) {
     super(data);
   }
 
@@ -211,17 +204,10 @@ export class ClaimIncentiveRewardIntention extends ScallopCoreBaseIntention<Clai
     network: SuiNetworks;
     scallopClient: ScallopClient;
   }): Promise<Transaction> {
-    return this.claimIncentiveRewards(
-      input.scallopClient,
-      input.account.address,
-      // this.data.lendingIncentive,
-      // this.data.borrowIncentiveV2,
-      // this.data.borrowIncentive,
-      // input.account.address,
-    );
+    return this.claimIncentiveRewards(input.scallopClient, input.account.address);
   }
 
-  static fromData(data: ClaimIncentiveRewardIntentionData): ClaimIncentiveRewardIntention {
+  static fromData(data = {}): ClaimIncentiveRewardIntention {
     return new ClaimIncentiveRewardIntention(data);
   }
 }

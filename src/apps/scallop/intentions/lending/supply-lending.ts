@@ -30,7 +30,7 @@ export class SupplyLendingIntention extends ScallopCoreBaseIntention<SupplyLendi
     network: SuiNetworks;
     scallopClient: ScallopClient;
   }): Promise<Transaction> {
-    return input.scallopClient.deposit(this.data.coinName, +this.data.amount, false);
+    return input.scallopClient.deposit(this.data.coinName, +this.data.amount, false, input.account.address);
   }
 
   static fromData(data: SupplyLendingIntentionData): SupplyLendingIntention {

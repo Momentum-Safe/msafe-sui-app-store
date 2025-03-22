@@ -53,14 +53,14 @@ export class DecoderLending extends Decoder {
     if (this.isUnstakeSpoolTransaction()) {
       return this.decodeUnstakeSpool();
     }
+    if (this.isMigrateAndClaim()) {
+      return this.decodeMigrateAndClaim();
+    }
     if (this.isClaimRewardTransaction()) {
       return this.decodeClaimReward();
     }
     if (this.isOpenObligationTransaction()) {
       return this.decodeOpenObligation();
-    }
-    if (this.isMigrateAndClaim()) {
-      return this.decodeMigrateAndClaim();
     }
     if (this.isMigrateScoinTransaction()) {
       return this.decodeMigrateScoin();

@@ -13,10 +13,7 @@ import {
   BorrowWithReferralIntention,
   BorrowWithReferralIntentionData,
 } from './intentions/lending/borrow-with-referral';
-import {
-  ClaimIncentiveRewardIntention,
-  ClaimIncentiveRewardIntentionData,
-} from './intentions/lending/claim-incentive-reward';
+import { ClaimIncentiveRewardIntention } from './intentions/lending/claim-incentive-reward';
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/lending/deposit-collateral';
 import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/lending/migrate-and-claim';
 import { MigrateScoinIntention, MigrateScoinIntentionData } from './intentions/lending/migrate-scoin';
@@ -96,7 +93,6 @@ export type ScallopIntentionData =
   | WithdrawCollateralIntentionData
   | OpenObligationIntentionData
   | UnstakeSpoolIntentionData
-  | ClaimIncentiveRewardIntentionData
   | BorrowWithBoostIntentionData
   | StakeScaIntentionData
   | ExtendStakePeriodIntentionData
@@ -210,7 +206,7 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
         intention = UnstakeSpoolIntention.fromData(intentionData as UnstakeSpoolIntentionData);
         break;
       case TransactionSubType.ClaimIncentiveReward:
-        intention = ClaimIncentiveRewardIntention.fromData(intentionData as ClaimIncentiveRewardIntentionData);
+        intention = ClaimIncentiveRewardIntention.fromData(intentionData);
         break;
       case TransactionSubType.BorrowWithBoost:
         intention = BorrowWithBoostIntention.fromData(intentionData as BorrowWithBoostIntentionData);
