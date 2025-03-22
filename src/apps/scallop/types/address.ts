@@ -1,9 +1,9 @@
 import type {
-  SupportAssetCoins,
+  string,
   SupportOracleType,
   SupportPackageType,
   SupportSCoin,
-  SupportStakeMarketCoins,
+  string,
 } from './constant';
 import { SUPPORT_ORACLES } from '../constants';
 
@@ -18,7 +18,7 @@ export interface AddressesInterface {
     obligationAccessStore: string;
     coins: Partial<
       Record<
-        SupportAssetCoins,
+        string,
         {
           id: string;
           treasury: string;
@@ -77,7 +77,7 @@ export interface AddressesInterface {
     config: string;
     pools: Partial<
       Record<
-        SupportStakeMarketCoins,
+        string,
         {
           id: string;
           rewardPoolId: string;

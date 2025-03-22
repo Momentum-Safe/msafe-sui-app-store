@@ -1,14 +1,13 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { MoveCallTransaction, SplitCoinsTransaction } from '@mysten/sui.js/dist/cjs/transactions';
+import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '@scallop-io/sui-scallop-sdk';
 
 import { Decoder } from './decoder';
-import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '../constants';
 import { DecodeResult } from '../types';
+import { SplitCoinTransactionType } from '../types/sui';
 import { TransactionSubType } from '../types/utils';
-import { MoveCallHelper } from '../utils/moveCallHelper';
-import { SplitCoinHelper } from '../utils/splitCoinHelper';
+import { MoveCallHelper, SplitCoinHelper } from '../utils';
 
-export class DecoderVesca extends Decoder {
+export class DecoderVeSca extends Decoder {
   decode() {
     if (this.isExtendPeriodAndStakeMoreSca()) {
       return this.decodePeriodAndStakeMoreSca();
@@ -29,93 +28,85 @@ export class DecoderVesca extends Decoder {
   }
 
   private isStakeScaFirsTime() {
-    return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::mint_ve_sca_key`);
+    return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::mint_ve_sca_key`);
   }
 
   private isExtendPeriodAndStakeMoreSca() {
-    const extendPeriod = this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::extend_lock_period`);
-    const stakeMoreSca = this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::lock_more_sca`);
+    const extendPeriod = this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::extend_lock_period`);
+    const stakeMoreSca = this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::lock_more_sca`);
     return !!extendPeriod && !!stakeMoreSca;
   }
 
   private isRedeemSca() {
-    return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::redeem`);
+    return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::redeem`);
   }
 
   private isStakeMoreSca() {
-    return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::lock_more_sca`);
+    return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::lock_more_sca`);
   }
 
   private isExtendPeriod() {
-    return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::extend_lock_period`);
+    return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::extend_lock_period`);
   }
 
   private isRenewExpiredVeSca() {
-    return !!this.getMoveCallTransaction(`${this.coreId.veScaPkgId}::ve_sca::renew_expired_ve_sca`);
+    return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::renew_expired_ve_sca`);
   }
 
   private get helperStakeMoreSca() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.veScaPkgId}::ve_sca::lock_more_sca`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.veScaPkgId}::ve_sca::lock_more_sca`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperStakeSca() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.veScaPkgId}::ve_sca::mint_ve_sca_key`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.veScaPkgId}::ve_sca::mint_ve_sca_key`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperExtendStakePeriod() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.veScaPkgId}::ve_sca::extend_lock_period`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.veScaPkgId}::ve_sca::extend_lock_period`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperRedeemSca() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.veScaPkgId}::ve_sca::redeem`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.veScaPkgId}::ve_sca::redeem`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperRenewExpired() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.veScaPkgId}::ve_sca::renew_expired_ve_sca`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.veScaPkgId}::ve_sca::renew_expired_ve_sca`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperOldUnstakeObligation() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target.startsWith(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::unstake`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::unstake`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperUnstakeObligation() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.borrowIncentivePkg}::user::unstake`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::unstake`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperStakeObligationWithVeSca() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target.startsWith(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private decodeRedeemSca(): DecodeResult {
@@ -130,9 +121,11 @@ export class DecoderVesca extends Decoder {
   }
 
   private decodeRenewExpiredVeSca(): DecodeResult {
-    const lockSca = this.helperRenewExpired.getNestedInputParam<SplitCoinsTransaction>(4);
+    const lockSca = this.helperRenewExpired.getNestedInputParam<SplitCoinTransactionType>(4);
     const unlockTime = this.helperRenewExpired.decodeInputU64(5);
-    const amountFromSplitCoin = new SplitCoinHelper(lockSca, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const amountFromSplitCoin = new SplitCoinHelper(lockSca, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     const veScaKey = this.helperRenewExpired.decodeOwnedObjectId(1);
     const isHaveRedeem = !!this.helperRedeemSca.moveCall;
     let oldUnstakeObligation: string[] = [];
@@ -236,7 +229,7 @@ export class DecoderVesca extends Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.ExtendStakePeriod,
       intentionData: {
-        lockPeriodInDays: unlockTime,
+        unlockTime,
         obligationId,
         obligationKey,
         veScaKey,
@@ -247,9 +240,11 @@ export class DecoderVesca extends Decoder {
   }
 
   private decodePeriodAndStakeMoreSca(): DecodeResult {
-    const lockSca = this.helperStakeMoreSca.getNestedInputParam<SplitCoinsTransaction>(4);
+    const lockSca = this.helperStakeMoreSca.getNestedInputParam<SplitCoinTransactionType>(4);
     const unlockTime = this.helperExtendStakePeriod.decodeInputU64(4);
-    const amountFromSplitCoin = new SplitCoinHelper(lockSca, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const amountFromSplitCoin = new SplitCoinHelper(lockSca, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     let oldUnstakeObligation: string[] = [];
     let unstakeObligation: string[] = [];
     let veScaKey;
@@ -312,12 +307,14 @@ export class DecoderVesca extends Decoder {
     let lockSca;
     let unlockTime;
     if (this.helperStakeSca.moveCall && this.helperStakeMoreSca.moveCall === undefined) {
-      lockSca = this.helperStakeSca.getNestedInputParam<SplitCoinsTransaction>(3);
+      lockSca = this.helperStakeSca.getNestedInputParam<SplitCoinTransactionType>(3);
       unlockTime = this.helperStakeSca.decodeInputU64(4);
     } else {
-      lockSca = this.helperStakeMoreSca.getNestedInputParam<SplitCoinsTransaction>(4);
+      lockSca = this.helperStakeMoreSca.getNestedInputParam<SplitCoinTransactionType>(4);
     }
-    const amountFromSplitCoin = new SplitCoinHelper(lockSca, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const amountFromSplitCoin = new SplitCoinHelper(lockSca, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     let oldUnstakeObligation: string[] = [];
     let unstakeObligation: string[] = [];
     let veScaKey;

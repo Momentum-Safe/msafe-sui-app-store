@@ -1,18 +1,19 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
+import { ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { SuiNetworks } from '@/types';
 
-import { Scallop } from '../../models';
-import { SupportBorrowIncentiveRewardCoins, TransactionSubType } from '../../types';
+import { TransactionSubType } from '../../types';
+import { OldBorrowIncentiveTxBuilder } from '../../utils';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface MigrateAndClaimIntentionData {
   obligationKey: string;
   obligationId: string;
-  rewardCoinName: SupportBorrowIncentiveRewardCoins;
+  rewardCoinName: string;
   veScaKey?: string;
 }
 
@@ -25,18 +26,31 @@ export class MigrateAndClaimIntention extends ScallopCoreBaseIntention<MigrateAn
     super(data);
   }
 
+  async migrateAndClaim({ account, scallopClient: client }: { account: WalletAccount; scallopClient: ScallopClient }) {
+    const sender = account.address;
+    const { obligationKey, obligationId, rewardCoinName, veScaKey } = this.data;
+
+    const tx = client.builder.createTxBlock();
+    tx.setSender(sender);
+
+    const rewardCoin = OldBorrowIncentiveTxBuilder.redeem_rewards(tx, obligationKey, obligationId, rewardCoinName);
+    tx.transferObjects([rewardCoin], sender);
+    await tx.unstakeObligationQuick(obligationId, obligationKey);
+    if (veScaKey) {
+      await tx.stakeObligationWithVeScaQuick(obligationId, obligationKey, veScaKey);
+    } else {
+      await tx.stakeObligationQuick(obligationId, obligationKey);
+    }
+    return tx.txBlock;
+  }
+
   async build(input: {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-    scallop: Scallop;
-  }): Promise<TransactionBlock> {
-    return input.scallop.client.migrateAndClaim(
-      this.data.obligationKey,
-      this.data.obligationId,
-      this.data.rewardCoinName,
-      this.data.veScaKey,
-    );
+    scallopClient: ScallopClient;
+  }): Promise<Transaction> {
+    return this.migrateAndClaim(input);
   }
 
   static fromData(data: MigrateAndClaimIntentionData): MigrateAndClaimIntention {

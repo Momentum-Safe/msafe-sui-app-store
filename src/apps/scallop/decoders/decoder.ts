@@ -1,41 +1,90 @@
-import { TransactionBlock } from '@mysten/sui.js/dist/cjs/transactions';
+import { DevInspectResults } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { parseStructTag } from '@mysten/sui/utils';
+import { ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
-import { Scallop } from '../models';
+import { MoveCallCommand, TransactionCommand, TransactionCommands, TransactionInputs } from '../types/sui';
 
 export class Decoder {
-  protected scallop: Scallop;
+  protected inputs: TransactionInputs;
+
+  protected commands: TransactionCommands;
+
+  protected movecallsAsSet: Set<string>;
 
   constructor(
-    public readonly txb: TransactionBlock,
-    scallop: Scallop,
+    public readonly transaction: Transaction,
+    protected scallopClient: ScallopClient,
+    protected devInspectResult: DevInspectResults,
   ) {
-    this.scallop = scallop;
+    this.scallopClient = scallopClient;
+    this.inputs = transaction.getData().inputs;
+    this.commands = transaction.getData().commands;
+    this.movecallsAsSet = new Set(
+      this.commands
+        .filter(this.isMoveCall)
+        .map((command) => `${command.MoveCall.package}::${command.MoveCall.module}::${command.MoveCall.function}`),
+    );
+  }
+
+  get address() {
+    return this.scallopClient.address;
+  }
+
+  get utils() {
+    return this.scallopClient.utils;
   }
 
   protected get coreId() {
     return {
-      protocolPkg: this.scallop.address.get('core.packages.protocol.id'),
-      market: this.scallop.address.get('core.market'),
-      version: this.scallop.address.get('core.version'),
-      coinDecimalsRegistry: this.scallop.address.get('core.coinDecimalsRegistry'),
-      xOracle: this.scallop.address.get('core.oracles.xOracle'),
-      spoolPkg: this.scallop.address.get('spool.id'),
-      borrowIncentivePkg: this.scallop.address.get('borrowIncentive.id'),
-      veScaPkgId: this.scallop.address.get('vesca.id'),
-      scoin: this.scallop.address.get('scoin.id'),
-      referral: this.scallop.address.get('referral.id'),
+      protocolPkg: this.address.get('core.packages.protocol.id'),
+      market: this.address.get('core.market'),
+      version: this.address.get('core.version'),
+      coinDecimalsRegistry: this.address.get('core.coinDecimalsRegistry'),
+      xOracle: this.address.get('core.oracles.xOracle'),
+      spoolPkg: this.address.get('spool.id'),
+      borrowIncentivePkg: this.address.get('borrowIncentive.id'),
+      veScaPkgId: this.address.get('vesca.id'),
+      scoin: this.address.get('scoin.id'),
+      referral: this.address.get('referral.id'),
     };
   }
 
-  protected get transactions() {
-    return this.txb.blockData.transactions;
+  protected matchMoveCallCommand(moveCall: MoveCallCommand, target: string) {
+    const { address, module, name } = parseStructTag(target);
+
+    return moveCall.package === address && moveCall.module === module && moveCall.function === name;
   }
 
-  protected get inputTransaction() {
-    return this.txb.blockData.inputs;
+  private isMoveCall(command: TransactionCommand): command is typeof command & { MoveCall: MoveCallCommand } {
+    return command.$kind === 'MoveCall';
   }
 
-  protected getMoveCallTransaction(target: string) {
-    return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
+  protected filterMoveCallCommands(command: TransactionCommand, target: string) {
+    return this.isMoveCall(command) && this.matchMoveCallCommand(command.MoveCall, target);
+  }
+
+  protected getMoveCallCommands(targets: string[]): MoveCallCommand[] {
+    const targetSet = new Set(targets);
+    const targetToIdxMap = targets.reduce(
+      (acc, target, idx) => {
+        acc[target] = idx;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const moveCallCommands: MoveCallCommand[] = [];
+    this.commands.forEach((command) => {
+      if (this.isMoveCall(command) && targetSet.has(command.MoveCall.package)) {
+        moveCallCommands[targetToIdxMap[command.MoveCall.package]] = command.MoveCall;
+      }
+    });
+
+    return moveCallCommands;
+  }
+
+  protected hasMoveCallCommand(target: string) {
+    return this.movecallsAsSet.has(target);
   }
 }

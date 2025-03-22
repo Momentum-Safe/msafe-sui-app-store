@@ -1,36 +1,55 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import type { SerializedBcs } from '@mysten/bcs';
-import { ObjectArg, SharedObjectRef } from '@mysten/sui.js/bcs';
-import type { SuiObjectRef } from '@mysten/sui.js/client';
-import type { TransactionArgument, TransactionObjectArgument } from '@mysten/sui.js/transactions';
-
-import type { SupportAssetCoins } from './constant';
+import { SuiObjectRef } from '@mysten/sui/client';
+import type { Inputs } from '@mysten/sui/transactions';
 
 export type OptionalKeys<T> = {
   [K in keyof T]?: T[K];
 };
 
-export type CoinPrices = OptionalKeys<Record<SupportAssetCoins, number>>;
+export type CoinPrices = OptionalKeys<Record<string, number>>;
 
 export type PriceMap = Map<
-  SupportAssetCoins,
+  string,
   {
     price: number;
     publishTime: number;
   }
 >;
 
-export type PureCallArg = {
-  Pure: number[];
+// export type PureCallArg = {
+//   Pure: number[];
+// };
+
+type SharedObjectRef = {
+  /** Hex code as string representing the object id */
+  objectId: string;
+  /** The version the object was shared at */
+  initialSharedVersion: number | string;
+  /** Whether reference is mutable */
+  mutable: boolean;
 };
 
+type ObjectArg =
+  | {
+      ImmOrOwnedObject: SuiObjectRef;
+    }
+  | {
+      SharedObject: SharedObjectRef;
+    }
+  | {
+      Receiving: SuiObjectRef;
+    };
 export type ObjectCallArg = {
   Object: ObjectArg;
 };
 
-export type SuiAddressArg = TransactionArgument | SerializedBcs<any> | string | PureCallArg;
-export type SuiObjectArg = TransactionObjectArgument | string | SharedObjectRef | SuiObjectRef | ObjectCallArg;
-export type SuiTxArg = SuiAddressArg | number | bigint | boolean;
+// export type SuiAddressArg = TransactionArgument | SerializedBcs<any> | string | PureCallArg;
+export type SuiObjectArg =
+  | string
+  | Parameters<typeof Inputs.ObjectRef>[0]
+  | Parameters<typeof Inputs.SharedObjectRef>[0];
+
+// export type SuiTxArg = SuiAddressArg | number | bigint | boolean;
 export type SuiNetworks = 'sui:devnet' | 'sui:testnet' | 'sui:localnet' | 'sui:mainnet';
 export enum TransactionSubType {
   SupplyLending = 'SupplyLending',

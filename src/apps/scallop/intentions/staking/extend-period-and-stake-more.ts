@@ -1,12 +1,13 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
+import { SCA_COIN_TYPE, ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { SuiNetworks } from '@/types';
 
-import { Scallop } from '../../models';
 import { TransactionSubType } from '../../types/utils';
+import { OldBorrowIncentiveTxBuilder } from '../../utils';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface ExtendPeriodAndStakeMoreIntentionData {
@@ -28,22 +29,54 @@ export class ExtendPeriodAndStakeMoreIntention extends ScallopCoreBaseIntention<
     super(data);
   }
 
+  async extendPeriodAndStakeMoreSca({
+    account,
+    scallopClient: client,
+  }: {
+    account: WalletAccount;
+    scallopClient: ScallopClient;
+  }) {
+    const {
+      amount,
+      veScaKey,
+      lockPeriodInDays,
+      obligationId,
+      obligationKey,
+      isOldBorrowIncentive,
+      isObligationLocked,
+    } = this.data;
+
+    const sender = account.address;
+    const tx = client.builder.createTxBlock();
+    tx.setSender(sender);
+
+    // Get all SCA and merge them into one.
+    const coins = await client.utils.selectCoins(amount, SCA_COIN_TYPE, sender);
+    const [takeCoin, leftCoin] = tx.takeAmountFromCoins(coins, amount);
+    tx.extendLockPeriod(veScaKey, lockPeriodInDays);
+    tx.extendLockAmount(veScaKey, takeCoin);
+    tx.transferObjects([leftCoin], sender);
+    if (!obligationId || !obligationKey) {
+      return tx.txBlock;
+    }
+    if (isObligationLocked) {
+      if (isOldBorrowIncentive) {
+        OldBorrowIncentiveTxBuilder.unstakeObligation(tx, obligationId, obligationKey);
+      } else {
+        tx.unstakeObligation(obligationId, obligationKey);
+      }
+    }
+    tx.stakeObligationWithVesca(obligationId, obligationKey, veScaKey);
+    return tx.txBlock;
+  }
+
   async build(input: {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-    scallop: Scallop;
-  }): Promise<TransactionBlock> {
-    return input.scallop.client.extendPeriodAndStakeMoreSca(
-      this.data.amount,
-      this.data.veScaKey,
-      this.data.lockPeriodInDays,
-      this.data.obligationId,
-      this.data.obligationKey,
-      this.data.isObligationLocked,
-      this.data.isOldBorrowIncentive,
-      input.account.address,
-    );
+    scallopClient: ScallopClient;
+  }): Promise<Transaction> {
+    return this.extendPeriodAndStakeMoreSca(input);
   }
 
   static fromData(data: ExtendPeriodAndStakeMoreIntentionData): ExtendPeriodAndStakeMoreIntention {

@@ -1,12 +1,36 @@
-import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction, TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/dist/cjs/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { bcs } from '@mysten/sui/bcs';
+import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
+import { TransactionBlockInput } from '@mysten/sui.js/transactions';
 
-export class MoveCallHelper {
+import {
+  BcsType,
+  MoveCallTransactionArgumentType,
+  MoveCallTransactionType,
+  SplitCoinTransactionType,
+  TransactionCommand,
+} from '../types/sui';
+
+class MoveCallHelper {
+  private cmdIdx: number;
+
   constructor(
-    public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
-  ) {}
+    public readonly moveCall: TransactionCommand,
+    public readonly transaction: Transaction,
+  ) {
+    this.cmdIdx = transaction.getData().commands.findIndex((t) => {
+      if (t.$kind === 'MoveCall') {
+        const target = `${t.MoveCall.package}::${t.MoveCall.module}::${t.MoveCall.function}`;
+        const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
+        return target === moveCallTarget;
+      }
+      return false;
+    });
+  }
+
+  get txBlockTransactions(): MoveCallTransactionType {
+    return this.transaction.blockData.transactions[this.cmdIdx] as MoveCallTransactionType;
+  }
 
   decodeSharedObjectId(argIndex: number) {
     const input = this.getInputParam(argIndex);
@@ -19,61 +43,57 @@ export class MoveCallHelper {
   }
 
   decodeInputU64(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u64');
+    const strVal = this.decodePureArg<string>(argIndex, 'U64');
     return Number(strVal);
   }
 
   decodeInputU8(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u8');
+    const strVal = this.decodePureArg<string>(argIndex, 'U8');
     return Number(strVal);
   }
 
   decodeInputAddress(argIndex: number) {
-    const input = this.decodePureArg<string>(argIndex, 'address');
+    const input = this.decodePureArg<string>(argIndex, 'Address');
     return normalizeSuiAddress(input);
   }
 
   decodeInputString(argIndex: number) {
-    return this.decodePureArg<string>(argIndex, 'string');
+    return this.decodePureArg<string>(argIndex, 'String');
   }
 
   decodeInputBool(argIndex: number) {
-    return this.decodePureArg<boolean>(argIndex, 'bool');
+    return this.decodePureArg<boolean>(argIndex, 'Bool');
   }
 
-  decodePureArg<T>(argIndex: number, bcsType: string) {
+  decodePureArg<T>(argIndex: number, type: BcsType) {
     const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getPureInputValue<T>(input, bcsType);
+    return MoveCallHelper.getPureInputValue<T>(input, type);
   }
 
   getInputParam(argIndex: number) {
-    const arg = this.moveCall.arguments[argIndex];
+    const arg = this.transaction.blockData.inputs[argIndex] as MoveCallTransactionArgumentType;
     if (arg.kind !== 'Input') {
       throw new Error('not input type');
     }
-    return this.txb.blockData.inputs[arg.index];
+    return this.transaction.blockData.inputs[arg.index];
   }
 
-  getNestedInputParam<T>(argIndex: number) {
-    const arg = this.moveCall.arguments[argIndex];
+  getNestedInputParam<T = SplitCoinTransactionType>(argIndex: number) {
+    const arg = this.transaction.blockData.inputs[argIndex] as MoveCallTransactionArgumentType;
     if (arg.kind !== 'NestedResult') {
       throw new Error('not input type');
     }
-    return this.txb.blockData.transactions[arg.index] as T;
+    return this.transaction.blockData.transactions[arg.index] as T;
   }
 
-  isHaveNestedInput(argIndex: number) {
-    const arg = this.moveCall.arguments[argIndex];
-    return arg.kind === 'NestedResult';
-  }
-
-  static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
+  static getPureInputValue<T>(input: TransactionBlockInput, type: BcsType) {
     if (input.type !== 'pure') {
       throw new Error('not pure argument');
     }
     if (typeof input.value === 'object' && 'Pure' in input.value) {
       const bcsNums = input.value.Pure;
-      return bcs.de(bcsType, new Uint8Array(bcsNums)) as T;
+      const a = bcs[type];
+      return bcs[type].parse(new Uint8Array(bcsNums)) as T;
     }
     return input.value as T;
   }
@@ -104,7 +124,7 @@ export class MoveCallHelper {
     return normalizeSuiAddress(input.value.Object.Shared.objectId as string);
   }
 
-  static getPureInput<T>(input: TransactionBlockInput, bcsType: string) {
+  static getPureInput<T>(input: TransactionBlockInput) {
     if (input.type !== 'pure') {
       throw new Error('not pure argument');
     }
@@ -115,14 +135,16 @@ export class MoveCallHelper {
       throw new Error('Pure not in value');
     }
     const bcsVal = input.value.Pure;
-    return bcs.de(bcsType, new Uint8Array(bcsVal)) as T;
+    return bcs.U64.parse(new Uint8Array(bcsVal)) as T;
   }
 
   typeArg(index: number) {
-    return normalizeStructTag(this.moveCall.typeArguments[index]);
+    return normalizeStructTag(this.txBlockTransactions.typeArguments[index]);
   }
 
   txArg(index: number) {
-    return this.moveCall.arguments[index];
+    return this.transaction.blockData.inputs[index];
   }
 }
+
+export default MoveCallHelper;

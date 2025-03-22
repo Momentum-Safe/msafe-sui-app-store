@@ -1,18 +1,16 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { MoveCallTransaction, SplitCoinsTransaction } from '@mysten/sui.js/dist/cjs/transactions';
+import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '@scallop-io/sui-scallop-sdk';
 
 import { Decoder } from './decoder';
-import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '../constants';
-import { SupportBorrowIncentiveRewardCoins, SupportStakeMarketCoins } from '../types';
+import { SplitCoinTransactionType } from '../types/sui';
 import { DecodeResult, TransactionSubType } from '../types/utils';
-import { MoveCallHelper } from '../utils/moveCallHelper';
-import { SplitCoinHelper } from '../utils/splitCoinHelper';
+import { MoveCallHelper, SplitCoinHelper } from '../utils';
 
 export class DecoderLending extends Decoder {
   decode() {
-    if (this.isMoveAsset()) {
-      return this.decodeMoveAsset();
-    }
+    // if (this.isMoveAsset()) {
+    //   return this.decodeMoveAsset();
+    // }
     if (this.isSupplyWithStakeSpoolTransaction()) {
       return this.decodeSupplyWithStakeSpool();
     }
@@ -70,247 +68,221 @@ export class DecoderLending extends Decoder {
     return undefined;
   }
 
-  private isMoveAsset() {
-    return !!this.getMoveCallTransaction(
-      '0x5857d185897aaff40ae37b2eecc895efc1a9dff1b210c4fb894eabbce4ac2603::slippage_check::check_slippage',
-    );
-  }
-
   private isMigrateScoinTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.scoin}::s_coin_converter::mint_s_coin`);
+    return this.hasMoveCallCommand(`${this.coreId.scoin}::s_coin_converter::mint_s_coin`);
   }
 
   private isSupplyLendingTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::mint::mint`);
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::mint::mint`);
   }
 
   private isSupplyWithStakeSpoolTransaction() {
-    const supplyMoveCall = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::mint::mint`);
-    const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::stake`);
-    return !!supplyMoveCall && !!stakeMoveCall;
+    const supplyMoveCall = this.hasMoveCallCommand(`${this.coreId.protocolPkg}::mint::mint`);
+    const stakeMoveCall = this.hasMoveCallCommand(`${this.coreId.spoolPkg}::user::stake`);
+    return supplyMoveCall && stakeMoveCall;
   }
 
   private isUnstakeAndWithdrawTransaction() {
-    const unstakeMoveCall = this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::unstake`);
-    const withdrawMoveCall = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::redeem::redeem`);
-    return !!unstakeMoveCall && !!withdrawMoveCall;
+    const unstakeMoveCall = this.hasMoveCallCommand(`${this.coreId.spoolPkg}::user::unstake`);
+    const withdrawMoveCall = this.hasMoveCallCommand(`${this.coreId.protocolPkg}::redeem::redeem`);
+    return unstakeMoveCall && withdrawMoveCall;
   }
 
   private isStakeSpoolTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::stake`);
+    return this.hasMoveCallCommand(`${this.coreId.spoolPkg}::user::stake`);
   }
 
   private isWithdrawLendingTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::redeem::redeem`);
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::redeem::redeem`);
   }
 
   private isWithdrawLendingScoinTransaction() {
-    const redeem = !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::redeem::redeem`);
-    const burnScoin = !!this.getMoveCallTransaction(`${this.coreId.scoin}::s_coin_converter::burn_s_coin`);
-    return !!redeem && !!burnScoin;
+    const redeem = this.hasMoveCallCommand(`${this.coreId.protocolPkg}::redeem::redeem`);
+    const burnScoin = this.hasMoveCallCommand(`${this.coreId.scoin}::s_coin_converter::burn_s_coin`);
+    return redeem && burnScoin;
   }
 
   private isDepositCollateralTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::deposit_collateral::deposit_collateral`);
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::deposit_collateral::deposit_collateral`);
   }
 
   private isWithdrawCollateralTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::withdraw_collateral::withdraw_collateral`);
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::withdraw_collateral::withdraw_collateral`);
   }
 
   private isBorrowTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow`);
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::borrow::borrow`);
   }
 
   private isBorrowWithBoostTransaction() {
-    const borrowMoveCall = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow`);
-    const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
-    return !!borrowMoveCall && !!stakeMoveCall;
+    const borrowMoveCall = this.hasMoveCallCommand(`${this.coreId.protocolPkg}::borrow::borrow`);
+    const stakeMoveCall = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    return borrowMoveCall && stakeMoveCall;
   }
 
   private isBorrowWithReferralTransaction() {
-    const borrowWithReferral = this.getMoveCallTransaction(`${this.coreId.protocolPkg}::borrow::borrow_with_referral`);
-    return !!borrowWithReferral;
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::borrow::borrow_with_referral`);
   }
 
   private isRepayTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::repay::repay`);
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::repay::repay`);
   }
 
   private isRepayWithBoostTransaction() {
-    const repayMoveCall = !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::repay::repay`);
-    const stakeMoveCall = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
-    return !!repayMoveCall && !!stakeMoveCall;
+    const repayMoveCall = this.hasMoveCallCommand(`${this.coreId.protocolPkg}::repay::repay`);
+    const stakeMoveCall = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    return repayMoveCall && stakeMoveCall;
   }
 
   private isUnstakeSpoolTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::unstake`);
+    return this.hasMoveCallCommand(`${this.coreId.spoolPkg}::user::unstake`);
   }
 
   private isCreateStakeAccountTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::new_spool_account`);
+    return this.hasMoveCallCommand(`${this.coreId.spoolPkg}::user::new_spool_account`);
   }
 
   private isClaimRewardTransaction() {
-    const lendingIncentive = this.getMoveCallTransaction(`${this.coreId.spoolPkg}::user::redeem_rewards`);
-    const borrowIncentiveV2 = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::redeem_rewards`);
-    return !!lendingIncentive || !!borrowIncentiveV2;
+    const lendingIncentive = this.hasMoveCallCommand(`${this.coreId.spoolPkg}::user::redeem_rewards`);
+    const borrowIncentiveV2 = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::redeem_rewards`);
+    return lendingIncentive || borrowIncentiveV2;
   }
 
   private isOpenObligationTransaction() {
-    return !!this.getMoveCallTransaction(`${this.coreId.protocolPkg}::open_obligation::open_obligation`);
+    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::open_obligation::open_obligation`);
   }
 
   private isMigrateAndClaim() {
-    const oldBorrowIncentive = this.getMoveCallTransaction(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`);
-    const stakeWithVeSca = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
-    const stakeWithoutVesca = this.getMoveCallTransaction(`${this.coreId.borrowIncentivePkg}::user::stake`);
-    return !!oldBorrowIncentive && (!!stakeWithVeSca || !!stakeWithoutVesca);
+    const oldBorrowIncentive = this.hasMoveCallCommand(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`);
+    const stakeWithVeSca = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    const stakeWithoutVesca = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake`);
+    return oldBorrowIncentive && (stakeWithVeSca || stakeWithoutVesca);
   }
 
   private get helperClaimLendingReward() {
-    const moveCalls = this.transactions
-      .filter(
-        (trans) =>
-          trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.spoolPkg}::user::redeem_rewards`),
-      )
-      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+    const moveCalls = this.commands
+      .filter((command) => this.filterMoveCallCommands(command, `${this.coreId.spoolPkg}::user::redeem_rewards`))
+      .map((command) => new MoveCallHelper(command, this.transaction));
     return moveCalls;
   }
 
   private get helperClaimBorrowV2Reward() {
-    const moveCalls = this.transactions
-      .filter(
-        (trans) =>
-          trans.kind === 'MoveCall' &&
-          trans.target.startsWith(`${this.coreId.borrowIncentivePkg}::user::redeem_rewards`),
+    const moveCalls = this.commands
+      .filter((command) =>
+        this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::redeem_rewards`),
       )
-      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+      .map((command) => new MoveCallHelper(command, this.transaction));
     return moveCalls;
   }
 
   private get helperStakeObligationWithVeSca() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target.startsWith(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperClaimBorrowReward() {
-    const moveCalls = this.transactions
-      .filter(
-        (trans) =>
-          trans.kind === 'MoveCall' &&
-          trans.target.startsWith(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`),
+    const moveCalls = this.commands
+      .filter((command) =>
+        this.filterMoveCallCommands(command, `${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`),
       )
-      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+      .map((command) => new MoveCallHelper(command, this.transaction));
     return moveCalls;
   }
 
   private get helperMint() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::mint::mint`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::mint::mint`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperUnstakes() {
-    const moveCalls = this.transactions
-      .filter((trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.spoolPkg}::user::unstake`))
-      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+    const moveCalls = this.commands
+      .filter((command) => this.filterMoveCallCommands(command, `${this.coreId.spoolPkg}::user::unstake`))
+      .map((command) => new MoveCallHelper(command, this.transaction));
     return moveCalls;
   }
 
   private get helperRedeems() {
-    const moveCalls = this.transactions
-      .filter(
-        (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::redeem::redeem`),
-      )
-      .map((trans) => new MoveCallHelper(trans as MoveCallTransaction, this.txb));
+    const moveCalls = this.commands
+      .filter((command) => this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::redeem::redeem`))
+      .map((command) => new MoveCallHelper(command, this.transaction));
     return moveCalls;
   }
 
   private get helperRedeem() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::redeem::redeem`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::redeem::redeem`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperBurnScoin() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.scoin}::s_coin_converter::burn_s_coin`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.scoin}::s_coin_converter::burn_s_coin`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
-  private get helperSlippage() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target.startsWith(
-          `0x5857d185897aaff40ae37b2eecc895efc1a9dff1b210c4fb894eabbce4ac2603::slippage_check::check_slippage`,
-        ),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
-  }
+  // private get helperSlippage() {
+  //   const moveCall = this.commands.find((command) =>
+  //     this.filterMoveCallCommands(
+  //       command,
+  //       `0x5857d185897aaff40ae37b2eecc895efc1a9dff1b210c4fb894eabbce4ac2603::slippage_check::check_slippage`,
+  //     ),
+  //   );
+  //   return new MoveCallHelper(moveCall, this.transaction);
+  // }
 
   private get helperStake() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.spoolPkg}::user::stake`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.spoolPkg}::user::stake`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperUnstake() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.spoolPkg}::user::unstake`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.spoolPkg}::user::unstake`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperDepositCollateral() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target.startsWith(`${this.coreId.protocolPkg}::deposit_collateral::deposit_collateral`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::deposit_collateral::deposit_collateral`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperWithdrawCollateral() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target.startsWith(`${this.coreId.protocolPkg}::withdraw_collateral::withdraw_collateral`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::withdraw_collateral::withdraw_collateral`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperBorrow() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::borrow::borrow`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::borrow::borrow`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperBorrowWithReferral() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target.startsWith(`${this.coreId.protocolPkg}::borrow::borrow_with_referral`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::borrow::borrow_with_referral`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private get helperRepay() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(`${this.coreId.protocolPkg}::repay::repay`),
-    ) as MoveCallTransaction;
-    return new MoveCallHelper(moveCall, this.txb);
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.protocolPkg}::repay::repay`),
+    );
+    return new MoveCallHelper(moveCall, this.transaction);
   }
 
   private decodeMigrateScoin(): DecodeResult {
@@ -328,9 +300,7 @@ export class DecoderLending extends Decoder {
     }
     const obligationKey = this.helperClaimBorrowReward[0].decodeOwnedObjectId(2);
     const obligationId = this.helperClaimBorrowReward[0].decodeSharedObjectId(3);
-    const rewardCoinName = this.scallop.utils.parseCoinNameFromType(
-      this.helperClaimBorrowReward[0].typeArg(0),
-    ) as SupportBorrowIncentiveRewardCoins;
+    const rewardCoinName = this.utils.parseCoinNameFromType(this.helperClaimBorrowReward[0].typeArg(0));
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.MigrateAndClaim,
@@ -351,10 +321,13 @@ export class DecoderLending extends Decoder {
     };
   }
 
+  // @TODO: Decode from event rather than from transaction block
   private decodeSupplyLending(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
-    const amount = this.helperMint.getNestedInputParam<SplitCoinsTransaction>(2);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const coinName = this.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
+    const amount = this.helperMint.getNestedInputParam<SplitCoinTransactionType>(2);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.SupplyLending,
@@ -366,9 +339,11 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeWithdrawLending(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
-    const amount = this.helperRedeem.getNestedInputParam<SplitCoinsTransaction>(2);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const coinName = this.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
+    const amount = this.helperRedeem.getNestedInputParam<SplitCoinTransactionType>(2);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.WithdrawLending,
@@ -380,9 +355,11 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeWithdrawLendingScoin(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
-    const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const coinName = this.utils.parseCoinNameFromType(this.helperRedeem.typeArg(0));
+    const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinTransactionType>(1);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.WithdrawLending,
@@ -394,9 +371,11 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeDepositCollateral(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperDepositCollateral.typeArg(0));
-    const amount = this.helperDepositCollateral.getNestedInputParam<SplitCoinsTransaction>(3);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const coinName = this.utils.parseCoinNameFromType(this.helperDepositCollateral.typeArg(0));
+    const amount = this.helperDepositCollateral.getNestedInputParam<SplitCoinTransactionType>(3);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     const obligationId = this.helperDepositCollateral.decodeSharedObjectId(1);
     return {
       txType: TransactionType.Other,
@@ -410,7 +389,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeWithdrawCollateral(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperWithdrawCollateral.typeArg(0));
+    const coinName = this.utils.parseCoinNameFromType(this.helperWithdrawCollateral.typeArg(0));
     const amount = this.helperWithdrawCollateral.decodeInputU64(5);
     const obligationId = this.helperWithdrawCollateral.decodeSharedObjectId(1);
     const obligationKey = this.helperWithdrawCollateral.decodeOwnedObjectId(2);
@@ -427,7 +406,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeBorrow(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
+    const coinName = this.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
     const amount = this.helperBorrow.decodeInputU64(5);
     const obligationId = this.helperBorrow.decodeSharedObjectId(1);
     const obligationKey = this.helperBorrow.decodeOwnedObjectId(2);
@@ -444,7 +423,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeBorrowWithBoost(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
+    const coinName = this.utils.parseCoinNameFromType(this.helperBorrow.typeArg(0));
     const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
     const amount = this.helperBorrow.decodeInputU64(5);
     const obligationId = this.helperBorrow.decodeSharedObjectId(1);
@@ -463,7 +442,7 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeBorrowWithReferral(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperBorrowWithReferral.typeArg(0));
+    const coinName = this.utils.parseCoinNameFromType(this.helperBorrowWithReferral.typeArg(0));
     let veScaKey;
     if (this.helperStakeObligationWithVeSca.moveCall) {
       veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
@@ -485,9 +464,11 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeRepay(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
-    const amount = this.helperRepay.getNestedInputParam<SplitCoinsTransaction>(3);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const coinName = this.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
+    const amount = this.helperRepay.getNestedInputParam<SplitCoinTransactionType>(3);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     const obligationId = this.helperRepay.decodeSharedObjectId(1);
     return {
       txType: TransactionType.Other,
@@ -501,10 +482,12 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeRepayWithBoost(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
+    const coinName = this.utils.parseCoinNameFromType(this.helperRepay.typeArg(0));
     const veScaKey = this.helperStakeObligationWithVeSca.decodeOwnedObjectId(9);
-    const amount = this.helperRepay.getNestedInputParam<SplitCoinsTransaction>(3);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const amount = this.helperRepay.getNestedInputParam<SplitCoinTransactionType>(3);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     const obligationId = this.helperRepay.decodeSharedObjectId(1);
     return {
       txType: TransactionType.Other,
@@ -525,15 +508,15 @@ export class DecoderLending extends Decoder {
     }
     let amountFromSplitCoin = 0;
     if (this.helperBurnScoin.moveCall) {
-      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
-      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinTransactionType>(1);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction).getAmountInput().reduce((a, b) => a + b, 0);
     }
     if (this.helperStake.moveCall && amountFromSplitCoin === 0) {
-      const amount = this.helperStake.getNestedInputParam<SplitCoinsTransaction>(2);
-      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+      const amount = this.helperStake.getNestedInputParam<SplitCoinTransactionType>(2);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction).getAmountInput().reduce((a, b) => a + b, 0);
     }
     const coinType = this.helperStake.typeArg(0);
-    const coinName = this.scallop.utils.parseCoinNameFromType(coinType);
+    const coinName = this.utils.parseCoinNameFromType(coinType);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.StakeSpool,
@@ -549,7 +532,7 @@ export class DecoderLending extends Decoder {
     const stakeSpoolAccount = this.helperUnstake.decodeOwnedObjectId(1);
     const amount = this.helperUnstake.decodeInputU64(2);
     const coinType = this.helperUnstake.typeArg(0);
-    const coinName = this.scallop.utils.parseCoinNameFromType(coinType);
+    const coinName = this.utils.parseCoinNameFromType(coinType);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.UnstakeSpool,
@@ -562,9 +545,11 @@ export class DecoderLending extends Decoder {
   }
 
   private decodeSupplyWithStakeSpool(): DecodeResult {
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
-    const amount = this.helperMint.getNestedInputParam<SplitCoinsTransaction>(2);
-    const amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+    const coinName = this.utils.parseCoinNameFromType(this.helperMint.typeArg(0));
+    const amount = this.helperMint.getNestedInputParam<SplitCoinTransactionType>(2);
+    const amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction)
+      .getAmountInput()
+      .reduce((a, b) => a + b, 0);
     let stakeSpoolAccount;
     if (!this.isCreateStakeAccountTransaction()) {
       stakeSpoolAccount = this.helperStake.decodeOwnedObjectId(1);
@@ -587,11 +572,11 @@ export class DecoderLending extends Decoder {
       const amount = tx.decodeInputU64(2);
       stakeAccountWithAmount.push({ id: stakeAccountId, coin: amount });
     });
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
+    const coinName = this.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
     let amountFromSplitCoin = 0;
     if (this.helperBurnScoin.moveCall) {
-      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
-      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
+      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinTransactionType>(1);
+      amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction).getAmountInput().reduce((a, b) => a + b, 0);
     }
     return {
       txType: TransactionType.Other,
@@ -604,74 +589,70 @@ export class DecoderLending extends Decoder {
     };
   }
 
-  private decodeMoveAsset(): DecodeResult {
-    const stakeAccountWithAmount: { id: string; coin: number }[] = [];
-    this.helperUnstakes.forEach((tx) => {
-      const stakeAccountId = tx.decodeOwnedObjectId(1);
-      const amount = tx.decodeInputU64(2);
-      stakeAccountWithAmount.push({ id: stakeAccountId, coin: amount });
-    });
-    const coinName = this.scallop.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
-    let amountFromSplitCoin = 0;
-    if (this.helperBurnScoin.moveCall) {
-      const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinsTransaction>(1);
-      amountFromSplitCoin = new SplitCoinHelper(amount, this.txb).getAmountInput().reduce((a, b) => a + b, 0);
-    }
-    const slippage = this.helperSlippage.decodePureArg(1, 'u64');
-    const validSwapAmount = this.helperSlippage.decodePureArg(2, 'string');
+  // private decodeMoveAsset(): DecodeResult {
+  //   const stakeAccountWithAmount: { id: string; coin: number }[] = [];
+  //   this.helperUnstakes.forEach((tx) => {
+  //     const stakeAccountId = tx.decodeOwnedObjectId(1);
+  //     const amount = tx.decodeInputU64(2);
+  //     stakeAccountWithAmount.push({ id: stakeAccountId, coin: amount });
+  //   });
+  //   const coinName = this.utils.parseCoinNameFromType(this.helperRedeems[0].typeArg(0));
+  //   let amountFromSplitCoin = 0;
+  //   if (this.helperBurnScoin.moveCall) {
+  //     const amount = this.helperBurnScoin.getNestedInputParam<SplitCoinTransactionType>(1);
+  //     amountFromSplitCoin = new SplitCoinHelper(amount, this.transaction).getAmountInput().reduce((a, b) => a + b, 0);
+  //   }
+  //   const slippage = this.helperSlippage.decodePureArg(1, 'U64');
+  //   const validSwapAmount = this.helperSlippage.decodePureArg(2, 'String');
 
-    return {
-      txType: TransactionType.Other,
-      type: TransactionSubType.MigrateWusdcToUsdc,
-      intentionData: {
-        amount: amountFromSplitCoin,
-        coinName,
-        slippage,
-        validSwapAmount,
-        stakeAccountId: stakeAccountWithAmount,
-      },
-    };
-  }
+  //   return {
+  //     txType: TransactionType.Other,
+  //     type: TransactionSubType.MigrateWusdcToUsdc,
+  //     intentionData: {
+  //       amount: amountFromSplitCoin,
+  //       coinName,
+  //       slippage,
+  //       validSwapAmount,
+  //       stakeAccountId: stakeAccountWithAmount,
+  //     },
+  //   };
+  // }
 
   private decodeClaimReward(): DecodeResult {
     const lendingReward: {
-      stakeMarketCoinName: SupportStakeMarketCoins;
+      stakeMarketCoinName: string;
       stakeAccountId: string;
     }[] = [];
     const borrowRewardV2: {
       obligationId: string;
       obligationKey: string;
-      rewardCoinName: SupportBorrowIncentiveRewardCoins;
+      rewardCoinName: string;
     }[] = [];
 
     const borrowReward: {
       obligationId: string;
       obligationKey: string;
-      rewardCoinName: SupportBorrowIncentiveRewardCoins;
+      rewardCoinName: string;
     }[] = [];
 
     this.helperClaimLendingReward.forEach((tx) => {
       const stakeAccountId = tx.decodeOwnedObjectId(2);
       const stakeMarketCoinName = tx.typeArg(0);
-      const coinName = this.scallop.utils.parseCoinNameFromType(stakeMarketCoinName);
-      lendingReward.push({ stakeMarketCoinName: coinName as SupportStakeMarketCoins, stakeAccountId });
+      const coinName = this.utils.parseCoinNameFromType(stakeMarketCoinName);
+      lendingReward.push({ stakeMarketCoinName: coinName as string, stakeAccountId });
     });
 
     this.helperClaimBorrowV2Reward.forEach((tx) => {
       const obligationKey = tx.decodeSharedObjectId(3);
       const obligationId = tx.decodeOwnedObjectId(4);
-      const rewardCoinName = this.scallop.utils.parseCoinNameFromType(
-        tx.typeArg(0),
-      ) as SupportBorrowIncentiveRewardCoins;
+      const rewardCoinName = this.utils.parseCoinNameFromType(tx.typeArg(0));
       borrowRewardV2.push({ obligationId, obligationKey, rewardCoinName });
     });
 
     this.helperClaimBorrowReward.forEach((tx) => {
       const obligationKey = tx.decodeSharedObjectId(2);
       const obligationId = tx.decodeOwnedObjectId(3);
-      const rewardCoinName = this.scallop.utils.parseCoinNameFromType(
-        tx.typeArg(0),
-      ) as SupportBorrowIncentiveRewardCoins;
+      const rewardCoinName = this.utils.parseCoinNameFromType(tx.typeArg(0));
       borrowReward.push({ obligationId, obligationKey, rewardCoinName });
     });
 

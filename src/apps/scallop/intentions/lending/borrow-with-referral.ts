@@ -1,17 +1,16 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
+import { ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { SuiNetworks } from '@/types';
 
-import { Scallop } from '../../models';
-import { SupportPoolCoins } from '../../types';
 import { TransactionSubType } from '../../types/utils';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface BorrowWithReferralIntentionData {
-  coinName: SupportPoolCoins;
+  coinName: string;
   amount: number | string;
   obligationId: string;
   obligationKey: string;
@@ -27,20 +26,40 @@ export class BorrowWithReferralIntention extends ScallopCoreBaseIntention<Borrow
     super(data);
   }
 
+  async borrowWithReferral(client: ScallopClient, data: BorrowWithReferralIntentionData, walletAddress?: string) {
+    const { obligationId, obligationKey, veScaKey, coinName: poolCoinName, amount } = this.data;
+    const txb = await this.buildTxWithRefreshObligation(
+      client,
+      {
+        walletAddress,
+        obligationId,
+        obligationKey,
+        veScaKey,
+      },
+      async (_, scallopTxBlock) => {
+        const borrowReferral = scallopTxBlock.claimReferralTicket(poolCoinName);
+        const coin = await scallopTxBlock.borrowWithReferralQuick(
+          +amount,
+          poolCoinName,
+          borrowReferral,
+          obligationId,
+          obligationKey,
+        );
+        scallopTxBlock.burnReferralTicket(borrowReferral, poolCoinName);
+        scallopTxBlock.transferObjects([coin], walletAddress);
+      },
+    );
+
+    return txb.txBlock;
+  }
+
   async build(input: {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-    scallop: Scallop;
-  }): Promise<TransactionBlock> {
-    return input.scallop.client.borrowWithReferral(
-      this.data.coinName,
-      Number(this.data.amount),
-      this.data.obligationId,
-      this.data.obligationKey,
-      this.data.veScaKey,
-      input.account.address,
-    );
+    scallopClient: ScallopClient;
+  }): Promise<Transaction> {
+    return this.borrowWithReferral(input.scallopClient, this.data, input.account.address);
   }
 
   static fromData(data: BorrowWithReferralIntentionData): BorrowWithReferralIntention {
