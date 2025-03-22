@@ -1,4 +1,4 @@
-import { DevInspectResults } from '@mysten/sui/client';
+// import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { parseStructTag } from '@mysten/sui/utils';
 import { ScallopClient } from '@scallop-io/sui-scallop-sdk';
@@ -15,7 +15,7 @@ export class Decoder {
   constructor(
     public readonly transaction: Transaction,
     protected scallopClient: ScallopClient,
-    protected devInspectResult: DevInspectResults,
+    // protected devInspectResult: DevInspectResults,
   ) {
     this.scallopClient = scallopClient;
     this.inputs = transaction.getData().inputs;

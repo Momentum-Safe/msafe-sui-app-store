@@ -141,14 +141,14 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     const { transaction } = input;
     console.log('transaction', transaction);
 
-    const devInspectResult = await input.suiClient.devInspectTransactionBlock({
-      transactionBlock: transaction,
-      sender: input.account.address,
-    });
+    // const devInspectResult = await input.suiClient.devInspectTransactionBlock({
+    //   transactionBlock: transaction,
+    //   sender: input.account.address,
+    // });
 
-    const decoderLending = new DecoderLending(transaction, this.scallopClient, devInspectResult);
-    const decoderReferral = new DecoderReferral(transaction, this.scallopClient, devInspectResult);
-    const decoderVesca = new DecoderVeSca(transaction, this.scallopClient, devInspectResult);
+    const decoderLending = new DecoderLending(transaction, this.scallopClient);
+    const decoderReferral = new DecoderReferral(transaction, this.scallopClient);
+    const decoderVesca = new DecoderVeSca(transaction, this.scallopClient);
 
     const result = decoderLending.decode() || decoderReferral.decode() || decoderVesca.decode();
     if (!result) {
