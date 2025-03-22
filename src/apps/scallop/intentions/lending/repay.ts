@@ -49,13 +49,7 @@ export class RepayIntention extends ScallopCoreBaseIntention<RepayIntentionData>
     network: SuiNetworks;
     scallopClient: ScallopClient;
   }): Promise<Transaction> {
-    return input.scallopClient.repay(
-      this.data.coinName,
-      +this.data.amount,
-      false,
-      this.data.obligationId,
-      this.data.obligationKey,
-    );
+    return this.repay(input);
   }
 
   static fromData(data: RepayIntentionData): RepayIntention {
