@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.216",
+  "version": "0.0.217",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -67,7 +67,7 @@
     "kriya-dev-sdk": "1.0.6",
     "luxon": "^3.4.4",
     "nanoid": "3",
-    "navi-sdk": "1.5.4-dev.2",
+    "navi-sdk": "1.6.0",
     "sort-keys-recursive": "^2.1.10",
     "turbos-clmm-sdk": "^2.2.2"
   },
