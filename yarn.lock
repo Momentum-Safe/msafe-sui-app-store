@@ -3669,10 +3669,10 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/frontend-sui@^0.2.37":
-  version "0.2.37"
-  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.37.tgz#d6f98e223bf170cd4be6599e04eabf75ba68d177"
-  integrity sha512-AIJww+AVBmp4HKW8ZyhUjpl1mhOumNZDAnw7MZVB4lK4lX3N0aLBVQJRVxd2b/WGEl/dieVLkdUAY1OsVPahhQ==
+"@suilend/frontend-sui@^0.2.52":
+  version "0.2.52"
+  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.52.tgz#5788fc3550aa19509e652a8c923c4be7dc479d4a"
+  integrity sha512-L/d3pWaVuo0ngxPa8DzgKf+An2p3KjbRvcB9QSiiYhsaeviOTkzxEvHloYCYmXz41+RKHtRrt2kikfdqV5iskA==
   dependencies:
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
@@ -3680,20 +3680,20 @@
     mixpanel-browser "^2.56.0"
     next "^15.0.3"
 
-"@suilend/sdk@^1.1.38":
-  version "1.1.38"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.38.tgz#5ac1ebb9ee55372652d8bc930e69dbd755d9c432"
-  integrity sha512-IzFt7VGNzyvB59QFkDEeK7SdxK+J2j8JhEq5jARW3jZgBiiFwIt8usSx967pA07H8ONnRzDdhewI9ZMg1Uk3sg==
+"@suilend/sdk@^1.1.44":
+  version "1.1.44"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.44.tgz#6a4178ac6d1e1e1e4fa8c1c48303cde1602a9c3c"
+  integrity sha512-alHTPsVylWjpXxmWx/oPAIohEoFltpG7iPAbfN0mn/Me1ytEWUHmmKyui+jBz9o/G7r3n01bFzGqoxHN5MdOSQ==
   dependencies:
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
     p-limit "3.1.0"
     uuid "^11.0.3"
 
-"@suilend/springsui-sdk@^1.0.19":
-  version "1.0.19"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.19.tgz#cf541a18a197465d9727d21d41be632676b9f691"
-  integrity sha512-KTPkP4DhgWR4SgPDnSCboQNhZdr//NjyEAdIMVX+NUPhLXJwuRNNkRoJZaCTAjIpCPh+w6YGzec0oU07xw1u3Q==
+"@suilend/springsui-sdk@^1.0.20":
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.20.tgz#4e1e3384ad2a844a2e2e47ed83ef8fa6ee7b208a"
+  integrity sha512-ozo7Pz+A1aJg5ihgpFZu90iTD34EGju5usVFM4PDK2uzRp1g3aHCnmU7M5meOc/Vj/9HZWdIbi88iGpB8b08HA==
   dependencies:
     bignumber.js "^9.1.2"
 
