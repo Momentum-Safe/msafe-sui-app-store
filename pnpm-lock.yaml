@@ -42,8 +42,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(typescript@5.4.3)
       '@scallop-io/sui-scallop-sdk':
-        specifier: ^2.0.5
-        version: 2.0.5(@mysten/bcs@0.11.1)(@mysten/sui@1.24.0(typescript@5.4.3))(@scallop-io/sui-kit@1.3.5(typescript@5.4.3))(bn.js@5.2.1)(typescript@5.4.3)
+        specifier: ^2.0.6
+        version: 2.0.6(@mysten/bcs@0.11.1)(@mysten/sui@1.24.0(typescript@5.4.3))(@scallop-io/sui-kit@1.3.5(typescript@5.4.3))(bn.js@5.2.1)(typescript@5.4.3)
       '@suilend/frontend-sui':
         specifier: ^0.2.43
         version: 0.2.52(@babel/core@7.26.10)(@mysten/sui@1.24.0(typescript@5.4.3))(date-fns@4.1.0)(react-dom@19.0.0(react@18.3.1))(react@18.3.1)(typescript@5.4.3)
@@ -2573,8 +2573,8 @@ packages:
     resolution: {integrity: sha512-GXJStwAdvVD8CtxzFEF9ze+mlWiuwCt8Wu0QrpNQh6ydzAYMFRKzL9zhpTMCuzyh8k46VFXZzLVE4slJrKzt2A==}
     engines: {node: '>=16'}
 
-  '@scallop-io/sui-scallop-sdk@2.0.5':
-    resolution: {integrity: sha512-s61xfXVqgtcl4ki/N9B2UsTjCvh+pUCGU1H/+NfhPfd+0Q4115/AUhAjj/1gITxYxZZxKTZPxKL/W9boD76Cog==}
+  '@scallop-io/sui-scallop-sdk@2.0.6':
+    resolution: {integrity: sha512-jN2ZwRZfB5rKbjfM88+7Hu0WHyKEwczuNJkoxY3VhX9xzuMAhdFdl9QE5RwOAowRV4sqjGonZKEfXRTijxzQBw==}
     engines: {node: '>=18.15.0'}
     peerDependencies:
       '@mysten/bcs': ^1.2.0
@@ -10061,7 +10061,7 @@ snapshots:
       - '@gql.tada/vue-support'
       - typescript
 
-  '@scallop-io/sui-scallop-sdk@2.0.5(@mysten/bcs@0.11.1)(@mysten/sui@1.24.0(typescript@5.4.3))(@scallop-io/sui-kit@1.3.5(typescript@5.4.3))(bn.js@5.2.1)(typescript@5.4.3)':
+  '@scallop-io/sui-scallop-sdk@2.0.6(@mysten/bcs@0.11.1)(@mysten/sui@1.24.0(typescript@5.4.3))(@scallop-io/sui-kit@1.3.5(typescript@5.4.3))(bn.js@5.2.1)(typescript@5.4.3)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.10.0)
       '@mysten/bcs': 0.11.1
