@@ -172,7 +172,7 @@ export class DecoderVeSca extends Decoder {
       type: TransactionSubType.RenewExpStakePeriod,
       intentionData: {
         amount: amountFromSplitCoin,
-        lockPeriodInDays: unlockTime,
+        unlockTime,
         obligationId,
         obligationKey,
         veScaKey,
@@ -294,7 +294,7 @@ export class DecoderVeSca extends Decoder {
       intentionData: {
         amount: amountFromSplitCoin,
         veScaKey,
-        lockPeriodInDays: unlockTime,
+        unlockTime,
         obligationId,
         obligationKey,
         isOldBorrowIncentive,

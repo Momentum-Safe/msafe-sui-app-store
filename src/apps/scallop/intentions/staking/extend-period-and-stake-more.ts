@@ -13,7 +13,7 @@ import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 export interface ExtendPeriodAndStakeMoreIntentionData {
   amount: number;
   veScaKey: string;
-  lockPeriodInDays: number;
+  unlockTime: number;
   obligationId: string | undefined;
   obligationKey: string | undefined;
   isOldBorrowIncentive: boolean;
@@ -39,7 +39,7 @@ export class ExtendPeriodAndStakeMoreIntention extends ScallopCoreBaseIntention<
     const {
       amount,
       veScaKey,
-      lockPeriodInDays,
+      unlockTime,
       obligationId,
       obligationKey,
       isOldBorrowIncentive,
@@ -53,7 +53,7 @@ export class ExtendPeriodAndStakeMoreIntention extends ScallopCoreBaseIntention<
     // Get all SCA and merge them into one.
     const coins = await client.utils.selectCoins(amount, SCA_COIN_TYPE, sender);
     const [takeCoin, leftCoin] = tx.takeAmountFromCoins(coins, amount);
-    tx.extendLockPeriod(veScaKey, lockPeriodInDays);
+    tx.extendLockPeriod(veScaKey, unlockTime);
     tx.extendLockAmount(veScaKey, takeCoin);
     tx.transferObjects([leftCoin], sender);
     if (!obligationId || !obligationKey) {
