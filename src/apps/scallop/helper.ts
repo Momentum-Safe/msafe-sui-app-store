@@ -6,7 +6,7 @@ import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { DecoderLending } from './decoders/decoderLending';
 import { DecoderReferral } from './decoders/decoderReferral';
-import { DecoderVeSca } from './decoders/decoderVeSca';
+import { DecoderVeSca } from './decoders/decoderVesca';
 import { BorrowIntention, BorrowIntentionData } from './intentions/lending/borrow';
 import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/lending/borrow-with-boost';
 import {
