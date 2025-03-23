@@ -33,7 +33,12 @@ export class MigrateAndClaimIntention extends ScallopCoreBaseIntention<MigrateAn
     const tx = client.builder.createTxBlock();
     tx.setSender(sender);
 
-    const rewardCoin = OldBorrowIncentiveTxBuilder.redeem_rewards(tx, obligationKey, obligationId, rewardCoinName);
+    const rewardCoin = OldBorrowIncentiveTxBuilder.redeem_rewards(
+      tx,
+      obligationKey,
+      obligationId,
+      client.utils.parseCoinType(rewardCoinName),
+    );
     tx.transferObjects([rewardCoin], sender);
     await tx.unstakeObligationQuick(obligationId, obligationKey);
     if (veScaKey) {

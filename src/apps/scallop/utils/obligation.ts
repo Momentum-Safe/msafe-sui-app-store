@@ -1,4 +1,4 @@
-import { SUI_CLOCK_OBJECT_ID, SUI_TYPE_ARG } from '@mysten/sui/utils';
+import { normalizeStructTag, SUI_CLOCK_OBJECT_ID, SUI_TYPE_ARG } from '@mysten/sui/utils';
 import { ScallopQuery, ScallopTxBlock } from '@scallop-io/sui-scallop-sdk';
 
 export const isObligationMigrated = async (query: ScallopQuery, obligationId: string) => {
@@ -38,7 +38,7 @@ export const OldBorrowIncentiveTxBuilder = {
         tx.object(obligationId),
         SUI_CLOCK_OBJECT_ID,
       ],
-      [SUI_TYPE_ARG],
+      [normalizeStructTag(SUI_TYPE_ARG)],
     ),
   redeem_rewards: (tx: ScallopTxBlock, obligationKey: string, obligationId: string, rewardType: string) =>
     tx.moveCall(
@@ -50,6 +50,6 @@ export const OldBorrowIncentiveTxBuilder = {
         tx.object(obligationId),
         SUI_CLOCK_OBJECT_ID,
       ],
-      [rewardType],
+      [normalizeStructTag(rewardType)],
     ),
 } as const;
