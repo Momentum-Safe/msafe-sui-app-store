@@ -25,21 +25,31 @@ export class BorrowIntention extends ScallopCoreBaseIntention<BorrowIntentionDat
     super(data);
   }
 
+  async borrow({ account, scallopClient: client }: { account: WalletAccount; scallopClient: ScallopClient }) {
+    const { coinName, amount, obligationId, obligationKey } = this.data;
+    const sender = account.address;
+    const tx = await this.buildTxWithRefreshObligation(
+      client,
+      {
+        walletAddress: sender,
+        obligationId,
+        obligationKey,
+      },
+      async (_, innerTx) => {
+        await innerTx.borrowQuick(+amount, coinName, obligationId, obligationKey);
+      },
+    );
+
+    return tx.txBlock;
+  }
+
   async build(input: {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
     scallopClient: ScallopClient;
   }): Promise<Transaction> {
-    const { coinName, amount, obligationId, obligationKey } = this.data;
-    return input.scallopClient.borrow(
-      coinName,
-      Number(amount),
-      false,
-      obligationId,
-      obligationKey,
-      input.account.address,
-    );
+    return this.borrow(input);
   }
 
   static fromData(data: BorrowIntentionData): BorrowIntention {
