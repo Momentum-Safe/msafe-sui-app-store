@@ -1,33 +1,24 @@
-import { bcs } from '@mysten/sui.js/bcs';
-import { SplitCoinsTransaction, TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/dist/cjs/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
-import { MoveCallHelper } from './moveCallHelper';
+import MoveCallHelper from './moveCallHelper';
+import { SplitCoinTransactionType } from '../types/sui';
 
-export class SplitCoinHelper {
+class SplitCoinHelper {
   constructor(
-    public readonly splitCoin: SplitCoinsTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly splitCoin: SplitCoinTransactionType,
+    public readonly txb: Transaction,
   ) {}
 
   getAmountInput() {
     return this.splitCoin.amounts
       .map((input) => {
         if (input.kind === 'Input') {
-          return Number(MoveCallHelper.getPureInputValue<number>(input, 'u64'));
+          return Number(MoveCallHelper.getPureInputValue<number>(input, 'U64'));
         }
         return undefined;
       })
       .filter((input) => input !== undefined);
   }
-
-  static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
-    }
-    if (typeof input.value === 'object' && 'Pure' in input.value) {
-      const bcsNums = input.value.Pure;
-      return bcs.de(bcsType, new Uint8Array(bcsNums)) as T;
-    }
-    return input.value as T;
-  }
 }
+
+export default SplitCoinHelper;
