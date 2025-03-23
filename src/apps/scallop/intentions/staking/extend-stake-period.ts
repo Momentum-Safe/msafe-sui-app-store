@@ -15,7 +15,7 @@ export interface ExtendStakePeriodIntentionData {
   isOldBorrowIncentive: boolean;
   obligationId: string | undefined;
   obligationKey: string | undefined;
-  lockPeriodInDays: number | undefined;
+  unlockTime: number | undefined;
   veScaKey: string | undefined;
 }
 
@@ -36,13 +36,12 @@ export class ExtendStakePeriodIntention extends ScallopCoreBaseIntention<ExtendS
     scallopClient: ScallopClient;
   }) {
     const sender = account.address;
-    const { veScaKey, lockPeriodInDays, obligationId, obligationKey, isObligationLocked, isOldBorrowIncentive } =
-      this.data;
+    const { veScaKey, unlockTime, obligationId, obligationKey, isObligationLocked, isOldBorrowIncentive } = this.data;
 
     const tx = client.builder.createTxBlock();
     tx.setSender(sender);
 
-    tx.extendLockPeriod(veScaKey, lockPeriodInDays);
+    tx.extendLockPeriod(veScaKey, unlockTime);
     if (obligationId && obligationKey) {
       if (isObligationLocked) {
         if (isOldBorrowIncentive) {

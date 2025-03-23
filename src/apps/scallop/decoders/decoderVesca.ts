@@ -363,7 +363,7 @@ export class DecoderVeSca extends Decoder {
       type: TransactionSubType.StakeSca,
       intentionData: {
         amount: amountFromSplitCoin,
-        lockPeriodInDays: unlockTime,
+        unlockTime,
         obligationId,
         obligationKey,
         veScaKey,
