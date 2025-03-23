@@ -133,19 +133,19 @@ export class DecoderVeSca extends Decoder {
     let stakeObligation: string[] = [];
     if (this.helperOldUnstakeObligation.moveCall) {
       oldUnstakeObligation = [
-        this.helperOldUnstakeObligation.decodeSharedObjectId(2), // Obligation key
+        this.helperOldUnstakeObligation.decodeOwnedObjectId(2), // Obligation key
         this.helperOldUnstakeObligation.decodeSharedObjectId(3), // Obligation Id
       ];
     }
     if (this.helperUnstakeObligation.moveCall) {
       unstakeObligation = [
-        this.helperUnstakeObligation.decodeSharedObjectId(3), // Obligation key
+        this.helperUnstakeObligation.decodeOwnedObjectId(3), // Obligation key
         this.helperUnstakeObligation.decodeSharedObjectId(4), // Obligation Id
       ];
     }
     if (this.helperStakeObligationWithVeSca.moveCall) {
       stakeObligation = [
-        this.helperStakeObligationWithVeSca.decodeSharedObjectId(3), // Obligation key
+        this.helperStakeObligationWithVeSca.decodeOwnedObjectId(3), // Obligation key
         this.helperStakeObligationWithVeSca.decodeSharedObjectId(4), // Obligation Id
       ];
     }
@@ -191,19 +191,19 @@ export class DecoderVeSca extends Decoder {
     let stakeObligation: string[] = [];
     if (this.helperOldUnstakeObligation.moveCall) {
       oldUnstakeObligation = [
-        this.helperOldUnstakeObligation.decodeSharedObjectId(2), // Obligation key
+        this.helperOldUnstakeObligation.decodeOwnedObjectId(2), // Obligation key
         this.helperOldUnstakeObligation.decodeSharedObjectId(3), // Obligation Id
       ];
     }
     if (this.helperUnstakeObligation.moveCall) {
       unstakeObligation = [
-        this.helperUnstakeObligation.decodeSharedObjectId(3), // Obligation key
+        this.helperUnstakeObligation.decodeOwnedObjectId(3), // Obligation key
         this.helperUnstakeObligation.decodeSharedObjectId(4), // Obligation Id
       ];
     }
     if (this.helperStakeObligationWithVeSca.moveCall) {
       stakeObligation = [
-        this.helperStakeObligationWithVeSca.decodeSharedObjectId(3), // Obligation key
+        this.helperStakeObligationWithVeSca.decodeOwnedObjectId(3), // Obligation key
         this.helperStakeObligationWithVeSca.decodeSharedObjectId(4), // Obligation Id
       ];
     }
@@ -251,13 +251,13 @@ export class DecoderVeSca extends Decoder {
     let stakeObligation: string[] = [];
     if (this.helperOldUnstakeObligation.moveCall) {
       oldUnstakeObligation = [
-        this.helperOldUnstakeObligation.decodeSharedObjectId(2), // Obligation key
+        this.helperOldUnstakeObligation.decodeOwnedObjectId(2), // Obligation key
         this.helperOldUnstakeObligation.decodeSharedObjectId(3), // Obligation Id
       ];
     }
     if (this.helperUnstakeObligation.moveCall) {
       unstakeObligation = [
-        this.helperUnstakeObligation.decodeSharedObjectId(3), // Obligation key
+        this.helperUnstakeObligation.decodeOwnedObjectId(3), // Obligation key
         this.helperUnstakeObligation.decodeSharedObjectId(4), // Obligation Id
       ];
     }
@@ -266,7 +266,7 @@ export class DecoderVeSca extends Decoder {
     }
     if (this.helperStakeObligationWithVeSca.moveCall) {
       stakeObligation = [
-        this.helperStakeObligationWithVeSca.decodeSharedObjectId(3), // Obligation key
+        this.helperStakeObligationWithVeSca.decodeOwnedObjectId(3), // Obligation key
         this.helperStakeObligationWithVeSca.decodeSharedObjectId(4), // Obligation Id
       ];
     }
@@ -321,13 +321,13 @@ export class DecoderVeSca extends Decoder {
     let stakeObligation: string[] = [];
     if (this.helperOldUnstakeObligation.moveCall) {
       oldUnstakeObligation = [
-        this.helperOldUnstakeObligation.decodeSharedObjectId(2), // Obligation key
+        this.helperOldUnstakeObligation.decodeOwnedObjectId(2), // Obligation key
         this.helperOldUnstakeObligation.decodeSharedObjectId(3), // Obligation Id
       ];
     }
     if (this.helperUnstakeObligation.moveCall) {
       unstakeObligation = [
-        this.helperUnstakeObligation.decodeSharedObjectId(3), // Obligation key
+        this.helperUnstakeObligation.decodeOwnedObjectId(3), // Obligation key
         this.helperUnstakeObligation.decodeSharedObjectId(4), // Obligation Id
       ];
     }
@@ -336,7 +336,7 @@ export class DecoderVeSca extends Decoder {
     }
     if (this.helperStakeObligationWithVeSca.moveCall) {
       stakeObligation = [
-        this.helperStakeObligationWithVeSca.decodeSharedObjectId(3), // Obligation key
+        this.helperStakeObligationWithVeSca.decodeOwnedObjectId(3), // Obligation key
         this.helperStakeObligationWithVeSca.decodeSharedObjectId(4), // Obligation Id
       ];
     }
