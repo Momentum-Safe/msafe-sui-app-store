@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { fromB64, toHEX } from '@mysten/bcs';
+import { fromBase64, toHex } from '@mysten/bcs';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
@@ -139,7 +139,7 @@ export class Decoder {
     console.log('Decoder.decodeWithdraw', coinType, value);
 
     const inputIndex = (commands.withdraw_ctokens.MoveCall.arguments[4] as any).Input as number;
-    const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
+    const inputValue = new BigNumber(toHex(fromBase64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
 
     const isMax = inputValue === MAX_U64.toString();
     console.log(
@@ -179,7 +179,7 @@ export class Decoder {
     console.log('Decoder.decodeBorrow', coinType, value);
 
     const inputIndex = (commands.borrow_request.MoveCall.arguments[4] as any).Input as number;
-    const inputValue = new BigNumber(toHEX(fromB64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
+    const inputValue = new BigNumber(toHex(fromBase64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
 
     const isMax = inputValue === MAX_U64.toString();
     console.log(

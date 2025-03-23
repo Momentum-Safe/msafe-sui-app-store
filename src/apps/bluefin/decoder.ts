@@ -1,6 +1,6 @@
 import { asIntN } from '@cetusprotocol/cetus-sui-clmm-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
-import { fromB64 } from '@mysten/bcs';
+import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 
@@ -235,23 +235,23 @@ export class Decoder {
   }
 
   private getU32(index: number): string {
-    return String(bcs.u32().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes))));
+    return String(bcs.u32().parse(Uint8Array.from(fromBase64(this.inputs[index].Pure.bytes))));
   }
 
   private getU64(index: number): string {
-    return bcs.u64().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes)));
+    return bcs.u64().parse(Uint8Array.from(fromBase64(this.inputs[index].Pure.bytes)));
   }
 
   private getU128(index: number): string {
-    return bcs.u128().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes)));
+    return bcs.u128().parse(Uint8Array.from(fromBase64(this.inputs[index].Pure.bytes)));
   }
 
   private getBoolean(index: number): boolean {
-    return bcs.bool().parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes)));
+    return bcs.bool().parse(Uint8Array.from(fromBase64(this.inputs[index].Pure.bytes)));
   }
 
   private getAddress(index: number): string {
-    return bcs.Address.parse(Uint8Array.from(fromB64(this.inputs[index].Pure.bytes)));
+    return bcs.Address.parse(Uint8Array.from(fromBase64(this.inputs[index].Pure.bytes)));
   }
 
   private getTypeArguments(command: any): Array<string> {
