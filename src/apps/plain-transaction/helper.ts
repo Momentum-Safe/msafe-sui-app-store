@@ -1,5 +1,5 @@
 import { TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { fromHEX } from '@mysten/bcs';
+import { fromHex } from '@mysten/bcs';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
@@ -30,7 +30,7 @@ export class PlainTransactionIntention implements TransactionIntention<PlainTran
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<Transaction> {
-    return Transaction.from(fromHEX(this.data.content));
+    return Transaction.from(fromHex(this.data.content));
   }
 
   static fromData(data: PlainTransactionData) {

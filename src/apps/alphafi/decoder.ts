@@ -1,6 +1,6 @@
 import { coinsList, poolIdPoolNameMap, poolInfo, PoolName, singleAssetPoolCoinMap } from '@alphafi/alphafi-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
-import { bcs, fromB64 } from '@mysten/bcs';
+import { bcs, fromBase64 } from '@mysten/bcs';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 
@@ -120,13 +120,13 @@ export class Decoder {
 
     let res;
     if (bytes.length === 12) {
-      res = bcs.u64().parse(fromB64(bytes));
+      res = bcs.u64().parse(fromBase64(bytes));
     } else if (bytes.length === 24) {
-      res = bcs.u128().parse(fromB64(bytes));
+      res = bcs.u128().parse(fromBase64(bytes));
     } else if (bytes.length === 44) {
-      res = bcs.u256().parse(fromB64(bytes));
+      res = bcs.u256().parse(fromBase64(bytes));
     } else {
-      res = bcs.u64().parse(fromB64(bytes));
+      res = bcs.u64().parse(fromBase64(bytes));
     }
 
     return res;
