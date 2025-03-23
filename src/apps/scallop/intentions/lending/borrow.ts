@@ -36,7 +36,8 @@ export class BorrowIntention extends ScallopCoreBaseIntention<BorrowIntentionDat
         obligationKey,
       },
       async (_, innerTx) => {
-        await innerTx.borrowQuick(+amount, coinName, obligationId, obligationKey);
+        const coin = await innerTx.borrowQuick(+amount, coinName, obligationId, obligationKey);
+        innerTx.transferObjects([coin], sender);
       },
     );
 
