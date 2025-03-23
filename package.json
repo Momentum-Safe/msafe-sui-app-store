@@ -58,7 +58,7 @@
     "@open-rpc/client-js": "^1.8.1",
     "@pythnetwork/pyth-sui-js": "^2.1.0",
     "@suilend/frontend-sui": "^0.2.52",
-    "@suilend/sdk": "^1.1.44",
+    "@suilend/sdk": "^1.1.45",
     "@suilend/springsui-sdk": "^1.0.20",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
