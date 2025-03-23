@@ -36,15 +36,8 @@ export class ExtendPeriodAndStakeMoreIntention extends ScallopCoreBaseIntention<
     account: WalletAccount;
     scallopClient: ScallopClient;
   }) {
-    const {
-      amount,
-      veScaKey,
-      unlockTime,
-      obligationId,
-      obligationKey,
-      isOldBorrowIncentive,
-      isObligationLocked,
-    } = this.data;
+    const { amount, veScaKey, unlockTime, obligationId, obligationKey, isOldBorrowIncentive, isObligationLocked } =
+      this.data;
 
     const sender = account.address;
     const tx = client.builder.createTxBlock();
