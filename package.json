@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.222",
+  "version": "0.0.224",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -57,6 +57,7 @@
     "@mysten/sui": "^1.8.0",
     "@open-rpc/client-js": "^1.8.1",
     "@pythnetwork/pyth-sui-js": "^2.1.0",
+    "@scallop-io/sui-scallop-sdk": "^2.0.6",
     "@suilend/frontend-sui": "^0.2.52",
     "@suilend/sdk": "^1.1.45",
     "@suilend/springsui-sdk": "^1.0.20",
@@ -95,6 +96,9 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
+  },
+  "resolutions": {
+    "@mysten/sui": "^1.8.0"
   },
   "peerDependencies": {
     "@msafe/sui3-utils": ">3.0.0",

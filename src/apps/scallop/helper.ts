@@ -1,34 +1,25 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
-
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
+import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { DecoderLending } from './decoders/decoderLending';
 import { DecoderReferral } from './decoders/decoderReferral';
-import { DecoderVesca } from './decoders/decoderVesca';
+import { DecoderVeSca } from './decoders/decoderVesca';
 import { BorrowIntention, BorrowIntentionData } from './intentions/lending/borrow';
 import { BorrowWithBoostIntention, BorrowWithBoostIntentionData } from './intentions/lending/borrow-with-boost';
 import {
   BorrowWithReferralIntention,
   BorrowWithReferralIntentionData,
 } from './intentions/lending/borrow-with-referral';
-import {
-  ClaimIncentiveRewardIntention,
-  ClaimIncentiveRewardIntentionData,
-} from './intentions/lending/claim-incentive-reward';
+import { ClaimIncentiveRewardIntention } from './intentions/lending/claim-incentive-reward';
 import { DepositCollateralIntention, DepositCollateralIntentionData } from './intentions/lending/deposit-collateral';
 import { MigrateAndClaimIntention, MigrateAndClaimIntentionData } from './intentions/lending/migrate-and-claim';
 import { MigrateScoinIntention, MigrateScoinIntentionData } from './intentions/lending/migrate-scoin';
-import {
-  MigrateWusdcToUsdcIntention,
-  MigrateWusdcToUsdcIntentionData,
-} from './intentions/lending/migrate-wusd-to-usdc';
 import { OpenObligationIntention, OpenObligationIntentionData } from './intentions/lending/open-obligation';
 import { RepayIntention, RepayIntentionData } from './intentions/lending/repay';
 import { RepayWithBoostIntention, RepayWithBoostIntentionData } from './intentions/lending/repay-with-boost';
-import { StakeSpoolIntention, StakeSpoolIntentionData } from './intentions/lending/stake-spool';
 import { SupplyLendingIntention, SupplyLendingIntentionData } from './intentions/lending/supply-lending';
 import { UnstakeSpoolIntention, UnstakeSpoolIntentionData } from './intentions/lending/unstake-spool';
 import {
@@ -62,9 +53,9 @@ import {
   SupplyAndStakeLendingIntentionData,
 } from './intentions/staking/supply-and-stake-lending';
 import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/staking/withdraw-staked-sca';
-import { Scallop } from './models/scallop';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
+import { IAppHelperInternal } from '../interface/sui';
 
 export type ScallopIntention =
   | SupplyLendingIntention
@@ -74,7 +65,6 @@ export type ScallopIntention =
   | DepositCollateralIntention
   | WithdrawCollateralIntention
   | OpenObligationIntention
-  | StakeSpoolIntention
   | UnstakeSpoolIntention
   | ClaimIncentiveRewardIntention
   | BorrowWithBoostIntention
@@ -92,8 +82,7 @@ export type ScallopIntention =
   | ClaimRevenueReferralIntention
   | BindReferralIntention
   | MigrateScoinIntention
-  | RepayWithBoostIntention
-  | MigrateWusdcToUsdcIntention;
+  | RepayWithBoostIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -103,9 +92,7 @@ export type ScallopIntentionData =
   | DepositCollateralIntentionData
   | WithdrawCollateralIntentionData
   | OpenObligationIntentionData
-  | StakeSpoolIntentionData
   | UnstakeSpoolIntentionData
-  | ClaimIncentiveRewardIntentionData
   | BorrowWithBoostIntentionData
   | StakeScaIntentionData
   | ExtendStakePeriodIntentionData
@@ -121,36 +108,48 @@ export type ScallopIntentionData =
   | ClaimRevenueReferralIntentionData
   | BindReferralIntentionData
   | MigrateScoinIntentionData
-  | RepayWithBoostIntentionData
-  | MigrateWusdcToUsdcIntentionData;
+  | RepayWithBoostIntentionData;
 
-export class ScallopAppHelper implements IAppHelperInternalLegacy<ScallopIntentionData> {
+export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData> {
   application = 'scallop';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui' as const;
 
-  private scallop: Scallop | undefined;
+  private scallopClient: ScallopClient | undefined;
 
-  async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
-  ): Promise<{
+  async deserialize(input: {
+    transaction: Transaction;
+    chain: IdentifierString;
+    network: SuiNetworks;
+    suiClient: SuiClient;
+    account: WalletAccount;
+    appContext?: any;
+  }): Promise<{
     txType: TransactionType;
     txSubType: TransactionSubType;
     intentionData: ScallopIntentionData;
   }> {
-    if (!this.scallop) {
-      this.scallop = new Scallop({
-        client: input.suiClient,
+    if (!this.scallopClient) {
+      const scallop = new Scallop({
+        addressId: '67c44a103fe1b8c454eb9699',
         walletAddress: input.account.address,
+        suiClients: [input.suiClient],
       });
-      await this.scallop.init();
+      this.scallopClient = await scallop.createScallopClient();
     }
 
-    const { transactionBlock } = input;
-    console.log('transactionBlock', transactionBlock);
-    const decoderLending = new DecoderLending(transactionBlock, this.scallop);
-    const decoderReferral = new DecoderReferral(transactionBlock, this.scallop);
-    const decoderVesca = new DecoderVesca(transactionBlock, this.scallop);
+    const { transaction } = input;
+    console.log('transaction', transaction);
+
+    // const devInspectResult = await input.suiClient.devInspectTransactionBlock({
+    //   transactionBlock: transaction,
+    //   sender: input.account.address,
+    // });
+
+    const decoderLending = new DecoderLending(transaction, this.scallopClient);
+    const decoderReferral = new DecoderReferral(transaction, this.scallopClient);
+    const decoderVesca = new DecoderVeSca(transaction, this.scallopClient);
+
     const result = decoderLending.decode() || decoderReferral.decode() || decoderVesca.decode();
     if (!result) {
       throw new Error('Unknown transaction type');
@@ -169,14 +168,15 @@ export class ScallopAppHelper implements IAppHelperInternalLegacy<ScallopIntenti
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account, network, txSubType, intentionData } = input;
-    if (!this.scallop) {
-      this.scallop = new Scallop({
-        client: input.suiClient,
+    if (!this.scallopClient) {
+      const scallop = new Scallop({
+        addressId: '67c44a103fe1b8c454eb9699',
         walletAddress: input.account.address,
+        suiClients: [input.suiClient],
       });
-      await this.scallop.init();
+      this.scallopClient = await scallop.createScallopClient();
     }
 
     let intention: ScallopIntention;
@@ -202,14 +202,11 @@ export class ScallopAppHelper implements IAppHelperInternalLegacy<ScallopIntenti
       case TransactionSubType.OpenObligation:
         intention = OpenObligationIntention.fromData(intentionData as OpenObligationIntentionData);
         break;
-      case TransactionSubType.StakeSpool:
-        intention = StakeSpoolIntention.fromData(intentionData as StakeSpoolIntentionData);
-        break;
       case TransactionSubType.UnstakeSpool:
         intention = UnstakeSpoolIntention.fromData(intentionData as UnstakeSpoolIntentionData);
         break;
       case TransactionSubType.ClaimIncentiveReward:
-        intention = ClaimIncentiveRewardIntention.fromData(intentionData as ClaimIncentiveRewardIntentionData);
+        intention = ClaimIncentiveRewardIntention.fromData(intentionData);
         break;
       case TransactionSubType.BorrowWithBoost:
         intention = BorrowWithBoostIntention.fromData(intentionData as BorrowWithBoostIntentionData);
@@ -261,12 +258,9 @@ export class ScallopAppHelper implements IAppHelperInternalLegacy<ScallopIntenti
       case TransactionSubType.RepayWithBoost:
         intention = RepayWithBoostIntention.fromData(intentionData as RepayWithBoostIntentionData);
         break;
-      case TransactionSubType.MigrateWusdcToUsdc:
-        intention = MigrateWusdcToUsdcIntention.fromData(intentionData as MigrateWusdcToUsdcIntentionData);
-        break;
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account, network, scallop: this.scallop });
+    return intention.build({ suiClient, account, network, scallopClient: this.scallopClient });
   }
 }

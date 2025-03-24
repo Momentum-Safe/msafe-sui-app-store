@@ -1,16 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
+import { ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
-import { Scallop } from '../../models';
-import { SupportAssetCoins, SupportPoolCoins } from '../../types';
 import { SuiNetworks, TransactionSubType } from '../../types/utils';
 import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 
 export interface WithdrawLendingIntentionData {
   amount: string | number;
-  coinName: SupportAssetCoins;
+  coinName: string;
 }
 
 export class WithdrawLendingIntention extends ScallopCoreBaseIntention<WithdrawLendingIntentionData> {
@@ -26,13 +25,9 @@ export class WithdrawLendingIntention extends ScallopCoreBaseIntention<WithdrawL
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-    scallop: Scallop;
-  }): Promise<TransactionBlock> {
-    return input.scallop.client.withdraw(
-      this.data.coinName as SupportPoolCoins,
-      Number(this.data.amount),
-      input.account.address,
-    );
+    scallopClient: ScallopClient;
+  }): Promise<Transaction> {
+    return input.scallopClient.withdraw(this.data.coinName, Number(this.data.amount), false, input.account.address);
   }
 
   static fromData(data: WithdrawLendingIntentionData): WithdrawLendingIntention {
