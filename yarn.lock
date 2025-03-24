@@ -4125,10 +4125,10 @@
     mixpanel-browser "^2.56.0"
     next "^15.0.3"
 
-"@suilend/sdk@^1.1.45":
-  version "1.1.45"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.45.tgz#0685e4318d215a93702d6ffa2ec8688a86920795"
-  integrity sha512-sGun+odqJP7XDFizwXgNNDXWTa0bIAJrekLsiiwZKokynzqRJ7cCGJ6+WLgHYZuNxF3QCrsZ/168a8YkPQB4wQ==
+"@suilend/sdk@^1.1.46":
+  version "1.1.46"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.46.tgz#562d8da308ee65645ecd2e4ab80dec140b34eca1"
+  integrity sha512-Z6M5IdXbYsn0OTVc9kBtxpajyuNS41wdqhN6JgCGcdsO9zdOeWi8AhrHB8yBgvwS4BXxWXlSson5D3/fQeaMGQ==
   dependencies:
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
