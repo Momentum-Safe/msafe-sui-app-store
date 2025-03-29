@@ -273,7 +273,13 @@ export const getAggregatorSdk = (network: SuiNetworks, account: WalletAccount) =
   const suiClient = new SuiClient({
     url: 'https://fullnode.mainnet.sui.io/',
   });
-  const aggregatorSdk = new AggregatorClient(aggregatorURL, account.address, suiClient, Env.Mainnet);
+  const aggregatorSdk = new AggregatorClient({
+    endpoint: aggregatorURL,
+    signer: account.address,
+    client: suiClient,
+    env: Env.Mainnet,
+  });
+
   return aggregatorSdk;
 };
 
