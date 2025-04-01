@@ -1,9 +1,8 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { LiquidStakingObjectInfo } from '@suilend/springsui-sdk/client';
+import { fetchRegistryLiquidStakingInfoMap, LiquidStakingObjectInfo } from '@suilend/springsui-sdk/client';
 
-import { ASSETS_URL } from '@/apps/springSui/constants';
 import { SpringSuiIntentionData } from '@/apps/springSui/types/intention';
 import { SuiNetworks } from '@/types';
 
@@ -30,7 +29,7 @@ export type Utils = {
 export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
   const suilendUtils = await getSuilendUtils(suiClient, account);
 
-  const LIQUID_STAKING_INFO_MAP = await (await fetch(`${ASSETS_URL}/liquid-staking-info-map.json`)).json();
+  const LIQUID_STAKING_INFO_MAP = await fetchRegistryLiquidStakingInfoMap(suiClient);
 
   return { ...suilendUtils, LIQUID_STAKING_INFO_MAP };
 };
