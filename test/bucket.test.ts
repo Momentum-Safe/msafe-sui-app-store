@@ -489,7 +489,7 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.sBUCK;
-    const proofCount = 5;
+    const proofCount = 10;
     await buildLockedClaimTx(bucketClient, tx, COINS_TYPE_LIST.sBUCK, 5, address);
 
     const decoder = new Decoder(tx);
