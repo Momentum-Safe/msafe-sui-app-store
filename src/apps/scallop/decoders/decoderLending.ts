@@ -644,8 +644,8 @@ export class DecoderLending extends Decoder {
     });
 
     this.helperClaimBorrowV2Reward.forEach((tx) => {
-      const obligationKey = tx.decodeSharedObjectId(3);
-      const obligationId = tx.decodeOwnedObjectId(4);
+      const obligationKey = tx.decodeSharedObjectId(4);
+      const obligationId = tx.decodeOwnedObjectId(3);
       const rewardCoinName = this.utils.parseCoinNameFromType(tx.typeArg(0));
       borrowRewardV2.push({ obligationId, obligationKey, rewardCoinName });
     });
