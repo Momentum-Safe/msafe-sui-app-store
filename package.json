@@ -63,7 +63,7 @@
     "@suilend/springsui-sdk": "^1.0.21",
     "axios": "^1.6.7",
     "bignumber.js": "^9.1.2",
-    "bucket-protocol-sdk": "^0.10.17",
+    "bucket-protocol-sdk": "^0.12.0",
     "buffer": "^6.0.3",
     "date-fns": "^4.1.0",
     "kriya-dev-sdk": "1.0.6",

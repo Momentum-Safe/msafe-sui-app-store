@@ -489,14 +489,14 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.sBUCK;
-    const proofCount = 5;
-    await buildLockedClaimTx(bucketClient, tx, COINS_TYPE_LIST.sBUCK, 5, address);
+    const proofCount = 4;
+    await buildLockedClaimTx(bucketClient, tx, COINS_TYPE_LIST.sBUCK, proofCount, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
     expect(result.type).toBe('lock-claim');
     const intentionData = result.intentionData as LockClaimIntentionData;
     expect(intentionData.coinType).toBe(coinType);
-    expect(intentionData.proofCount).toBe(proofCount);
+    expect(intentionData.proofCount).toBe(proofCount * 2);
   });
 });
