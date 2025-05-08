@@ -53,7 +53,6 @@ export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
   params: {
     position: V3PositionType;
     pool: Pools;
-    removeLiqAmount: bigint;
     address: string;
     withdrawPercentage: number;
   };
