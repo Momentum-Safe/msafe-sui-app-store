@@ -2932,7 +2932,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.3.1", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.3.0", "@mysten/sui@^1.3.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
+"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.3.1", "@mysten/sui@^1.13.0", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.2.1", "@mysten/sui@^1.2.17", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.3.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.21.1.tgz#a3f43aba5e970ff46dafabd160c4963276ef3619"
   integrity sha512-HVrcqiUUSPToxbQtEgARFCnLr6FMkDHhhwWdy/urk8dqr8jnNZkU3Ppr6YUgg3vRE3sXPhuIjXOCEL6Wyq6Esw==
@@ -4337,13 +4337,6 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.3.tgz#6209321eb2c1712a7e7466422b8cb1fc0d9dd5d8"
   integrity sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==
 
-"@types/superstruct@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@types/superstruct/-/superstruct-0.8.2.tgz#60c7d52e0b7a4c7cc819d1f0a43b36c1d56f0bd4"
-  integrity sha512-iM57MTPOXVkLwvo5Md6X5YhAszcJmuLlO6u5Z+JGzxTQ/3uHoZTKdWhjs408QJ27+NphS3kPgSSbqJWBSPsegg==
-  dependencies:
-    superstruct "*"
-
 "@types/unist@*":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-3.0.3.tgz#acaab0f919ce69cce629c2d4ed2eb4adc1b6c20c"
@@ -5234,13 +5227,13 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
-bucket-protocol-sdk@^0.10.17:
-  version "0.10.28"
-  resolved "https://registry.yarnpkg.com/bucket-protocol-sdk/-/bucket-protocol-sdk-0.10.28.tgz#a5ac82d99b1b4eccd038315a899fdd0767798987"
-  integrity sha512-pXZ3LQJVxJ+IfcYzNpYhIbrFJorTP2WJPAPkzOvNqtV9Zj6I703NrzZB5xAt2MB0AIVM0jxF95BBVblGZoerLg==
+bucket-protocol-sdk@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/bucket-protocol-sdk/-/bucket-protocol-sdk-0.12.0.tgz#a299b49d14516fbb101a51279f349cb009030eda"
+  integrity sha512-0UY82b0CphmwMcVbBS9nQ/j1WqOdGG7QlFSaeqwMkhqR4ZHwO+arpOCjMFTX2fb4BMfTnrfCoF0tAGFT3RqeFw==
   dependencies:
-    "@mysten/sui" "^1.8.0"
-    "@types/superstruct" "^0.8.2"
+    "@mysten/sui" "^1.28.2"
+    decimal.js "^10.5.0"
     superstruct "^1.0.3"
 
 buffer-from@^1.0.0:
@@ -5700,7 +5693,7 @@ debug@~4.3.1, debug@~4.3.2:
   dependencies:
     ms "^2.1.3"
 
-decimal.js@^10.4.1, decimal.js@^10.4.3:
+decimal.js@^10.4.1, decimal.js@^10.4.3, decimal.js@^10.5.0:
   version "10.5.0"
   resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.5.0.tgz#0f371c7cf6c4898ce0afb09836db73cd82010f22"
   integrity sha512-8vDa8Qxvr/+d94hSh5P3IJwI5t8/c0KsMp+g8bNw9cY2icONa5aPfvKeieW1WlG0WQYwwhJ7mjui2xtiePQSXw==
@@ -9753,15 +9746,15 @@ sucrase@^3.35.0:
     pirates "^4.0.1"
     ts-interface-checker "^0.1.9"
 
-superstruct@*, superstruct@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-2.0.2.tgz#3f6d32fbdc11c357deff127d591a39b996300c54"
-  integrity sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==
-
 superstruct@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-1.0.4.tgz#0adb99a7578bd2f1c526220da6571b2d485d91ca"
   integrity sha512-7JpaAoX2NGyoFlI9NBh66BQXGONc+uE+MRS5i2iOBKuS4e+ccgMDjATgZldkah+33DakBxDHiss9kvUcGAO8UQ==
+
+superstruct@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-2.0.2.tgz#3f6d32fbdc11c357deff127d591a39b996300c54"
+  integrity sha512-uV+TFRZdXsqXTL2pRvujROjdZQ4RAlBUS5BTh9IGm+jTqQntYThciG/qu57Gs69yjnVUSqdxF9YLmSnpupBW9A==
 
 supports-color@^7.1.0:
   version "7.2.0"
