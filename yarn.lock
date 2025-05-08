@@ -2425,7 +2425,7 @@
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.2.0.tgz#5f3d96ec6b2354ad6d8a28bf216a1d97b5426861"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
 
-"@hop.ag/sdk@^3.2.7", "@hop.ag/sdk@^3.3.0":
+"@hop.ag/sdk@^3.3.0":
   version "3.3.6"
   resolved "https://registry.yarnpkg.com/@hop.ag/sdk/-/sdk-3.3.6.tgz#269bdad2f427dbf7c41b7bec851bd77d648cbe74"
   integrity sha512-8v8eYVenpwJtmafwtoacaR0TTBKkwbJQu5shfC6g6399QYf81f6icDGO7bw4zxTYrsCBXUgovgmaq8JJNbDkCA==
@@ -2841,6 +2841,14 @@
     js-sha256 "^0.9.0"
     js-sha3 "^0.8.0"
 
+"@mmt-finance/clmm-sdk@^1.0.17":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@mmt-finance/clmm-sdk/-/clmm-sdk-1.0.17.tgz#5aad00dd1cf6070e73c9d563096f0757ef3e9d7d"
+  integrity sha512-rEQH97hL8X6wG5x89pzWJ15LweCCD0JOjC7TgrMnBHiyPGWlsKyQ3wSVGkJOiGLC+3IRnx4fLaaeeVvNt4Z1UQ==
+  dependencies:
+    "@syntsugar/cc-graph" "^0.1.1"
+    tslib "^2.8.1"
+
 "@msafe/sui3-model@^1.0.40":
   version "1.0.58"
   resolved "https://registry.yarnpkg.com/@msafe/sui3-model/-/sui3-model-1.0.58.tgz#b3295a47059123b014bdc93a939f92b6826a5185"
@@ -2924,7 +2932,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.3.1", "@mysten/sui@^1.13.0", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.2.1", "@mysten/sui@^1.2.17", "@mysten/sui@^1.3.0", "@mysten/sui@^1.3.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
+"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.3.1", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.3.0", "@mysten/sui@^1.3.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.21.1.tgz#a3f43aba5e970ff46dafabd160c4963276ef3619"
   integrity sha512-HVrcqiUUSPToxbQtEgARFCnLr6FMkDHhhwWdy/urk8dqr8jnNZkU3Ppr6YUgg3vRE3sXPhuIjXOCEL6Wyq6Esw==
@@ -4914,7 +4922,7 @@ axios-retry@^3.8.0:
     "@babel/runtime" "^7.15.4"
     is-retry-allowed "^2.2.0"
 
-axios@^1.4.0, axios@^1.5.1, axios@^1.6.7, axios@^1.7.3, axios@^1.7.7:
+axios@^1.4.0, axios@^1.5.1, axios@^1.6.7, axios@^1.7.7:
   version "1.7.9"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.9.tgz#d7d071380c132a24accda1b2cfc1535b79ec650a"
   integrity sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==
@@ -5113,6 +5121,11 @@ bn.js@^5.1.2, bn.js@^5.2.0, bn.js@^5.2.1:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.1.tgz#0bc527a6a0d18d0aa8d5b0538ce4a77dccfa7b70"
   integrity sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==
+
+bn.js@^5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.2.tgz#82c09f9ebbb17107cd72cb7fd39bd1f9d0aaa566"
+  integrity sha512-v2YAxEmKaBLahNwE1mjp4WON6huMNeuDvagFZW+ASCuA/ku0bXR9hSMw0XpiqMoA3+rmnyck/tPRSFQkoC9Cuw==
 
 borsh@^0.7.0:
   version "0.7.0"
@@ -5355,15 +5368,6 @@ chai@^4.3.10:
     loupe "^2.3.6"
     pathval "^1.1.1"
     type-detect "^4.1.0"
-
-chakra-s3@^0.0.20:
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/chakra-s3/-/chakra-s3-0.0.20.tgz#b1747a242daf83f55fbab7d88782e2b4866c96d6"
-  integrity sha512-cLMAf7opxvlN2O2Ie10LVmDB77NXSPpXHNVs0YbyfvmRjW8XMlGnuiN8aDpyOUcLKbkI71KNKHHN+HM3jRPVcA==
-  dependencies:
-    "@mysten/sui" "^1.2.1"
-    buffer "^6.0.3"
-    tslib "~2.6"
 
 chalk@^4.0.0, chalk@^4.0.2:
   version "4.1.2"
@@ -8004,56 +8008,6 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kriya-clmm-lp-vault-sdk@^1.0.53:
-  version "1.0.54"
-  resolved "https://registry.yarnpkg.com/kriya-clmm-lp-vault-sdk/-/kriya-clmm-lp-vault-sdk-1.0.54.tgz#232eba8feb5fb0cb307711140c63184fe8f3e034"
-  integrity sha512-iUvwQHoSzAtt5M7momxbDKV0/K576Yc4HN9yrO2oeQ2XBxBnwfYJhvla8qWWV41v4i6DMxytB3tnFYg2MbVPWQ==
-  dependencies:
-    "@mysten/sui" "^1.13.0"
-    axios "^1.6.7"
-    bignumber.js "^9.1.2"
-    bn.js "^5.2.1"
-    decimal.js "^10.4.3"
-    kriya-dex-sdk "^1.1.52"
-    kriya-oracle-sdk "0.0.13"
-    kriya-v3-sdk "2.0.10"
-    mime-types "^2.1.35"
-
-kriya-clmm-sdk@1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/kriya-clmm-sdk/-/kriya-clmm-sdk-1.0.10.tgz#f4c702402fec956fb9fa65d8703112844beaf655"
-  integrity sha512-Cqb6MloX15uAZ58El4DBuKyPo9bXWkHc5LcBNjgscfmO7buqVgv0BGyp0Q5e/QUM0vbOQI7rU7CCFDCSdH9f5w==
-  dependencies:
-    "@mysten/sui" "^1.3.0"
-    axios "^1.4.0"
-    bn.js "^5.2.1"
-    decimal.js "^10.4.3"
-
-kriya-dev-sdk@1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/kriya-dev-sdk/-/kriya-dev-sdk-1.0.6.tgz#1e76c20f135a4913a7a9c38736cc50a4ea78d6c2"
-  integrity sha512-3uZCLDa3FFPUqmHiSwhca8cDBJEUjCtrlng7nGyG2w5bmO9rIww+hrtcyVAWTB2xBY9D8BwNTdyACjDqFCSTAg==
-  dependencies:
-    "@mysten/sui" "^1.3.0"
-    axios "^1.4.0"
-    bn.js "^5.2.1"
-    chakra-s3 "^0.0.20"
-    decimal.js "^10.4.3"
-    kriya-clmm-lp-vault-sdk "^1.0.53"
-    kriya-clmm-sdk "1.0.10"
-    kriya-dex-sdk "^2.0.8"
-    kriya-farms-sdk "^0.0.21"
-    kriya-oracle-sdk "^0.0.13"
-    kriya-vault-sdk "^2.0.2"
-
-kriya-dex-sdk@^1.1.52, kriya-dex-sdk@^1.1.69:
-  version "1.1.70"
-  resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-1.1.70.tgz#7ed9bf72c083cf48dca37ab8426829efc3917162"
-  integrity sha512-AKFySZ94djnVr5BxPYCER9tpYu1aKcYWOWrloGBAvg9fwTRTxyGdaz3GiZpjSn+muKwjiFJhRxslzHWo9UPcPQ==
-  dependencies:
-    "@mysten/sui.js" "^0.54.1"
-    axios "^1.4.0"
-
 kriya-dex-sdk@^2.0.8:
   version "2.0.8"
   resolved "https://registry.yarnpkg.com/kriya-dex-sdk/-/kriya-dex-sdk-2.0.8.tgz#e244260365b0c0333cc3c88fca725788b0f17637"
@@ -8061,59 +8015,6 @@ kriya-dex-sdk@^2.0.8:
   dependencies:
     "@mysten/sui" "^1.3.0"
     axios "^1.4.0"
-
-kriya-farms-sdk@^0.0.21:
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/kriya-farms-sdk/-/kriya-farms-sdk-0.0.21.tgz#05f944229b74b31e45c69e01d7784e5a2b831e8b"
-  integrity sha512-s05QcgQLriEyvwE2mN4/8gjAkpnN8znCkt7nlUbVE2TYZ6gKgLfwC3MwkgUxGtQToVZRtxHkY7sfnGZn7MaeyA==
-  dependencies:
-    "@hop.ag/sdk" "^3.2.7"
-    "@mysten/sui" "^1.2.1"
-    buffer "^6.0.3"
-    decimal.js "^10.4.3"
-    kriya-dex-sdk "^1.1.69"
-    kriya-oracle-sdk "^0.0.8"
-    tslib "~2.6"
-
-kriya-oracle-sdk@0.0.13, kriya-oracle-sdk@^0.0.13:
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/kriya-oracle-sdk/-/kriya-oracle-sdk-0.0.13.tgz#90c13e1de11914f9f6a536da49ba4ddcd0fc3b12"
-  integrity sha512-1gD+IrGdYnPLf5/MqG2TVw5TbMhNl/cQCDGhaNFNPjorQLXi1LXfSvDo4PdP/QXmg7CJSC1m57tlqFfIpaiIHA==
-  dependencies:
-    "@mysten/sui" "^1.2.17"
-    axios "^1.7.3"
-    tslib "~2.6"
-
-kriya-oracle-sdk@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/kriya-oracle-sdk/-/kriya-oracle-sdk-0.0.8.tgz#09820b0c5bf9b60cd601dca12dca711c0b31c91c"
-  integrity sha512-UvcikwKAby0l/VNqpduYBAJbE2H9VVOnJcOKabjRSPXwfNiV8MJ9/PptwL9M1czy/T96bIsFUZ/17Z5teadnlw==
-  dependencies:
-    "@mysten/sui" "^1.2.1"
-    axios "^1.7.3"
-    tslib "~2.6"
-
-kriya-v3-sdk@2.0.10:
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/kriya-v3-sdk/-/kriya-v3-sdk-2.0.10.tgz#ad3e73e595d52993e2819ae669cd1f174d3a550e"
-  integrity sha512-QhskyYxYQtVi763aEE9LLiqLBeZqUExpGIyBFgCxtxDl+fOs+yFEBn9ck8gGT0T2lNahR2CP0ElT8vteRIZTtw==
-  dependencies:
-    "@mysten/sui" "^1.3.0"
-    axios "^1.4.0"
-    bn.js "^5.2.1"
-    decimal.js "^10.4.3"
-
-kriya-vault-sdk@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/kriya-vault-sdk/-/kriya-vault-sdk-2.0.2.tgz#13828ddb290626916baec34433cb7894e1357e68"
-  integrity sha512-ptICGnYAOUJV7gVR7NAH6pnF0/dLGf+nd1uBMJdHK4feHxAsEZYQ+3ATIqhBmbSKGUoQRCUaWHqPHZl2cXcBJg==
-  dependencies:
-    "@mysten/sui" "^1.3.0"
-    axios "^1.6.7"
-    bignumber.js "^9.1.2"
-    bn.js "^5.2.1"
-    decimal.js "^10.4.3"
-    kriya-dex-sdk "^1.1.52"
 
 leven@^3.1.0:
   version "3.1.0"
@@ -8340,7 +8241,7 @@ mime-db@1.52.0:
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.52.0.tgz#bbabcdc02859f4987301c856e3387ce5ec43bf70"
   integrity sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==
 
-mime-types@^2.1.12, mime-types@^2.1.35:
+mime-types@^2.1.12:
   version "2.1.35"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.35.tgz#381a871b62a734450660ae3deee44813f70d959a"
   integrity sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==
@@ -10097,15 +9998,10 @@ tslib@^1.8.1:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.6.2, tslib@^2.8.0:
+tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.6.2, tslib@^2.8.0, tslib@^2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
-
-tslib@~2.6:
-  version "2.6.3"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.3.tgz#0438f810ad7a9edcde7a241c3d80db693c8cbfe0"
-  integrity sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==
 
 tsup@^8.0.1:
   version "8.3.6"
