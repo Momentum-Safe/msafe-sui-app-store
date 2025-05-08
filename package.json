@@ -69,7 +69,6 @@
     "bucket-protocol-sdk": "^0.10.17",
     "buffer": "^6.0.3",
     "date-fns": "^4.1.0",
-    "kriya-dex-sdk": "^2.0.8",
     "luxon": "^3.4.4",
     "nanoid": "3",
     "navi-sdk": "1.6.0",
