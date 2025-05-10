@@ -37,7 +37,7 @@ export const getRemoveLiquidityTxb = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: Transaction = await clmmSdk.Position.closePositionTransactionPayload(txbParams);
+  const txb: Transaction = await clmmSdk.Position.closePositionPayload(txbParams);
   return txb;
 };
 
@@ -47,7 +47,7 @@ export const getDecreaseLiquidityTxb = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: Transaction = await clmmSdk.Position.removeLiquidityTransactionPayload(txbParams);
+  const txb: Transaction = await clmmSdk.Position.removeLiquidityPayload(txbParams);
   return txb;
 };
 
@@ -57,6 +57,6 @@ export const getClaimFeeAndMiningTxb = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const clmmSdk = getClmmSdk(network, account);
-  const txb: Transaction = await clmmSdk.Rewarder.collectRewarderTransactionPayload(txbParams);
+  const txb: Transaction = await clmmSdk.Rewarder.collectRewarderPayload(txbParams);
   return txb;
 };

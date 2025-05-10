@@ -1,4 +1,4 @@
-import { asIntN } from '@cetusprotocol/cetus-sui-clmm-sdk';
+import { asIntN } from '@cetusprotocol/common-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
