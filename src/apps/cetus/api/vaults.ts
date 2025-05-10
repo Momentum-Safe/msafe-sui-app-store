@@ -11,8 +11,10 @@ export const getAddVaultsPositionPayload = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const vaultsSdk = getVaultsSdk(network, account);
-  const txb: Transaction = await vaultsSdk.Vaults.deposit(txbParams);
-  return txb;
+  const tx = new Transaction()
+  tx.setSender(account.address)
+  await vaultsSdk.Vaults.deposit(txbParams, tx);
+  return tx;
 };
 
 export const getRemoveVaultsPositionPayload = async (
@@ -21,6 +23,7 @@ export const getRemoveVaultsPositionPayload = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const vaultsSdk = getVaultsSdk(network, account);
-  const txb: Transaction = await vaultsSdk.Vaults.withdraw(txbParams);
-  return txb;
+  const tx = new Transaction()
+  await vaultsSdk.Vaults.withdraw(txbParams, tx);
+  return tx;
 };
