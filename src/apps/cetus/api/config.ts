@@ -56,6 +56,8 @@ export const clmmConfig: SdkOptions = {
 };
 
 export const peripheryConfig: PeripherySdkOptions = {
+  // fullRpcUrl: getFullnodeUrl('mainnet'),
+  // env: "mainnet",
   launchpad: {
     package_id: '0x80d114c5d474eabc2eb2fcd1a0903f1eb5b5096a8dc4184d72453f7a9be728e4',
     published_at: '0x80d114c5d474eabc2eb2fcd1a0903f1eb5b5096a8dc4184d72453f7a9be728e4',
@@ -273,7 +275,13 @@ export const getAggregatorSdk = (network: SuiNetworks, account: WalletAccount) =
   const suiClient = new SuiClient({
     url: 'https://fullnode.mainnet.sui.io/',
   });
-  const aggregatorSdk = new AggregatorClient(aggregatorURL, account.address, suiClient, Env.Mainnet);
+  const aggregatorSdk = new AggregatorClient({
+    endpoint: aggregatorURL,
+    signer: account.address,
+    client: suiClient,
+    env: Env.Mainnet,
+  });
+
   return aggregatorSdk;
 };
 
