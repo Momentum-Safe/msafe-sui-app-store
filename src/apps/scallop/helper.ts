@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
+import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
@@ -117,6 +117,20 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
 
   private scallopClient: ScallopClient | undefined;
 
+  private async initScallopClient(walletAddress: string, suiClient: SuiClient) {
+    if (!this.scallopClient) {
+      const scallop = new Scallop({
+        addressId: '67c44a103fe1b8c454eb9699',
+        walletAddress,
+        suiClients: [suiClient],
+        fullnodeUrls: [
+          (suiClient as any).transport.rpcClient.requestManager.transports[0]?.uri ?? getFullnodeUrl('mainnet'),
+        ],
+      });
+      this.scallopClient = await scallop.createScallopClient();
+    }
+  }
+
   async deserialize(input: {
     transaction: Transaction;
     chain: IdentifierString;
@@ -129,16 +143,9 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     txSubType: TransactionSubType;
     intentionData: ScallopIntentionData;
   }> {
-    if (!this.scallopClient) {
-      const scallop = new Scallop({
-        addressId: '67c44a103fe1b8c454eb9699',
-        walletAddress: input.account.address,
-        suiClients: [input.suiClient],
-      });
-      this.scallopClient = await scallop.createScallopClient();
-    }
+    const { transaction, suiClient, account } = input;
+    await this.initScallopClient(account.address, suiClient);
 
-    const { transaction } = input;
     console.log('transaction', transaction);
 
     // const devInspectResult = await input.suiClient.devInspectTransactionBlock({
@@ -170,14 +177,7 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     network: SuiNetworks;
   }): Promise<Transaction> {
     const { suiClient, account, network, txSubType, intentionData } = input;
-    if (!this.scallopClient) {
-      const scallop = new Scallop({
-        addressId: '67c44a103fe1b8c454eb9699',
-        walletAddress: input.account.address,
-        suiClients: [input.suiClient],
-      });
-      this.scallopClient = await scallop.createScallopClient();
-    }
+    await this.initScallopClient(account.address, suiClient);
 
     let intention: ScallopIntention;
     switch (txSubType) {
