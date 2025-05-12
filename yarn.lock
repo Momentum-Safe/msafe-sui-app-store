@@ -1454,10 +1454,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@cetusprotocol/aggregator-sdk@^0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.4.4.tgz#7be1666b69a3f867a13f43d818e9387a1ee5e64a"
-  integrity sha512-rrWAkXlyCQeOBn+dr+WxDTP8lK1lr2SAwIPJP1w+uVTz1k9CCK8ufj7lhGfNVEC264qEivq5mIF7eWzsAgBELw==
+"@cetusprotocol/aggregator-sdk@0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.9.0.tgz#8e7f88e89459f1928481e9c56f8b598b273199f4"
+  integrity sha512-2VY9rry66IcQVxOI5b7//LzGCrywFBka/03Y6ZMjPDaDFtmxpm0BJ7t4ry350+0kjjU9+okU4W3iC9FZcBZJsA==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
@@ -1474,26 +1474,6 @@
     node-fetch "^3.3.2"
     ts-jest "^29.1.3"
     typescript "^5.4.5"
-
-"@cetusprotocol/cetus-periphery-sdk@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-periphery-sdk/-/cetus-periphery-sdk-3.5.0.tgz#93ebadc5a9b171a1412f46ed8ef55f4e8dea46dd"
-  integrity sha512-wc6GoKPD0YtK1VfZNde0/n8vnDOkoszgf9YGfSpsGdZl+wln847Qa/gH4oLPnmkA3P/XkLT4xWQVRjIXU5yXWg==
-  dependencies:
-    "@mysten/bcs" "^0.11.1"
-    "@mysten/sui" "^1.8.0"
-    "@suchipi/femver" "^1.0.0"
-    "@types/bn.js" "^5.1.1"
-    axios "^1.4.0"
-    blakejs "^1.2.1"
-    bn.js "^5.2.1"
-    decimal.js "^10.4.1"
-    isomorphic-fetch "^3.0.0"
-    js-base64 "^3.7.4"
-    js-sha3 "^0.8.0"
-    superstruct "^1.0.3"
-    tiny-invariant "^1.1.0"
-    tweetnacl "^1.0.3"
 
 "@cetusprotocol/cetus-sui-clmm-sdk@5.1.6":
   version "5.1.6"
@@ -1515,63 +1495,30 @@
     tweetnacl "^1.0.3"
     uuid "^9.0.0"
 
-"@cetusprotocol/cetus-sui-clmm-sdk@^5.3.4":
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-sui-clmm-sdk/-/cetus-sui-clmm-sdk-5.3.4.tgz#71fb2012ef8845d92f8f72e3e5b8cf638fe446bd"
-  integrity sha512-FbuWkhr+ash1MY/NODqCS/dyE/R0kZbiKqd0FcRCqWidpYnFKZhEaCv/tYd0ExKzZrnDxi+aaoYy/9FwirSwSg==
-  dependencies:
-    "@suchipi/femver" "^1.0.0"
-    "@syntsugar/cc-graph" "^0.1.1"
-    "@types/bn.js" "^5.1.1"
-    axios "^1.4.0"
-    bn.js "^5.2.1"
-    cors "^2.8.5"
-    decimal.js "^10.4.1"
-    dotenv "^16.4.7"
-    isomorphic-fetch "^3.0.0"
-    js-base64 "^3.7.4"
-    js-sha3 "^0.8.0"
-    superstruct "^1.0.3"
-    tiny-invariant "^1.1.0"
-    tweetnacl "^1.0.3"
-    uuid "^9.0.0"
+"@cetusprotocol/common-sdk@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/common-sdk/-/common-sdk-1.0.1.tgz#af055d18085410a0d3a9e621b76eb9fe63b6a493"
+  integrity sha512-FCZcKzWbrz9E3ml/qqpLRH4A93o4Cut2PTGD8YuAPx5C9bfjRPN40m5q47GBwtSxxcoGBJFfWswczpfb+Biqcw==
 
-"@cetusprotocol/cetus-xcetus-sdk@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/cetus-xcetus-sdk/-/cetus-xcetus-sdk-0.1.1.tgz#84e14d5db68e4baa8f0ccb501e93fb97b32baba9"
-  integrity sha512-+KCzi9OZKdu/YS7BZxy9qZCjIIYsMJiDU+z1hBvB/hn44XCWSvbzGN7xuJ7HfKo3UO6+TDoyYa56LulapSN0wg==
-  dependencies:
-    "@suchipi/femver" "^1.0.0"
-    "@types/bn.js" "^5.1.1"
-    axios "^1.4.0"
-    bn.js "^5.2.1"
-    decimal.js "^10.4.1"
-    dotenv "^16.4.5"
-    isomorphic-fetch "^3.0.0"
-    js-base64 "^3.7.4"
-    js-sha3 "^0.8.0"
-    superstruct "^1.0.3"
-    tiny-invariant "^1.1.0"
-    tweetnacl "^1.0.3"
+"@cetusprotocol/farms-sdk@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/farms-sdk/-/farms-sdk-1.0.2.tgz#3ea5242d044267cd01ef0f9a25ad776358335f14"
+  integrity sha512-AE9la29BlexHyW8ASuDgyFJM5wZQYYgQjAJX8dPH5wPqMC5AZkOiH2hz4dENj324I5mYkmC4wJMCelU1IlruaQ==
 
-"@cetusprotocol/vaults-sdk@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-0.2.2.tgz#1bdd500fd741fb286b234ca7c226a123c7091e95"
-  integrity sha512-ZxzM+nxNIoucZ7RPrbvjyBk1FXhza+stcR/crail0d5OXjolcOQQV/gZfJRpxGhGzHJI2nu+9ozrVxJw2V9E9Q==
-  dependencies:
-    "@cetusprotocol/aggregator-sdk" "^0.4.4"
-    "@suchipi/femver" "^1.0.0"
-    "@types/bn.js" "^5.1.1"
-    axios "^1.4.0"
-    bn.js "^5.2.1"
-    decimal.js "^10.4.1"
-    dotenv "^16.4.5"
-    isomorphic-fetch "^3.0.0"
-    js-base64 "^3.7.4"
-    js-sha3 "^0.8.0"
-    superstruct "^1.0.3"
-    tiny-invariant "^1.1.0"
-    tweetnacl "^1.0.3"
+"@cetusprotocol/sui-clmm-sdk@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/sui-clmm-sdk/-/sui-clmm-sdk-1.0.2.tgz#58f1e59b5a8d18019847757b5bbb74aefc18e740"
+  integrity sha512-C5/KXZRabmTsYb4LB5pMVmYUQF0uFvn90rQmDlRapBX78Fcki8jsySYhva1XuDQBHI+X38x4Q4DvbHbtBvUkoA==
+
+"@cetusprotocol/vaults-sdk@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-1.0.2.tgz#d2dd52e58bab0478c106234b12505b56d04d4769"
+  integrity sha512-jLo3s1sUcHv2d6DkHg7XFGrdi4T5og17FlvqI2RPol/SiItdXC+GlI88y/fVFntlGMxWKqWaihK5z1pDPlO7Sg==
+
+"@cetusprotocol/xcetus-sdk@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/xcetus-sdk/-/xcetus-sdk-1.0.2.tgz#a82b0cbc72e726548c955225edf35b92082a7d9d"
+  integrity sha512-7KEsSDMkjbBOgK0qeKtRgrVKl7EhpCFzs6gK4yUipJnTAMQkj+fnATtJ3JMXZbEnvynL9rGxgwGD0C0LoFdzWw==
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
@@ -2869,7 +2816,7 @@
     "@noble/hashes" "^1.3.3"
     sort-keys-recursive "^2.1.10"
 
-"@mysten/bcs@0.11.1", "@mysten/bcs@^0.11.1":
+"@mysten/bcs@0.11.1":
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.11.1.tgz#0cc0b0f5960f60cfe5cf6a8c229affa59cd09b1b"
   integrity sha512-xP85isNSYUCHd3O/g+TmZYmg4wK6cU8q/n/MebkIGP4CYVJZz2wU/G24xIZ3wI+0iTop4dfgA5kYrg/DQKCUzA==
@@ -2932,7 +2879,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.3.1", "@mysten/sui@^1.13.0", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.2.1", "@mysten/sui@^1.2.17", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.3.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
+"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.3.1", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.3.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.21.1.tgz#a3f43aba5e970ff46dafabd160c4963276ef3619"
   integrity sha512-HVrcqiUUSPToxbQtEgARFCnLr6FMkDHhhwWdy/urk8dqr8jnNZkU3Ppr6YUgg3vRE3sXPhuIjXOCEL6Wyq6Esw==
@@ -5100,7 +5047,7 @@ bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
-blakejs@^1.1.0, blakejs@^1.2.1:
+blakejs@^1.1.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/blakejs/-/blakejs-1.2.1.tgz#5057e4206eadb4a97f7c0b6e197a505042fc3814"
   integrity sha512-QXUSXI3QVc/gJME0dBpXrag1kbzOqCjCX8/b54ntNyW6sjtoqxqRk3LTmXzaJoh71zMsDCjM+47jS7XiwN/+fQ==
@@ -5114,11 +5061,6 @@ bn.js@^5.1.2, bn.js@^5.2.0, bn.js@^5.2.1:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.1.tgz#0bc527a6a0d18d0aa8d5b0538ce4a77dccfa7b70"
   integrity sha512-eXRvHzWyYPBuB4NBy0cmYQjGitUrtqwbvlzP3G6VFnNRbsZQIxQ10PbKKHt8gZ/HW/D/747aDl+QkDqg3KQLMQ==
-
-bn.js@^5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-5.2.2.tgz#82c09f9ebbb17107cd72cb7fd39bd1f9d0aaa566"
-  integrity sha512-v2YAxEmKaBLahNwE1mjp4WON6huMNeuDvagFZW+ASCuA/ku0bXR9hSMw0XpiqMoA3+rmnyck/tPRSFQkoC9Cuw==
 
 borsh@^0.7.0:
   version "0.7.0"
