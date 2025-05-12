@@ -42,11 +42,13 @@ import {
   ExtendPeriodAndStakeMoreIntentionData,
 } from './intentions/staking/extend-period-and-stake-more';
 import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/staking/extend-stake-period';
+import { MergeVeScaIntention, MergeVeScaIntentionData } from './intentions/staking/merge-ve-sca';
 import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/staking/redeem-sca';
 import {
   RenewExpStakePeriodIntention,
   RenewExpStakePeriodIntentionData,
 } from './intentions/staking/renew-exp-stake-period';
+import { SplitVeScaIntention, SplitVeScaIntentionData } from './intentions/staking/split-ve-sca';
 import { StakeScaIntention, StakeScaIntentionData } from './intentions/staking/stake-sca';
 import {
   SupplyAndStakeLendingIntention,
@@ -82,7 +84,9 @@ export type ScallopIntention =
   | ClaimRevenueReferralIntention
   | BindReferralIntention
   | MigrateScoinIntention
-  | RepayWithBoostIntention;
+  | RepayWithBoostIntention
+  | MergeVeScaIntention
+  | SplitVeScaIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -108,7 +112,9 @@ export type ScallopIntentionData =
   | ClaimRevenueReferralIntentionData
   | BindReferralIntentionData
   | MigrateScoinIntentionData
-  | RepayWithBoostIntentionData;
+  | RepayWithBoostIntentionData
+  | MergeVeScaIntentionData
+  | SplitVeScaIntentionData;
 
 export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData> {
   application = 'scallop';
@@ -158,6 +164,7 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     const decoderVesca = new DecoderVeSca(transaction, this.scallopClient);
 
     const result = decoderLending.decode() || decoderReferral.decode() || decoderVesca.decode();
+
     if (!result) {
       throw new Error('Unknown transaction type');
     }
@@ -257,6 +264,12 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
         break;
       case TransactionSubType.RepayWithBoost:
         intention = RepayWithBoostIntention.fromData(intentionData as RepayWithBoostIntentionData);
+        break;
+      case TransactionSubType.MergeVeSca:
+        intention = MergeVeScaIntention.fromData(intentionData as MergeVeScaIntentionData);
+        break;
+      case TransactionSubType.SplitVeSca:
+        intention = SplitVeScaIntention.fromData(intentionData as SplitVeScaIntentionData);
         break;
       default:
         throw new Error('not implemented');

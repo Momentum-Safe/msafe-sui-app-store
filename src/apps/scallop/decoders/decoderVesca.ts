@@ -24,6 +24,12 @@ export class DecoderVeSca extends Decoder {
     if (this.isRedeemSca()) {
       return this.decodeRedeemSca();
     }
+    if (this.isMergeVeSca()) {
+      return this.decodeMergeVesca();
+    }
+    if (this.isSplitVeSca()) {
+      return this.decodeSplitVesca();
+    }
     return undefined;
   }
 
@@ -51,6 +57,14 @@ export class DecoderVeSca extends Decoder {
 
   private isRenewExpiredVeSca() {
     return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::renew_expired_ve_sca`);
+  }
+
+  private isMergeVeSca() {
+    return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::merge`);
+  }
+
+  private isSplitVeSca() {
+    return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::split`);
   }
 
   private get helperStakeMoreSca() {
@@ -97,7 +111,7 @@ export class DecoderVeSca extends Decoder {
 
   private get helperUnstakeObligation() {
     const moveCall = this.commands.find((command) =>
-      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::unstake`),
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::unstake_v2`),
     );
     return new MoveCallHelper(moveCall, this.transaction);
   }
@@ -106,6 +120,14 @@ export class DecoderVeSca extends Decoder {
     const moveCall = this.commands.find((command) =>
       this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
     );
+    return new MoveCallHelper(moveCall, this.transaction);
+  }
+
+  private getMergeSplitVeScaHelper(type: 'merge' | 'split') {
+    const moveCall = this.commands.find((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.veScaPkgId}::ve_sca::${type}`),
+    );
+
     return new MoveCallHelper(moveCall, this.transaction);
   }
 
@@ -370,6 +392,34 @@ export class DecoderVeSca extends Decoder {
         isObligationLocked,
         isOldBorrowIncentive,
       },
+    };
+  }
+
+  private decodeMergeVesca(): DecodeResult {
+    const mergeSplithelper = this.getMergeSplitVeScaHelper('merge');
+    const intentionData = {
+      targetVeScaKey: mergeSplithelper.decodeOwnedObjectId(1),
+      sourceVeScaKey: mergeSplithelper.decodeOwnedObjectId(2),
+    };
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.MergeVeSca,
+      intentionData,
+    };
+  }
+
+  private decodeSplitVesca(): DecodeResult {
+    const helper = this.getMergeSplitVeScaHelper('split');
+    const intentionData = {
+      targetVeScaKey: helper.decodeOwnedObjectId(1),
+      splitAmount: helper.decodeInputU64(4),
+    };
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.SplitVeSca,
+      intentionData,
     };
   }
 }
