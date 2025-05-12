@@ -2,6 +2,7 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '@scallop-io/sui-scallop-sdk';
 
 import { Decoder } from './decoder';
+import { VeScaObligationBindingsIntentData } from '../intentions/staking/ve-sca-obligation-bindings';
 import { DecodeResult } from '../types';
 import { SplitCoinTransactionType } from '../types/sui';
 import { TransactionSubType } from '../types/utils';
@@ -29,6 +30,9 @@ export class DecoderVeSca extends Decoder {
     }
     if (this.isSplitVeSca()) {
       return this.decodeSplitVesca();
+    }
+    if (this.isVeScaObligationBindings()) {
+      return this.decodeVeScaObligationBindings();
     }
     return undefined;
   }
@@ -65,6 +69,28 @@ export class DecoderVeSca extends Decoder {
 
   private isSplitVeSca() {
     return this.hasMoveCallCommand(`${this.coreId.veScaPkgId}::ve_sca::split`);
+  }
+
+  private isVeScaObligationBindings() {
+    const unstakeCommands = this.commands.filter((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::unstake_v2`),
+    );
+
+    const stakeCommands = this.commands.filter((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca_v2`),
+    );
+
+    const deactivateBoostCommands = this.commands.filter((command) =>
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::deactivate_boost_v2`),
+    );
+
+    const notEmpty =
+      unstakeCommands.length > 0 && stakeCommands.length > 0 && unstakeCommands.length === stakeCommands.length;
+    const isDeactivateBoost = deactivateBoostCommands.length > 0;
+    const noOtherCommands =
+      this.commands.length === unstakeCommands.length + stakeCommands.length + deactivateBoostCommands.length;
+
+    return noOtherCommands && (notEmpty || isDeactivateBoost);
   }
 
   private get helperStakeMoreSca() {
@@ -118,7 +144,7 @@ export class DecoderVeSca extends Decoder {
 
   private get helperStakeObligationWithVeSca() {
     const moveCall = this.commands.find((command) =>
-      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca_v2`),
     );
     return new MoveCallHelper(moveCall, this.transaction);
   }
@@ -129,6 +155,45 @@ export class DecoderVeSca extends Decoder {
     );
 
     return new MoveCallHelper(moveCall, this.transaction);
+  }
+
+  private getVeScaObligationBindingHelpers() {
+    const unstakeMoveCall = `${this.coreId.borrowIncentivePkg}::user::unstake_v2`;
+    const stakeMoveCall = `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca_v2`;
+    const deactivateMoveCall = `${this.coreId.borrowIncentivePkg}::user::deactivate_boost_v2`;
+
+    const helpers: {
+      action: 'stake' | 'unstake' | 'deactivate';
+      helper: MoveCallHelper;
+    }[] = [];
+
+    let unstakeHelperIdx = 0;
+    let stakeHelperIdx = 0;
+    let deactivateIdx = 0;
+
+    this.commands.forEach((command) => {
+      if (this.filterMoveCallCommands(command, unstakeMoveCall)) {
+        helpers.push({
+          action: 'unstake',
+          helper: new MoveCallHelper(command, this.transaction, unstakeHelperIdx),
+        });
+        unstakeHelperIdx++;
+      } else if (this.filterMoveCallCommands(command, stakeMoveCall)) {
+        helpers.push({
+          action: 'stake',
+          helper: new MoveCallHelper(command, this.transaction, stakeHelperIdx),
+        });
+        stakeHelperIdx++;
+      } else if (this.filterMoveCallCommands(command, deactivateMoveCall)) {
+        helpers.push({
+          action: 'deactivate',
+          helper: new MoveCallHelper(command, this.transaction, deactivateIdx),
+        });
+        deactivateIdx++;
+      }
+    });
+
+    return helpers;
   }
 
   private decodeRedeemSca(): DecodeResult {
@@ -420,6 +485,52 @@ export class DecoderVeSca extends Decoder {
       txType: TransactionType.Other,
       type: TransactionSubType.SplitVeSca,
       intentionData,
+    };
+  }
+
+  private decodeVeScaObligationBindings(): DecodeResult {
+    const helpers = this.getVeScaObligationBindingHelpers();
+
+    const parseArgFromHelper = (
+      action: 'stake' | 'unstake' | 'deactivate',
+      helper: MoveCallHelper,
+    ): VeScaObligationBindingsIntentData['bindingDatas'][number]['args'] => {
+      switch (action) {
+        case 'stake': {
+          return {
+            veScaKey: helper.decodeOwnedObjectId(9),
+            obligationId: helper.decodeSharedObjectId(4),
+            obligationKey: helper.decodeOwnedObjectId(3),
+          };
+        }
+        case 'unstake': {
+          return {
+            obligationId: helper.decodeSharedObjectId(4),
+            obligationKey: helper.decodeOwnedObjectId(3),
+          };
+        }
+        case 'deactivate': {
+          return {
+            veScaKey: helper.decodeOwnedObjectId(4),
+            obligationId: helper.decodeSharedObjectId(3),
+          };
+        }
+        default:
+          throw new Error(`Invalid action ${action}`);
+      }
+    };
+
+    const bindingDatas = helpers.map(({ action, helper }) => ({
+      action,
+      args: parseArgFromHelper(action, helper),
+    }));
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.VeScaObligationBindings,
+      intentionData: {
+        bindingDatas,
+      },
     };
   }
 }

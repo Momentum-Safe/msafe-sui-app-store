@@ -54,6 +54,10 @@ import {
   SupplyAndStakeLendingIntention,
   SupplyAndStakeLendingIntentionData,
 } from './intentions/staking/supply-and-stake-lending';
+import {
+  VeScaObligationBindingsIntentData,
+  VeScaObligationBindingsIntention,
+} from './intentions/staking/ve-sca-obligation-bindings';
 import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/staking/withdraw-staked-sca';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
@@ -86,7 +90,8 @@ export type ScallopIntention =
   | MigrateScoinIntention
   | RepayWithBoostIntention
   | MergeVeScaIntention
-  | SplitVeScaIntention;
+  | SplitVeScaIntention
+  | VeScaObligationBindingsIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -114,7 +119,8 @@ export type ScallopIntentionData =
   | MigrateScoinIntentionData
   | RepayWithBoostIntentionData
   | MergeVeScaIntentionData
-  | SplitVeScaIntentionData;
+  | SplitVeScaIntentionData
+  | VeScaObligationBindingsIntentData;
 
 export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData> {
   application = 'scallop';
@@ -271,6 +277,10 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
       case TransactionSubType.SplitVeSca:
         intention = SplitVeScaIntention.fromData(intentionData as SplitVeScaIntentionData);
         break;
+      case TransactionSubType.VeScaObligationBindings: {
+        intention = VeScaObligationBindingsIntention.fromData(intentionData as VeScaObligationBindingsIntentData);
+        break;
+      }
       default:
         throw new Error('not implemented');
     }

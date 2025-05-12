@@ -83,6 +83,7 @@ export enum TransactionSubType {
   MigrateWusdcToUsdc = 'MigrateWusdcToUsdc',
   MergeVeSca = 'MergeVeSca',
   SplitVeSca = 'SplitVeSca',
+  VeScaObligationBindings = 'VeScaObligationBindings',
 }
 
 export type DecodeResult = {
