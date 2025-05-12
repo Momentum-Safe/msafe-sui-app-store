@@ -1,3 +1,4 @@
+import { getFullnodeUrl } from '@mysten/sui/client';
 import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { BorrowIntention } from '@/apps/scallop/intentions/lending/borrow';
@@ -22,6 +23,7 @@ describe('Scallop App', () => {
   const scallop = new Scallop({
     addressId: '67c44a103fe1b8c454eb9699',
     walletAddress: Account.address,
+    fullnodeUrls: [getFullnodeUrl('mainnet')],
   });
   let scallopClient: ScallopClient;
 
