@@ -3,15 +3,15 @@ import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
 
-import { getPeripherySdk } from './config';
+import { getFarmsSdk } from './config';
 
 export const getFarmingAddLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
-  const txb: Transaction = await peripherySdk.Farms.openPositionAddLiquidityStakePaylod(txbParams);
+  const peripherySdk = getFarmsSdk(network, account);
+  const txb: Transaction = await peripherySdk.Farms.openPositionAddLiquidityStakePayload(txbParams);
   return txb;
 };
 
@@ -20,7 +20,7 @@ export const getFarmingIncreaseLiquidityTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const txb: Transaction = await peripherySdk.Farms.addLiquidityFixCoinPayload(txbParams);
   return txb;
 };
@@ -30,7 +30,7 @@ export const getFarmingDecreaseLiquidityTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const txb: Transaction = await peripherySdk.Farms.removeLiquidityPayload(txbParams);
   return txb;
 };
@@ -40,7 +40,7 @@ export const getFarmingRemoveLiquidityTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const txb: Transaction = await peripherySdk.Farms.removeLiquidityPayload(txbParams);
   return txb;
 };
@@ -50,7 +50,7 @@ export const getFarmingClaimFeeAndRewardTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const txb: Transaction = await peripherySdk.Farms.claimFeeAndClmmReward(txbParams);
   return txb;
 };
@@ -60,7 +60,7 @@ export const getFarmingHarvest = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const txb: Transaction = await peripherySdk.Farms.harvestPayload(txbParams);
   return txb;
 };
@@ -70,7 +70,7 @@ export const getFarmingBatchHarvest = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const params: any = Object.values(txbParams);
   const txb: Transaction = await peripherySdk.Farms.batchHarvestPayload(params);
   return txb;
@@ -81,7 +81,7 @@ export const getFarmingStake = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const txb: Transaction = await peripherySdk.Farms.depositPayload(txbParams);
   return txb;
 };
@@ -91,7 +91,7 @@ export const getFarmingUnstake = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const peripherySdk = getPeripherySdk(network, account);
+  const peripherySdk = getFarmsSdk(network, account);
   const txb: Transaction = await peripherySdk.Farms.withdrawPayload(txbParams);
   return txb;
 };
