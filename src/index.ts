@@ -14,7 +14,7 @@ import { TURBOSAppHelper } from '@/apps/turbos/helper';
 import { VoloAppHelper } from '@/apps/volo/helper';
 
 import { BluefinHelper } from './apps/bluefin/helper';
-import { KRIYAAppHelper } from './apps/kriya/helper';
+import { MMTDEXAppHelper } from './apps/mmt-dex/helper';
 
 export const appHelpers = MSafeApps.fromHelpers([
   new CoreHelper(),
@@ -23,7 +23,7 @@ export const appHelpers = MSafeApps.fromHelpers([
   new PlainTransactionHelper(),
   new CetusHelper(),
   new TURBOSAppHelper(),
-  new KRIYAAppHelper(),
+  new MMTDEXAppHelper(),
   new ScallopAppHelper(),
   new VoloAppHelper(),
   new BucketHelper(),
