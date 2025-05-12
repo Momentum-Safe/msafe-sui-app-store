@@ -4,12 +4,12 @@ import { OLD_BORROW_INCENTIVE_PROTOCOL_ID } from '@scallop-io/sui-scallop-sdk';
 import { Decoder } from './decoder';
 import { VeScaObligationBindingsIntentData } from '../intentions/staking/ve-sca-obligation-bindings';
 import { DecodeResult } from '../types';
-import { SplitCoinTransactionType } from '../types/sui';
+import { SplitCoinTransactionType, TransactionInputs, TransferObjectsCommand } from '../types/sui';
 import { TransactionSubType } from '../types/utils';
-import { MoveCallHelper, SplitCoinHelper } from '../utils';
+import { MoveCallHelper, partitionArray, SplitCoinHelper } from '../utils';
 
 export class DecoderVeSca extends Decoder {
-  decode() {
+  async decode() {
     if (this.isExtendPeriodAndStakeMoreSca()) {
       return this.decodePeriodAndStakeMoreSca();
     }
@@ -33,6 +33,9 @@ export class DecoderVeSca extends Decoder {
     }
     if (this.isVeScaObligationBindings()) {
       return this.decodeVeScaObligationBindings();
+    }
+    if (await this.isTransferVeScaKey()) {
+      return this.decodeTransferVeScaKey();
     }
     return undefined;
   }
@@ -91,6 +94,57 @@ export class DecoderVeSca extends Decoder {
       this.commands.length === unstakeCommands.length + stakeCommands.length + deactivateBoostCommands.length;
 
     return noOtherCommands && (notEmpty || isDeactivateBoost);
+  }
+
+  private async isTransferVeScaKey() {
+    const transferTxs = this.commands.filter((t) => t.$kind === 'TransferObjects') as {
+      TransferObjects: TransferObjectsCommand;
+    }[];
+    // only allow 1 transfer object tx
+    if (transferTxs.length !== 1) {
+      return false;
+    }
+
+    // check if all the transfered objects are veSCA keys
+    const { objects } = transferTxs[0].TransferObjects;
+    const veScaKeyIndexes = (
+      objects.filter((t) => t.$kind === 'Input') as {
+        $kind: 'Input';
+        Input: number;
+      }[]
+    ).map(({ Input }) => Input);
+
+    // only allow if all objects is Input type
+    if (veScaKeyIndexes.length !== objects.length) {
+      return false;
+    }
+
+    // Get all veSCA keys objects
+    const indexesAsSet = new Set(veScaKeyIndexes);
+    const veScaKeys = (
+      this.inputs.filter((t, idx) => t.$kind === 'Object' && indexesAsSet.has(idx)) as TransactionInputs[number][]
+    ).map((t) => t.Object.ImmOrOwnedObject) as TransactionInputs[number]['Object']['ImmOrOwnedObject'][];
+
+    // assert object types
+    const veScaKeyType = `${this.coreId.veScaObjId}::ve_sca::VeScaKey`;
+
+    const batches = partitionArray(
+      veScaKeys.map(({ objectId }) => objectId),
+      50,
+    );
+
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
+      const responses = await this.scallopClient.scallopSuiKit.queryGetObjects(batch, {
+        showType: true,
+      });
+
+      if (responses.some((t) => t.type !== veScaKeyType)) {
+        return false;
+      }
+    }
+
+    return veScaKeys.length > 0;
   }
 
   private get helperStakeMoreSca() {
@@ -530,6 +584,40 @@ export class DecoderVeSca extends Decoder {
       type: TransactionSubType.VeScaObligationBindings,
       intentionData: {
         bindingDatas,
+      },
+    };
+  }
+
+  private decodeTransferVeScaKey() {
+    const transferTxs = this.commands.filter((t) => t.$kind === 'TransferObjects') as {
+      TransferObjects: TransferObjectsCommand;
+    }[];
+
+    // check if all the transfered objects are veSCA keys
+    const { objects } = transferTxs[0].TransferObjects;
+    const veScaKeyIndexes = (
+      objects.filter((t) => t.$kind === 'Input') as {
+        $kind: 'Input';
+        Input: number;
+      }[]
+    ).map(({ Input }) => Input);
+
+    // only allow if all objects is Input type
+    if (veScaKeyIndexes.length !== objects.length) {
+      return false;
+    }
+
+    // Get all veSCA keys objects
+    const indexesAsSet = new Set(veScaKeyIndexes);
+    const veScaKeys = (
+      this.inputs.filter((t, idx) => t.$kind === 'Object' && indexesAsSet.has(idx)) as TransactionInputs[number][]
+    ).map((t) => t.Object.ImmOrOwnedObject) as TransactionInputs[number]['Object']['ImmOrOwnedObject'][];
+
+    return {
+      xType: TransactionType.Other,
+      type: TransactionSubType.TransferVeScaKeys,
+      intentionData: {
+        veScaKeys,
       },
     };
   }

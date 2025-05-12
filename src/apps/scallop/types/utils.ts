@@ -84,6 +84,7 @@ export enum TransactionSubType {
   MergeVeSca = 'MergeVeSca',
   SplitVeSca = 'SplitVeSca',
   VeScaObligationBindings = 'VeScaObligationBindings',
+  TransferVeScaKeys = 'TransferVeScaKeys',
 }
 
 export type DecodeResult = {

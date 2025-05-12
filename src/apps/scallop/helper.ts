@@ -58,6 +58,7 @@ import {
   VeScaObligationBindingsIntentData,
   VeScaObligationBindingsIntention,
 } from './intentions/staking/ve-sca-obligation-bindings';
+import { TransferVeScaKeysIntention, TransferVeScaKeysIntentionData } from './intentions/staking/ve-sca-transfers';
 import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/staking/withdraw-staked-sca';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
@@ -91,7 +92,8 @@ export type ScallopIntention =
   | RepayWithBoostIntention
   | MergeVeScaIntention
   | SplitVeScaIntention
-  | VeScaObligationBindingsIntention;
+  | VeScaObligationBindingsIntention
+  | TransferVeScaKeysIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -120,7 +122,8 @@ export type ScallopIntentionData =
   | RepayWithBoostIntentionData
   | MergeVeScaIntentionData
   | SplitVeScaIntentionData
-  | VeScaObligationBindingsIntentData;
+  | VeScaObligationBindingsIntentData
+  | TransferVeScaKeysIntentionData;
 
 export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData> {
   application = 'scallop';
@@ -169,7 +172,7 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     const decoderReferral = new DecoderReferral(transaction, this.scallopClient);
     const decoderVesca = new DecoderVeSca(transaction, this.scallopClient);
 
-    const result = decoderLending.decode() || decoderReferral.decode() || decoderVesca.decode();
+    const result = decoderLending.decode() || decoderReferral.decode() || (await decoderVesca.decode());
 
     if (!result) {
       throw new Error('Unknown transaction type');
@@ -279,6 +282,10 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
         break;
       case TransactionSubType.VeScaObligationBindings: {
         intention = VeScaObligationBindingsIntention.fromData(intentionData as VeScaObligationBindingsIntentData);
+        break;
+      }
+      case TransactionSubType.TransferVeScaKeys: {
+        intention = TransferVeScaKeysIntention.fromData(intentionData as TransferVeScaKeysIntentionData);
         break;
       }
       default:

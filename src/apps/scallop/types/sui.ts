@@ -5,6 +5,7 @@ export type TransactionInputs = GetDataReturnType['inputs'];
 export type TransactionCommands = GetDataReturnType['commands'];
 export type TransactionCommand = TransactionCommands[number];
 
+export type TransferObjectsCommand = TransactionCommand['TransferObjects'];
 export type MoveCallCommand = TransactionCommand['MoveCall'];
 export type SplitCoinCommand = TransactionCommand['SplitCoins'];
 
