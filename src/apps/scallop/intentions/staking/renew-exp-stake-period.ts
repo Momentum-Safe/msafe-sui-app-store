@@ -13,7 +13,7 @@ import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
 export interface RenewExpStakePeriodIntentionData {
   amount: number;
   unlockTime: number;
-  vescaKey: string;
+  veScaKey: string;
   isHaveRedeem: boolean;
   obligation?: string;
   obligationKey?: string;
@@ -41,7 +41,7 @@ export class RenewExpStakePeriodIntention extends ScallopCoreBaseIntention<Renew
     const {
       amount,
       unlockTime,
-      vescaKey,
+      veScaKey,
       isHaveRedeem,
       obligation,
       obligationKey,
@@ -53,7 +53,7 @@ export class RenewExpStakePeriodIntention extends ScallopCoreBaseIntention<Renew
     tx.setSender(sender);
 
     if (isHaveRedeem) {
-      const redeem = tx.redeemSca(vescaKey);
+      const redeem = tx.redeemSca(veScaKey);
       tx.transferObjects([redeem], sender);
     }
 
@@ -63,7 +63,7 @@ export class RenewExpStakePeriodIntention extends ScallopCoreBaseIntention<Renew
     tx.transferObjects([leftCoin], sender);
 
     // renew veSCA
-    tx.renewExpiredVeSca(vescaKey, takeCoin, unlockTime);
+    tx.renewExpiredVeSca(veScaKey, takeCoin, unlockTime);
     if (!obligation || !obligationKey) {
       return tx.txBlock;
     }
@@ -74,7 +74,7 @@ export class RenewExpStakePeriodIntention extends ScallopCoreBaseIntention<Renew
         tx.unstakeObligation(obligation, obligationKey);
       }
     }
-    tx.stakeObligationWithVesca(obligation, obligationKey, vescaKey);
+    tx.stakeObligationWithVesca(obligation, obligationKey, veScaKey);
     return tx.txBlock;
   }
 
