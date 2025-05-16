@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
+import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
@@ -42,16 +42,23 @@ import {
   ExtendPeriodAndStakeMoreIntentionData,
 } from './intentions/staking/extend-period-and-stake-more';
 import { ExtendStakePeriodIntention, ExtendStakePeriodIntentionData } from './intentions/staking/extend-stake-period';
+import { MergeVeScaIntention, MergeVeScaIntentionData } from './intentions/staking/merge-ve-sca';
 import { RedeemScaIntention, RedeemScaIntentionData } from './intentions/staking/redeem-sca';
 import {
   RenewExpStakePeriodIntention,
   RenewExpStakePeriodIntentionData,
 } from './intentions/staking/renew-exp-stake-period';
+import { SplitVeScaIntention, SplitVeScaIntentionData } from './intentions/staking/split-ve-sca';
 import { StakeScaIntention, StakeScaIntentionData } from './intentions/staking/stake-sca';
 import {
   SupplyAndStakeLendingIntention,
   SupplyAndStakeLendingIntentionData,
 } from './intentions/staking/supply-and-stake-lending';
+import {
+  VeScaObligationBindingsIntentData,
+  VeScaObligationBindingsIntention,
+} from './intentions/staking/ve-sca-obligation-bindings';
+import { TransferVeScaKeysIntention, TransferVeScaKeysIntentionData } from './intentions/staking/ve-sca-transfers';
 import { WithdrawStakedScaIntention, WithdrawStakedScaIntentionData } from './intentions/staking/withdraw-staked-sca';
 import { SuiNetworks } from './types';
 import { TransactionSubType } from './types/utils';
@@ -82,7 +89,11 @@ export type ScallopIntention =
   | ClaimRevenueReferralIntention
   | BindReferralIntention
   | MigrateScoinIntention
-  | RepayWithBoostIntention;
+  | RepayWithBoostIntention
+  | MergeVeScaIntention
+  | SplitVeScaIntention
+  | VeScaObligationBindingsIntention
+  | TransferVeScaKeysIntention;
 
 export type ScallopIntentionData =
   | SupplyLendingIntentionData
@@ -108,7 +119,11 @@ export type ScallopIntentionData =
   | ClaimRevenueReferralIntentionData
   | BindReferralIntentionData
   | MigrateScoinIntentionData
-  | RepayWithBoostIntentionData;
+  | RepayWithBoostIntentionData
+  | MergeVeScaIntentionData
+  | SplitVeScaIntentionData
+  | VeScaObligationBindingsIntentData
+  | TransferVeScaKeysIntentionData;
 
 export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData> {
   application = 'scallop';
@@ -116,6 +131,20 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
   supportSDK = '@mysten/sui' as const;
 
   private scallopClient: ScallopClient | undefined;
+
+  private async initScallopClient(walletAddress: string, suiClient: SuiClient) {
+    if (!this.scallopClient) {
+      const scallop = new Scallop({
+        addressId: '67c44a103fe1b8c454eb9699',
+        walletAddress,
+        suiClients: [suiClient],
+        fullnodeUrls: [
+          (suiClient as any).transport.rpcClient.requestManager.transports[0]?.uri ?? getFullnodeUrl('mainnet'),
+        ],
+      });
+      this.scallopClient = await scallop.createScallopClient();
+    }
+  }
 
   async deserialize(input: {
     transaction: Transaction;
@@ -129,16 +158,9 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     txSubType: TransactionSubType;
     intentionData: ScallopIntentionData;
   }> {
-    if (!this.scallopClient) {
-      const scallop = new Scallop({
-        addressId: '67c44a103fe1b8c454eb9699',
-        walletAddress: input.account.address,
-        suiClients: [input.suiClient],
-      });
-      this.scallopClient = await scallop.createScallopClient();
-    }
+    const { transaction, suiClient, account } = input;
+    await this.initScallopClient(account.address, suiClient);
 
-    const { transaction } = input;
     console.log('transaction', transaction);
 
     // const devInspectResult = await input.suiClient.devInspectTransactionBlock({
@@ -150,7 +172,8 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     const decoderReferral = new DecoderReferral(transaction, this.scallopClient);
     const decoderVesca = new DecoderVeSca(transaction, this.scallopClient);
 
-    const result = decoderLending.decode() || decoderReferral.decode() || decoderVesca.decode();
+    const result = decoderLending.decode() || decoderReferral.decode() || (await decoderVesca.decode());
+
     if (!result) {
       throw new Error('Unknown transaction type');
     }
@@ -170,14 +193,7 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     network: SuiNetworks;
   }): Promise<Transaction> {
     const { suiClient, account, network, txSubType, intentionData } = input;
-    if (!this.scallopClient) {
-      const scallop = new Scallop({
-        addressId: '67c44a103fe1b8c454eb9699',
-        walletAddress: input.account.address,
-        suiClients: [input.suiClient],
-      });
-      this.scallopClient = await scallop.createScallopClient();
-    }
+    await this.initScallopClient(account.address, suiClient);
 
     let intention: ScallopIntention;
     switch (txSubType) {
@@ -258,6 +274,20 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
       case TransactionSubType.RepayWithBoost:
         intention = RepayWithBoostIntention.fromData(intentionData as RepayWithBoostIntentionData);
         break;
+      case TransactionSubType.MergeVeSca:
+        intention = MergeVeScaIntention.fromData(intentionData as MergeVeScaIntentionData);
+        break;
+      case TransactionSubType.SplitVeSca:
+        intention = SplitVeScaIntention.fromData(intentionData as SplitVeScaIntentionData);
+        break;
+      case TransactionSubType.VeScaObligationBindings: {
+        intention = VeScaObligationBindingsIntention.fromData(intentionData as VeScaObligationBindingsIntentData);
+        break;
+      }
+      case TransactionSubType.TransferVeScaKeys: {
+        intention = TransferVeScaKeysIntention.fromData(intentionData as TransferVeScaKeysIntentionData);
+        break;
+      }
       default:
         throw new Error('not implemented');
     }

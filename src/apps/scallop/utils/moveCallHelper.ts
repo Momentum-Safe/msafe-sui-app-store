@@ -17,17 +17,25 @@ class MoveCallHelper {
   constructor(
     public readonly moveCall: TransactionCommand | undefined,
     public readonly transaction: Transaction,
+    index = 0,
   ) {
-    this.cmdIdx = moveCall?.MoveCall
-      ? transaction.getData().commands.findIndex((t) => {
-          if (t.$kind === 'MoveCall') {
-            const target = `${t.MoveCall.package}::${t.MoveCall.module}::${t.MoveCall.function}`;
-            const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
-            return target === moveCallTarget;
+    const indexes: number[] = [];
+    if (moveCall?.MoveCall) {
+      transaction.getData().commands.filter((t, idx) => {
+        if (t.$kind === 'MoveCall') {
+          const target = `${t.MoveCall.package}::${t.MoveCall.module}::${t.MoveCall.function}`;
+          const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
+          const match = target === moveCallTarget;
+          if (match) {
+            indexes.push(idx);
+            return true;
           }
           return false;
-        })
-      : -1;
+        }
+        return false;
+      });
+    }
+    this.cmdIdx = indexes[index];
   }
 
   get txBlockTransactions(): MoveCallTransactionType {

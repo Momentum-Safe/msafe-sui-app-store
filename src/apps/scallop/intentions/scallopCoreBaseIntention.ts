@@ -69,7 +69,7 @@ export abstract class ScallopCoreBaseIntention<D> implements BaseIntention<D> {
     const { obligationId, obligationKey } = input;
 
     // unstake obligation if it is locked
-    const locked = await this.isObligationLocked(client.suiKit.client(), obligationId);
+    const locked = await this.isObligationLocked(client.scallopSuiKit.client, obligationId);
     if (locked) {
       await txb.unstakeObligationQuick(obligationId, obligationKey);
       await callback(client, txb, input);

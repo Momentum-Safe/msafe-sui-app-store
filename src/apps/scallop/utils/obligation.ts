@@ -2,7 +2,7 @@ import { normalizeStructTag, SUI_CLOCK_OBJECT_ID, SUI_TYPE_ARG } from '@mysten/s
 import { ScallopQuery, ScallopTxBlock } from '@scallop-io/sui-scallop-sdk';
 
 export const isObligationMigrated = async (query: ScallopQuery, obligationId: string) => {
-  const obligation = await query.suiKit.client().getObject({
+  const obligation = await query.scallopSuiKit.client.getObject({
     id: obligationId,
     options: {
       showContent: true,

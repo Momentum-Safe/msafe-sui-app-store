@@ -45,6 +45,7 @@ export class Decoder {
       spoolPkg: this.address.get('spool.id'),
       borrowIncentivePkg: this.address.get('borrowIncentive.id'),
       veScaPkgId: this.address.get('vesca.id'),
+      veScaObjId: this.address.get('vesca.object'),
       scoin: this.address.get('scoin.id'),
       referral: this.address.get('referral.id'),
     };

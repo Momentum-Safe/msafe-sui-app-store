@@ -116,7 +116,7 @@ export class DecoderLending extends Decoder {
 
   private isBorrowWithBoostTransaction() {
     const borrowMoveCall = this.hasMoveCallCommand(`${this.coreId.protocolPkg}::borrow::borrow`);
-    const stakeMoveCall = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    const stakeMoveCall = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca_v2`);
     return borrowMoveCall && stakeMoveCall;
   }
 
@@ -130,7 +130,7 @@ export class DecoderLending extends Decoder {
 
   private isRepayWithBoostTransaction() {
     const repayMoveCall = this.hasMoveCallCommand(`${this.coreId.protocolPkg}::repay::repay`);
-    const stakeMoveCall = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    const stakeMoveCall = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca_v2`);
     return repayMoveCall && stakeMoveCall;
   }
 
@@ -154,7 +154,7 @@ export class DecoderLending extends Decoder {
 
   private isMigrateAndClaim() {
     const oldBorrowIncentive = this.hasMoveCallCommand(`${OLD_BORROW_INCENTIVE_PROTOCOL_ID}::user::redeem_rewards`);
-    const stakeWithVeSca = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`);
+    const stakeWithVeSca = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca_v2`);
     const stakeWithoutVesca = this.hasMoveCallCommand(`${this.coreId.borrowIncentivePkg}::user::stake`);
     return oldBorrowIncentive && (stakeWithVeSca || stakeWithoutVesca);
   }
@@ -177,7 +177,7 @@ export class DecoderLending extends Decoder {
 
   private get helperStakeObligationWithVeSca() {
     const moveCall = this.commands.find((command) =>
-      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca`),
+      this.filterMoveCallCommands(command, `${this.coreId.borrowIncentivePkg}::user::stake_with_ve_sca_v2`),
     );
     return new MoveCallHelper(moveCall, this.transaction);
   }

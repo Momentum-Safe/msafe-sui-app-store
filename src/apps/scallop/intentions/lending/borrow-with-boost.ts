@@ -26,11 +26,7 @@ export class BorrowWithBoostIntention extends ScallopCoreBaseIntention<BorrowWit
     super(data);
   }
 
-  public async borrowWithBoost(
-    client: ScallopClient,
-    data: BorrowWithBoostIntentionData,
-    walletAddress: string,
-  ): Promise<Transaction> {
+  public async borrowWithBoost(client: ScallopClient, walletAddress: string): Promise<Transaction> {
     const { obligationId, obligationKey, veScaKey, amount, coinName: poolCoinName } = this.data;
     const txb = await this.buildTxWithRefreshObligation(
       client,
@@ -54,7 +50,7 @@ export class BorrowWithBoostIntention extends ScallopCoreBaseIntention<BorrowWit
     network: SuiNetworks;
     scallopClient: ScallopClient;
   }): Promise<Transaction> {
-    return this.borrowWithBoost(input.scallopClient, this.data, input.account.address);
+    return this.borrowWithBoost(input.scallopClient, input.account.address);
   }
 
   static fromData(data: BorrowWithBoostIntentionData): BorrowWithBoostIntention {

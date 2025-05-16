@@ -1,0 +1,83 @@
+import { TransactionType } from '@msafe/sui3-utils';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
+import { ScallopClient, ScallopQuery, ScallopTxBlock } from '@scallop-io/sui-scallop-sdk';
+
+import { SuiNetworks, TransactionSubType } from '../../types';
+import { ScallopCoreBaseIntention } from '../scallopCoreBaseIntention';
+
+export interface MergeVeScaIntentionData {
+  targetVeScaKey: string;
+  sourceVeScaKey: string;
+  obligationDatas: {
+    obligationKey: string;
+    obligationId: string;
+  }[];
+}
+
+export class MergeVeScaIntention extends ScallopCoreBaseIntention<MergeVeScaIntentionData> {
+  txType: TransactionType.Other;
+
+  txSubType: TransactionSubType.MergeVeSca;
+
+  constructor(public readonly data: MergeVeScaIntentionData) {
+    super(data);
+  }
+
+  private async handleUnsubForKeys(
+    tx: ScallopTxBlock,
+    query: ScallopQuery,
+    cb: (innerTx: ScallopTxBlock, targetVeScaKey: string, sourceVeScaKey: string) => void,
+  ) {
+    const { targetVeScaKey, sourceVeScaKey } = this.data;
+    const [targetObligation, sourceObligation] = await Promise.all([
+      query.getBindedObligationId(targetVeScaKey),
+      query.getBindedObligationId(sourceVeScaKey),
+    ]);
+
+    // Unstake
+    if (targetObligation) {
+      await tx.unstakeObligationQuick(targetObligation);
+    }
+    if (sourceObligation) {
+      await tx.unstakeObligationQuick(sourceObligation);
+    }
+
+    // run callback
+    cb(tx, targetVeScaKey, sourceVeScaKey);
+
+    if (targetObligation) {
+      await tx.stakeObligationWithVeScaQuick(targetObligation, undefined, targetVeScaKey);
+    }
+
+    if (sourceObligation) {
+      await tx.stakeObligationWithVeScaQuick(sourceObligation, undefined, sourceVeScaKey);
+    }
+  }
+
+  async build(input: {
+    suiClient: SuiClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+    scallopClient: ScallopClient;
+  }): Promise<Transaction> {
+    const {
+      scallopClient,
+      account: { address },
+    } = input;
+
+    const tx = scallopClient.builder.createTxBlock();
+    tx.setSender(address);
+
+    await this.handleUnsubForKeys(tx, scallopClient.query, async (innerTx, targetVeScaKey, sourceVeScaKey) => {
+      innerTx.mergeVeSca(tx.object(targetVeScaKey), tx.object(sourceVeScaKey));
+    });
+
+    return tx.txBlock;
+  }
+
+  static fromData(data: MergeVeScaIntentionData): MergeVeScaIntention {
+    return new MergeVeScaIntention(data);
+  }
+}
