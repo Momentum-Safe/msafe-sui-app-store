@@ -54,7 +54,7 @@
     "@cetusprotocol/vaults-sdk": "1.0.2",
     "@cetusprotocol/xcetus-sdk": "^1.0.2",
     "@firefly-exchange/library-sui": "^2.4.18",
-    "@mmt-finance/clmm-sdk": "^1.0.17",
+    "@mmt-finance/clmm-sdk": "^1.1.2",
     "@mysten/bcs": "^1.5.0",
     "@mysten/sui": "^1.8.0",
     "@open-rpc/client-js": "^1.8.1",
