@@ -4065,33 +4065,34 @@
   resolved "https://registry.yarnpkg.com/@suchipi/femver/-/femver-1.0.0.tgz#4909dcc069695e07bd23a64c4bfe411d11d9692f"
   integrity sha512-bprE8+K5V+DPX7q2e2K57ImqNBdfGHDIWaGI5xHxZoxbKOuQZn4wzPiUxOAHnsUr3w3xHrWXwN7gnG/iIuEMIg==
 
-"@suilend/frontend-sui@^0.2.54":
-  version "0.2.54"
-  resolved "https://registry.yarnpkg.com/@suilend/frontend-sui/-/frontend-sui-0.2.54.tgz#a39e3e71db32d4cf58be32168b53f6210ce5f908"
-  integrity sha512-RmkXX/YzjfExqR0Bl+Wmh69EVN69mqKEUc306NIdyyLnXcTtJ/i4go/KXHyIWvOIeJMHO4LqdRgpr/3N5hP/HQ==
-  dependencies:
-    "@pythnetwork/pyth-sui-js" "^2.1.0"
-    bignumber.js "^9.1.2"
-    lodash "^4.17.21"
-    mixpanel-browser "^2.56.0"
-    next "^15.0.3"
-
-"@suilend/sdk@^1.1.49":
-  version "1.1.49"
-  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.49.tgz#5ae4a9e181693ab72c1f4c51a7aebd8906e9cd96"
-  integrity sha512-Jd4zisFboUrtdkPxM+4BaZvOvEqJp1wJN0iQk5TDvTi+a4kwVU4PYndR/3XscJXcGzaZK4FsdcfFcFmXCA0G7Q==
+"@suilend/sdk@^1.1.57":
+  version "1.1.57"
+  resolved "https://registry.yarnpkg.com/@suilend/sdk/-/sdk-1.1.57.tgz#aced1ae94581111f899a6c5ef8e60acdea76028e"
+  integrity sha512-qK7ER6DXNKremW6YAXQbnVg2AVcQPeWFWEokRW73tyrvA+REz9Ygv2Qvu2J2eL9Jvt5oSHxMYojrK2dWuPAOEQ==
   dependencies:
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     bignumber.js "^9.1.2"
     p-limit "3.1.0"
     uuid "^11.0.3"
 
-"@suilend/springsui-sdk@^1.0.21":
-  version "1.0.21"
-  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.21.tgz#150a3dfa69bbdb0fde0a5acf2e36ec03bb2b6a31"
-  integrity sha512-l7y7iTmyVA4KHnppaBC4/cPCIjwNrqRiMwi1Uuy+Q8CI1kLtYffgJ87fH5nAQGKpR7aY0IAvzVJ4dXw02LyXrg==
+"@suilend/springsui-sdk@^1.0.24":
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/@suilend/springsui-sdk/-/springsui-sdk-1.0.24.tgz#84810efc4e38e6a6f8f00f6bc87e37b430225597"
+  integrity sha512-R9LUoVZakpxk9Z7rEPnsd0x6NewXcnNTd5fQt5s68o1VPmQOVoCVD46pM4iSIHeX4O4oEitdEcFH/60IqzQCJw==
   dependencies:
     bignumber.js "^9.1.2"
+
+"@suilend/sui-fe@^0.2.72":
+  version "0.2.72"
+  resolved "https://registry.yarnpkg.com/@suilend/sui-fe/-/sui-fe-0.2.72.tgz#31291aeb039087af50fd53f673db642622e47244"
+  integrity sha512-8HZPhqvsvBS9HvQLbSr/+2KF4uAQWziOuVM66UaCfFRBoMviCM8w9P9dKBfq9k6x34uwo1No9+gb/t9kv2orDA==
+  dependencies:
+    "@pythnetwork/pyth-sui-js" "^2.1.0"
+    bignumber.js "^9.1.2"
+    lodash "^4.17.21"
+    mixpanel-browser "^2.56.0"
+    next "^15.0.3"
+    p-limit "3.1.0"
 
 "@swc/counter@0.1.3":
   version "0.1.3"
