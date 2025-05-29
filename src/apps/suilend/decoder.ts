@@ -3,7 +3,7 @@ import { fromBase64, toHex } from '@mysten/bcs';
 import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
-import { MAX_U64 } from '@suilend/frontend-sui';
+import { MAX_U64 } from '@suilend/sui-fe';
 import BigNumber from 'bignumber.js';
 
 import {

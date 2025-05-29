@@ -1,7 +1,7 @@
 import { normalizeStructTag } from '@mysten/sui/utils';
-import { isSendPoints } from '@suilend/frontend-sui';
 import { ClaimRewardsReward, Side, SuilendClient } from '@suilend/sdk';
 import { Obligation } from '@suilend/sdk/_generated/suilend/obligation/structs';
+import { isSendPoints } from '@suilend/sui-fe';
 import BigNumber from 'bignumber.js';
 
 const getRewards = (suilendClient: SuilendClient, obligation: Obligation<string>) => {

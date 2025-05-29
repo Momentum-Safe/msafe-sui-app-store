@@ -1,7 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { fetchRegistryLiquidStakingInfoMap, LiquidStakingObjectInfo } from '@suilend/springsui-sdk/client';
+import { LiquidStakingInfo } from '@suilend/springsui-sdk/_generated/liquid_staking/liquid-staking/structs';
+import { WeightHook } from '@suilend/springsui-sdk/_generated/liquid_staking/weight/structs';
+import { LiquidStakingObjectInfo } from '@suilend/springsui-sdk/client';
+import { API_URL } from '@suilend/sui-fe';
 
 import { SpringSuiIntentionData } from '@/apps/springSui/types/intention';
 import { SuiNetworks } from '@/types';
@@ -29,7 +32,25 @@ export type Utils = {
 export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
   const suilendUtils = await getSuilendUtils(suiClient, account);
 
-  const LIQUID_STAKING_INFO_MAP = await fetchRegistryLiquidStakingInfoMap(suiClient);
+  const lstInfoRes = await fetch(`${API_URL}/springsui/lst-info`);
+  const lstInfoJson: Record<
+    string,
+    {
+      LIQUID_STAKING_INFO: LiquidStakingObjectInfo;
+      liquidStakingInfo: LiquidStakingInfo<string>;
+      weightHook: WeightHook<string>;
+      apy: string;
+    }
+  > = await lstInfoRes.json();
+  if ((lstInfoRes as any)?.statusCode === 500) {
+    throw new Error('Failed to fetch SpringSui LST data');
+  }
+
+  const lstInfoMap = lstInfoJson;
+
+  const LIQUID_STAKING_INFO_MAP = Object.fromEntries(
+    Object.values(lstInfoMap).map((info) => [info.LIQUID_STAKING_INFO.type, info.LIQUID_STAKING_INFO]),
+  );
 
   return { ...suilendUtils, LIQUID_STAKING_INFO_MAP };
 };
