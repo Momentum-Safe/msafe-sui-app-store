@@ -76,6 +76,7 @@ export class PlainTransactionHelper implements IAppHelperInternal<PlainTransacti
   }): Promise<Transaction> {
     const { suiClient, network, account } = input;
     const intention = PlainTransactionIntention.fromData(input.intentionData);
+    console.log('🚀 ~ helper.ts:79 ~ PlainTransactionHelper ~ account:', account);
     return intention.build({ suiClient, network, account });
   }
 }
