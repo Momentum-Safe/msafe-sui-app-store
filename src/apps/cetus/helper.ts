@@ -18,6 +18,7 @@ import { FarmingRemoveLiquidityIntention } from './intentions/farming-remove';
 import { FarmingStakeIntention } from './intentions/farming-stake';
 import { FarmingUnstakeIntention } from './intentions/farming-unstake';
 import { IncreaseLiquidityIntention } from './intentions/increase-liquidity';
+import { PosVestingRedeemIntention } from './intentions/pos-vesting-redeem';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
 import { SwapIntention } from './intentions/swap';
 import { AddVaultsPositionIntention } from './intentions/vaults-add';
@@ -28,7 +29,6 @@ import { XcetusClaimingStakeRewardsIntention } from './intentions/xcetus-claim';
 import { XcetusConvertIntention } from './intentions/xcetus-convert';
 import { XcetusRedeemIntention } from './intentions/xcetus-redeem';
 import { XcetusRedeemLockIntention } from './intentions/xcetus-redeem-lock';
-import {PosVestingRedeemIntention} from './intentions/pos-vesting-redeem';
 import { SuiNetworks, CetusIntentionData, TransactionSubType } from './types';
 
 export type CetusIntention =

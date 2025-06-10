@@ -29,5 +29,5 @@ export enum TransactionSubType {
   VestingRedeem = 'VestingRedeem',
   AddVaultsPosition = 'AddVaultsPosition',
   RemoveVaultsPosition = 'RemoveVaultsPosition',
-  PosVestingRedeem = 'PosVestingRedeem'
+  PosVestingRedeem = 'PosVestingRedeem',
 }
