@@ -18,6 +18,7 @@ import { FarmingRemoveLiquidityIntention } from './intentions/farming-remove';
 import { FarmingStakeIntention } from './intentions/farming-stake';
 import { FarmingUnstakeIntention } from './intentions/farming-unstake';
 import { IncreaseLiquidityIntention } from './intentions/increase-liquidity';
+import { PosVestingRedeemIntention } from './intentions/pos-vesting-redeem';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
 import { SwapIntention } from './intentions/swap';
 import { AddVaultsPositionIntention } from './intentions/vaults-add';
@@ -53,7 +54,8 @@ export type CetusIntention =
   | VestingRedeemIntention
   | SwapIntention
   | AddVaultsPositionIntention
-  | RemoveVaultsPositionIntention;
+  | RemoveVaultsPositionIntention
+  | PosVestingRedeemIntention;
 
 export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
   application = 'cetus';
@@ -163,6 +165,9 @@ export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
         break;
       case TransactionSubType.RemoveVaultsPosition:
         intention = RemoveVaultsPositionIntention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.PosVestingRedeem:
+        intention = PosVestingRedeemIntention.fromData(input.intentionData);
         break;
       default:
         throw new Error('not implemented');
