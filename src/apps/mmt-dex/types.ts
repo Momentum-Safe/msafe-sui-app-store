@@ -15,6 +15,7 @@ export interface AddLiquidityIntentionData extends MMTDEXIntentionData {
     pool: Pools;
     selectedLowTick: number;
     selectedHighTick: number;
+    slippage: number;
   };
 }
 
@@ -27,6 +28,8 @@ export interface AddLiquiditySingleSideIntentionData extends MMTDEXIntentionData
     pool: Pools;
     selectedLowTick: number;
     selectedHighTick: number;
+    swapSlippage: number;
+    addLiquiditySlippage: number;
   };
 }
 
