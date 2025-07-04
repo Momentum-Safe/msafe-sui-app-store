@@ -33,6 +33,31 @@ export interface AddLiquiditySingleSideIntentionData extends MMTDEXIntentionData
   };
 }
 
+export interface ManageLiquidityIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.ManageLiquidity;
+  params: {
+    address: string;
+    amountA: string;
+    amountB: string;
+    pool: Pools & { poolId: string };
+    positionObjectId: string;
+    slippage: number;
+  };
+}
+
+export interface ManageLiquiditySingleSideIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.ManageLiquiditySingleSide;
+  params: {
+    address: string;
+    amount: string;
+    isTokenX: boolean;
+    pool: Pools & { poolId: string };
+    positionObjectId: string;
+    swapSlippage: number;
+    addLiquiditySlippage: number;
+  };
+}
+
 export interface ClaimAllRewardsIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.ClaimAllRewards;
   params: {
@@ -78,6 +103,8 @@ export enum TransactionSubType {
   ClaimRewards = 'ClaimRewards',
   RemoveLiquidity = 'RemoveLiquidity',
   Swap = 'Swap',
+  ManageLiquidity = 'ManageLiquidity',
+  ManageLiquiditySingleSide = 'ManageLiquiditySingleSide',
 }
 
 export const Rpc = 'https://fullnode.mainnet.sui.io/';
