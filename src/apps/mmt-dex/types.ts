@@ -68,6 +68,22 @@ export interface SwapIntentionData extends MMTDEXIntentionData {
   };
 }
 
+export interface StakeXSuiIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.StakeXSui;
+  params: {
+    address: string;
+    amount: string;
+  };
+}
+
+export interface UnstakeXSuiIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.UnstakeXSui;
+  params: {
+    address: string;
+    amount: string;
+  };
+}
+
 export enum TransactionSubType {
   AddLiquidity = 'AddLiquidity',
   AddLiquiditySingleSide = 'AddLiquiditySingleSide',
@@ -75,6 +91,8 @@ export enum TransactionSubType {
   ClaimRewards = 'ClaimRewards',
   RemoveLiquidity = 'RemoveLiquidity',
   Swap = 'Swap',
+  StakeXSui = 'StakeXSui',
+  UnstakeXSui = 'UnstakeXSui',
 }
 
 export const Rpc = 'https://fullnode.mainnet.sui.io/';

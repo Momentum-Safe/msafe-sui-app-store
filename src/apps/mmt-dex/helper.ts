@@ -21,7 +21,11 @@ import {
   SwapIntentionData,
   MMTDEXIntentionData,
   TransactionSubType,
+  UnstakeXSuiIntentionData,
+  StakeXSuiIntentionData,
 } from './types';
+import { StakeXSuiIntention } from './intentions/stake-xsui';
+import { UnstakeXSuiIntention } from './intentions/unstake-xsui';
 
 export type MMTDEXIntention =
   | AddLiquidityIntention
@@ -29,7 +33,9 @@ export type MMTDEXIntention =
   | ClaimRewardsIntention
   | ClaimAllRewardsIntention
   | RemoveLiquidityIntention
-  | SwapIntention;
+  | SwapIntention
+  | StakeXSuiIntention
+  | UnstakeXSuiIntention;
 
 export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> {
   application = 'mmt-dex';
@@ -87,9 +93,15 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
       case TransactionSubType.RemoveLiquidity:
         intention = RemoveLiquidityIntention.fromData(input.intentionData as RemoveLiquidityIntentionData);
         break;
+      case TransactionSubType.StakeXSui:
+        intention = StakeXSuiIntention.fromData(input.intentionData as StakeXSuiIntentionData);
+        break;
+      case TransactionSubType.UnstakeXSui:
+        intention = UnstakeXSuiIntention.fromData(input.intentionData as UnstakeXSuiIntentionData);
+        break;
       default:
         throw new Error('not implemented');
     }
-    return intention.build();
+    return intention.build({ suiClient: input.suiClient });
   }
 }
