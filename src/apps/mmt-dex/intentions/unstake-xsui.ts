@@ -1,11 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { BaseIntention } from '@/apps/interface/sui';
 
 import { TransactionSubType, UnstakeXSuiIntentionData } from '../types';
 import { getUnstakeTxPayload } from '../utils/stake';
-import { SuiClient } from '@mysten/sui/client';
 
 export class UnstakeXSuiIntention extends BaseIntention<UnstakeXSuiIntentionData> {
   txType: TransactionType.Other;

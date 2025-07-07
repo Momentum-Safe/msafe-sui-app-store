@@ -11,7 +11,9 @@ import { AddLiquiditySingleSideIntention } from './intentions/add-liquidity-sing
 import { ClaimAllRewardsIntention } from './intentions/claim-all-rewards';
 import { ClaimRewardsIntention } from './intentions/claim-rewards';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
+import { StakeXSuiIntention } from './intentions/stake-xsui';
 import { SwapIntention } from './intentions/swap';
+import { UnstakeXSuiIntention } from './intentions/unstake-xsui';
 import {
   AddLiquidityIntentionData,
   AddLiquiditySingleSideIntentionData,
@@ -24,8 +26,6 @@ import {
   UnstakeXSuiIntentionData,
   StakeXSuiIntentionData,
 } from './types';
-import { StakeXSuiIntention } from './intentions/stake-xsui';
-import { UnstakeXSuiIntention } from './intentions/unstake-xsui';
 
 export type MMTDEXIntention =
   | AddLiquidityIntention
