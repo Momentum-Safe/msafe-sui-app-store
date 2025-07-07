@@ -21,9 +21,9 @@ export class SwapIntention extends BaseIntention<SwapIntentionData> {
       network: 'mainnet',
     });
     const { params } = this.data;
-    const { route, tokenIn, amountIn, address } = params;
+    const { route, tokenIn, amountIn, address, slippage } = params;
     const tx = new Transaction();
-    await performMmtSwap(sdk, route, tokenIn, amountIn, address, tx);
+    await performMmtSwap(sdk, route, tokenIn, amountIn, address, tx, slippage);
     return tx;
   }
 

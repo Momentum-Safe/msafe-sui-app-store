@@ -5,6 +5,7 @@ import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
+import { getLimitSqrtPriceUsingSlippage } from './liquidity';
 
 export type Pools = {
   tokenXReserve: string;
@@ -83,6 +84,7 @@ export const performMmtSwap = async (
   amountIn: string,
   address: string,
   tx: Transaction,
+  slippage: number,
 ) => {
   let inputAmount = BigInt(Math.ceil(Number(amountIn) * 10 ** tokenIn.decimals)) as bigint | TransactionArgument;
 
@@ -113,6 +115,15 @@ export const performMmtSwap = async (
     const tokenXType = isReverse ? routeTokenY.coinType : routeTokenX.coinType;
     const tokenYType = isReverse ? routeTokenX.coinType : routeTokenY.coinType;
 
+    const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
+      poolId: v3PoolId,
+      tokenX: routeTokenX,
+      tokenY: routeTokenY,
+      slippagePercentage: slippage,
+      isTokenX: isXtoY,
+      suiClient: mmtSdk.rpcClient,
+    });
+
     const outputCoin = mmtSdk.Pool.swap(
       tx,
       {
@@ -124,8 +135,7 @@ export const performMmtSwap = async (
       inputAmount,
       inputCoin,
       isXtoY,
-      undefined,
-      // BigInt(limitSqrtPrice.toString())
+      limitSqrtPrice.toString(),
     );
 
     tx.transferObjects([inputCoin], tx.pure.address(address));

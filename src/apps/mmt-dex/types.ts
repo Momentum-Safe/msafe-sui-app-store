@@ -93,6 +93,7 @@ export interface SwapIntentionData extends MMTDEXIntentionData {
     tokenIn: Tokens;
     amountIn: string;
     address: string;
+    slippage: number;
   };
 }
 
