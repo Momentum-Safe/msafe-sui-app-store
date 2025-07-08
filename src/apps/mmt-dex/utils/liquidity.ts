@@ -228,8 +228,11 @@ export function getNewPositionObject({
   return position;
 }
 
-const getResultAmountUsingSlippage = (amount: bigint, slippage: number) => {
-  return (amount * BigInt(100 - slippage)) / BigInt(100);
+const getResultAmountUsingSlippage = (amount: bigint, slippagePercentage: number) => {
+  const basisPoints = Math.floor(slippagePercentage * 100); // 0.5% -> 50 basis points
+  const remainingBasisPoints = 10000 - basisPoints; // 10000 - 50 = 9950
+
+  return (amount * BigInt(remainingBasisPoints)) / BigInt(10000);
 };
 
 export function getMinimalAmountUsingSlippage(
@@ -360,7 +363,7 @@ export const executeSingleSidedClmmDeposit = async (
     });
 
     const poolModel = {
-      objectId: pool.objectId,
+      objectId: pool.poolId,
       tokenXType: pool.tokenX.coinType,
       tokenYType: pool.tokenY.coinType,
       tickSpacing: pool.tickSpacing,
@@ -455,7 +458,6 @@ export const executeAddLiquidityToExistingPosition = async (
 export const executeAddSingleSidedLiquidityToExistingPosition = async (
   mmt: MmtSDK,
   tx: Transaction,
-  suiClient: SuiClient,
   address: string,
   amount: string,
   isTokenX: boolean,
@@ -482,7 +484,7 @@ export const executeAddSingleSidedLiquidityToExistingPosition = async (
     };
 
     const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
-      suiClient,
+      suiClient: mmt.rpcClient,
       poolId: pool.poolId,
       currentSqrtPrice: pool.currentSqrtPrice,
       tokenX: pool.tokenX,

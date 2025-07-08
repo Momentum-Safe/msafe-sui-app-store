@@ -25,7 +25,6 @@ export class ManageLiquiditySingleSideIntention extends BaseIntention<ManageLiqu
     await executeAddSingleSidedLiquidityToExistingPosition(
       sdk,
       tx,
-      sdk.rpcClient,
       address,
       amount,
       isTokenX,

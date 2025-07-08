@@ -31,7 +31,7 @@ export class AddLiquidityIntention extends BaseIntention<AddLiquidityIntentionDa
       amountA,
       amountB,
       pool,
-      pool.objectId,
+      pool.poolId,
       selectedLowTick,
       selectedHighTick,
       slippage,
