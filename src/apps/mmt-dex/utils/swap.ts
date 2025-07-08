@@ -135,11 +135,12 @@ export const performMmtSwap = async (
       inputAmount,
       inputCoin,
       isXtoY,
-      limitSqrtPrice.toString(),
+      undefined,
+      limitSqrtPrice,
     );
 
     tx.transferObjects([inputCoin], tx.pure.address(address));
-    inputCoin = outputCoin;
+    inputCoin = outputCoin as any;
 
     inputCoinType = isXtoY ? tokenYType : tokenXType;
 
