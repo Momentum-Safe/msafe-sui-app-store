@@ -31,14 +31,37 @@ export const claimV3Rewards = (
   tx: Transaction,
 ) => {
   const poolModel = {
-    objectId: pool.objectId,
+    objectId: pool.poolId,
     tokenXType: pool.tokenXType,
     tokenYType: pool.tokenYType,
   };
 
-  if ((pool?.rewarders?.length ?? 0) > 0) {
-    mmt.Pool.collectAllRewards(tx, poolModel, pool.rewarders, position.objectId, address);
+  if (pool?.rewarders && pool?.rewarders.length > 0) {
+    mmt.Pool.collectAllRewards(
+      tx,
+      poolModel,
+      pool.rewarders.map((rewarder) => ({
+        coin_type: rewarder.coinType,
+        flow_rate: rewarder.flowRate,
+        reward_amount: rewarder.rewardAmount,
+        rewards_allocated: rewarder.rewardsAllocated,
+        hasEnded: rewarder.hasEnded,
+      })), // Assert non-null
+      position.objectId,
+      address,
+    );
   }
 
-  mmt.Pool.collectFee(tx, pool, position.objectId, address);
+  mmt.Pool.collectFee(
+    tx,
+    {
+      objectId: pool.poolId,
+      tokenXType: pool.tokenXType,
+      tokenYType: pool.tokenYType,
+      isStable: pool.isStable,
+      tickSpacing: pool.tickSpacing,
+    },
+    position.objectId,
+    address,
+  );
 };
