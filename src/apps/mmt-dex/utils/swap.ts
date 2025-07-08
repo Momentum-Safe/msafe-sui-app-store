@@ -5,9 +5,91 @@ import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
 import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
-import { getLimitSqrtPriceUsingSlippage } from './liquidity';
+import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
+
+export type SwapRoute = {
+  poolId: string;
+  poolSource: string;
+  tokenXReserve: string;
+  tokenYReserve: string;
+  protocolFeesPercent: string;
+  lpFeesPercent: string;
+  feeRate: number;
+  isStable: boolean;
+  tokenXType: string;
+  tokenYType: string;
+  tvl: string;
+  apy: string;
+  tokenX: {
+    coinType: string;
+    ticker: string;
+    name: string;
+    decimals: number;
+    iconUrl: string;
+    description: string;
+    price: string;
+    isVerified: boolean;
+    isMmtWhitelisted: boolean;
+    tokenType: string;
+  };
+  tokenY: {
+    coinType: string;
+    ticker: string;
+    name: string;
+    decimals: number;
+    iconUrl: string;
+    description: string;
+    price: string;
+    isVerified: boolean;
+    isMmtWhitelisted: boolean;
+    tokenType: string;
+  };
+  fees24h: string;
+  currentSqrtPrice: string;
+  currentTickIndex: string;
+  liquidity: string;
+  liquidityHM: string;
+  tickSpacing: number;
+  volume24h: string;
+  timestamp: string;
+  rewarders: [
+    {
+      coinType: string;
+      flowRate: number;
+      hasEnded: boolean;
+      rewardAmount: number;
+      rewardsAllocated: number;
+    },
+    {
+      coinType: string;
+      flowRate: number;
+      hasEnded: boolean;
+      rewardAmount: number;
+      rewardsAllocated: number;
+    },
+    {
+      coinType: string;
+      flowRate: number;
+      hasEnded: boolean;
+      rewardAmount: number;
+      rewardsAllocated: 66078579096424;
+    },
+  ];
+  aprBreakdown: {
+    total: string;
+    rewards: [
+      {
+        coinType: string;
+        apr: string;
+        amountPerDay: number;
+      },
+    ];
+    fee: string;
+  };
+};
 
 export type Pools = {
+  poolId: string;
   tokenXReserve: string;
   lspSupply: string;
   protocolFeesPercent: string;
@@ -79,29 +161,32 @@ export type Tokens = {
 
 export const performMmtSwap = async (
   mmtSdk: MmtSDK,
-  route: Pools[],
+  route: SwapRoute[],
   tokenIn: Tokens,
   amountIn: string,
   address: string,
   tx: Transaction,
   slippage: number,
 ) => {
-  let inputAmount = BigInt(Math.ceil(Number(amountIn) * 10 ** tokenIn.decimals)) as bigint | TransactionArgument;
-
-  let inputCoin = await getExactCoinByAmount(
-    mmtSdk,
-    address,
-    normalizeSuiCoinType(tokenIn.coinType),
-    inputAmount as bigint,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+  let inputCoin = await getCoinObject({
+    mmt: mmtSdk,
     tx,
-  );
+    address,
+    coinType: tokenIn.coinType,
+    coinAmount: amountIn,
+    coinDecimals: tokenIn.decimals,
+  });
+
+  let inputAmount = tx.moveCall({
+    target: '0x2::coin::value',
+    typeArguments: [tokenIn.coinType],
+    arguments: [inputCoin],
+  });
 
   let inputCoinType = tokenIn.coinType;
 
   for (let i = 0; i < route.length; i += 1) {
-    const { objectId, tokenX: routeTokenX, tokenY: routeTokenY, isStable } = route[i]!;
+    const { poolId: objectId, tokenX: routeTokenX, tokenY: routeTokenY, isStable } = route[i]!;
 
     const { id: v3PoolId, isReverse } = mappedMmtV3Pool[objectId as keyof typeof mappedMmtV3Pool] || {
       id: objectId,
@@ -117,14 +202,14 @@ export const performMmtSwap = async (
 
     const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
       poolId: v3PoolId,
-      tokenX: routeTokenX,
-      tokenY: routeTokenY,
+      tokenX: routeTokenX as any,
+      tokenY: routeTokenY as any,
       slippagePercentage: slippage,
       isTokenX: isXtoY,
       suiClient: mmtSdk.rpcClient,
     });
 
-    const outputCoin = mmtSdk.Pool.swap(
+    let outputCoin = mmtSdk.Pool.swap(
       tx,
       {
         objectId: v3PoolId,
@@ -135,16 +220,15 @@ export const performMmtSwap = async (
       inputAmount,
       inputCoin,
       isXtoY,
-      address,
+      undefined,
       limitSqrtPrice,
+      false, // TODO: check why cannot useMvr
     );
-
     tx.transferObjects([inputCoin], tx.pure.address(address));
     inputCoin = outputCoin as any;
-
     inputCoinType = isXtoY ? tokenYType : tokenXType;
 
-    [inputAmount] = tx.moveCall({
+    inputAmount = tx.moveCall({
       target: '0x2::coin::value',
       typeArguments: [inputCoinType],
       arguments: [inputCoin],

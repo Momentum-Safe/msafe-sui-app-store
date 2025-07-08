@@ -1,5 +1,5 @@
 import { V3PositionType } from './utils/reward';
-import { Pools, Tokens } from './utils/swap';
+import { Pools, SwapRoute, Tokens } from './utils/swap';
 
 export type MMTDEXIntentionData = {
   action: TransactionSubType;
@@ -89,7 +89,7 @@ export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
 export interface SwapIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.Swap;
   params: {
-    route: Pools[];
+    route: SwapRoute[];
     tokenIn: Tokens;
     amountIn: string;
     address: string;
