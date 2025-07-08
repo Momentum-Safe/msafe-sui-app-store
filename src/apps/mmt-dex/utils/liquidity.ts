@@ -386,7 +386,7 @@ export const executeSingleSidedClmmDeposit = async (
 
     await mmt.Pool.addLiquiditySingleSidedV2({
       txb: tx,
-      poolModel,
+      pool: poolModel,
       position: poolModel.objectId,
       inputCoin,
       isXtoY: isTokenX,

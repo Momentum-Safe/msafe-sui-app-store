@@ -135,7 +135,7 @@ export const performMmtSwap = async (
       inputAmount,
       inputCoin,
       isXtoY,
-      undefined,
+      address,
       limitSqrtPrice,
     );
 
