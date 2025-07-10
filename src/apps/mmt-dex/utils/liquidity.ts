@@ -390,12 +390,13 @@ export const executeSingleSidedClmmDeposit = async (
     await mmt.Pool.addLiquiditySingleSidedV2({
       txb: tx,
       pool: poolModel,
-      position: poolModel.objectId,
+      position,
       inputCoin,
       isXtoY: isTokenX,
       limitSqrtPrice,
       slippagePercentage: addLiquiditySlippage,
       transferToAddress: address,
+      useMvr: true,
     });
 
     tx.transferObjects([position], tx.pure.address(address));
