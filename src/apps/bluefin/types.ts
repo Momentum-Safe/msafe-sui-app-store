@@ -84,6 +84,18 @@ export type RewardCollection = {
   rewardCoinType: string;
 };
 
+export type Swap = {
+  pool: SuiAddress;
+  amountIn: string;
+  amountOut: string;
+  aToB: boolean;
+  byAmountIn: boolean;
+  slippage: number;
+  recipient?: SuiAddress;
+  estimateAmount?: boolean;
+  applySlippageToPrice?: boolean;
+};
+
 export enum TransactionSubType {
   OpenPosition = 'OpenPosition',
   ClosePosition = 'ClosePosition',
