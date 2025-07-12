@@ -23,7 +23,7 @@ export class RemoveLiquidityIntention extends BaseIntention<RemoveLiquidityInten
     txb = await turbosSdk.pool.collectFee({ txb, ...this.data });
     txb = await turbosSdk.pool.collectReward({ txb, ...this.data });
     txb = await turbosSdk.pool.decreaseLiquidity({ txb, ...this.data });
-    txb = await turbosSdk.nft.burn({ txb, nft: this.data.nft, pool: this.data.pool });
+    txb = await turbosSdk.position.burn({ txb, nft: this.data.nft, pool: this.data.pool });
     return txb;
   }
 

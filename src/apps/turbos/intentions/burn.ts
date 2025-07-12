@@ -19,13 +19,13 @@ export class BurnIntention extends BaseIntention<BurnIntentionData> {
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
-    const { pool, nft, txb } = this.data;
+    const { pool, nft } = this.data;
 
-    return turbosSdk.nft.burn({
+    const tx = await turbosSdk.position.burn({
       pool,
       nft,
-      txb,
     });
+    return tx;
   }
 
   static fromData(data: BurnIntentionData) {

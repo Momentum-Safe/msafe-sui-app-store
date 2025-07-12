@@ -21,7 +21,7 @@ export class CollectFeeIntention extends BaseIntention<CollectFeeIntentionData> 
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { pool, address, nft, collectAmountA, collectAmountB, deadline, txb } = this.data;
 
-    return turbosSdk.pool.collectFee({
+    const tx = await turbosSdk.pool.collectFee({
       pool,
       address,
       collectAmountA,
@@ -30,6 +30,8 @@ export class CollectFeeIntention extends BaseIntention<CollectFeeIntentionData> 
       deadline,
       txb,
     });
+
+    return tx;
   }
 
   static fromData(data: CollectFeeIntentionData) {

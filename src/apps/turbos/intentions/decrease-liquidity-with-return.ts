@@ -6,14 +6,14 @@ import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
 import { BaseIntention } from '@/apps/interface/sui';
 
-import { DecreaseLiquidityIntentionData, SuiNetworks, TransactionSubType } from '../types';
+import { DecreaseLiquidityWithReturnIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
-export class DecreaseLiquidityIntention extends BaseIntention<DecreaseLiquidityIntentionData> {
+export class DecreaseLiquidityWithReturnIntention extends BaseIntention<DecreaseLiquidityWithReturnIntentionData> {
   txType!: TransactionType.Other;
 
-  txSubType!: TransactionSubType.AddLiquidity;
+  txSubType!: TransactionSubType.DecreaseLiquidityWithReturn;
 
-  constructor(public override readonly data: DecreaseLiquidityIntentionData) {
+  constructor(public override readonly data: DecreaseLiquidityWithReturnIntentionData) {
     super(data);
   }
 
@@ -21,7 +21,11 @@ export class DecreaseLiquidityIntention extends BaseIntention<DecreaseLiquidityI
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { pool, address, amountA, amountB, slippage, nft, decreaseLiquidity, deadline } = this.data;
 
-    const tx = await turbosSdk.pool.decreaseLiquidity({
+    const {
+      txb: tx,
+      coinA: objectCoinA,
+      coinB: objectCoinB,
+    } = await turbosSdk.pool.decreaseLiquidityWithReturn({
       pool,
       slippage,
       address,
@@ -31,10 +35,11 @@ export class DecreaseLiquidityIntention extends BaseIntention<DecreaseLiquidityI
       decreaseLiquidity,
       deadline,
     });
+    tx.transferObjects([objectCoinA!, objectCoinB!], this.data.address);
     return tx;
   }
 
-  static fromData(data: DecreaseLiquidityIntentionData) {
-    return new DecreaseLiquidityIntention(data);
+  static fromData(data: DecreaseLiquidityWithReturnIntentionData) {
+    return new DecreaseLiquidityWithReturnIntention(data);
   }
 }
