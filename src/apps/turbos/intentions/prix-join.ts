@@ -17,11 +17,7 @@ export class PrixJoinIntention extends BaseIntention<PrixJoinIntentionData> {
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<Transaction> {
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const txb = new Transaction();
     txb.moveCall({
       target: `${prixConfig.PackageId}::claim::join`,

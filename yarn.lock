@@ -3753,9 +3753,9 @@ __metadata:
     "@mmt-finance/clmm-sdk": "npm:^1.3.9"
     "@msafe/sui3-utils": "npm:^3.1.66"
     "@mysten/bcs": "npm:^1.5.0"
-    "@mysten/sui": "npm:^1.36.0"
+    "@mysten/sui": "npm:^1.8.0"
     "@mysten/sui.js": "npm:0.54.1"
-    "@mysten/wallet-standard": "npm:^0.16.5"
+    "@mysten/wallet-standard": "npm:0.11.6"
     "@open-rpc/client-js": "npm:^1.8.1"
     "@pythnetwork/pyth-sui-js": "npm:^2.1.0"
     "@scallop-io/sui-scallop-sdk": "npm:^2.1.6"
@@ -3946,6 +3946,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mysten/wallet-standard@npm:0.11.6":
+  version: 0.11.6
+  resolution: "@mysten/wallet-standard@npm:0.11.6"
+  dependencies:
+    "@mysten/sui.js": "npm:0.54.1"
+    "@wallet-standard/core": "npm:1.0.3"
+  checksum: 10c0/66bcb5501e68886619b1d52c11d783977b8326f7f3daa1000f9affbe408693e7944217710bf1da47df92cf05da4ca313bdce3260c47934084bc4b8fa55badb24
+  languageName: node
+  linkType: hard
+
 "@mysten/wallet-standard@npm:0.13.25, @mysten/wallet-standard@npm:^0.13.7":
   version: 0.13.25
   resolution: "@mysten/wallet-standard@npm:0.13.25"
@@ -3953,16 +3963,6 @@ __metadata:
     "@mysten/sui": "npm:1.21.1"
     "@wallet-standard/core": "npm:1.1.0"
   checksum: 10c0/538087c466896a4a210c30f8c39b56a95500d9ffcb1294622e42734c73823786642ade15b47c08aeb747682c74f43ef003e50b6b258f9a63e2a568ef5bb78718
-  languageName: node
-  linkType: hard
-
-"@mysten/wallet-standard@npm:^0.16.5":
-  version: 0.16.5
-  resolution: "@mysten/wallet-standard@npm:0.16.5"
-  dependencies:
-    "@mysten/sui": "npm:1.36.0"
-    "@wallet-standard/core": "npm:1.1.1"
-  checksum: 10c0/1a2ca47a83b4983abd9c952aefa199c670187a4118e8ce62393d65dc51a554b9fd3bd31d4c5f68602d7f13fe7b1d86ea86c27da858f1eb530130b691e958ad7f
   languageName: node
   linkType: hard
 
@@ -6241,7 +6241,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wallet-standard/app@npm:^1.1.0":
+"@wallet-standard/app@npm:^1.0.1, @wallet-standard/app@npm:^1.1.0":
   version: 1.1.0
   resolution: "@wallet-standard/app@npm:1.1.0"
   dependencies:
@@ -6250,10 +6250,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wallet-standard/base@npm:^1.1.0":
+"@wallet-standard/base@npm:^1.0.1, @wallet-standard/base@npm:^1.1.0":
   version: 1.1.0
   resolution: "@wallet-standard/base@npm:1.1.0"
   checksum: 10c0/4cae344d5a74ba4b7d063b649b191f2267bd11ea9573ebb9e78874163c03b58e3ec531bb296d0a8d7941bc09231761d97afb4c6ca8c0dc399c81d39884b4e408
+  languageName: node
+  linkType: hard
+
+"@wallet-standard/core@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@wallet-standard/core@npm:1.0.3"
+  dependencies:
+    "@wallet-standard/app": "npm:^1.0.1"
+    "@wallet-standard/base": "npm:^1.0.1"
+    "@wallet-standard/features": "npm:^1.0.3"
+    "@wallet-standard/wallet": "npm:^1.0.1"
+  checksum: 10c0/4dc2e18d64861bc267e4033f2f28093d0da760c1af148fc78e7cd87cfe9e716811c587825c9ca434b3d0809a8bc2a8e3d0032a3ce5df568ac3f3ac5cf33db932
   languageName: node
   linkType: hard
 
@@ -6270,19 +6282,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wallet-standard/core@npm:1.1.1":
-  version: 1.1.1
-  resolution: "@wallet-standard/core@npm:1.1.1"
-  dependencies:
-    "@wallet-standard/app": "npm:^1.1.0"
-    "@wallet-standard/base": "npm:^1.1.0"
-    "@wallet-standard/errors": "npm:^0.1.1"
-    "@wallet-standard/features": "npm:^1.1.0"
-    "@wallet-standard/wallet": "npm:^1.1.0"
-  checksum: 10c0/fb0398869de6858df1ce0e1abe4f9fb59c52f98eae5a493d908c5b961a59d4ce94b2fe937e4395408ab1dbd3de921710d7441addc5ce14366c4747fc77286cf8
-  languageName: node
-  linkType: hard
-
 "@wallet-standard/errors@npm:^0.1.0":
   version: 0.1.0
   resolution: "@wallet-standard/errors@npm:0.1.0"
@@ -6295,19 +6294,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wallet-standard/errors@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@wallet-standard/errors@npm:0.1.1"
-  dependencies:
-    chalk: "npm:^5.4.1"
-    commander: "npm:^13.1.0"
-  bin:
-    errors: bin/cli.mjs
-  checksum: 10c0/03b7519b92c6058f1c1c20dee46ba5d35b890ed66b56708d18b9c94fc1b746384c270a49097d3b705e2272903234509133dd6aa1680a524d6c410c5e4ca95f83
-  languageName: node
-  linkType: hard
-
-"@wallet-standard/features@npm:^1.1.0":
+"@wallet-standard/features@npm:^1.0.3, @wallet-standard/features@npm:^1.1.0":
   version: 1.1.0
   resolution: "@wallet-standard/features@npm:1.1.0"
   dependencies:
@@ -6316,7 +6303,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wallet-standard/wallet@npm:^1.1.0":
+"@wallet-standard/wallet@npm:^1.0.1, @wallet-standard/wallet@npm:^1.1.0":
   version: 1.1.0
   resolution: "@wallet-standard/wallet@npm:1.1.0"
   dependencies:
@@ -7363,7 +7350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^5.3.0, chalk@npm:^5.4.1":
+"chalk@npm:^5.3.0":
   version: 5.4.1
   resolution: "chalk@npm:5.4.1"
   checksum: 10c0/b23e88132c702f4855ca6d25cb5538b1114343e41472d5263ee8a37cccfccd9c4216d111e1097c6a27830407a1dc81fecdf2a56f2c63033d4dbbd88c10b0dcef
@@ -7533,13 +7520,6 @@ __metadata:
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10c0/6e1996680c083b3b897bfc1cfe1c58dfbcd9842fd43e1aaf8a795fbc237f65efcc860a3ef457b318e73f29a4f4a28f6403c3d653d021d960e4632dd45bde54a9
-  languageName: node
-  linkType: hard
-
-"commander@npm:^13.1.0":
-  version: 13.1.0
-  resolution: "commander@npm:13.1.0"
-  checksum: 10c0/7b8c5544bba704fbe84b7cab2e043df8586d5c114a4c5b607f83ae5060708940ed0b5bd5838cf8ce27539cde265c1cbd59ce3c8c6b017ed3eec8943e3a415164
   languageName: node
   linkType: hard
 

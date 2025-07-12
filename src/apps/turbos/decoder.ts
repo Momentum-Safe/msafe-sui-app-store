@@ -1,12 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
-import { Transaction, TransactionInput } from '@mysten/sui/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
+import { Transaction } from '@mysten/sui/transactions';
 import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig, prixConfig } from './config';
 import { TransactionSubType, TURBOSIntentionData } from './types';
-import { fromBase64 } from '@mysten/bcs';
 
 type GetDataReturnType = ReturnType<Transaction['getData']>;
 export type TransactionInputs = GetDataReturnType['inputs'];
@@ -591,10 +590,6 @@ export class MoveCallHelper {
 
   decodeInputBool(argIndex: number) {
     return bcs.bool().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes)));
-  }
-
-  typeArg(index: number) {
-    return normalizeStructTag(this.moveCall.MoveCall.typeArguments[index]);
   }
 
   shortTypeArg(index: number) {

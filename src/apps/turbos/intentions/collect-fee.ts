@@ -17,11 +17,7 @@ export class CollectFeeIntention extends BaseIntention<CollectFeeIntentionData> 
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<Transaction> {
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { pool, address, nft, collectAmountA, collectAmountB, deadline, txb } = this.data;
 

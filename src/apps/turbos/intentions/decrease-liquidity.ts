@@ -17,11 +17,7 @@ export class DecreaseLiquidityIntention extends BaseIntention<DecreaseLiquidityI
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<Transaction> {
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { pool, address, amountA, amountB, slippage, nft, decreaseLiquidity, deadline, txb } = this.data;
 

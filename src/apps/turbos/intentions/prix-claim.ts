@@ -19,11 +19,7 @@ export class PrixClaimIntention extends BaseIntention<PrixClaimIntentionData> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<Transaction> {
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const txb = new Transaction();
     txb.moveCall({
       target: `${prixConfig.PackageId}::claim::claim`,
