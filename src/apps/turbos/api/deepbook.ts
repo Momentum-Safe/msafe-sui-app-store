@@ -1,5 +1,5 @@
 import { Transaction } from '@mysten/sui/transactions';
-import { normalizeSuiObjectId } from '@mysten/sui.js/utils';
+import { normalizeSuiObjectId } from '@mysten/sui/utils';
 import { TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig } from '../config';
@@ -38,23 +38,23 @@ export const swap_exact_quote_for_base = async (options: SwapExactOptions) => {
     target: `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`,
     arguments: [
       txb.object(String(poolId)),
-      txb.pure(client_order_id),
+      txb.pure.u64(client_order_id),
       accountCap,
-      txb.pure(amountIn),
+      txb.pure.u64(amountIn),
       txb.object(normalizeSuiObjectId('0x6')),
       sendCoin,
     ],
   });
 
   if (mergeCoin) {
-    txb.transferObjects([mergeCoin], txb.pure(currentAddress));
+    txb.transferObjects([mergeCoin], txb.pure.address(currentAddress));
   }
 
-  txb.transferObjects([base_coin_ret!], txb.pure(currentAddress));
-  txb.transferObjects([quote_coin_ret!], txb.pure(currentAddress));
+  txb.transferObjects([base_coin_ret!], txb.pure.address(currentAddress));
+  txb.transferObjects([quote_coin_ret!], txb.pure.address(currentAddress));
 
   if (!currentAccountCap) {
-    txb.transferObjects([accountCap], txb.pure(currentAddress));
+    txb.transferObjects([accountCap], txb.pure.address(currentAddress));
   }
 
   txb.setSenderIfNotSet(currentAddress);
@@ -87,23 +87,23 @@ export const swap_exact_base_for_quote = async (options: SwapExactOptions) => {
     target: `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`,
     arguments: [
       txb.object(String(poolId)),
-      txb.pure(client_order_id),
+      txb.pure.u64(client_order_id),
       accountCap,
-      txb.pure(amountIn),
+      txb.pure.u64(amountIn),
       sendCoin,
       zero,
       txb.object(normalizeSuiObjectId('0x6')),
     ],
   });
   if (mergeCoin) {
-    txb.transferObjects([mergeCoin], txb.pure(currentAddress));
+    txb.transferObjects([mergeCoin], txb.pure.address(currentAddress));
   }
 
-  txb.transferObjects([base_coin_ret!], txb.pure(currentAddress));
-  txb.transferObjects([quote_coin_ret!], txb.pure(currentAddress));
+  txb.transferObjects([base_coin_ret!], txb.pure.address(currentAddress));
+  txb.transferObjects([quote_coin_ret!], txb.pure.address(currentAddress));
 
   if (!currentAccountCap) {
-    txb.transferObjects([accountCap], txb.pure(currentAddress));
+    txb.transferObjects([accountCap], txb.pure.address(currentAddress));
   }
 
   txb.setSenderIfNotSet(currentAddress);

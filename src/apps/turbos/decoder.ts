@@ -1,13 +1,17 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
-import { Transaction } from '@mysten/sui/transactions';
+import { bcs } from '@mysten/sui/bcs';
+import { Transaction, TransactionInput } from '@mysten/sui/transactions';
+import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig, prixConfig } from './config';
 import { TransactionSubType, TURBOSIntentionData } from './types';
+import { fromBase64 } from '@mysten/bcs';
+
+type GetDataReturnType = ReturnType<Transaction['getData']>;
+export type TransactionInputs = GetDataReturnType['inputs'];
+export type TransactionCommands = GetDataReturnType['commands'];
+export type TransactionCommand = TransactionCommands[number];
 
 type DecodeResult = {
   txType: TransactionType;
@@ -50,7 +54,7 @@ export class Decoder {
   ) {}
 
   private get transactions() {
-    return this.txb.blockData.transactions;
+    return this.txb.getData().commands;
   }
 
   private get swap1Layer() {
@@ -119,17 +123,26 @@ export class Decoder {
   }
 
   private getMoveCallTransaction(target: string) {
-    return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
+    return this.transactions.find((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return trans.$kind === 'MoveCall' && moveCallTarget === target;
+    });
   }
 
   private getMoveCallsTransaction(targets: string[]) {
     return targets.every((target) =>
-      this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target),
+      this.transactions.find((trans) => {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return trans.$kind === 'MoveCall' && moveCallTarget === target;
+      }),
     );
   }
 
   private getSwapMoveCallTransaction(targets: string[]) {
-    return this.transactions.find((trans) => trans.kind === 'MoveCall' && targets.includes(trans.target));
+    return this.transactions.find((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return trans.$kind === 'MoveCall' && targets.includes(moveCallTarget);
+    });
   }
 
   private isSwapTransaction() {
@@ -184,13 +197,14 @@ export class Decoder {
   }
 
   private async decodeSwap(): Promise<DecodeResult> {
-    const moveCall = this.transactions.find((trans) => trans.kind === 'MoveCall') as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => trans.$kind === 'MoveCall');
     let layer: 0 | 1 = 0;
-    if (this.swap2Layer.includes(moveCall.target)) {
+    const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
+    if (this.swap2Layer.includes(moveCallTarget)) {
       layer = 1;
     }
 
-    const atob = getAtoB(layer, moveCall.target, this.swap1Layer, this.swap2Layer);
+    const atob = getAtoB(layer, moveCallTarget, this.swap1Layer, this.swap2Layer);
 
     const routes = atob.map((item, index) => {
       const pool = this.helper.decodeSharedObjectId(index);
@@ -206,13 +220,17 @@ export class Decoder {
 
     // eslint-disable-next-line no-nested-ternary
     const coinTypeA = atob[0]
-      ? moveCall.typeArguments[0]
+      ? moveCall.MoveCall.typeArguments[0]
       : layer === 1
-        ? moveCall.typeArguments[0]
-        : moveCall.typeArguments[1];
+        ? moveCall.MoveCall.typeArguments[0]
+        : moveCall.MoveCall.typeArguments[1];
     const coinTypeB =
       // eslint-disable-next-line no-nested-ternary
-      layer === 1 ? moveCall.typeArguments[4] : atob[0] ? moveCall.typeArguments[1] : moveCall.typeArguments[0];
+      layer === 1
+        ? moveCall.MoveCall.typeArguments[4]
+        : atob[0]
+          ? moveCall.MoveCall.typeArguments[1]
+          : moveCall.MoveCall.typeArguments[0];
 
     const address = this.helper.decodeInputAddress(6 + 2 * layer);
     const deadline = this.helper.decodeInputU64(7 + 2 * layer);
@@ -470,177 +488,120 @@ export class Decoder {
   }
 
   private get helper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target !== '0x2::coin::zero' &&
-        trans.target !== '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero',
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return (
+        trans.$kind === 'MoveCall' &&
+        moveCallTarget !== '0x2::coin::zero' &&
+        moveCallTarget !== '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero'
+      );
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get collectRewardHelper() {
-    const moveCalls = this.transactions.filter(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::collect_reward`,
-    ) as MoveCallTransaction[];
+    const moveCalls = this.transactions.filter((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return (
+        trans.$kind === 'MoveCall' && moveCallTarget === `${this.config.PackageId}::position_manager::collect_reward`
+      );
+    });
     return moveCalls.map((moveCall) => new MoveCallHelper(moveCall, this.txb));
   }
 
   private get collectFeeHelper() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::collect`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return trans.$kind === 'MoveCall' && moveCallTarget === `${this.config.PackageId}::position_manager::collect`;
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get decreaseLiquidityHelper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::decrease_liquidity`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return (
+        trans.$kind === 'MoveCall' &&
+        moveCallTarget === `${this.config.PackageId}::position_manager::decrease_liquidity`
+      );
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get swapExactBaseForQuoteHelper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return (
+        trans.$kind === 'MoveCall' &&
+        moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`
+      );
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get swapExactQuoteForBaseHelper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+      return (
+        trans.$kind === 'MoveCall' &&
+        moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`
+      );
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 }
 
 export class MoveCallHelper {
   constructor(
-    public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly moveCall: TransactionCommand,
+    public readonly txb: Transaction,
   ) {}
 
+  private get inputs() {
+    return this.txb.getData().inputs;
+  }
+
   decodeSharedObjectId(argIndex: number) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getSharedObjectId(input);
+    return this.inputs[argIndex].Object.SharedObject.objectId;
   }
 
   decodeOwnedObjectId(argIndex: number) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getOwnedObjectId(input);
+    return this.inputs[argIndex].Object.ImmOrOwnedObject.objectId;
   }
 
   decodeInputU128(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u128');
-    return Number(strVal);
+    return Number(bcs.u128().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputU64(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u64');
-    return Number(strVal);
+    return Number(bcs.u64().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputU32(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u32');
-    return Number(strVal);
+    return Number(bcs.u32().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputU8(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u8');
-    return Number(strVal);
+    return Number(bcs.u8().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputAddress(argIndex: number) {
-    const input = this.decodePureArg<string>(argIndex, 'address');
-    return normalizeSuiAddress(input);
-  }
-
-  decodeInputString(argIndex: number) {
-    return this.decodePureArg<string>(argIndex, 'string');
+    return bcs.Address.parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes)));
   }
 
   decodeInputBool(argIndex: number) {
-    return this.decodePureArg<boolean>(argIndex, 'bool');
-  }
-
-  decodePureArg<T>(argIndex: number, bcsType: string) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getPureInputValue<T>(input, bcsType);
-  }
-
-  getInputParam(argIndex: number) {
-    const arg = this.moveCall.arguments[argIndex];
-    if (arg.kind !== 'Input') {
-      throw new Error('not input type');
-    }
-    return this.txb.blockData.inputs[arg.index];
-  }
-
-  static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
-    }
-    if (typeof input.value === 'object' && 'Pure' in input.value) {
-      const bcsNums = input.value.Pure;
-      return bcs.de(bcsType, new Uint8Array(bcsNums)) as T;
-    }
-    return input.value as T;
-  }
-
-  static getOwnedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
-      throw new Error(`not object argument: ${JSON.stringify(input)}`);
-    }
-    if (typeof input.value === 'object') {
-      if (!('Object' in input.value) || !('ImmOrOwned' in input.value.Object)) {
-        throw new Error('not ImmOrOwned');
-      }
-      return normalizeSuiAddress(input.value.Object.ImmOrOwned.objectId as string);
-    }
-    return normalizeSuiAddress(input.value as string);
-  }
-
-  static getSharedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
-      throw new Error(`not object argument: ${JSON.stringify(input)}`);
-    }
-    if (typeof input.value !== 'object') {
-      return normalizeSuiAddress(input.value as string);
-    }
-    if (!('Object' in input.value) || !('Shared' in input.value.Object)) {
-      throw new Error('not Shared');
-    }
-    return normalizeSuiAddress(input.value.Object.Shared.objectId as string);
-  }
-
-  static getPureInput<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
-    }
-    if (typeof input.value !== 'object') {
-      return input.value as T;
-    }
-    if (!('Pure' in input.value)) {
-      throw new Error('Pure not in value');
-    }
-    const bcsVal = input.value.Pure;
-    return bcs.de(bcsType, new Uint8Array(bcsVal)) as T;
+    return bcs.bool().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes)));
   }
 
   typeArg(index: number) {
-    return normalizeStructTag(this.moveCall.typeArguments[index]);
+    return normalizeStructTag(this.moveCall.MoveCall.typeArguments[index]);
   }
 
   shortTypeArg(index: number) {
-    return this.moveCall.typeArguments[index];
+    return this.moveCall.MoveCall.typeArguments[index];
   }
 
   txArg(index: number) {
-    return this.moveCall.arguments[index];
+    return this.moveCall.MoveCall.arguments[index];
   }
 }
