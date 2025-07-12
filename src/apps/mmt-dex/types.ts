@@ -39,7 +39,7 @@ export interface ManageLiquidityIntentionData extends MMTDEXIntentionData {
     address: string;
     amountA: string;
     amountB: string;
-    pool: NormalizedPool & { poolId: string };
+    pool: NormalizedPool;
     positionObjectId: string;
     slippage: number;
   };
@@ -51,7 +51,7 @@ export interface ManageLiquiditySingleSideIntentionData extends MMTDEXIntentionD
     address: string;
     amount: string;
     isTokenX: boolean;
-    pool: NormalizedPool & { poolId: string };
+    pool: NormalizedPool;
     positionObjectId: string;
     swapSlippage: number;
     addLiquiditySlippage: number;
