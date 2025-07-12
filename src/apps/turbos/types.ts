@@ -7,6 +7,8 @@ export enum TransactionSubType {
   AddLiquidity = 'AddLiquidity',
   IncreaseLiquidity = 'IncreaseLiquidity',
   DecreaseLiquidity = 'DecreaseLiquidity',
+  DecreaseLiquidityWithReturn = 'DecreaseLiquidityWithReturn',
+  RemoveLiquidityWithReturn = 'removeLiquidityWithReturn',
   RemoveLiquidity = 'RemoveLiquidity',
   CollectFee = 'CollectFee',
   CollectReward = 'CollectReward',
@@ -24,9 +26,11 @@ export type TURBOSIntentionData =
   | AddLiquidityIntentionData
   | IncreaseLiquidityIntentionData
   | DecreaseLiquidityIntentionData
+  | DecreaseLiquidityWithReturnIntentionData
   | CollectFeeIntentionData
   | CollectRewardIntentionData
   | RemoveLiquidityIntentionData
+  | RemoveLiquidityWithReturnIntentionData
   | BurnIntentionData
   | SwapIntentionData
   | PrixJoinIntentionData
@@ -47,11 +51,13 @@ export interface ClaimAllIntentionData {
 export type CollectFeeIntentionData = Pool.CollectFeeOptions;
 export type CollectRewardIntentionData = Pool.CollectRewardOptions;
 export type DecreaseLiquidityIntentionData = Pool.DecreaseLiquidityOptions;
+export type DecreaseLiquidityWithReturnIntentionData = Pool.DecreaseLiquidityOptions;
 export type IncreaseLiquidityIntentionData = Pool.IncreaseLiquidityOptions; // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PrixClaimIntentionData {} // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface PrixJoinIntentionData {}
 
 export type RemoveLiquidityIntentionData = Pool.RemoveLiquidityOptions;
+export type RemoveLiquidityWithReturnIntentionData = Pool.RemoveLiquidityOptions;
 export type SwapIntentionData = Trade.SwapOptions;
 
 export interface SwapExactBaseForQuoteIntentionData {

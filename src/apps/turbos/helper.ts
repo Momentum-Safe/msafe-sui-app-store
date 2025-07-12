@@ -14,13 +14,16 @@ import { CollectFeeIntention } from './intentions/collect-fee';
 import { CollectRewardIntention } from './intentions/collect-reward';
 import { CreatePoolIntention } from './intentions/create-pool';
 import { DecreaseLiquidityIntention } from './intentions/decrease-liquidity';
+import { DecreaseLiquidityWithReturnIntention } from './intentions/decrease-liquidity-with-return';
 import { IncreaseLiquidityIntention } from './intentions/increase-liquidity';
 import { PrixClaimIntention } from './intentions/prix-claim';
 import { PrixJoinIntention } from './intentions/prix-join';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
+import { RemoveLiquidityWithReturnIntention } from './intentions/remove-liquidity-with-return';
 import { SwapIntention } from './intentions/swap';
 import { SwapExactBaseForQuoteIntention } from './intentions/swap-exact-base-for-quote';
 import { SwapExactQuoteForBaseIntention } from './intentions/swap-exact-quote-for-base';
+
 import {
   AddLiquidityIntentionData,
   BurnIntentionData,
@@ -28,10 +31,12 @@ import {
   CollectRewardIntentionData,
   CreatePoolIntentionData,
   DecreaseLiquidityIntentionData,
+  DecreaseLiquidityWithReturnIntentionData,
   IncreaseLiquidityIntentionData,
   PrixClaimIntentionData,
   PrixJoinIntentionData,
   RemoveLiquidityIntentionData,
+  RemoveLiquidityWithReturnIntentionData,
   SuiNetworks,
   SwapExactBaseForQuoteIntentionData,
   SwapExactQuoteForBaseIntentionData,
@@ -45,9 +50,11 @@ export type TURBOSIntention =
   | AddLiquidityIntention
   | IncreaseLiquidityIntention
   | DecreaseLiquidityIntention
+  | DecreaseLiquidityWithReturnIntention
   | CollectFeeIntention
   | CollectRewardIntention
   | RemoveLiquidityIntention
+  | RemoveLiquidityWithReturnIntention
   | BurnIntention
   | SwapIntention
   | PrixClaimIntention
@@ -70,13 +77,13 @@ export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> 
     txbParams?: any;
   }): Promise<{
     txType: TransactionType;
-    txSubType: TransactionSubType;
+    txSubType: string;
     intentionData: TURBOSIntentionData;
   }> {
-    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
+    console.log(input, 'input');
+    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network);
     const contract = await turbosSdk.contract.getConfig();
     const { transaction, account } = input;
-    console.log(input, 'input');
     const decoder = new Decoder(transaction, turbosSdk, contract);
     const result = await decoder.decode(account.address);
     return {
@@ -95,8 +102,9 @@ export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> 
     network: SuiNetworks;
   }): Promise<Transaction> {
     const { suiClient, account, network } = input;
-    let intention: TURBOSIntention;
     console.log(input.intentionData, 'intentionData');
+
+    let intention: TURBOSIntention;
     switch (input.txSubType) {
       case TransactionSubType.CreatePool:
         intention = CreatePoolIntention.fromData(input.intentionData as CreatePoolIntentionData);
@@ -110,8 +118,18 @@ export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> 
       case TransactionSubType.DecreaseLiquidity:
         intention = DecreaseLiquidityIntention.fromData(input.intentionData as DecreaseLiquidityIntentionData);
         break;
+      case TransactionSubType.DecreaseLiquidityWithReturn:
+        intention = DecreaseLiquidityWithReturnIntention.fromData(
+          input.intentionData as DecreaseLiquidityWithReturnIntentionData,
+        );
+        break;
       case TransactionSubType.RemoveLiquidity:
         intention = RemoveLiquidityIntention.fromData(input.intentionData as RemoveLiquidityIntentionData);
+        break;
+      case TransactionSubType.RemoveLiquidityWithReturn:
+        intention = RemoveLiquidityWithReturnIntention.fromData(
+          input.intentionData as RemoveLiquidityWithReturnIntentionData,
+        );
         break;
       case TransactionSubType.CollectFee:
         intention = CollectFeeIntention.fromData(input.intentionData as CollectFeeIntentionData);
@@ -137,6 +155,7 @@ export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> 
       case TransactionSubType.SwapExactQuoteForBase:
         intention = SwapExactQuoteForBaseIntention.fromData(input.intentionData as SwapExactQuoteForBaseIntentionData);
         break;
+
       default:
         throw new Error('not implemented');
     }

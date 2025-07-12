@@ -21,7 +21,7 @@ export class BurnIntention extends BaseIntention<BurnIntentionData> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { pool, nft, txb } = this.data;
 
-    return turbosSdk.nft.burn({
+    return turbosSdk.position.burn({
       pool,
       nft,
       txb,

@@ -90,6 +90,14 @@ export class Decoder {
       return this.decodeDecreaseLiquidity(address);
     }
 
+    if (this.isRemoveLiquidityWithReturnTransaction()) {
+      return this.decodeRemoveLiquidityWithReturn(address);
+    }
+
+    if (this.isDecreaseLiquidityWithReturnTransaction()) {
+      return this.decodeDecreaseLiquidityWithReturn(address);
+    }
+
     if (this.isCollectFeeTransaction()) {
       return this.decodeCollectFee();
     }
@@ -160,6 +168,10 @@ export class Decoder {
     return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::decrease_liquidity`);
   }
 
+  private isDecreaseLiquidityWithReturnTransaction() {
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::decrease_liquidity_with_return_`);
+  }
+
   private isCollectFeeTransaction() {
     return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::collect`);
   }
@@ -183,6 +195,13 @@ export class Decoder {
   private isRemoveLiquidityTransaction() {
     return !!this.getMoveCallsTransaction([
       `${this.config.PackageId}::position_manager::decrease_liquidity`,
+      `${this.config.PackageId}::position_manager::burn`,
+    ]);
+  }
+
+  private isRemoveLiquidityWithReturnTransaction() {
+    return !!this.getMoveCallsTransaction([
+      `${this.config.PackageId}::position_manager::decrease_liquidity_with_return_`,
       `${this.config.PackageId}::position_manager::burn`,
     ]);
   }
@@ -341,6 +360,32 @@ export class Decoder {
     };
   }
 
+  private decodeDecreaseLiquidityWithReturn(address: string): DecodeResult {
+    console.log(this.helper, 'decodeDecreaseLiquidityWithReturn this.helper');
+    const pool = this.helper.decodeSharedObjectId(0);
+    const nft = this.helper.decodeSharedObjectId(2);
+    const decreaseLiquidity = this.helper.decodeInputU64(3);
+    const amountA = this.helper.decodeInputU64(4);
+    const amountB = this.helper.decodeInputU64(5);
+
+    const deadline = this.helper.decodeInputU64(6);
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.DecreaseLiquidityWithReturn,
+      intentionData: {
+        pool,
+        decreaseLiquidity,
+        nft,
+        amountA,
+        amountB,
+        slippage: 10, // DO NOT use slippage by user setting for now.
+        address,
+        deadline,
+      },
+    };
+  }
+
   private decodeCollectFee(): DecodeResult {
     console.log(this.helper, 'decodeCollectFee this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
@@ -419,6 +464,39 @@ export class Decoder {
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.RemoveLiquidity,
+      intentionData: {
+        pool,
+        decreaseLiquidity,
+        nft,
+        amountA,
+        amountB,
+        slippage: 10,
+        address,
+        collectAmountA,
+        collectAmountB,
+        rewardAmounts,
+        deadline,
+      },
+    };
+  }
+
+  private decodeRemoveLiquidityWithReturn(address: string): DecodeResult {
+    console.log(this.helper, 'decodeRemoveLiquidityWithReturn this.helper');
+    const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(0);
+    const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(2);
+    const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(3);
+    const amountA = this.decreaseLiquidityHelper.decodeInputU64(4);
+    const amountB = this.decreaseLiquidityHelper.decodeInputU64(5);
+
+    const deadline = this.decreaseLiquidityHelper.decodeInputU64(6);
+    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
+
+    const collectAmountA = this.collectFeeHelper.decodeInputU64(3) || 0;
+    const collectAmountB = this.collectFeeHelper.decodeInputU64(4) || 0;
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.RemoveLiquidityWithReturn,
       intentionData: {
         pool,
         decreaseLiquidity,
