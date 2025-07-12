@@ -6,7 +6,7 @@ import { Transaction } from '@mysten/sui/transactions';
 import BN from 'bn.js';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
-import { Pools } from './swap';
+import { NormalizedPool } from './swap';
 
 function signedShiftRight(n0: BN, shiftBy: number, bitWidth: number) {
   const twoN0 = n0.toTwos(bitWidth).shrn(shiftBy);
@@ -165,7 +165,7 @@ export const executeClmmDeposit = async (
   address: string,
   amountA: string,
   amountB: string,
-  pool: Pools,
+  pool: NormalizedPool,
   poolId: string,
   selectedLowTick: number,
   selectedHighTick: number,
@@ -227,7 +227,7 @@ export const executeSingleSidedClmmDeposit = async (
   address: string,
   amount: string,
   isTokenX: boolean,
-  pool: Pools,
+  pool: NormalizedPool,
   selectedLowTick: number,
   selectedHighTick: number,
 ) => {
@@ -242,7 +242,7 @@ export const executeSingleSidedClmmDeposit = async (
     const inputCoin = await getExactCoinByAmount(mmt, address, inputCoinType, inputCoinAmount, tx);
 
     const poolModel = {
-      objectId: pool.objectId,
+      objectId: pool.poolId,
       tokenXType: normalizeSuiCoinType(pool.tokenX.coinType),
       tokenYType: normalizeSuiCoinType(pool.tokenY.coinType),
       tickSpacing: pool.tickSpacing,
@@ -260,7 +260,7 @@ export const executeSingleSidedClmmDeposit = async (
     );
 
     const rpcPool = await suiClient.getObject({
-      id: pool.objectId,
+      id: pool.poolId,
       options: { showContent: true },
     });
 

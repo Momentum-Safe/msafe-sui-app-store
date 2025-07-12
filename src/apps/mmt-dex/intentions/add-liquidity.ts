@@ -24,17 +24,7 @@ export class AddLiquidityIntention extends BaseIntention<AddLiquidityIntentionDa
     const { address, amountA, amountB, pool, selectedLowTick, selectedHighTick } = params;
     const tx = new Transaction();
 
-    await executeClmmDeposit(
-      sdk,
-      tx,
-      address,
-      amountA,
-      amountB,
-      pool,
-      pool.objectId,
-      selectedLowTick,
-      selectedHighTick,
-    );
+    await executeClmmDeposit(sdk, tx, address, amountA, amountB, pool, pool.poolId, selectedLowTick, selectedHighTick);
 
     return tx;
   }

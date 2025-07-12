@@ -1,5 +1,5 @@
 import { V3PositionType } from './utils/reward';
-import { Pools, Tokens } from './utils/swap';
+import { NormalizedPool, Tokens } from './utils/swap';
 
 export type MMTDEXIntentionData = {
   action: TransactionSubType;
@@ -12,7 +12,7 @@ export interface AddLiquidityIntentionData extends MMTDEXIntentionData {
     address: string;
     amountA: string;
     amountB: string;
-    pool: Pools;
+    pool: NormalizedPool;
     selectedLowTick: number;
     selectedHighTick: number;
   };
@@ -24,7 +24,7 @@ export interface AddLiquiditySingleSideIntentionData extends MMTDEXIntentionData
     address: string;
     amount: string;
     isTokenX: boolean;
-    pool: Pools;
+    pool: NormalizedPool;
     selectedLowTick: number;
     selectedHighTick: number;
   };
@@ -35,7 +35,7 @@ export interface ClaimAllRewardsIntentionData extends MMTDEXIntentionData {
   params: {
     address: string;
     positions: V3PositionType[];
-    pools: Pools[];
+    pools: NormalizedPool[];
   };
 }
 
@@ -44,7 +44,7 @@ export interface ClaimRewardsIntentionData extends MMTDEXIntentionData {
   params: {
     address: string;
     position: V3PositionType;
-    pool: Pools;
+    pool: NormalizedPool;
   };
 }
 
@@ -52,7 +52,7 @@ export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.RemoveLiquidity;
   params: {
     position: V3PositionType;
-    pool: Pools;
+    pool: NormalizedPool;
     address: string;
     withdrawPercentage: number;
   };
@@ -61,7 +61,7 @@ export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
 export interface SwapIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.Swap;
   params: {
-    route: Pools[];
+    route: NormalizedPool[];
     tokenIn: Tokens;
     amountIn: string;
     address: string;

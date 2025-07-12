@@ -2,7 +2,7 @@ import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { Reward } from '@mmt-finance/clmm-sdk/dist/types';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { Pools } from './swap';
+import { NormalizedPool } from './swap';
 
 export type V3PositionType = {
   objectId: string;
@@ -27,18 +27,41 @@ export const claimV3Rewards = (
   mmt: MmtSDK,
   address: string,
   position: V3PositionType,
-  pool: Pools,
+  pool: NormalizedPool,
   tx: Transaction,
 ) => {
   const poolModel = {
-    objectId: pool.objectId,
+    objectId: pool.poolId,
     tokenXType: pool.tokenXType,
     tokenYType: pool.tokenYType,
   };
 
   if ((pool?.rewarders?.length ?? 0) > 0) {
-    mmt.Pool.collectAllRewards(tx, poolModel, pool.rewarders, position.objectId, address);
+    mmt.Pool.collectAllRewards(
+      tx,
+      poolModel,
+      pool.rewarders.map((rewarder) => ({
+        coin_type: rewarder.coinType,
+        flow_rate: rewarder.flowRate,
+        reward_amount: rewarder.rewardAmount,
+        rewards_allocated: rewarder.rewardsAllocated,
+        hasEnded: rewarder.hasEnded,
+      })),
+      position.objectId,
+      address,
+    );
   }
 
-  mmt.Pool.collectFee(tx, pool, position.objectId, address);
+  mmt.Pool.collectFee(
+    tx,
+    {
+      objectId: pool.poolId,
+      tokenXType: pool.tokenXType,
+      tokenYType: pool.tokenYType,
+      isStable: pool.isStable,
+      tickSpacing: pool.tickSpacing,
+    },
+    position.objectId,
+    address,
+  );
 };

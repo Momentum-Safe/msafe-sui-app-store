@@ -29,7 +29,7 @@ export class RemoveLiquidityIntention extends BaseIntention<RemoveLiquidityInten
     const typeY = pool.tokenY.coinType;
 
     const poolModel = {
-      objectId: pool.objectId,
+      objectId: pool.poolId,
       tokenXType: typeX,
       tokenYType: typeY,
     };
