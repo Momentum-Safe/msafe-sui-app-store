@@ -6,6 +6,7 @@ import { Transaction } from '@mysten/sui/transactions';
 import BN from 'bn.js';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
+// eslint-disable-next-line import/no-cycle
 import { NormalizedPool } from './swap';
 
 function signedShiftRight(n0: BN, shiftBy: number, bitWidth: number) {

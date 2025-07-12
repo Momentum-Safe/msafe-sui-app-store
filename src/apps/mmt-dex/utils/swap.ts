@@ -5,6 +5,7 @@ import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { normalizeSuiCoinType } from './common';
+// eslint-disable-next-line import/no-cycle
 import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
 
 export type NormalizedRewarder = {
