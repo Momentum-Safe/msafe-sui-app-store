@@ -10,13 +10,12 @@ import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { AddLiquiditySingleSideIntention } from './intentions/add-liquidity-single-side';
 import { ClaimAllRewardsIntention } from './intentions/claim-all-rewards';
 import { ClaimRewardsIntention } from './intentions/claim-rewards';
+import { ManageLiquidityIntention } from './intentions/manage-liquidity';
+import { ManageLiquiditySingleSideIntention } from './intentions/manage-liquidity-single-side';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
 import { StakeXSuiIntention } from './intentions/stake-xsui';
 import { SwapIntention } from './intentions/swap';
 import { UnstakeXSuiIntention } from './intentions/unstake-xsui';
-import { ManageLiquidityIntention } from './intentions/manage-liquidy';
-import { ManageLiquiditySingleSideIntention } from './intentions/manage-liquidity-single-side';
-
 import {
   AddLiquidityIntentionData,
   AddLiquiditySingleSideIntentionData,

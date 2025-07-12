@@ -6,7 +6,8 @@ import { Transaction } from '@mysten/sui/transactions';
 import BN from 'bn.js';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
-import { Pools } from './swap';
+// eslint-disable-next-line import/no-cycle
+import { NormalizedPool } from './swap';
 
 function signedShiftRight(n0: BN, shiftBy: number, bitWidth: number) {
   const twoN0 = n0.toTwos(bitWidth).shrn(shiftBy);
@@ -160,7 +161,9 @@ export const tickIndexToSqrtPriceX64 = (tickIndex: number, tickSpacing: number, 
 };
 
 export function toBaseUnits(amount: string, decimals: number): bigint {
-  if (!/^(\d+)(\.\d+)?$/.test(amount)) return BigInt(0);
+  if (!/^(\d+)(\.\d+)?$/.test(amount)) {
+    return BigInt(0);
+  }
   const [whole, fraction = ''] = amount.split('.');
   const fractionPadded = (fraction + '0'.repeat(decimals)).slice(0, decimals);
   const baseStr = whole + fractionPadded;
@@ -242,7 +245,9 @@ export function getMinimalAmountUsingSlippage(
 ): bigint {
   const amount = toBaseUnits(coinAmount, decimals);
 
-  if (Number(coinAmount) === 0) return BigInt(0);
+  if (Number(coinAmount) === 0) {
+    return BigInt(0);
+  }
 
   const minimalAmount = getResultAmountUsingSlippage(amount, slippage);
   return minimalAmount;
@@ -256,7 +261,7 @@ export async function getLimitSqrtPriceUsingSlippage({
   slippagePercentage,
   isTokenX,
   suiClient,
-}: Pick<Pools, 'currentSqrtPrice' | 'tokenX' | 'tokenY'> & {
+}: Pick<NormalizedPool, 'currentSqrtPrice' | 'tokenX' | 'tokenY'> & {
   slippagePercentage: number; // 1 = 1% slippage
   isTokenX: boolean;
   suiClient: SuiClient;
@@ -293,7 +298,7 @@ export const executeClmmDeposit = async (
   address: string,
   amountA: string,
   amountB: string,
-  pool: Pools,
+  pool: NormalizedPool,
   poolId: string,
   selectedLowTick: number,
   selectedHighTick: number,
@@ -346,7 +351,7 @@ export const executeSingleSidedClmmDeposit = async (
   address: string,
   amount: string,
   isTokenX: boolean,
-  pool: Pools & { poolId: string },
+  pool: NormalizedPool,
   selectedLowTick: number,
   selectedHighTick: number,
   swapSlippage: number,
@@ -364,8 +369,8 @@ export const executeSingleSidedClmmDeposit = async (
 
     const poolModel = {
       objectId: pool.poolId,
-      tokenXType: pool.tokenX.coinType,
-      tokenYType: pool.tokenY.coinType,
+      tokenXType: normalizeSuiCoinType(pool.tokenX.coinType),
+      tokenYType: normalizeSuiCoinType(pool.tokenY.coinType),
       tickSpacing: pool.tickSpacing,
     };
 
@@ -412,7 +417,7 @@ export const executeAddLiquidityToExistingPosition = async (
   address: string,
   amountA: string,
   amountB: string,
-  pool: Pools & { poolId: string },
+  pool: NormalizedPool,
   positionObjectId: string,
   slippage: number,
 ) => {
@@ -462,7 +467,7 @@ export const executeAddSingleSidedLiquidityToExistingPosition = async (
   address: string,
   amount: string,
   isTokenX: boolean,
-  pool: Pools & { poolId: string },
+  pool: NormalizedPool,
   positionObjectId: string,
   swapSlippage: number,
   addLiquiditySlippage: number,

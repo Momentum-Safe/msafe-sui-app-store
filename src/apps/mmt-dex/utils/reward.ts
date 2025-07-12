@@ -2,7 +2,7 @@ import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { Reward } from '@mmt-finance/clmm-sdk/dist/types';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { Pools } from './swap';
+import { NormalizedPool } from './swap';
 
 export type V3PositionType = {
   objectId: string;
@@ -27,7 +27,7 @@ export const claimV3Rewards = (
   mmt: MmtSDK,
   address: string,
   position: V3PositionType,
-  pool: Pools,
+  pool: NormalizedPool,
   tx: Transaction,
 ) => {
   const poolModel = {

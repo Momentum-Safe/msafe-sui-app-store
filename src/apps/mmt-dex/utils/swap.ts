@@ -1,149 +1,56 @@
 /* eslint-disable no-restricted-syntax */
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import type { Rewarder, ExtendedPoolWithApr } from '@mmt-finance/clmm-sdk/dist/types';
+import type { TokenSchema } from '@mmt-finance/clmm-sdk/dist/types';
 import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
-import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
+import { normalizeSuiCoinType } from './common';
+// eslint-disable-next-line import/no-cycle
 import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
 
-export type SwapRoute = {
+export type NormalizedRewarder = {
+  coinType: string;
+  flowRate: number;
+  hasEnded: boolean;
+  rewardAmount: number;
+  rewardsAllocated: number;
+};
+
+export type AprBreakdown = {
+  total: string;
+  fee: string;
+  rewards: {
+    coinType: string;
+    apr: string;
+    amountPerDay: number;
+  }[];
+};
+
+export type NormalizedPool = {
+  poolSource: 'mmt-v3';
   poolId: string;
-  poolSource: string;
-  tokenXReserve: string;
-  tokenYReserve: string;
-  protocolFeesPercent: string;
-  lpFeesPercent: string;
-  feeRate: number;
-  isStable: boolean;
   tokenXType: string;
   tokenYType: string;
-  tvl: string;
-  apy: string;
-  tokenX: {
-    coinType: string;
-    ticker: string;
-    name: string;
-    decimals: number;
-    iconUrl: string;
-    description: string;
-    price: string;
-    isVerified: boolean;
-    isMmtWhitelisted: boolean;
-    tokenType: string;
-  };
-  tokenY: {
-    coinType: string;
-    ticker: string;
-    name: string;
-    decimals: number;
-    iconUrl: string;
-    description: string;
-    price: string;
-    isVerified: boolean;
-    isMmtWhitelisted: boolean;
-    tokenType: string;
-  };
-  fees24h: string;
+  tickSpacing: number;
+  lpFeesPercent: string;
+  feeRate: number;
+  protocolFeesPercent: string;
+  isStable: boolean;
   currentSqrtPrice: string;
   currentTickIndex: string;
   liquidity: string;
   liquidityHM: string;
-  tickSpacing: number;
-  volume24h: string;
-  timestamp: string;
-  rewarders: [
-    {
-      coinType: string;
-      flowRate: number;
-      hasEnded: boolean;
-      rewardAmount: number;
-      rewardsAllocated: number;
-    },
-    {
-      coinType: string;
-      flowRate: number;
-      hasEnded: boolean;
-      rewardAmount: number;
-      rewardsAllocated: number;
-    },
-    {
-      coinType: string;
-      flowRate: number;
-      hasEnded: boolean;
-      rewardAmount: number;
-      rewardsAllocated: 66078579096424;
-    },
-  ];
-  aprBreakdown: {
-    total: string;
-    rewards: [
-      {
-        coinType: string;
-        apr: string;
-        amountPerDay: number;
-      },
-    ];
-    fee: string;
-  };
-};
-
-export type Pools = {
-  poolId: string;
   tokenXReserve: string;
-  lspSupply: string;
-  protocolFeesPercent: string;
-  createdAt?: string;
-  farmSource?: string;
-  volume: number;
-  packageId: string;
-  farmId?: string;
-  objectId: string;
-  poolSource: string;
-  lspType?: string;
-  lpFeesPercent?: string;
-  tokenYType: string;
-  data?: string;
-  updatedAt?: string;
-  isStable: boolean;
-  tokenXType: string;
   tokenYReserve: string;
-  tokenX: {
-    coinType: string;
-    ticker: string;
-    tokenName: string;
-    updatedAt?: string;
-    createdAt?: string;
-    decimals: number;
-    iconUrl: string;
-    description: string;
-    price: string;
-  };
-  tokenY: {
-    coinType: string;
-    ticker: string;
-    tokenName: string;
-    updatedAt?: string;
-    createdAt?: string;
-    decimals: number;
-    iconUrl: string;
-    description: string;
-    price: string;
-  };
-  tvl: number;
-  apy: number;
-  feeApy?: number;
-  lspBalance?: number;
-  currentSqrtPrice?: string;
-  currentTickIndex?: string;
-  liquidity?: string;
-  rewarders?: Rewarder[];
-  feeRate?: number;
-  tickSpacing?: number;
-  volume24h?: string;
-  fees24h?: string;
-  fees?: number;
-  aprBreakdown?: ExtendedPoolWithApr['aprBreakdown'];
+  tvl: string;
+  apy: string;
+  volume24h: string;
+  fees24h: string;
+  timestamp: string;
+  rewarders: NormalizedRewarder[];
+  tokenX: TokenSchema;
+  tokenY: TokenSchema;
+  aprBreakdown: AprBreakdown;
 };
 
 export type Tokens = {
@@ -161,7 +68,7 @@ export type Tokens = {
 
 export const performMmtSwap = async (
   mmtSdk: MmtSDK,
-  route: SwapRoute[],
+  route: NormalizedPool[],
   tokenIn: Tokens,
   amountIn: string,
   address: string,
@@ -186,7 +93,7 @@ export const performMmtSwap = async (
   let inputCoinType = tokenIn.coinType;
 
   for (let i = 0; i < route.length; i += 1) {
-    const { poolId: objectId, tokenX: routeTokenX, tokenY: routeTokenY, isStable } = route[i]!;
+    const { poolId: objectId, tokenX: routeTokenX, tokenY: routeTokenY, isStable, currentSqrtPrice } = route[i]!;
 
     const { id: v3PoolId, isReverse } = mappedMmtV3Pool[objectId as keyof typeof mappedMmtV3Pool] || {
       id: objectId,
@@ -202,14 +109,15 @@ export const performMmtSwap = async (
 
     const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
       poolId: v3PoolId,
-      tokenX: routeTokenX as any,
-      tokenY: routeTokenY as any,
+      tokenX: routeTokenX,
+      tokenY: routeTokenY,
       slippagePercentage: slippage,
       isTokenX: isXtoY,
       suiClient: mmtSdk.rpcClient,
+      currentSqrtPrice,
     });
 
-    let outputCoin = mmtSdk.Pool.swap(
+    const outputCoin = mmtSdk.Pool.swap(
       tx,
       {
         objectId: v3PoolId,
