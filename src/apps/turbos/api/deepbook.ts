@@ -1,5 +1,5 @@
 import { Transaction } from '@mysten/sui/transactions';
-import { normalizeSuiObjectId } from '@mysten/sui.js/utils';
+import { normalizeSuiObjectId } from '@mysten/sui/utils';
 import { TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig } from '../config';
