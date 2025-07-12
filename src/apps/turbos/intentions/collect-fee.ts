@@ -4,13 +4,13 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { Network, Pool, TurbosSdk } from 'turbos-clmm-sdk';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { SuiNetworks, TransactionSubType } from '../types';
 
 export type CollectFeeIntentionData = Pool.CollectFeeOptions;
 
-export class CollectFeeIntention extends BaseIntentionLegacy<CollectFeeIntentionData> {
+export class CollectFeeIntention extends BaseIntention<CollectFeeIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.AddLiquidity;

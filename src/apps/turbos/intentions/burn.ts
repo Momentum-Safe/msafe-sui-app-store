@@ -4,13 +4,13 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { NFT, TurbosSdk, Network } from 'turbos-clmm-sdk';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { SuiNetworks, TransactionSubType } from '../types';
 
 export type BurnIntentionData = NFT.BurnOptions;
 
-export class BurnIntention extends BaseIntentionLegacy<BurnIntentionData> {
+export class BurnIntention extends BaseIntention<BurnIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.AddLiquidity;

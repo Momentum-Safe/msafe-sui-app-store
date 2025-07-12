@@ -4,7 +4,7 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { TurbosSdk, Network } from 'turbos-clmm-sdk';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { swap_exact_base_for_quote } from '../api/deepbook';
 import { SuiNetworks, TransactionSubType } from '../types';
@@ -16,7 +16,7 @@ export interface SwapExactBaseForQuoteIntentionData {
   amountIn: number;
 }
 
-export class SwapExactBaseForQuoteIntention extends BaseIntentionLegacy<SwapExactBaseForQuoteIntentionData> {
+export class SwapExactBaseForQuoteIntention extends BaseIntention<SwapExactBaseForQuoteIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.SwapExactBaseForQuote;

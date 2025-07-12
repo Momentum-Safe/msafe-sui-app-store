@@ -4,14 +4,14 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { prixConfig } from '../config';
 import { SuiNetworks, TransactionSubType } from '../types';
 
 export interface PrixClaimIntentionData {}
 
-export class PrixClaimIntention extends BaseIntentionLegacy<PrixClaimIntentionData> {
+export class PrixClaimIntention extends BaseIntention<PrixClaimIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixClaim;

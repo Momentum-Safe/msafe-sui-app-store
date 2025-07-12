@@ -3,14 +3,14 @@ import { SuiClient } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { prixConfig } from '../config';
 import { SuiNetworks, TransactionSubType } from '../types';
 
 export interface PrixJoinIntentionData {}
 
-export class PrixJoinIntention extends BaseIntentionLegacy<PrixJoinIntentionData> {
+export class PrixJoinIntention extends BaseIntention<PrixJoinIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixJoin;

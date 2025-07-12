@@ -4,7 +4,7 @@ import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { Pool, TurbosSdk, Network } from 'turbos-clmm-sdk';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { SuiNetworks, TransactionSubType } from '../types';
 
@@ -14,7 +14,7 @@ export interface ClaimAllIntentionData {
   positions: ClaimAllParams[];
 }
 
-export class ClaimAllIntention extends BaseIntentionLegacy<ClaimAllIntentionData> {
+export class ClaimAllIntention extends BaseIntention<ClaimAllIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.ClaimAll;
