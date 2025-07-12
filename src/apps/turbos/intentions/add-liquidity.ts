@@ -19,13 +19,9 @@ export class AddLiquidityIntention extends BaseIntention<AddLiquidityIntentionDa
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
-    const { pool, address, amountA, amountB, slippage, tickLower, tickUpper, deadline } = this.data;
+    const { pool, address, amountA, amountB, slippage, tickLower, tickUpper, deadline,txb } = this.data;
 
-    const {
-      txb: tx,
-      coinA: objectCoinA,
-      coinB: objectCoinB,
-    } = await turbosSdk.pool.addLiquidity({
+    return turbosSdk.pool.addLiquidity({
       pool,
       slippage,
       address,
@@ -34,9 +30,8 @@ export class AddLiquidityIntention extends BaseIntention<AddLiquidityIntentionDa
       tickLower,
       tickUpper,
       deadline,
+      txb
     });
-    tx.transferObjects([objectCoinA!, objectCoinB!], address);
-    return tx;
   }
 
   static fromData(data: AddLiquidityIntentionData) {

@@ -20,9 +20,9 @@ export class SwapIntention extends BaseIntention<SwapIntentionData> {
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     console.log(this.data, 'this.data');
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
-    const { routes, coinTypeA, coinTypeB, address, amountA, amountB, slippage, amountSpecifiedIsInput, deadline } =
+    const { routes, coinTypeA, coinTypeB, address, amountA, amountB, slippage, amountSpecifiedIsInput, deadline, txb } =
       this.data;
-    const tx = await turbosSdk.trade.swap({
+    return turbosSdk.trade.swap({
       routes,
       coinTypeA,
       coinTypeB,
@@ -33,7 +33,6 @@ export class SwapIntention extends BaseIntention<SwapIntentionData> {
       slippage,
       deadline,
     });
-    return tx;
   }
 
   static fromData(data: SwapIntentionData) {

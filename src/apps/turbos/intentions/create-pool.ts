@@ -34,7 +34,7 @@ export class CreatePoolIntention extends BaseIntention<CreatePoolIntentionData> 
       txb,
     } = this.data;
 
-    const tx = await turbosSdk.pool.createPool({
+    return turbosSdk.pool.createPool({
       fee,
       amountA,
       amountB,
@@ -48,8 +48,6 @@ export class CreatePoolIntention extends BaseIntention<CreatePoolIntentionData> 
       deadline,
       txb,
     });
-
-    return tx;
   }
 
   static fromData(data: CreatePoolIntentionData) {

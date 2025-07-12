@@ -21,7 +21,7 @@ export class CollectRewardIntention extends BaseIntention<CollectRewardIntention
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const { pool, address, nft, rewardAmounts, deadline, txb } = this.data;
 
-    const tx = await turbosSdk.pool.collectReward({
+    return turbosSdk.pool.collectReward({
       pool,
       address,
       rewardAmounts,
@@ -29,8 +29,6 @@ export class CollectRewardIntention extends BaseIntention<CollectRewardIntention
       deadline,
       txb,
     });
-
-    return tx;
   }
 
   static fromData(data: CollectRewardIntentionData) {
