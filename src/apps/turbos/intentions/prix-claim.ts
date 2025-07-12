@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
 
@@ -23,8 +23,8 @@ export class PrixClaimIntention extends BaseIntention<PrixClaimIntentionData> {
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
-    const txb = new TransactionBlock();
+  }): Promise<Transaction> {
+    const txb = new Transaction();
     txb.moveCall({
       target: `${prixConfig.PackageId}::claim::claim`,
       typeArguments: [prixConfig.turbosCoinType],

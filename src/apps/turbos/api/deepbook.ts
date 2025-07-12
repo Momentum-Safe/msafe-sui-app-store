@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { normalizeSuiObjectId } from '@mysten/sui.js/utils';
 import { TurbosSdk } from 'turbos-clmm-sdk';
 
@@ -19,7 +19,7 @@ interface SwapExactOptions {
 
 export const swap_exact_quote_for_base = async (options: SwapExactOptions) => {
   const { token1, token2, poolId, amountIn, currentAddress, turbosSdk } = options;
-  const txb = new TransactionBlock();
+  const txb = new Transaction();
 
   const suiKit = new SuiKit(turbosSdk);
   // get token objectId
@@ -65,7 +65,7 @@ export const swap_exact_quote_for_base = async (options: SwapExactOptions) => {
 
 export const swap_exact_base_for_quote = async (options: SwapExactOptions) => {
   const { token1, token2, poolId, amountIn, currentAddress, turbosSdk } = options;
-  const txb = new TransactionBlock();
+  const txb = new Transaction();
 
   const suiKit = new SuiKit(turbosSdk);
   // get token objectId
