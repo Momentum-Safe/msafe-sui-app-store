@@ -1,5 +1,5 @@
-import { PaginatedCoins } from '@mysten/sui.js/client';
-import { TransactionBlock, TransactionObjectArgument } from '@mysten/sui.js/transactions';
+import { PaginatedCoins } from '@mysten/sui/client';
+import { Transaction, TransactionObjectArgument } from '@mysten/sui/transactions';
 import { TurbosSdk, unstable_getObjectId } from 'turbos-clmm-sdk';
 
 import { deepbookConfig } from '../config';
@@ -39,14 +39,14 @@ export class SuiKit {
   splitAndMergeCoin(
     coins: CoinData | undefined,
     amount: number,
-    txb: TransactionBlock,
+    txb: Transaction,
   ): [TransactionObjectArgument | undefined, TransactionObjectArgument | undefined] {
     if (!coins || coins.length < 1) {
       return [undefined, undefined];
     }
 
     if (this.isSuiCoinAddress(coins[0]!.coinType)) {
-      const [sendCoin] = txb.splitCoins(txb.gas, [txb.pure(amount)]);
+      const [sendCoin] = txb.splitCoins(txb.gas, [txb.pure.u64(amount)]);
       return [sendCoin, undefined];
     }
 
@@ -58,7 +58,7 @@ export class SuiKit {
       );
     }
 
-    const [sendCoin] = txb.splitCoins(mergeCoin, [txb.pure(amount)]);
+    const [sendCoin] = txb.splitCoins(mergeCoin, [txb.pure.u64(amount)]);
     return [sendCoin, mergeCoin];
   }
 
@@ -77,7 +77,7 @@ export class SuiKit {
     return dynamicFields.data[0]?.data ? unstable_getObjectId(dynamicFields.data[0].data) : undefined;
   }
 
-  createAccount(txb: TransactionBlock): TransactionObjectArgument {
+  createAccount(txb: Transaction): TransactionObjectArgument {
     const [cap] = txb.moveCall({
       typeArguments: [],
       target: `${deepbookConfig.PackageId}::clob_v2::create_account`,
@@ -86,7 +86,7 @@ export class SuiKit {
     return cap;
   }
 
-  zero(token: string, txb: TransactionBlock): TransactionObjectArgument {
+  zero(token: string, txb: Transaction): TransactionObjectArgument {
     return txb.moveCall({
       typeArguments: [token],
       target: `0x2::coin::zero`,

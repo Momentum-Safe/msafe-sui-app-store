@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.275",
+  "version": "0.0.276",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -74,7 +74,7 @@
     "nanoid": "3",
     "navi-sdk": "1.6.0",
     "sort-keys-recursive": "^2.1.10",
-    "turbos-clmm-sdk": "^2.2.2"
+    "turbos-clmm-sdk": "^3.6.0"
   },
   "devDependencies": {
     "@msafe/sui3-utils": "^3.1.66",

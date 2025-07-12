@@ -1,15 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui.js/utils';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { prixConfig } from '../config';
 import { PrixClaimIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
-export class PrixClaimIntention extends BaseIntentionLegacy<PrixClaimIntentionData> {
+export class PrixClaimIntention extends BaseIntention<PrixClaimIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixClaim;
@@ -19,12 +19,8 @@ export class PrixClaimIntention extends BaseIntentionLegacy<PrixClaimIntentionDa
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<TransactionBlock> {
-    const txb = new TransactionBlock();
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
+    const txb = new Transaction();
     txb.moveCall({
       target: `${prixConfig.PackageId}::claim::claim`,
       typeArguments: [prixConfig.turbosCoinType],

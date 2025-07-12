@@ -1,14 +1,14 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { prixConfig } from '../config';
 import { PrixJoinIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
-export class PrixJoinIntention extends BaseIntentionLegacy<PrixJoinIntentionData> {
+export class PrixJoinIntention extends BaseIntention<PrixJoinIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixJoin;
@@ -17,12 +17,8 @@ export class PrixJoinIntention extends BaseIntentionLegacy<PrixJoinIntentionData
     super(data);
   }
 
-  async build(input: {
-    suiClient: SuiClient;
-    account: WalletAccount;
-    network: SuiNetworks;
-  }): Promise<TransactionBlock> {
-    const txb = new TransactionBlock();
+  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
+    const txb = new Transaction();
     txb.moveCall({
       target: `${prixConfig.PackageId}::claim::join`,
       typeArguments: [prixConfig.turbosCoinType],

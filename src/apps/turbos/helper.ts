@@ -1,11 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
 // eslint-disable-next-line import/no-cycle
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { IAppHelperInternal } from '@/apps/interface/sui';
 
 import { Decoder } from './decoder';
 import { AddLiquidityIntention } from './intentions/add-liquidity';
@@ -55,26 +55,29 @@ export type TURBOSIntention =
   | SwapExactQuoteForBaseIntention
   | SwapExactBaseForQuoteIntention;
 
-export class TURBOSAppHelper implements IAppHelperInternalLegacy<TURBOSIntentionData> {
+export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> {
   application = 'turbos';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui' as const;
 
-  async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount } & {
-      action?: string;
-      txbParams?: any;
-    },
-  ): Promise<{
+  async deserialize(input: {
+    transaction: Transaction;
+    chain: IdentifierString;
+    network: SuiNetworks;
+    suiClient: SuiClient;
+    account: WalletAccount;
+    action?: string;
+    txbParams?: any;
+  }): Promise<{
     txType: TransactionType;
     txSubType: TransactionSubType;
     intentionData: TURBOSIntentionData;
   }> {
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
     const contract = await turbosSdk.contract.getConfig();
-    const { transactionBlock, account } = input;
+    const { transaction, account } = input;
     console.log(input, 'input');
-    const decoder = new Decoder(transactionBlock, turbosSdk, contract);
+    const decoder = new Decoder(transaction, turbosSdk, contract);
     const result = await decoder.decode(account.address);
     return {
       txType: TransactionType.Other,
@@ -90,7 +93,7 @@ export class TURBOSAppHelper implements IAppHelperInternalLegacy<TURBOSIntention
     suiClient: SuiClient;
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account, network } = input;
     let intention: TURBOSIntention;
     console.log(input.intentionData, 'intentionData');
