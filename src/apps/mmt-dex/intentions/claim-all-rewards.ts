@@ -26,8 +26,10 @@ export class ClaimAllRewardsIntention extends BaseIntention<ClaimAllRewardsInten
 
     // eslint-disable-next-line no-restricted-syntax
     for (const position of positions) {
-      const pool = pools.find((v3Pool) => v3Pool.objectId === position.poolId);
-      claimV3Rewards(sdk, address, position, pool, tx);
+      const pool = pools.find((v3Pool) => v3Pool.poolId === position.poolId);
+      if (pool) {
+        claimV3Rewards(sdk, address, position, pool, tx);
+      }
     }
 
     return tx;

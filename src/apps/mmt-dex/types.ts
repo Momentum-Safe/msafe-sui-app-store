@@ -1,5 +1,5 @@
 import { V3PositionType } from './utils/reward';
-import { Pools, Tokens } from './utils/swap';
+import { Pools, SwapRoute, Tokens } from './utils/swap';
 
 export type MMTDEXIntentionData = {
   action: TransactionSubType;
@@ -15,6 +15,7 @@ export interface AddLiquidityIntentionData extends MMTDEXIntentionData {
     pool: Pools;
     selectedLowTick: number;
     selectedHighTick: number;
+    slippage: number;
   };
 }
 
@@ -27,6 +28,33 @@ export interface AddLiquiditySingleSideIntentionData extends MMTDEXIntentionData
     pool: Pools;
     selectedLowTick: number;
     selectedHighTick: number;
+    swapSlippage: number;
+    addLiquiditySlippage: number;
+  };
+}
+
+export interface ManageLiquidityIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.ManageLiquidity;
+  params: {
+    address: string;
+    amountA: string;
+    amountB: string;
+    pool: Pools & { poolId: string };
+    positionObjectId: string;
+    slippage: number;
+  };
+}
+
+export interface ManageLiquiditySingleSideIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.ManageLiquiditySingleSide;
+  params: {
+    address: string;
+    amount: string;
+    isTokenX: boolean;
+    pool: Pools & { poolId: string };
+    positionObjectId: string;
+    swapSlippage: number;
+    addLiquiditySlippage: number;
   };
 }
 
@@ -61,10 +89,11 @@ export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
 export interface SwapIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.Swap;
   params: {
-    route: Pools[];
+    route: SwapRoute[];
     tokenIn: Tokens;
     amountIn: string;
     address: string;
+    slippage: number;
   };
 }
 
@@ -91,6 +120,8 @@ export enum TransactionSubType {
   ClaimRewards = 'ClaimRewards',
   RemoveLiquidity = 'RemoveLiquidity',
   Swap = 'Swap',
+  ManageLiquidity = 'ManageLiquidity',
+  ManageLiquiditySingleSide = 'ManageLiquiditySingleSide',
   StakeXSui = 'StakeXSui',
   UnstakeXSui = 'UnstakeXSui',
 }

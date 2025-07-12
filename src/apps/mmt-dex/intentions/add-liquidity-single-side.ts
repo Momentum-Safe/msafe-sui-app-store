@@ -21,7 +21,8 @@ export class AddLiquiditySingleSideIntention extends BaseIntention<AddLiquidityS
       network: 'mainnet',
     });
     const { params } = this.data;
-    const { address, amount, isTokenX, pool, selectedLowTick, selectedHighTick } = params;
+    const { address, amount, isTokenX, pool, selectedLowTick, selectedHighTick, swapSlippage, addLiquiditySlippage } =
+      params;
     const tx = new Transaction();
 
     await executeSingleSidedClmmDeposit(
@@ -34,6 +35,8 @@ export class AddLiquiditySingleSideIntention extends BaseIntention<AddLiquidityS
       pool,
       selectedLowTick,
       selectedHighTick,
+      swapSlippage,
+      addLiquiditySlippage,
     );
 
     return tx;
