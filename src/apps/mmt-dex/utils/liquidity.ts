@@ -382,11 +382,6 @@ export const executeSingleSidedClmmDeposit = async (
       selectedHighTick,
     });
 
-    const rpcPool = await suiClient.getObject({
-      id: pool.poolId,
-      options: { showContent: true },
-    });
-
     const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
       suiClient,
       poolId: pool.poolId,
