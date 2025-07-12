@@ -159,6 +159,138 @@ export const tickIndexToSqrtPriceX64 = (tickIndex: number, tickSpacing: number, 
   return new BN(tickIndexToSqrtPriceNegative(signedTick));
 };
 
+export function toBaseUnits(amount: string, decimals: number): bigint {
+  if (!/^(\d+)(\.\d+)?$/.test(amount)) {
+    return BigInt(0);
+  }
+  const [whole, fraction = ''] = amount.split('.');
+  const fractionPadded = (fraction + '0'.repeat(decimals)).slice(0, decimals);
+  const baseStr = whole + fractionPadded;
+  const baseStrClean = baseStr.replace(/^0+/, '') || '0';
+  return BigInt(baseStrClean);
+}
+
+export async function getCoinObject({
+  address,
+  coinType,
+  coinAmount,
+  coinDecimals,
+  tx,
+  mmt,
+}: {
+  mmt: MmtSDK;
+  address: string;
+  coinAmount: string;
+  coinType: string;
+  coinDecimals: number;
+  tx: Transaction;
+}) {
+  const amount = toBaseUnits(coinAmount, coinDecimals);
+  let inputCoin;
+  if (!Number(coinAmount)) {
+    [inputCoin] = tx.moveCall({
+      target: `0x2::coin::zero`,
+      typeArguments: [coinType],
+      arguments: [],
+    });
+  } else {
+    inputCoin = await getExactCoinByAmount(mmt, address, normalizeSuiCoinType(coinType), amount, tx);
+  }
+  return inputCoin;
+}
+
+export function getNewPositionObject({
+  mmt,
+  tx,
+  poolModel,
+  selectedLowTick,
+  selectedHighTick,
+}: {
+  mmt: MmtSDK;
+  tx: Transaction;
+  poolModel: {
+    objectId: string;
+    tokenXType: string;
+    tokenYType: string;
+    tickSpacing: number;
+  };
+  selectedLowTick: number;
+  selectedHighTick: number;
+}) {
+  const lowerTickSqrtPrice = tickIndexToSqrtPriceX64(convertI32ToSigned(selectedLowTick), poolModel.tickSpacing!);
+  const upperTickSqrtPrice = tickIndexToSqrtPriceX64(convertI32ToSigned(selectedHighTick), poolModel.tickSpacing!);
+
+  const position = mmt.Position.openPosition(
+    tx,
+    poolModel,
+    lowerTickSqrtPrice.toString(),
+    upperTickSqrtPrice.toString(),
+  );
+
+  return position;
+}
+
+const getResultAmountUsingSlippage = (amount: bigint, slippagePercentage: number) => {
+  const basisPoints = Math.floor(slippagePercentage * 100); // 0.5% -> 50 basis points
+  const remainingBasisPoints = 10000 - basisPoints; // 10000 - 50 = 9950
+
+  return (amount * BigInt(remainingBasisPoints)) / BigInt(10000);
+};
+
+export function getMinimalAmountUsingSlippage(
+  coinAmount: string,
+  decimals: number,
+  slippage: number, // (0, 100), 1 = 1%
+): bigint {
+  const amount = toBaseUnits(coinAmount, decimals);
+
+  if (Number(coinAmount) === 0) {
+    return BigInt(0);
+  }
+
+  const minimalAmount = getResultAmountUsingSlippage(amount, slippage);
+  return minimalAmount;
+}
+
+export async function getLimitSqrtPriceUsingSlippage({
+  poolId,
+  currentSqrtPrice,
+  tokenX,
+  tokenY,
+  slippagePercentage,
+  isTokenX,
+  suiClient,
+}: Pick<NormalizedPool, 'currentSqrtPrice' | 'tokenX' | 'tokenY'> & {
+  slippagePercentage: number; // 1 = 1% slippage
+  isTokenX: boolean;
+  suiClient: SuiClient;
+  poolId: string;
+}) {
+  const rpcPool = await suiClient.getObject({
+    id: poolId,
+    options: { showContent: true },
+  });
+
+  const rpcPoolCurrentPrice = (rpcPool?.data?.content as any)?.fields?.sqrt_price ?? currentSqrtPrice;
+
+  const currentPrice = TickMath.sqrtPriceX64ToPrice(
+    new BN(rpcPoolCurrentPrice?.toString()),
+    tokenX.decimals,
+    tokenY.decimals,
+  );
+
+  const minReceiveRate = isTokenX ? (100 - slippagePercentage) / 100 : (100 + slippagePercentage) / 100;
+
+  const limitSqrtPrice = TickMath.priceToSqrtPriceX64(
+    currentPrice.mul(minReceiveRate),
+    tokenX.decimals,
+    tokenY.decimals,
+  );
+
+  return BigInt(limitSqrtPrice.toString());
+}
+
+/** ========================================== add liquidity to new position ================================================ */
 export const executeClmmDeposit = async (
   mmt: MmtSDK,
   tx: Transaction,
@@ -169,37 +301,25 @@ export const executeClmmDeposit = async (
   poolId: string,
   selectedLowTick: number,
   selectedHighTick: number,
+  slippage: number,
 ) => {
-  const lowerTickSqrtPrice = tickIndexToSqrtPriceX64(convertI32ToSigned(selectedLowTick), pool.tickSpacing);
+  const inputCoinX = await getCoinObject({
+    mmt,
+    address,
+    coinType: pool.tokenX.coinType,
+    coinAmount: amountA,
+    coinDecimals: pool.tokenX.decimals,
+    tx,
+  });
 
-  const upperTickSqrtPrice = tickIndexToSqrtPriceX64(convertI32ToSigned(selectedHighTick), pool.tickSpacing);
-
-  const inputAmountA = BigInt(Math.ceil(Number(amountA) * 10 ** pool.tokenX.decimals));
-
-  const inputAmountB = BigInt(Math.ceil(Number(amountB) * 10 ** pool.tokenY.decimals));
-
-  let inputCoinX;
-  let inputCoinY;
-
-  if (!Number(amountA)) {
-    [inputCoinX] = tx.moveCall({
-      target: `0x2::coin::zero`,
-      typeArguments: [pool.tokenX.coinType],
-      arguments: [],
-    });
-  } else {
-    inputCoinX = await getExactCoinByAmount(mmt, address, normalizeSuiCoinType(pool.tokenX.coinType), inputAmountA, tx);
-  }
-
-  if (!Number(amountB)) {
-    [inputCoinY] = tx.moveCall({
-      target: `0x2::coin::zero`,
-      typeArguments: [pool.tokenY.coinType],
-      arguments: [],
-    });
-  } else {
-    inputCoinY = await getExactCoinByAmount(mmt, address, normalizeSuiCoinType(pool.tokenY.coinType), inputAmountB, tx);
-  }
+  const inputCoinY = await getCoinObject({
+    mmt,
+    address,
+    coinType: pool.tokenY.coinType,
+    coinAmount: amountB,
+    coinDecimals: pool.tokenY.decimals,
+    tx,
+  });
 
   const poolModel = {
     objectId: poolId,
@@ -208,15 +328,18 @@ export const executeClmmDeposit = async (
     tickSpacing: pool.tickSpacing,
   };
 
-  const position = mmt.Position.openPosition(
+  const position = getNewPositionObject({
+    mmt,
     tx,
     poolModel,
-    lowerTickSqrtPrice.toString(),
-    upperTickSqrtPrice.toString(),
-  );
+    selectedLowTick,
+    selectedHighTick,
+  });
 
-  mmt.Pool.addLiquidity(tx, poolModel, position, inputCoinX!, inputCoinY!, BigInt(0), BigInt(0), address);
+  const minimalAmountA = getMinimalAmountUsingSlippage(amountA, pool.tokenX.decimals, slippage);
+  const minimalAmountB = getMinimalAmountUsingSlippage(amountB, pool.tokenY.decimals, slippage);
 
+  mmt.Pool.addLiquidity(tx, poolModel, position, inputCoinX!, inputCoinY!, minimalAmountA, minimalAmountB, address);
   tx.transferObjects([position], tx.pure.address(address));
 };
 
@@ -230,16 +353,18 @@ export const executeSingleSidedClmmDeposit = async (
   pool: NormalizedPool,
   selectedLowTick: number,
   selectedHighTick: number,
+  swapSlippage: number,
+  addLiquiditySlippage: number,
 ) => {
   try {
-    const inputCoinAmount = BigInt(
-      Math.ceil(Number(amount) * 10 ** (isTokenX ? pool.tokenX.decimals : pool.tokenY.decimals)),
-    );
-
-    let inputCoinType = isTokenX ? pool.tokenX.coinType : pool.tokenY.coinType;
-    inputCoinType = normalizeSuiCoinType(inputCoinType);
-
-    const inputCoin = await getExactCoinByAmount(mmt, address, inputCoinType, inputCoinAmount, tx);
+    const inputCoin = await getCoinObject({
+      mmt,
+      address,
+      coinType: isTokenX ? pool.tokenX.coinType : pool.tokenY.coinType,
+      coinAmount: amount,
+      coinDecimals: isTokenX ? pool.tokenX.decimals : pool.tokenY.decimals,
+      tx,
+    });
 
     const poolModel = {
       objectId: pool.poolId,
@@ -248,50 +373,148 @@ export const executeSingleSidedClmmDeposit = async (
       tickSpacing: pool.tickSpacing,
     };
 
-    const lowerTickSqrtPrice = tickIndexToSqrtPriceX64(convertI32ToSigned(selectedLowTick), pool.tickSpacing!);
-
-    const upperTickSqrtPrice = tickIndexToSqrtPriceX64(convertI32ToSigned(selectedHighTick), pool.tickSpacing!);
-
-    const position = mmt.Position.openPosition(
+    const position = getNewPositionObject({
+      mmt,
       tx,
       poolModel,
-      lowerTickSqrtPrice.toString(),
-      upperTickSqrtPrice.toString(),
-    );
+      selectedLowTick,
+      selectedHighTick,
+    });
 
     const rpcPool = await suiClient.getObject({
       id: pool.poolId,
       options: { showContent: true },
     });
 
-    const rpcPoolCurrentPrice = (rpcPool?.data?.content as any)?.fields?.sqrt_price ?? pool.currentSqrtPrice;
+    const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
+      suiClient,
+      poolId: pool.poolId,
+      currentSqrtPrice: pool.currentSqrtPrice,
+      tokenX: pool.tokenX,
+      tokenY: pool.tokenY,
+      slippagePercentage: swapSlippage,
+      isTokenX,
+    });
 
-    const currentPrice = TickMath.sqrtPriceX64ToPrice(
-      new BN(rpcPoolCurrentPrice?.toString()),
-      pool.tokenX.decimals,
-      pool.tokenY.decimals,
-    );
-
-    const limitSqrtPrice = TickMath.priceToSqrtPriceX64(
-      currentPrice.mul(isTokenX ? 0.99 : 1.01),
-      pool.tokenX.decimals,
-      pool.tokenY.decimals,
-    );
-
-    await mmt.Pool.addLiquiditySingleSided(
-      tx,
-      poolModel,
+    await mmt.Pool.addLiquiditySingleSidedV2({
+      txb: tx,
+      pool: poolModel,
       position,
       inputCoin,
-      BigInt(0),
-      BigInt(0),
-      isTokenX,
-      address,
-      BigInt(limitSqrtPrice.toString()),
-    );
+      isXtoY: isTokenX,
+      limitSqrtPrice,
+      slippagePercentage: addLiquiditySlippage,
+      transferToAddress: address,
+      useMvr: true,
+    });
 
     tx.transferObjects([position], tx.pure.address(address));
   } catch (error) {
     console.error(error);
+  }
+};
+
+/** ======================== add liquidity to existing position ========================== */
+export const executeAddLiquidityToExistingPosition = async (
+  mmt: MmtSDK,
+  tx: Transaction,
+  address: string,
+  amountA: string,
+  amountB: string,
+  pool: NormalizedPool,
+  positionObjectId: string,
+  slippage: number,
+) => {
+  const inputCoinX = await getCoinObject({
+    mmt,
+    address,
+    coinType: pool.tokenX.coinType,
+    coinAmount: amountA,
+    coinDecimals: pool.tokenX.decimals,
+    tx,
+  });
+
+  const inputCoinY = await getCoinObject({
+    mmt,
+    address,
+    coinType: pool.tokenY.coinType,
+    coinAmount: amountB,
+    coinDecimals: pool.tokenY.decimals,
+    tx,
+  });
+
+  const poolModel = {
+    objectId: pool.poolId,
+    tokenXType: pool.tokenXType,
+    tokenYType: pool.tokenYType,
+    tickSpacing: pool.tickSpacing,
+  };
+
+  const minimalXAmount = getMinimalAmountUsingSlippage(amountA, pool.tokenX.decimals, slippage);
+  const minimalYAmount = getMinimalAmountUsingSlippage(amountB, pool.tokenY.decimals, slippage);
+
+  mmt.Pool.addLiquidity(
+    tx,
+    poolModel,
+    positionObjectId,
+    inputCoinX,
+    inputCoinY,
+    minimalXAmount,
+    minimalYAmount,
+    address,
+  );
+};
+
+export const executeAddSingleSidedLiquidityToExistingPosition = async (
+  mmt: MmtSDK,
+  tx: Transaction,
+  address: string,
+  amount: string,
+  isTokenX: boolean,
+  pool: NormalizedPool,
+  positionObjectId: string,
+  swapSlippage: number,
+  addLiquiditySlippage: number,
+) => {
+  try {
+    const inputCoin = await getCoinObject({
+      mmt,
+      address,
+      coinType: isTokenX ? pool.tokenX.coinType : pool.tokenY.coinType,
+      coinAmount: amount,
+      coinDecimals: isTokenX ? pool.tokenX.decimals : pool.tokenY.decimals,
+      tx,
+    });
+
+    const poolModel = {
+      objectId: pool.poolId,
+      tokenXType: pool.tokenX.coinType,
+      tokenYType: pool.tokenY.coinType,
+      tickSpacing: pool.tickSpacing,
+    };
+
+    const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
+      suiClient: mmt.rpcClient,
+      poolId: pool.poolId,
+      currentSqrtPrice: pool.currentSqrtPrice,
+      tokenX: pool.tokenX,
+      tokenY: pool.tokenY,
+      slippagePercentage: swapSlippage,
+      isTokenX,
+    });
+
+    await mmt.Pool.addLiquiditySingleSidedV2({
+      txb: tx,
+      pool: poolModel,
+      position: positionObjectId,
+      inputCoin,
+      isXtoY: isTokenX,
+      limitSqrtPrice,
+      slippagePercentage: addLiquiditySlippage,
+      transferToAddress: address,
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 };

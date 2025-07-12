@@ -6,3 +6,4 @@ coverage
 .yalc/
 yalc.lock
 .DS_Store
+yarn-error.log

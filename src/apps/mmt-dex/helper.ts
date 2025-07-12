@@ -11,7 +11,12 @@ import { AddLiquiditySingleSideIntention } from './intentions/add-liquidity-sing
 import { ClaimAllRewardsIntention } from './intentions/claim-all-rewards';
 import { ClaimRewardsIntention } from './intentions/claim-rewards';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
+import { StakeXSuiIntention } from './intentions/stake-xsui';
 import { SwapIntention } from './intentions/swap';
+import { UnstakeXSuiIntention } from './intentions/unstake-xsui';
+import { ManageLiquidityIntention } from './intentions/manage-liquidy';
+import { ManageLiquiditySingleSideIntention } from './intentions/manage-liquidity-single-side';
+
 import {
   AddLiquidityIntentionData,
   AddLiquiditySingleSideIntentionData,
@@ -21,6 +26,10 @@ import {
   SwapIntentionData,
   MMTDEXIntentionData,
   TransactionSubType,
+  UnstakeXSuiIntentionData,
+  StakeXSuiIntentionData,
+  ManageLiquiditySingleSideIntentionData,
+  ManageLiquidityIntentionData,
 } from './types';
 
 export type MMTDEXIntention =
@@ -29,7 +38,11 @@ export type MMTDEXIntention =
   | ClaimRewardsIntention
   | ClaimAllRewardsIntention
   | RemoveLiquidityIntention
-  | SwapIntention;
+  | SwapIntention
+  | StakeXSuiIntention
+  | UnstakeXSuiIntention
+  | ManageLiquidityIntention
+  | ManageLiquiditySingleSideIntention;
 
 export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> {
   application = 'mmt-dex';
@@ -87,9 +100,23 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
       case TransactionSubType.RemoveLiquidity:
         intention = RemoveLiquidityIntention.fromData(input.intentionData as RemoveLiquidityIntentionData);
         break;
+      case TransactionSubType.StakeXSui:
+        intention = StakeXSuiIntention.fromData(input.intentionData as StakeXSuiIntentionData);
+        break;
+      case TransactionSubType.UnstakeXSui:
+        intention = UnstakeXSuiIntention.fromData(input.intentionData as UnstakeXSuiIntentionData);
+        break;
+      case TransactionSubType.ManageLiquidity:
+        intention = ManageLiquidityIntention.fromData(input.intentionData as ManageLiquidityIntentionData);
+        break;
+      case TransactionSubType.ManageLiquiditySingleSide:
+        intention = ManageLiquiditySingleSideIntention.fromData(
+          input.intentionData as ManageLiquiditySingleSideIntentionData,
+        );
+        break;
       default:
         throw new Error('not implemented');
     }
-    return intention.build();
+    return intention.build({ suiClient: input.suiClient });
   }
 }

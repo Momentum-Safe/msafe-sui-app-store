@@ -2,9 +2,10 @@
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import type { TokenSchema } from '@mmt-finance/clmm-sdk/dist/types';
 import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
-import { Transaction, TransactionArgument } from '@mysten/sui/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
-import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
+import { normalizeSuiCoinType } from './common';
+import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
 
 export type NormalizedRewarder = {
   coinType: string;
@@ -71,23 +72,27 @@ export const performMmtSwap = async (
   amountIn: string,
   address: string,
   tx: Transaction,
+  slippage: number,
 ) => {
-  let inputAmount = BigInt(Math.ceil(Number(amountIn) * 10 ** tokenIn.decimals)) as bigint | TransactionArgument;
-
-  let inputCoin = await getExactCoinByAmount(
-    mmtSdk,
-    address,
-    normalizeSuiCoinType(tokenIn.coinType),
-    inputAmount as bigint,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+  let inputCoin = await getCoinObject({
+    mmt: mmtSdk,
     tx,
-  );
+    address,
+    coinType: tokenIn.coinType,
+    coinAmount: amountIn,
+    coinDecimals: tokenIn.decimals,
+  });
+
+  let inputAmount = tx.moveCall({
+    target: '0x2::coin::value',
+    typeArguments: [tokenIn.coinType],
+    arguments: [inputCoin],
+  });
 
   let inputCoinType = tokenIn.coinType;
 
   for (let i = 0; i < route.length; i += 1) {
-    const { poolId: objectId, tokenX: routeTokenX, tokenY: routeTokenY, isStable } = route[i]!;
+    const { poolId: objectId, tokenX: routeTokenX, tokenY: routeTokenY, isStable, currentSqrtPrice } = route[i]!;
 
     const { id: v3PoolId, isReverse } = mappedMmtV3Pool[objectId as keyof typeof mappedMmtV3Pool] || {
       id: objectId,
@@ -101,6 +106,16 @@ export const performMmtSwap = async (
     const tokenXType = isReverse ? routeTokenY.coinType : routeTokenX.coinType;
     const tokenYType = isReverse ? routeTokenX.coinType : routeTokenY.coinType;
 
+    const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
+      poolId: v3PoolId,
+      tokenX: routeTokenX,
+      tokenY: routeTokenY,
+      slippagePercentage: slippage,
+      isTokenX: isXtoY,
+      suiClient: mmtSdk.rpcClient,
+      currentSqrtPrice,
+    });
+
     const outputCoin = mmtSdk.Pool.swap(
       tx,
       {
@@ -113,15 +128,14 @@ export const performMmtSwap = async (
       inputCoin,
       isXtoY,
       undefined,
-      // BigInt(limitSqrtPrice.toString())
+      limitSqrtPrice,
+      false, // TODO: check why cannot useMvr
     );
-
     tx.transferObjects([inputCoin], tx.pure.address(address));
-    inputCoin = outputCoin;
-
+    inputCoin = outputCoin as any;
     inputCoinType = isXtoY ? tokenYType : tokenXType;
 
-    [inputAmount] = tx.moveCall({
+    inputAmount = tx.moveCall({
       target: '0x2::coin::value',
       typeArguments: [inputCoinType],
       arguments: [inputCoin],

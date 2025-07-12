@@ -36,7 +36,7 @@ export const claimV3Rewards = (
     tokenYType: pool.tokenYType,
   };
 
-  if ((pool?.rewarders?.length ?? 0) > 0) {
+  if (pool?.rewarders && pool?.rewarders.length > 0) {
     mmt.Pool.collectAllRewards(
       tx,
       poolModel,
@@ -46,7 +46,7 @@ export const claimV3Rewards = (
         reward_amount: rewarder.rewardAmount,
         rewards_allocated: rewarder.rewardsAllocated,
         hasEnded: rewarder.hasEnded,
-      })),
+      })), // Assert non-null
       position.objectId,
       address,
     );

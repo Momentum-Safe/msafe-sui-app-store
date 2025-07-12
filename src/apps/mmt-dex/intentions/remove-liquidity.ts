@@ -39,7 +39,6 @@ export class RemoveLiquidityIntention extends BaseIntention<RemoveLiquidityInten
         ? position.liquidity
         : new BigNumber(position.liquidity).multipliedBy(withdrawPercentage / 100).toFixed(0),
     );
-
     sdk.Pool.removeLiquidity(tx, poolModel, position.objectId, removeLiqAmount, BigInt(0), BigInt(0), address);
 
     claimV3Rewards(sdk, address, position, pool, tx);
