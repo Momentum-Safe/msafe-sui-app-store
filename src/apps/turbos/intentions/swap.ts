@@ -32,6 +32,7 @@ export class SwapIntention extends BaseIntention<SwapIntentionData> {
       amountSpecifiedIsInput,
       slippage,
       deadline,
+      txb,
     });
   }
 

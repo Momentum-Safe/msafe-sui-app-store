@@ -131,24 +131,33 @@ export class Decoder {
 
   private getMoveCallTransaction(target: string) {
     return this.transactions.find((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return trans.$kind === 'MoveCall' && moveCallTarget === target;
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === target;
+      }
+      return false;
     });
   }
 
   private getMoveCallsTransaction(targets: string[]) {
     return targets.every((target) =>
       this.transactions.find((trans) => {
-        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-        return trans.$kind === 'MoveCall' && moveCallTarget === target;
+        if (trans.$kind === 'MoveCall') {
+          const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+          return moveCallTarget === target;
+        }
+        return false;
       }),
     );
   }
 
   private getSwapMoveCallTransaction(targets: string[]) {
     return this.transactions.find((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return trans.$kind === 'MoveCall' && targets.includes(moveCallTarget);
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return !!targets.includes(moveCallTarget);
+      }
+      return false;
     });
   }
 
@@ -566,63 +575,69 @@ export class Decoder {
 
   private get helper() {
     const moveCall = this.transactions.find((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return (
-        trans.$kind === 'MoveCall' &&
-        moveCallTarget !== '0x2::coin::zero' &&
-        moveCallTarget !== '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero'
-      );
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return (
+          moveCallTarget !== '0x2::coin::zero' &&
+          moveCallTarget !== '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero'
+        );
+      }
+      return false;
     });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get collectRewardHelper() {
     const moveCalls = this.transactions.filter((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return (
-        trans.$kind === 'MoveCall' && moveCallTarget === `${this.config.PackageId}::position_manager::collect_reward`
-      );
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${this.config.PackageId}::position_manager::collect_reward`;
+      }
+      return false;
     });
     return moveCalls.map((moveCall) => new MoveCallHelper(moveCall, this.txb));
   }
 
   private get collectFeeHelper() {
     const moveCall = this.transactions.find((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return trans.$kind === 'MoveCall' && moveCallTarget === `${this.config.PackageId}::position_manager::collect`;
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${this.config.PackageId}::position_manager::collect`;
+      }
+      return false;
     });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get decreaseLiquidityHelper() {
     const moveCall = this.transactions.find((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return (
-        trans.$kind === 'MoveCall' &&
-        moveCallTarget === `${this.config.PackageId}::position_manager::decrease_liquidity`
-      );
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${this.config.PackageId}::position_manager::decrease_liquidity`;
+      }
+      return false;
     });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get swapExactBaseForQuoteHelper() {
     const moveCall = this.transactions.find((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return (
-        trans.$kind === 'MoveCall' &&
-        moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`
-      );
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`;
+      }
+      return false;
     });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get swapExactQuoteForBaseHelper() {
     const moveCall = this.transactions.find((trans) => {
-      const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
-      return (
-        trans.$kind === 'MoveCall' &&
-        moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`
-      );
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`;
+      }
+      return false;
     });
     return new MoveCallHelper(moveCall, this.txb);
   }
