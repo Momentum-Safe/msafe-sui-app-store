@@ -652,11 +652,11 @@ export class MoveCallHelper {
   ) {}
 
   private get inputs() {
-    return this.txb.getData().inputs as any;
+    return this.txb.getData().inputs;
   }
 
   getInputsIndex(index: number): number {
-    return this.inputs[index].Input;
+    return (this.moveCall as any).MoveCall.arguments[index].Input;
   }
 
   decodeSharedObjectId(argIndex: number) {
