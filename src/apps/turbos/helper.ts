@@ -23,7 +23,6 @@ import { RemoveLiquidityWithReturnIntention } from './intentions/remove-liquidit
 import { SwapIntention } from './intentions/swap';
 import { SwapExactBaseForQuoteIntention } from './intentions/swap-exact-base-for-quote';
 import { SwapExactQuoteForBaseIntention } from './intentions/swap-exact-quote-for-base';
-
 import {
   AddLiquidityIntentionData,
   BurnIntentionData,
