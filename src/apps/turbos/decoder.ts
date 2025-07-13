@@ -265,11 +265,11 @@ export class Decoder {
     const amountA = this.helper.decodeInputU64(2 + layer);
     const amountB = this.helper.decodeInputU64(3 + layer);
 
-    const result = await this.turbosSdk.trade.computeSwapResultV2({
-      pools: [{ pool: routes[0].pool, a2b: routes[0].a2b, amountSpecified: amountA }],
-      address,
-      amountSpecifiedIsInput,
-    });
+    // const result = await this.turbosSdk.trade.computeSwapResultV2({
+    //   pools: [{ pool: routes[0].pool, a2b: routes[0].a2b, amountSpecified: amountA }],
+    //   address,
+    //   amountSpecifiedIsInput,
+    // });
 
     return {
       txType: TransactionType.Other,
@@ -654,11 +654,11 @@ export class MoveCallHelper {
   }
 
   decodeSharedObjectId(argIndex: number) {
-    return this.inputs[argIndex].Object.SharedObject.objectId;
+    return this.inputs[argIndex].Object?.SharedObject?.objectId || this.inputs[argIndex].UnresolvedObject.objectId;
   }
 
   decodeOwnedObjectId(argIndex: number) {
-    return this.inputs[argIndex].Object.ImmOrOwnedObject.objectId;
+    return this.inputs[argIndex].Object?.ImmOrOwnedObject?.objectId || this.inputs[argIndex].UnresolvedObject.objectId;
   }
 
   decodeInputU128(argIndex: number) {
