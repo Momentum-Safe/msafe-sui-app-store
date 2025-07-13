@@ -234,8 +234,8 @@ export class Decoder {
     const atob = getAtoB(layer, moveCallTarget, this.swap1Layer, this.swap2Layer);
 
     const routes = atob.map((item, index) => {
-      const pool = this.helper.decodeSharedObjectId(index);
-      const sqrtPrice = this.helper.decodeInputU128(4 + index + layer);
+      const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(index));
+      const sqrtPrice = this.helper.decodeInputU128(this.helper.getInputsIndex(4 + index + layer));
       const nextTickIndex = this.turbosSdk.math.sqrtPriceX64ToTickIndex(new BN(sqrtPrice.toString()));
 
       return {
@@ -259,11 +259,11 @@ export class Decoder {
           ? moveCall.MoveCall.typeArguments[1]
           : moveCall.MoveCall.typeArguments[0];
 
-    const address = this.helper.decodeInputAddress(6 + 2 * layer);
-    const deadline = this.helper.decodeInputU64(7 + 2 * layer);
-    const amountSpecifiedIsInput = this.helper.decodeInputBool(5 + 2 * layer);
-    const amountA = this.helper.decodeInputU64(2 + layer);
-    const amountB = this.helper.decodeInputU64(3 + layer);
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6 + 2 * layer));
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(7 + 2 * layer));
+    const amountSpecifiedIsInput = this.helper.decodeInputBool(this.helper.getInputsIndex(5 + 2 * layer));
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(2 + layer));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(3 + layer));
 
     // const result = await this.turbosSdk.trade.computeSwapResultV2({
     //   pools: [{ pool: routes[0].pool, a2b: routes[0].a2b, amountSpecified: amountA }],
@@ -290,17 +290,17 @@ export class Decoder {
 
   private decodeAddLiquidity(): DecodeResult {
     console.log(this.helper, 'decodeAddLiquidity this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const address = this.helper.decodeInputAddress(12);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(12));
 
-    const amountA = this.helper.decodeInputU64(8);
-    const amountB = this.helper.decodeInputU64(9);
-    const tickLower = this.helper.decodeInputU32(4);
-    const tickLowerIsNeg = this.helper.decodeInputBool(5);
-    const tickUpper = this.helper.decodeInputU32(6);
-    const tickUpperIsNeg = this.helper.decodeInputBool(7);
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(8));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(9));
+    const tickLower = this.helper.decodeInputU32(this.helper.getInputsIndex(4));
+    const tickLowerIsNeg = this.helper.decodeInputBool(this.helper.getInputsIndex(5));
+    const tickUpper = this.helper.decodeInputU32(this.helper.getInputsIndex(6));
+    const tickUpperIsNeg = this.helper.decodeInputBool(this.helper.getInputsIndex(7));
 
-    const deadline = this.helper.decodeInputU64(13);
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(13));
 
     return {
       txType: TransactionType.Other,
@@ -321,12 +321,12 @@ export class Decoder {
   private decodeIncreaseLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeIncreaseLiquidity this.helper');
 
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(4);
-    const amountA = this.helper.decodeInputU64(5);
-    const amountB = this.helper.decodeInputU64(6);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(4));
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(5));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(6));
 
-    const deadline = this.helper.decodeInputU64(9);
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(9));
 
     return {
       txType: TransactionType.Other,
@@ -345,13 +345,13 @@ export class Decoder {
 
   private decodeDecreaseLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeDecreaseLiquidity this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
-    const decreaseLiquidity = this.helper.decodeInputU64(3);
-    const amountA = this.helper.decodeInputU64(4);
-    const amountB = this.helper.decodeInputU64(5);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
+    const decreaseLiquidity = this.helper.decodeInputU64(this.helper.getInputsIndex(3));
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(4));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(5));
 
-    const deadline = this.helper.decodeInputU64(6);
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(6));
 
     return {
       txType: TransactionType.Other,
@@ -397,13 +397,13 @@ export class Decoder {
 
   private decodeCollectFee(): DecodeResult {
     console.log(this.helper, 'decodeCollectFee this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
-    const address = this.helper.decodeInputAddress(5);
-    const collectAmountA = this.helper.decodeInputU64(3);
-    const collectAmountB = this.helper.decodeInputU64(4);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(5));
+    const collectAmountA = this.helper.decodeInputU64(this.helper.getInputsIndex(3));
+    const collectAmountB = this.helper.decodeInputU64(this.helper.getInputsIndex(4));
 
-    const deadline = this.helper.decodeInputU64(6);
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(6));
 
     return {
       txType: TransactionType.Other,
@@ -421,10 +421,10 @@ export class Decoder {
 
   private decodeCollectReward(): DecodeResult {
     console.log(this.helper, 'decodeCollectReward this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
-    const address = this.helper.decodeInputAddress(6);
-    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6));
+    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(helper.getInputsIndex(5)));
 
     const deadline = this.helper.decodeInputU64(7);
 
@@ -443,8 +443,8 @@ export class Decoder {
 
   private decodeBurn(): DecodeResult {
     console.log(this.helper, 'decodeBurn this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
 
     return {
       txType: TransactionType.Other,
@@ -458,17 +458,19 @@ export class Decoder {
 
   private decodeRemoveLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeRemoveLiquidity this.helper');
-    const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(0);
-    const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(2);
-    const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(3);
-    const amountA = this.decreaseLiquidityHelper.decodeInputU64(4);
-    const amountB = this.decreaseLiquidityHelper.decodeInputU64(5);
+    const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(this.decreaseLiquidityHelper.getInputsIndex(0));
+    const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(this.decreaseLiquidityHelper.getInputsIndex(2));
+    const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(
+      this.decreaseLiquidityHelper.getInputsIndex(3),
+    );
+    const amountA = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(4));
+    const amountB = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(5));
 
-    const deadline = this.decreaseLiquidityHelper.decodeInputU64(6);
-    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
+    const deadline = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(6));
+    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(helper.getInputsIndex(5)));
 
-    const collectAmountA = this.collectFeeHelper.decodeInputU64(3) || 0;
-    const collectAmountB = this.collectFeeHelper.decodeInputU64(4) || 0;
+    const collectAmountA = this.collectFeeHelper.decodeInputU64(this.collectFeeHelper.getInputsIndex(3)) || 0;
+    const collectAmountB = this.collectFeeHelper.decodeInputU64(this.collectFeeHelper.getInputsIndex(4)) || 0;
 
     return {
       txType: TransactionType.Other,
@@ -650,7 +652,11 @@ export class MoveCallHelper {
   ) {}
 
   private get inputs() {
-    return this.txb.getData().inputs;
+    return this.txb.getData().inputs as any;
+  }
+
+  getInputsIndex(index: number): number {
+    return this.inputs[index].Input;
   }
 
   decodeSharedObjectId(argIndex: number) {
