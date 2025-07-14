@@ -307,7 +307,7 @@ export class Decoder {
       type: TransactionSubType.AddLiquidity,
       intentionData: {
         pool,
-        slippage: 10,
+        slippage: 30,
         address,
         amountA,
         amountB,
@@ -322,7 +322,7 @@ export class Decoder {
     console.log(this.helper, 'decodeIncreaseLiquidity this.helper');
 
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
-    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(4));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(4));
     const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(5));
     const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(6));
 
@@ -333,7 +333,7 @@ export class Decoder {
       type: TransactionSubType.IncreaseLiquidity,
       intentionData: {
         pool,
-        slippage: 10,
+        slippage: 30,
         address,
         amountA,
         amountB,
@@ -346,7 +346,7 @@ export class Decoder {
   private decodeDecreaseLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeDecreaseLiquidity this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
-    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const decreaseLiquidity = this.helper.decodeInputU64(this.helper.getInputsIndex(3));
     const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(4));
     const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(5));
@@ -372,7 +372,7 @@ export class Decoder {
   private decodeDecreaseLiquidityWithReturn(address: string): DecodeResult {
     console.log(this.helper, 'decodeDecreaseLiquidityWithReturn this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
+    const nft = this.helper.decodeOwnedObjectId(2);
     const decreaseLiquidity = this.helper.decodeInputU64(3);
     const amountA = this.helper.decodeInputU64(4);
     const amountB = this.helper.decodeInputU64(5);
@@ -398,7 +398,7 @@ export class Decoder {
   private decodeCollectFee(): DecodeResult {
     console.log(this.helper, 'decodeCollectFee this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
-    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(5));
     const collectAmountA = this.helper.decodeInputU64(this.helper.getInputsIndex(3));
     const collectAmountB = this.helper.decodeInputU64(this.helper.getInputsIndex(4));
@@ -422,7 +422,7 @@ export class Decoder {
   private decodeCollectReward(): DecodeResult {
     console.log(this.helper, 'decodeCollectReward this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
-    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6));
     const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(helper.getInputsIndex(5)));
 
@@ -444,7 +444,7 @@ export class Decoder {
   private decodeBurn(): DecodeResult {
     console.log(this.helper, 'decodeBurn this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
-    const nft = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(2));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
 
     return {
       txType: TransactionType.Other,
@@ -458,8 +458,9 @@ export class Decoder {
 
   private decodeRemoveLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeRemoveLiquidity this.helper');
+    const slippage = 30;
     const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(this.decreaseLiquidityHelper.getInputsIndex(0));
-    const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(this.decreaseLiquidityHelper.getInputsIndex(2));
+    const nft = this.decreaseLiquidityHelper.decodeOwnedObjectId(this.decreaseLiquidityHelper.getInputsIndex(2));
     const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(
       this.decreaseLiquidityHelper.getInputsIndex(3),
     );
@@ -467,8 +468,12 @@ export class Decoder {
     const amountB = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(5));
 
     const deadline = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(6));
-    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(helper.getInputsIndex(5)));
-
+    const rewardAmounts = [0, 0, 0];
+    this.collectRewardHelper.forEach((helper) => {
+      const index = helper.decodeInputU64(helper.getInputsIndex(4));
+      const value = helper.decodeInputU64(helper.getInputsIndex(5));
+      rewardAmounts[index] = value;
+    });
     const collectAmountA = this.collectFeeHelper.decodeInputU64(this.collectFeeHelper.getInputsIndex(3)) || 0;
     const collectAmountB = this.collectFeeHelper.decodeInputU64(this.collectFeeHelper.getInputsIndex(4)) || 0;
 
@@ -479,9 +484,9 @@ export class Decoder {
         pool,
         decreaseLiquidity,
         nft,
-        amountA,
-        amountB,
-        slippage: 10,
+        amountA: ((amountA / (100 - slippage)) * 100).toFixed(0),
+        amountB: ((amountB / (100 - slippage)) * 100).toFixed(0),
+        slippage,
         address,
         collectAmountA,
         collectAmountB,
@@ -494,7 +499,7 @@ export class Decoder {
   private decodeRemoveLiquidityWithReturn(address: string): DecodeResult {
     console.log(this.helper, 'decodeRemoveLiquidityWithReturn this.helper');
     const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(0);
-    const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(2);
+    const nft = this.decreaseLiquidityHelper.decodeOwnedObjectId(2);
     const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(3);
     const amountA = this.decreaseLiquidityHelper.decodeInputU64(4);
     const amountB = this.decreaseLiquidityHelper.decodeInputU64(5);

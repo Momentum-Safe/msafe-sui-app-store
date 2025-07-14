@@ -11,7 +11,7 @@ import { RemoveLiquidityIntentionData, SuiNetworks, TransactionSubType } from '.
 export class RemoveLiquidityIntention extends BaseIntention<RemoveLiquidityIntentionData> {
   txType!: TransactionType.Other;
 
-  txSubType!: TransactionSubType.AddLiquidity;
+  txSubType!: TransactionSubType.RemoveLiquidity;
 
   constructor(public override readonly data: RemoveLiquidityIntentionData) {
     super(data);
