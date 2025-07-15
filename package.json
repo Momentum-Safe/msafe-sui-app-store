@@ -74,7 +74,7 @@
     "nanoid": "3",
     "navi-sdk": "1.6.0",
     "sort-keys-recursive": "^2.1.10",
-    "turbos-clmm-sdk": "^3.6.0"
+    "turbos-clmm-sdk": "^3.6.2"
   },
   "devDependencies": {
     "@msafe/sui3-utils": "^3.1.66",

@@ -227,6 +227,7 @@ export class Decoder {
     const moveCall = this.transactions.find((trans) => trans.$kind === 'MoveCall');
     let layer: 0 | 1 = 0;
     const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
+    console.log(moveCallTarget, 'moveCallTarget');
     if (this.swap2Layer.includes(moveCallTarget)) {
       layer = 1;
     }
