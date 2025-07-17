@@ -3,8 +3,10 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
+import { Decimal } from 'turbos-clmm-sdk';
 
 import {
+  Aggregator7KSwapIntentionData,
   ClosePositionIntentionData,
   CollectFeeIntentionData,
   CollectRewardsAndFeeIntentionData,
@@ -45,7 +47,11 @@ export class Decoder {
     if (this.isCollectFeeTx()) {
       return this.decodeCollectFeeTx();
     }
-    throw new Error(`Unknown transaction type`);
+
+    // Assuming the default call type is 7K aggregator swap
+    return this.decodeAggregator7KSwapTx();
+
+    // throw new Error(`Unknown transaction type`);
   }
 
   private decodeOpenPositionTx(): DecodeResult {
@@ -174,6 +180,29 @@ export class Decoder {
       }
     });
     return collectRewards;
+  }
+
+  private decodeAggregator7KSwapTx(): DecodeResult {
+    const openPosCommand = this.getMoveCallCommand('open_position');
+    const addLiqCommand = this.getMoveCallCommand('provide_liquidity_with_fixed_amount');
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.Aggregator7KSwap,
+      intentionData: {
+        // pool: this.getSharedObjectID(this.getInputIndex(openPosCommand, 1)),
+        // lowerTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 2)))).toString()),
+        // upperTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 3)))).toString()),
+        // tokenAmount: this.getU64(this.getInputIndex(addLiqCommand, 6)),
+        // maxAmountTokenA: this.getU64(this.getInputIndex(addLiqCommand, 7)),
+        // maxAmountTokenB: this.getU64(this.getInputIndex(addLiqCommand, 8)),
+        // isTokenAFixed: this.getBoolean(this.getInputIndex(addLiqCommand, 9)),
+        tokenIn: undefined,
+        tokenOut: undefined,
+        amountIn: `1`,
+        maxSlippage: Decimal(1),
+      } as Aggregator7KSwapIntentionData,
+    };
   }
 
   private collectTokens(): CollectTokens {
