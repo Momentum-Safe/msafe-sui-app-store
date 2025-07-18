@@ -48,7 +48,7 @@
     "@alphafi/alphafi-sdk": "^0.0.67",
     "@alphafi/stsui-sdk": "^0.0.21",
     "@bluefin-exchange/bluefin7k-aggregator-sdk": "^4.0.1-alpha.0",
-    "@cetusprotocol/aggregator-sdk": "0.12.0",
+    "@cetusprotocol/aggregator-sdk": "0.14.2",
     "@cetusprotocol/common-sdk": "1.1.3",
     "@cetusprotocol/farms-sdk": "1.1.4",
     "@cetusprotocol/sui-clmm-sdk": "1.1.3",
