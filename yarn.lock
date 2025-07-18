@@ -10014,10 +10014,10 @@ tsutils@^3.21.0:
   dependencies:
     tslib "^1.8.1"
 
-turbos-clmm-sdk@^3.6.3:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/turbos-clmm-sdk/-/turbos-clmm-sdk-3.6.3.tgz#e2d062ae6fe610d3d21919d24878cd4f9b4a6c5a"
-  integrity sha512-nyH40Hf6OeSiul5ZuAhEae1+pdmnZnjph/bLS1CI7bQw/Pxq/cQ2Mu/RZcqkXa+IemaU4iXDTZ2/i0555J4eLA==
+turbos-clmm-sdk@^2.2.2:
+  version "2.6.2"
+  resolved "https://registry.yarnpkg.com/turbos-clmm-sdk/-/turbos-clmm-sdk-2.6.2.tgz#fdf5f4bd7af211302ad194e6d3ea1de91d14740b"
+  integrity sha512-fjIF9AEbeKiVBNVFOZCcNZLukvCWlkK+kofb68xmquBp33UpWkFHNHxxvG7YKPeVQ2q0Ezuo4PIFjRrKucqrFg==
   dependencies:
     "@scure/bip39" "^1.2.1"
     "@types/bn.js" "^5.1.1"
