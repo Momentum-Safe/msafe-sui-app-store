@@ -1,12 +1,16 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { fromBase64 } from '@mysten/bcs';
+import { bcs } from '@mysten/sui/bcs';
+import { Transaction } from '@mysten/sui/transactions';
 import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig, prixConfig } from './config';
 import { TransactionSubType, TURBOSIntentionData } from './types';
+
+type GetDataReturnType = ReturnType<Transaction['getData']>;
+export type TransactionInputs = GetDataReturnType['inputs'];
+export type TransactionCommands = GetDataReturnType['commands'];
+export type TransactionCommand = TransactionCommands[number];
 
 type DecodeResult = {
   txType: TransactionType;
@@ -43,13 +47,13 @@ const getAtoB = (layer: 0 | 1, target: string, swap1Layer: string[], swap2Layer:
 
 export class Decoder {
   constructor(
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
     public readonly turbosSdk: TurbosSdk,
     public readonly config: Contract.Config,
   ) {}
 
   private get transactions() {
-    return this.txb.blockData.transactions;
+    return this.txb.getData().commands;
   }
 
   private get swap1Layer() {
@@ -86,6 +90,14 @@ export class Decoder {
       return this.decodeDecreaseLiquidity(address);
     }
 
+    if (this.isRemoveLiquidityWithReturnTransaction()) {
+      return this.decodeRemoveLiquidityWithReturn(address);
+    }
+
+    if (this.isDecreaseLiquidityWithReturnTransaction()) {
+      return this.decodeDecreaseLiquidityWithReturn(address);
+    }
+
     if (this.isCollectFeeTransaction()) {
       return this.decodeCollectFee();
     }
@@ -118,17 +130,35 @@ export class Decoder {
   }
 
   private getMoveCallTransaction(target: string) {
-    return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
+    return this.transactions.find((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === target;
+      }
+      return false;
+    });
   }
 
   private getMoveCallsTransaction(targets: string[]) {
     return targets.every((target) =>
-      this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target),
+      this.transactions.find((trans) => {
+        if (trans.$kind === 'MoveCall') {
+          const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+          return moveCallTarget === target;
+        }
+        return false;
+      }),
     );
   }
 
   private getSwapMoveCallTransaction(targets: string[]) {
-    return this.transactions.find((trans) => trans.kind === 'MoveCall' && targets.includes(trans.target));
+    return this.transactions.find((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return !!targets.includes(moveCallTarget);
+      }
+      return false;
+    });
   }
 
   private isSwapTransaction() {
@@ -145,6 +175,10 @@ export class Decoder {
 
   private isDecreaseLiquidityTransaction() {
     return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::decrease_liquidity`);
+  }
+
+  private isDecreaseLiquidityWithReturnTransaction() {
+    return !!this.getMoveCallTransaction(`${this.config.PackageId}::position_manager::decrease_liquidity_with_return_`);
   }
 
   private isCollectFeeTransaction() {
@@ -174,6 +208,13 @@ export class Decoder {
     ]);
   }
 
+  private isRemoveLiquidityWithReturnTransaction() {
+    return !!this.getMoveCallsTransaction([
+      `${this.config.PackageId}::position_manager::decrease_liquidity_with_return_`,
+      `${this.config.PackageId}::position_manager::burn`,
+    ]);
+  }
+
   private isSwapExactBaseForQuoteTransaction() {
     return !!this.getMoveCallTransaction(`${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`);
   }
@@ -183,17 +224,19 @@ export class Decoder {
   }
 
   private async decodeSwap(): Promise<DecodeResult> {
-    const moveCall = this.transactions.find((trans) => trans.kind === 'MoveCall') as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => trans.$kind === 'MoveCall');
     let layer: 0 | 1 = 0;
-    if (this.swap2Layer.includes(moveCall.target)) {
+    const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
+    console.log(moveCallTarget, 'moveCallTarget');
+    if (this.swap2Layer.includes(moveCallTarget)) {
       layer = 1;
     }
 
-    const atob = getAtoB(layer, moveCall.target, this.swap1Layer, this.swap2Layer);
+    const atob = getAtoB(layer, moveCallTarget, this.swap1Layer, this.swap2Layer);
 
     const routes = atob.map((item, index) => {
-      const pool = this.helper.decodeSharedObjectId(index);
-      const sqrtPrice = this.helper.decodeInputU128(4 + index + layer);
+      const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(index));
+      const sqrtPrice = this.helper.decodeInputU128(this.helper.getInputsIndex(4 + index + layer));
       const nextTickIndex = this.turbosSdk.math.sqrtPriceX64ToTickIndex(new BN(sqrtPrice.toString()));
 
       return {
@@ -205,25 +248,29 @@ export class Decoder {
 
     // eslint-disable-next-line no-nested-ternary
     const coinTypeA = atob[0]
-      ? moveCall.typeArguments[0]
+      ? moveCall.MoveCall.typeArguments[0]
       : layer === 1
-        ? moveCall.typeArguments[0]
-        : moveCall.typeArguments[1];
+        ? moveCall.MoveCall.typeArguments[0]
+        : moveCall.MoveCall.typeArguments[1];
     const coinTypeB =
       // eslint-disable-next-line no-nested-ternary
-      layer === 1 ? moveCall.typeArguments[4] : atob[0] ? moveCall.typeArguments[1] : moveCall.typeArguments[0];
+      layer === 1
+        ? moveCall.MoveCall.typeArguments[4]
+        : atob[0]
+          ? moveCall.MoveCall.typeArguments[1]
+          : moveCall.MoveCall.typeArguments[0];
 
-    const address = this.helper.decodeInputAddress(6 + 2 * layer);
-    const deadline = this.helper.decodeInputU64(7 + 2 * layer);
-    const amountSpecifiedIsInput = this.helper.decodeInputBool(5 + 2 * layer);
-    const amountA = this.helper.decodeInputU64(2 + layer);
-    const amountB = this.helper.decodeInputU64(3 + layer);
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6 + 2 * layer));
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(7 + 2 * layer));
+    const amountSpecifiedIsInput = this.helper.decodeInputBool(this.helper.getInputsIndex(5 + 2 * layer));
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(2 + layer));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(3 + layer));
 
-    const result = await this.turbosSdk.trade.computeSwapResultV2({
-      pools: [{ pool: routes[0].pool, a2b: routes[0].a2b, amountSpecified: amountA }],
-      address,
-      amountSpecifiedIsInput,
-    });
+    // const result = await this.turbosSdk.trade.computeSwapResultV2({
+    //   pools: [{ pool: routes[0].pool, a2b: routes[0].a2b, amountSpecified: amountA }],
+    //   address,
+    //   amountSpecifiedIsInput,
+    // });
 
     return {
       txType: TransactionType.Other,
@@ -244,24 +291,24 @@ export class Decoder {
 
   private decodeAddLiquidity(): DecodeResult {
     console.log(this.helper, 'decodeAddLiquidity this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const address = this.helper.decodeInputAddress(12);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(12));
 
-    const amountA = this.helper.decodeInputU64(8);
-    const amountB = this.helper.decodeInputU64(9);
-    const tickLower = this.helper.decodeInputU32(4);
-    const tickLowerIsNeg = this.helper.decodeInputBool(5);
-    const tickUpper = this.helper.decodeInputU32(6);
-    const tickUpperIsNeg = this.helper.decodeInputBool(7);
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(8));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(9));
+    const tickLower = this.helper.decodeInputU32(this.helper.getInputsIndex(4));
+    const tickLowerIsNeg = this.helper.decodeInputBool(this.helper.getInputsIndex(5));
+    const tickUpper = this.helper.decodeInputU32(this.helper.getInputsIndex(6));
+    const tickUpperIsNeg = this.helper.decodeInputBool(this.helper.getInputsIndex(7));
 
-    const deadline = this.helper.decodeInputU64(13);
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(13));
 
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.AddLiquidity,
       intentionData: {
         pool,
-        slippage: 10,
+        slippage: 30,
         address,
         amountA,
         amountB,
@@ -275,19 +322,19 @@ export class Decoder {
   private decodeIncreaseLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeIncreaseLiquidity this.helper');
 
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(4);
-    const amountA = this.helper.decodeInputU64(5);
-    const amountB = this.helper.decodeInputU64(6);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(4));
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(5));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(6));
 
-    const deadline = this.helper.decodeInputU64(9);
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(9));
 
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.IncreaseLiquidity,
       intentionData: {
         pool,
-        slippage: 10,
+        slippage: 30,
         address,
         amountA,
         amountB,
@@ -299,13 +346,13 @@ export class Decoder {
 
   private decodeDecreaseLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeDecreaseLiquidity this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
-    const decreaseLiquidity = this.helper.decodeInputU64(3);
-    const amountA = this.helper.decodeInputU64(4);
-    const amountB = this.helper.decodeInputU64(5);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
+    const decreaseLiquidity = this.helper.decodeInputU64(this.helper.getInputsIndex(3));
+    const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(4));
+    const amountB = this.helper.decodeInputU64(this.helper.getInputsIndex(5));
 
-    const deadline = this.helper.decodeInputU64(6);
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(6));
 
     return {
       txType: TransactionType.Other,
@@ -323,15 +370,41 @@ export class Decoder {
     };
   }
 
-  private decodeCollectFee(): DecodeResult {
-    console.log(this.helper, 'decodeCollectFee this.helper');
+  private decodeDecreaseLiquidityWithReturn(address: string): DecodeResult {
+    console.log(this.helper, 'decodeDecreaseLiquidityWithReturn this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
-    const address = this.helper.decodeInputAddress(5);
-    const collectAmountA = this.helper.decodeInputU64(3);
-    const collectAmountB = this.helper.decodeInputU64(4);
+    const nft = this.helper.decodeOwnedObjectId(2);
+    const decreaseLiquidity = this.helper.decodeInputU64(3);
+    const amountA = this.helper.decodeInputU64(4);
+    const amountB = this.helper.decodeInputU64(5);
 
     const deadline = this.helper.decodeInputU64(6);
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.DecreaseLiquidityWithReturn,
+      intentionData: {
+        pool,
+        decreaseLiquidity,
+        nft,
+        amountA,
+        amountB,
+        slippage: 10, // DO NOT use slippage by user setting for now.
+        address,
+        deadline,
+      },
+    };
+  }
+
+  private decodeCollectFee(): DecodeResult {
+    console.log(this.helper, 'decodeCollectFee this.helper');
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(5));
+    const collectAmountA = this.helper.decodeInputU64(this.helper.getInputsIndex(3));
+    const collectAmountB = this.helper.decodeInputU64(this.helper.getInputsIndex(4));
+
+    const deadline = this.helper.decodeInputU64(this.helper.getInputsIndex(6));
 
     return {
       txType: TransactionType.Other,
@@ -349,10 +422,10 @@ export class Decoder {
 
   private decodeCollectReward(): DecodeResult {
     console.log(this.helper, 'decodeCollectReward this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
-    const address = this.helper.decodeInputAddress(6);
-    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(5));
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
+    const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6));
+    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(helper.getInputsIndex(5)));
 
     const deadline = this.helper.decodeInputU64(7);
 
@@ -371,8 +444,8 @@ export class Decoder {
 
   private decodeBurn(): DecodeResult {
     console.log(this.helper, 'decodeBurn this.helper');
-    const pool = this.helper.decodeSharedObjectId(0);
-    const nft = this.helper.decodeSharedObjectId(2);
+    const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
+    const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
 
     return {
       txType: TransactionType.Other,
@@ -386,8 +459,48 @@ export class Decoder {
 
   private decodeRemoveLiquidity(address: string): DecodeResult {
     console.log(this.helper, 'decodeRemoveLiquidity this.helper');
+    const slippage = 30;
+    const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(this.decreaseLiquidityHelper.getInputsIndex(0));
+    const nft = this.decreaseLiquidityHelper.decodeOwnedObjectId(this.decreaseLiquidityHelper.getInputsIndex(2));
+    const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(
+      this.decreaseLiquidityHelper.getInputsIndex(3),
+    );
+    const amountA = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(4));
+    const amountB = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(5));
+
+    const deadline = this.decreaseLiquidityHelper.decodeInputU64(this.decreaseLiquidityHelper.getInputsIndex(6));
+    const rewardAmounts = [0, 0, 0];
+    this.collectRewardHelper.forEach((helper) => {
+      const index = helper.decodeInputU64(helper.getInputsIndex(4));
+      const value = helper.decodeInputU64(helper.getInputsIndex(5));
+      rewardAmounts[index] = value;
+    });
+    const collectAmountA = this.collectFeeHelper.decodeInputU64(this.collectFeeHelper.getInputsIndex(3)) || 0;
+    const collectAmountB = this.collectFeeHelper.decodeInputU64(this.collectFeeHelper.getInputsIndex(4)) || 0;
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.RemoveLiquidity,
+      intentionData: {
+        pool,
+        decreaseLiquidity,
+        nft,
+        amountA: ((amountA / (100 - slippage)) * 100).toFixed(0),
+        amountB: ((amountB / (100 - slippage)) * 100).toFixed(0),
+        slippage,
+        address,
+        collectAmountA,
+        collectAmountB,
+        rewardAmounts,
+        deadline,
+      },
+    };
+  }
+
+  private decodeRemoveLiquidityWithReturn(address: string): DecodeResult {
+    console.log(this.helper, 'decodeRemoveLiquidityWithReturn this.helper');
     const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(0);
-    const nft = this.decreaseLiquidityHelper.decodeSharedObjectId(2);
+    const nft = this.decreaseLiquidityHelper.decodeOwnedObjectId(2);
     const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(3);
     const amountA = this.decreaseLiquidityHelper.decodeInputU64(4);
     const amountB = this.decreaseLiquidityHelper.decodeInputU64(5);
@@ -400,7 +513,7 @@ export class Decoder {
 
     return {
       txType: TransactionType.Other,
-      type: TransactionSubType.RemoveLiquidity,
+      type: TransactionSubType.RemoveLiquidityWithReturn,
       intentionData: {
         pool,
         decreaseLiquidity,
@@ -469,177 +582,126 @@ export class Decoder {
   }
 
   private get helper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' &&
-        trans.target !== '0x2::coin::zero' &&
-        trans.target !== '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero',
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return (
+          moveCallTarget !== '0x2::coin::zero' &&
+          moveCallTarget !== '0x0000000000000000000000000000000000000000000000000000000000000002::coin::zero'
+        );
+      }
+      return false;
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get collectRewardHelper() {
-    const moveCalls = this.transactions.filter(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::collect_reward`,
-    ) as MoveCallTransaction[];
+    const moveCalls = this.transactions.filter((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${this.config.PackageId}::position_manager::collect_reward`;
+      }
+      return false;
+    });
     return moveCalls.map((moveCall) => new MoveCallHelper(moveCall, this.txb));
   }
 
   private get collectFeeHelper() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::collect`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${this.config.PackageId}::position_manager::collect`;
+      }
+      return false;
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get decreaseLiquidityHelper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${this.config.PackageId}::position_manager::decrease_liquidity`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${this.config.PackageId}::position_manager::decrease_liquidity`;
+      }
+      return false;
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get swapExactBaseForQuoteHelper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_base_for_quote`;
+      }
+      return false;
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 
   private get swapExactQuoteForBaseHelper() {
-    const moveCall = this.transactions.find(
-      (trans) =>
-        trans.kind === 'MoveCall' && trans.target === `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`,
-    ) as MoveCallTransaction;
+    const moveCall = this.transactions.find((trans) => {
+      if (trans.$kind === 'MoveCall') {
+        const moveCallTarget = `${trans.MoveCall.package}::${trans.MoveCall.module}::${trans.MoveCall.function}`;
+        return moveCallTarget === `${deepbookConfig.PackageId}::clob_v2::swap_exact_quote_for_base`;
+      }
+      return false;
+    });
     return new MoveCallHelper(moveCall, this.txb);
   }
 }
 
 export class MoveCallHelper {
   constructor(
-    public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly moveCall: TransactionCommand,
+    public readonly txb: Transaction,
   ) {}
 
+  private get inputs() {
+    return this.txb.getData().inputs;
+  }
+
+  getInputsIndex(index: number): number {
+    return (this.moveCall as any).MoveCall.arguments[index].Input;
+  }
+
   decodeSharedObjectId(argIndex: number) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getSharedObjectId(input);
+    return this.inputs[argIndex].Object?.SharedObject?.objectId || this.inputs[argIndex].UnresolvedObject.objectId;
   }
 
   decodeOwnedObjectId(argIndex: number) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getOwnedObjectId(input);
+    return this.inputs[argIndex].Object?.ImmOrOwnedObject?.objectId || this.inputs[argIndex].UnresolvedObject.objectId;
   }
 
   decodeInputU128(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u128');
-    return Number(strVal);
+    return Number(bcs.u128().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputU64(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u64');
-    return Number(strVal);
+    return Number(bcs.u64().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputU32(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u32');
-    return Number(strVal);
+    return Number(bcs.u32().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputU8(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u8');
-    return Number(strVal);
+    return Number(bcs.u8().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
   }
 
   decodeInputAddress(argIndex: number) {
-    const input = this.decodePureArg<string>(argIndex, 'address');
-    return normalizeSuiAddress(input);
-  }
-
-  decodeInputString(argIndex: number) {
-    return this.decodePureArg<string>(argIndex, 'string');
+    return bcs.Address.parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes)));
   }
 
   decodeInputBool(argIndex: number) {
-    return this.decodePureArg<boolean>(argIndex, 'bool');
-  }
-
-  decodePureArg<T>(argIndex: number, bcsType: string) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getPureInputValue<T>(input, bcsType);
-  }
-
-  getInputParam(argIndex: number) {
-    const arg = this.moveCall.arguments[argIndex];
-    if (arg.kind !== 'Input') {
-      throw new Error('not input type');
-    }
-    return this.txb.blockData.inputs[arg.index];
-  }
-
-  static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
-    }
-    if (typeof input.value === 'object' && 'Pure' in input.value) {
-      const bcsNums = input.value.Pure;
-      return bcs.de(bcsType, new Uint8Array(bcsNums)) as T;
-    }
-    return input.value as T;
-  }
-
-  static getOwnedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
-      throw new Error(`not object argument: ${JSON.stringify(input)}`);
-    }
-    if (typeof input.value === 'object') {
-      if (!('Object' in input.value) || !('ImmOrOwned' in input.value.Object)) {
-        throw new Error('not ImmOrOwned');
-      }
-      return normalizeSuiAddress(input.value.Object.ImmOrOwned.objectId as string);
-    }
-    return normalizeSuiAddress(input.value as string);
-  }
-
-  static getSharedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
-      throw new Error(`not object argument: ${JSON.stringify(input)}`);
-    }
-    if (typeof input.value !== 'object') {
-      return normalizeSuiAddress(input.value as string);
-    }
-    if (!('Object' in input.value) || !('Shared' in input.value.Object)) {
-      throw new Error('not Shared');
-    }
-    return normalizeSuiAddress(input.value.Object.Shared.objectId as string);
-  }
-
-  static getPureInput<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
-    }
-    if (typeof input.value !== 'object') {
-      return input.value as T;
-    }
-    if (!('Pure' in input.value)) {
-      throw new Error('Pure not in value');
-    }
-    const bcsVal = input.value.Pure;
-    return bcs.de(bcsType, new Uint8Array(bcsVal)) as T;
-  }
-
-  typeArg(index: number) {
-    return normalizeStructTag(this.moveCall.typeArguments[index]);
+    return bcs.bool().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes)));
   }
 
   shortTypeArg(index: number) {
-    return this.moveCall.typeArguments[index];
+    return this.moveCall.MoveCall.typeArguments[index];
   }
 
   txArg(index: number) {
-    return this.moveCall.arguments[index];
+    return this.moveCall.MoveCall.arguments[index];
   }
 }

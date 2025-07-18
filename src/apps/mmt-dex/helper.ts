@@ -10,6 +10,8 @@ import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { AddLiquiditySingleSideIntention } from './intentions/add-liquidity-single-side';
 import { ClaimAllRewardsIntention } from './intentions/claim-all-rewards';
 import { ClaimRewardsIntention } from './intentions/claim-rewards';
+import { ManageLiquidityIntention } from './intentions/manage-liquidity';
+import { ManageLiquiditySingleSideIntention } from './intentions/manage-liquidity-single-side';
 import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
 import { StakeXSuiIntention } from './intentions/stake-xsui';
 import { SwapIntention } from './intentions/swap';
@@ -25,6 +27,8 @@ import {
   TransactionSubType,
   UnstakeXSuiIntentionData,
   StakeXSuiIntentionData,
+  ManageLiquiditySingleSideIntentionData,
+  ManageLiquidityIntentionData,
 } from './types';
 
 export type MMTDEXIntention =
@@ -35,7 +39,9 @@ export type MMTDEXIntention =
   | RemoveLiquidityIntention
   | SwapIntention
   | StakeXSuiIntention
-  | UnstakeXSuiIntention;
+  | UnstakeXSuiIntention
+  | ManageLiquidityIntention
+  | ManageLiquiditySingleSideIntention;
 
 export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> {
   application = 'mmt-dex';
@@ -98,6 +104,14 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
         break;
       case TransactionSubType.UnstakeXSui:
         intention = UnstakeXSuiIntention.fromData(input.intentionData as UnstakeXSuiIntentionData);
+        break;
+      case TransactionSubType.ManageLiquidity:
+        intention = ManageLiquidityIntention.fromData(input.intentionData as ManageLiquidityIntentionData);
+        break;
+      case TransactionSubType.ManageLiquiditySingleSide:
+        intention = ManageLiquiditySingleSideIntention.fromData(
+          input.intentionData as ManageLiquiditySingleSideIntentionData,
+        );
         break;
       default:
         throw new Error('not implemented');
