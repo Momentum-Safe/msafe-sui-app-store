@@ -258,7 +258,6 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
-
   private getSharedObjectID(index: number): string {
     return this.inputs[index].Object.SharedObject.objectId as string;
   }
@@ -294,5 +293,4 @@ export class Decoder {
   private getInputIndex(command: any, index: number): number {
     return command.MoveCall.arguments[index].Input;
   }
-
 }
