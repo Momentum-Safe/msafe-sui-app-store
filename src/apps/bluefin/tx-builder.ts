@@ -160,7 +160,7 @@ export default class TxBuilder {
     return txb;
   }
 
-  static async Aggregator7KSwap(
+  static async aggregator7KSwap(
     txParams: Aggregator7KSwapIntentionData,
     account: WalletAccount,
     network: SuiNetworks,
@@ -182,6 +182,8 @@ export default class TxBuilder {
         commissionBps: 0,
       },
     });
+
+    (txb.tx as Transaction).setSender(account.address);
 
     return txb.tx as Transaction;
   }

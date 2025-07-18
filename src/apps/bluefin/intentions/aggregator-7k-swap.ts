@@ -20,7 +20,7 @@ export class Aggregator7KSwap extends BaseIntention<BluefinIntentionData> {
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
     console.log(this.data);
-    return TxBuilder.Aggregator7KSwap(this.data as Aggregator7KSwapIntentionData, account, network);
+    return TxBuilder.aggregator7KSwap(this.data as Aggregator7KSwapIntentionData, account, network);
   }
 
   static fromData(data: BluefinIntentionData) {

@@ -2,6 +2,7 @@ import { asIntN } from '@cetusprotocol/common-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
+import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { Decimal } from 'turbos-clmm-sdk';
 
@@ -25,7 +26,7 @@ import {
 export class Decoder {
   constructor(public readonly transaction: Transaction) {}
 
-  decode() {
+  async decode(client: SuiClient): Promise<DecodeResult> {
     if (this.isOpenPositionTx()) {
       return this.decodeOpenPositionTx();
     }
@@ -47,11 +48,11 @@ export class Decoder {
     if (this.isCollectFeeTx()) {
       return this.decodeCollectFeeTx();
     }
+    if (this.isAggregator7KSwapTx()) {
+      return this.decodeAggregator7KSwapTx(client);
+    }
 
-    // Assuming the default call type is 7K aggregator swap
-    return this.decodeAggregator7KSwapTx();
-
-    // throw new Error(`Unknown transaction type`);
+    throw new Error(`Unknown transaction type`);
   }
 
   private decodeOpenPositionTx(): DecodeResult {
@@ -182,25 +183,21 @@ export class Decoder {
     return collectRewards;
   }
 
-  private decodeAggregator7KSwapTx(): DecodeResult {
-    const openPosCommand = this.getMoveCallCommand('open_position');
-    const addLiqCommand = this.getMoveCallCommand('provide_liquidity_with_fixed_amount');
+  private async decodeAggregator7KSwapTx(client: SuiClient): Promise<DecodeResult> {
+    console.log(JSON.stringify(this.commands));
+    const settleCommand = this.getMoveCallCommand('settle');
+
+    const [tokenIn, tokenOut] = this.getTypeArguments(settleCommand);
+    const coinDetails = await client.getCoinMetadata({ coinType: tokenIn });
 
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.Aggregator7KSwap,
       intentionData: {
-        // pool: this.getSharedObjectID(this.getInputIndex(openPosCommand, 1)),
-        // lowerTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 2)))).toString()),
-        // upperTick: Number(asIntN(BigInt(this.getU32(this.getInputIndex(openPosCommand, 3)))).toString()),
-        // tokenAmount: this.getU64(this.getInputIndex(addLiqCommand, 6)),
-        // maxAmountTokenA: this.getU64(this.getInputIndex(addLiqCommand, 7)),
-        // maxAmountTokenB: this.getU64(this.getInputIndex(addLiqCommand, 8)),
-        // isTokenAFixed: this.getBoolean(this.getInputIndex(addLiqCommand, 9)),
-        tokenIn: undefined,
-        tokenOut: undefined,
-        amountIn: `1`,
-        maxSlippage: Decimal(1),
+        tokenIn: { address: tokenIn, decimals: coinDetails.decimals },
+        tokenOut: { address: tokenOut },
+        amountIn: `1`, // hardcoded for now
+        maxSlippage: Decimal(1), // hardcoded for now
       } as Aggregator7KSwapIntentionData,
     };
   }
@@ -251,9 +248,16 @@ export class Decoder {
     return !!this.getMoveCallCommand('close_position');
   }
 
+  private isAggregator7KSwapTx() {
+    return !!this.commands.find(
+      (command) => command.$kind === 'MoveCall' && command.MoveCall.function.toLowerCase().includes('settle'),
+    );
+  }
+
   private getMoveCallCommand(fn: string) {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
+
 
   private getSharedObjectID(index: number): string {
     return this.inputs[index].Object.SharedObject.objectId as string;
@@ -290,4 +294,5 @@ export class Decoder {
   private getInputIndex(command: any, index: number): number {
     return command.MoveCall.arguments[index].Input;
   }
+
 }
