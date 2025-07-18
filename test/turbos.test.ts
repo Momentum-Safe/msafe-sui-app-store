@@ -152,11 +152,11 @@ describe('Turbos App', () => {
     const addLiquidityData: AddLiquidityIntentionData = {
       pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
       slippage: 30,
-      address: Account.address,
-      amountA: '92743111',
-      amountB: '349983',
-      tickLower: -56680,
-      tickUpper: -55030,
+      address: TurbosAccount.address,
+      amountA: '152983049',
+      amountB: '638021',
+      tickLower: -55450,
+      tickUpper: -55040,
       deadline: 3600000,
     };
 
@@ -192,6 +192,41 @@ describe('Turbos App', () => {
     expect(intentionData.tickLower).toBe(addLiquidityData.tickLower);
     expect(intentionData.tickUpper).toBe(addLiquidityData.tickUpper);
   });
+
+  it('Test `AddLiquidity`  builder', async () => {
+    const appHelper = appHelpers.getAppHelper('turbos');
+
+    const turbosSdk = new TurbosSdk(Network.mainnet);
+
+    const config = await turbosSdk.contract.getConfig();
+
+    const addLiquidityData: AddLiquidityIntentionData = {
+      pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
+      slippage: 30,
+      address: TurbosAccount.address,
+      amountA: '157186517',
+      amountB: '638021',
+      tickLower: -55360,
+      tickUpper: -54950,
+      deadline: 3600000,
+    };
+
+    const res = await appHelper.build({
+      network: 'sui:mainnet',
+      txType: TransactionType.Other,
+      txSubType: TransactionSubType.AddLiquidity,
+      clientUrl: 'https://fullnode.mainnet.sui.io:443',
+      account: TurbosAccount,
+      intentionData: addLiquidityData,
+    });
+    // const moveCall: any = res.blockData.transactions.find(
+    //   (trans) => trans.kind === 'MoveCall' && trans.target.indexOf('::swap') > -1,
+    // );
+    // console.log(moveCall, 'moveCall');
+    // expect(moveCall.target).toBe(`${config.PackageId}::swap_router::swap_a_b`);
+
+    console.log(res, 'addLiquidityData');
+  }, 30000);
 
   it('Test `swap` short address builder', async () => {
     const appHelper = appHelpers.getAppHelper('turbos');
