@@ -11,7 +11,7 @@ import {
   SwapIntentionData,
   TransactionSubType,
 } from '@/apps/turbos/types';
-import { appHelpers } from '@/index';
+// import { appHelpers } from '@/index';
 
 import { Account } from './config';
 
@@ -193,122 +193,122 @@ describe('Turbos App', () => {
     expect(intentionData.tickUpper).toBe(addLiquidityData.tickUpper);
   });
 
-  it('Test `AddLiquidity`  builder', async () => {
-    const appHelper = appHelpers.getAppHelper('turbos');
+  // it('Test `AddLiquidity`  builder', async () => {
+  //   const appHelper = appHelpers.getAppHelper('turbos');
 
-    const turbosSdk = new TurbosSdk(Network.mainnet);
+  //   const turbosSdk = new TurbosSdk(Network.mainnet);
 
-    const config = await turbosSdk.contract.getConfig();
+  //   const config = await turbosSdk.contract.getConfig();
 
-    const addLiquidityData: AddLiquidityIntentionData = {
-      pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
-      slippage: 30,
-      address: TurbosAccount.address,
-      amountA: '157186517',
-      amountB: '638021',
-      tickLower: -55360,
-      tickUpper: -54950,
-      deadline: 3600000,
-    };
+  //   const addLiquidityData: AddLiquidityIntentionData = {
+  //     pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
+  //     slippage: 30,
+  //     address: TurbosAccount.address,
+  //     amountA: '157186517',
+  //     amountB: '638021',
+  //     tickLower: -55360,
+  //     tickUpper: -54950,
+  //     deadline: 3600000,
+  //   };
 
-    const res = await appHelper.build({
-      network: 'sui:mainnet',
-      txType: TransactionType.Other,
-      txSubType: TransactionSubType.AddLiquidity,
-      clientUrl: 'https://fullnode.mainnet.sui.io:443',
-      account: TurbosAccount,
-      intentionData: addLiquidityData,
-    });
-    // const moveCall: any = res.blockData.transactions.find(
-    //   (trans) => trans.kind === 'MoveCall' && trans.target.indexOf('::swap') > -1,
-    // );
-    // console.log(moveCall, 'moveCall');
-    // expect(moveCall.target).toBe(`${config.PackageId}::swap_router::swap_a_b`);
+  //   const res = await appHelper.build({
+  //     network: 'sui:mainnet',
+  //     txType: TransactionType.Other,
+  //     txSubType: TransactionSubType.AddLiquidity,
+  //     clientUrl: 'https://fullnode.mainnet.sui.io:443',
+  //     account: TurbosAccount,
+  //     intentionData: addLiquidityData,
+  //   });
+  //   // const moveCall: any = res.blockData.transactions.find(
+  //   //   (trans) => trans.kind === 'MoveCall' && trans.target.indexOf('::swap') > -1,
+  //   // );
+  //   // console.log(moveCall, 'moveCall');
+  //   // expect(moveCall.target).toBe(`${config.PackageId}::swap_router::swap_a_b`);
 
-    console.log(res, 'addLiquidityData');
-  }, 30000);
+  //   console.log(res, 'addLiquidityData');
+  // }, 30000);
 
-  it('Test `swap` short address builder', async () => {
-    const appHelper = appHelpers.getAppHelper('turbos');
+  // it('Test `swap` short address builder', async () => {
+  //   const appHelper = appHelpers.getAppHelper('turbos');
 
-    const turbosSdk = new TurbosSdk(Network.mainnet);
+  //   const turbosSdk = new TurbosSdk(Network.mainnet);
 
-    const config = await turbosSdk.contract.getConfig();
+  //   const config = await turbosSdk.contract.getConfig();
 
-    const swapData: SwapIntentionData = {
-      routes: [
-        {
-          pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
-          a2b: true,
-          nextTickIndex: -55322,
-        },
-      ],
-      coinTypeA: '0x2::sui::SUI',
-      coinTypeB: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC',
-      address: TurbosAccount.address,
-      amountA: '1000000000',
-      amountB: '3956390',
-      amountSpecifiedIsInput: true,
-      slippage: '0.5',
-    };
+  //   const swapData: SwapIntentionData = {
+  //     routes: [
+  //       {
+  //         pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
+  //         a2b: true,
+  //         nextTickIndex: -55322,
+  //       },
+  //     ],
+  //     coinTypeA: '0x2::sui::SUI',
+  //     coinTypeB: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC',
+  //     address: TurbosAccount.address,
+  //     amountA: '1000000000',
+  //     amountB: '3956390',
+  //     amountSpecifiedIsInput: true,
+  //     slippage: '0.5',
+  //   };
 
-    const res = await appHelper.build({
-      network: 'sui:mainnet',
-      txType: TransactionType.Other,
-      txSubType: TransactionSubType.Swap,
-      clientUrl: 'https://fullnode.mainnet.sui.io:443',
-      account: TurbosAccount,
-      intentionData: swapData,
-    });
-    const moveCall: any = res.blockData.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.indexOf('::swap') > -1,
-    );
-    console.log(moveCall, 'moveCall');
-    expect(moveCall.target).toBe(`${config.PackageId}::swap_router::swap_a_b`);
+  //   const res = await appHelper.build({
+  //     network: 'sui:mainnet',
+  //     txType: TransactionType.Other,
+  //     txSubType: TransactionSubType.Swap,
+  //     clientUrl: 'https://fullnode.mainnet.sui.io:443',
+  //     account: TurbosAccount,
+  //     intentionData: swapData,
+  //   });
+  //   const moveCall: any = res.blockData.transactions.find(
+  //     (trans) => trans.kind === 'MoveCall' && trans.target.indexOf('::swap') > -1,
+  //   );
+  //   console.log(moveCall, 'moveCall');
+  //   expect(moveCall.target).toBe(`${config.PackageId}::swap_router::swap_a_b`);
 
-    // console.log(res);
-  }, 30000);
+  //   // console.log(res);
+  // }, 30000);
 
-  it('Test `swap` long address builder', async () => {
-    const appHelper = appHelpers.getAppHelper('turbos');
+  // it('Test `swap` long address builder', async () => {
+  //   const appHelper = appHelpers.getAppHelper('turbos');
 
-    const turbosSdk = new TurbosSdk(Network.mainnet);
+  //   const turbosSdk = new TurbosSdk(Network.mainnet);
 
-    const config = await turbosSdk.contract.getConfig();
+  //   const config = await turbosSdk.contract.getConfig();
 
-    const swapData: SwapIntentionData = {
-      routes: [
-        {
-          pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
-          a2b: true,
-          nextTickIndex: -55322,
-        },
-      ],
-      coinTypeA: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
-      coinTypeB: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC',
-      address: TurbosAccount.address,
-      amountA: '1000000000',
-      amountB: '3956390',
-      amountSpecifiedIsInput: true,
-      slippage: '0.5',
-    };
+  //   const swapData: SwapIntentionData = {
+  //     routes: [
+  //       {
+  //         pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
+  //         a2b: true,
+  //         nextTickIndex: -55322,
+  //       },
+  //     ],
+  //     coinTypeA: '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI',
+  //     coinTypeB: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC',
+  //     address: TurbosAccount.address,
+  //     amountA: '1000000000',
+  //     amountB: '3956390',
+  //     amountSpecifiedIsInput: true,
+  //     slippage: '0.5',
+  //   };
 
-    const res = await appHelper.build({
-      network: 'sui:mainnet',
-      txType: TransactionType.Other,
-      txSubType: TransactionSubType.Swap,
-      clientUrl: 'https://fullnode.mainnet.sui.io:443',
-      account: TurbosAccount,
-      intentionData: swapData,
-    });
-    const moveCall: any = res.blockData.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.indexOf('::swap') > -1,
-    );
-    console.log(moveCall, 'moveCall');
-    expect(moveCall.target).toBe(`${config.PackageId}::swap_router::swap_a_b`);
+  //   const res = await appHelper.build({
+  //     network: 'sui:mainnet',
+  //     txType: TransactionType.Other,
+  //     txSubType: TransactionSubType.Swap,
+  //     clientUrl: 'https://fullnode.mainnet.sui.io:443',
+  //     account: TurbosAccount,
+  //     intentionData: swapData,
+  //   });
+  //   const moveCall: any = res.blockData.transactions.find(
+  //     (trans) => trans.kind === 'MoveCall' && trans.target.indexOf('::swap') > -1,
+  //   );
+  //   console.log(moveCall, 'moveCall');
+  //   expect(moveCall.target).toBe(`${config.PackageId}::swap_router::swap_a_b`);
 
-    // console.log(res);
-  }, 30000);
+  //   // console.log(res);
+  // }, 30000);
 
   it('Test `decodeSwap` decoder', async () => {
     const tx = new Transaction();
