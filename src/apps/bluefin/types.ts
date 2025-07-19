@@ -1,4 +1,18 @@
+import Decimal from '@firefly-exchange/library-sui/dist/src/spot/clmm/decimal';
 import { SuiAddress, TransactionType } from '@msafe/sui3-utils';
+
+export interface Token {
+  address: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+  logoURI: string;
+  totalSupply: string;
+  circulatingSupply: string;
+  isVerified: boolean;
+  hasBluefinPools: boolean;
+  rfqSupported: boolean;
+}
 
 export type SuiNetworks = 'sui:devnet' | 'sui:testnet' | 'sui:localnet' | 'sui:mainnet';
 
@@ -63,6 +77,13 @@ export type CollectFeeIntentionData = {
   collectFeeTokens: FeeTokens;
 };
 
+export type Aggregator7KSwapIntentionData = {
+  tokenIn: Token | undefined;
+  tokenOut: Token | undefined;
+  amountIn: string;
+  maxSlippage: Decimal;
+};
+
 export type BluefinIntentionData =
   | OpenPositionIntentionData
   | ClosePositionIntentionData
@@ -70,7 +91,8 @@ export type BluefinIntentionData =
   | RemoveLiquidityIntentionData
   | CollectRewardsIntentionData
   | CollectFeeIntentionData
-  | CollectRewardsAndFeeIntentionData;
+  | CollectRewardsAndFeeIntentionData
+  | Aggregator7KSwapIntentionData;
 
 export type DecodeResult = {
   txType: TransactionType;
@@ -92,4 +114,5 @@ export enum TransactionSubType {
   CollectFee = 'CollectFee',
   CollectRewards = 'CollectRewards',
   CollectRewardsAndFee = 'CollectRewardsAndFee',
+  Aggregator7KSwap = 'Aggregator7KSwap',
 }

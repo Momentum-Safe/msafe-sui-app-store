@@ -6,6 +6,7 @@ import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { IAppHelperInternal } from '@/apps/interface/sui';
 
 import { Decoder } from './decoder';
+import { Aggregator7KSwap } from './intentions/aggregator-7k-swap';
 import { ClosePosition } from './intentions/close-position';
 import { CollectFee } from './intentions/collect-fee';
 import { CollectRewards } from './intentions/collect-rewards';
@@ -38,11 +39,11 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     txbParams?: any;
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BluefinIntentionData }> {
     console.log('Bluefin helper deserialize input: ', input);
-    const { transaction } = input;
+    const { transaction, suiClient } = input;
 
     const decoder = new Decoder(transaction);
 
-    const result = decoder.decode();
+    const result = await decoder.decode(suiClient);
 
     return {
       txType: TransactionType.Other,
@@ -83,12 +84,19 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
       case TransactionSubType.CollectFee:
         intention = CollectFee.fromData(input.intentionData);
         break;
+
       case TransactionSubType.CollectRewards:
         intention = CollectRewards.fromData(input.intentionData);
         break;
+
       case TransactionSubType.CollectRewardsAndFee:
         intention = CollectRewardsAndFee.fromData(input.intentionData);
         break;
+
+      case TransactionSubType.Aggregator7KSwap:
+        intention = Aggregator7KSwap.fromData(input.intentionData);
+        break;
+
       default:
         throw new Error('not implemented');
     }

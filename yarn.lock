@@ -1454,6 +1454,11 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bluefin-exchange/bluefin7k-aggregator-sdk@^4.0.1-alpha.0":
+  version "4.0.1-alpha.0"
+  resolved "https://registry.yarnpkg.com/@bluefin-exchange/bluefin7k-aggregator-sdk/-/bluefin7k-aggregator-sdk-4.0.1-alpha.0.tgz#e0402fe4c75681698110abc605d8cb17228d5597"
+  integrity sha512-GuqQ5cd8f5U3R/QEUoHX/yaZgBJInPvfMow2QKrguozkgiwlkUHjCrXKXsqRW+lSL2ADRFjFOXv+hN9xvzdJNw==
+
 "@cetusprotocol/aggregator-sdk@0.14.2":
   version "0.14.2"
   resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.14.2.tgz#92455c922bfa992115ef146164d1d7932126a771"
