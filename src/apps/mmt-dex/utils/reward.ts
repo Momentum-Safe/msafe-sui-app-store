@@ -65,3 +65,65 @@ export const claimV3Rewards = (
     address,
   );
 };
+
+export type ClaimRewardsAsParams = {
+  sdk: MmtSDK;
+  address: string;
+  positionId: string;
+  pool: NormalizedPool;
+  txb: Transaction;
+  targetCoinType: string;
+  slippage: number;
+};
+
+export async function claimRewardsAsTargetCoin({
+  sdk,
+  address,
+  positionId,
+  pool,
+  txb,
+  targetCoinType,
+  slippage,
+}: ClaimRewardsAsParams) {
+  const poolModel = {
+    objectId: pool.poolId,
+    tokenXType: pool.tokenXType,
+    tokenYType: pool.tokenYType,
+  };
+
+  const rewarderCoinTypes = pool.rewarders.map((rewarder) => rewarder.coinType);
+
+  if (rewarderCoinTypes.length > 0) {
+    console.log('claimRewardsAsTargetCoin input', {
+      pool: poolModel,
+      positionId,
+      rewarderCoinTypes,
+      targetCoinType,
+      slippage,
+      toAddress: address,
+    });
+    await sdk.Pool.claimRewardsAs({
+      txb,
+      pool: poolModel,
+      positionId,
+      rewarderCoinTypes,
+      targetCoinType,
+      slippage,
+      toAddress: address,
+    });
+  }
+
+  const pools = await sdk.Pool.getAllPools();
+
+  await sdk.Pool.claimFeeAs({
+    txb,
+    pool: poolModel,
+    positionId,
+    targetCoinType,
+    slippage,
+    toAddress: address,
+    pools,
+  });
+
+  return txb;
+}

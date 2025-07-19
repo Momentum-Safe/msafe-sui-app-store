@@ -1,4 +1,4 @@
-import { V3PositionType } from './utils/reward';
+import { ClaimRewardsAsParams, V3PositionType } from './utils/reward';
 import { NormalizedPool, Tokens } from './utils/swap';
 
 export type MMTDEXIntentionData = {
@@ -76,6 +76,12 @@ export interface ClaimRewardsIntentionData extends MMTDEXIntentionData {
   };
 }
 
+export interface ClaimRewardsAsIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.ClaimRewardsAs;
+  params: {
+    claimParams: Omit<ClaimRewardsAsParams, 'sdk' | 'txb'>[];
+  };
+}
 export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.RemoveLiquidity;
   params: {
@@ -118,6 +124,7 @@ export enum TransactionSubType {
   AddLiquiditySingleSide = 'AddLiquiditySingleSide',
   ClaimAllRewards = 'ClaimAllRewards',
   ClaimRewards = 'ClaimRewards',
+  ClaimRewardsAs = 'ClaimRewardsAs',
   RemoveLiquidity = 'RemoveLiquidity',
   Swap = 'Swap',
   ManageLiquidity = 'ManageLiquidity',

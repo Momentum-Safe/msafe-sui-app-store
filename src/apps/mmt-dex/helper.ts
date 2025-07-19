@@ -29,13 +29,16 @@ import {
   StakeXSuiIntentionData,
   ManageLiquiditySingleSideIntentionData,
   ManageLiquidityIntentionData,
+  ClaimRewardsAsIntentionData,
 } from './types';
+import { ClaimRewardAsIntention } from './intentions/claim-reward-as';
 
 export type MMTDEXIntention =
   | AddLiquidityIntention
   | AddLiquiditySingleSideIntention
   | ClaimRewardsIntention
   | ClaimAllRewardsIntention
+  | ClaimRewardAsIntention
   | RemoveLiquidityIntention
   | SwapIntention
   | StakeXSuiIntention
@@ -96,6 +99,9 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
       case TransactionSubType.ClaimAllRewards:
         intention = ClaimAllRewardsIntention.fromData(input.intentionData as ClaimAllRewardsIntentionData);
         break;
+      case TransactionSubType.ClaimRewardsAs:
+        intention = ClaimRewardAsIntention.fromData(input.intentionData as ClaimRewardsAsIntentionData);
+        break;
       case TransactionSubType.RemoveLiquidity:
         intention = RemoveLiquidityIntention.fromData(input.intentionData as RemoveLiquidityIntentionData);
         break;
@@ -114,7 +120,7 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
         );
         break;
       default:
-        throw new Error('not implemented');
+        throw new Error(`not implemented ${input.txSubType}`);
     }
     return intention.build({ suiClient: input.suiClient });
   }

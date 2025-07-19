@@ -1,12 +1,12 @@
 /* eslint-disable no-restricted-syntax */
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import type { TokenSchema } from '@mmt-finance/clmm-sdk/dist/types';
-import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { normalizeSuiCoinType } from './common';
 // eslint-disable-next-line import/no-cycle
 import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
+import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
 
 export type NormalizedRewarder = {
   coinType: string;
