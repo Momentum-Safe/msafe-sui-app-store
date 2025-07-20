@@ -425,8 +425,13 @@ export class Decoder {
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
     const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6));
-    const rewardAmounts = this.collectRewardHelper.map((helper) => helper.decodeInputU64(helper.getInputsIndex(5)));
 
+    const rewardAmounts = [0, 0, 0];
+    this.collectRewardHelper.forEach((helper) => {
+      const index = helper.decodeInputU64(helper.getInputsIndex(4));
+      const value = helper.decodeInputU64(helper.getInputsIndex(5));
+      rewardAmounts[index] = value;
+    });
     const deadline = this.helper.decodeInputU64(7);
 
     return {
