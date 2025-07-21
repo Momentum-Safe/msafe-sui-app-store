@@ -89,6 +89,9 @@ export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
     pool: NormalizedPool;
     address: string;
     withdrawPercentage: number;
+    zapOutOn: boolean;
+    targetCoinType: string;
+    slippage: number;
   };
 }
 
