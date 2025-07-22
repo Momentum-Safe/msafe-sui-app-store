@@ -35,10 +35,11 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     network: SuiNetworks;
     suiClient: SuiClient;
     account: WalletAccount;
-    action?: string;
-    txbParams?: any;
+    appContext?: any;
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BluefinIntentionData }> {
     console.log('Bluefin helper deserialize input: ', input);
+    console.log('JSON stringify: ', JSON.stringify(input));
+
     const { transaction, suiClient } = input;
 
     const decoder = new Decoder(transaction);

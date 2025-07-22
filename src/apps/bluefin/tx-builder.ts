@@ -165,7 +165,7 @@ export default class TxBuilder {
     account: WalletAccount,
     network: SuiNetworks,
   ): Promise<Transaction> {
-    const sdk = getBluefinSpotSDK(network, account);
+    const _ = getBluefinSpotSDK(network, account);
 
     const quoteResponse = await getQuote({
       tokenIn: txParams.tokenIn.address,
@@ -176,7 +176,7 @@ export default class TxBuilder {
     const txb = await buildTx({
       quoteResponse,
       accountAddress: account.address,
-      slippage: txParams.maxSlippage.toNumber(),
+      slippage: typeof txParams.maxSlippage === 'string' ? txParams.maxSlippage : txParams.maxSlippage.toNumber(),
       commission: {
         partner: '0x956d6ea2da156a037952964badc51f997cc5581c86a0e05f74049e6effab9347',
         commissionBps: 0,

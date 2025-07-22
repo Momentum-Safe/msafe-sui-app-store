@@ -184,7 +184,6 @@ export class Decoder {
   }
 
   private async decodeAggregator7KSwapTx(client: SuiClient): Promise<DecodeResult> {
-    console.log(JSON.stringify(this.commands));
     const settleCommand = this.getMoveCallCommand('settle');
 
     const [tokenIn, tokenOut] = this.getTypeArguments(settleCommand);
