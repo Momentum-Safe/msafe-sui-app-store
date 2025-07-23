@@ -36,7 +36,7 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     suiClient: SuiClient;
     account: WalletAccount;
     appContext?: any;
-  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BluefinIntentionData }> {
+  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BluefinIntentionData & {appContext?: any} }> {
     console.log('Bluefin helper deserialize input: ', input);
 
     const { transaction, suiClient } = input;
@@ -48,7 +48,10 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     return {
       txType: TransactionType.Other,
       txSubType: result.type,
-      intentionData: result.intentionData,
+      intentionData: {
+        appContext: input.appContext,
+        ...result.intentionData,
+      },
     };
   }
 
