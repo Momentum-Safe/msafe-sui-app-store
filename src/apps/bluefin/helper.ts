@@ -43,11 +43,11 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
   }> {
     console.log('Bluefin helper deserialize input: ', input);
 
-    const { transaction, suiClient } = input;
+    const { transaction, appContext } = input;
 
-    const decoder = new Decoder(transaction);
+    const decoder = new Decoder(transaction, appContext);
 
-    const result = await decoder.decode(suiClient);
+    const result = await decoder.decode();
 
     return {
       txType: TransactionType.Other,

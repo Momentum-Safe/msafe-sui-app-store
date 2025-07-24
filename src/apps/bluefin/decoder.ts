@@ -2,9 +2,7 @@ import { asIntN } from '@cetusprotocol/common-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { Decimal } from 'turbos-clmm-sdk';
 
 import {
   Aggregator7KSwapIntentionData,
@@ -24,9 +22,12 @@ import {
 } from './types';
 
 export class Decoder {
-  constructor(public readonly transaction: Transaction) {}
+  constructor(
+    public readonly transaction: Transaction,
+    public readonly appContext?: any,
+  ) {}
 
-  async decode(client: SuiClient): Promise<DecodeResult> {
+  async decode(): Promise<DecodeResult> {
     if (this.isOpenPositionTx()) {
       return this.decodeOpenPositionTx();
     }
@@ -49,7 +50,7 @@ export class Decoder {
       return this.decodeCollectFeeTx();
     }
     if (this.isAggregator7KSwapTx()) {
-      return this.decodeAggregator7KSwapTx(client);
+      return this.decodeAggregator7KSwapTx();
     }
 
     throw new Error(`Unknown transaction type`);
@@ -183,20 +184,18 @@ export class Decoder {
     return collectRewards;
   }
 
-  private async decodeAggregator7KSwapTx(client: SuiClient): Promise<DecodeResult> {
-    const settleCommand = this.getMoveCallCommand('settle');
-
-    const [tokenIn, tokenOut] = this.getTypeArguments(settleCommand);
-    const coinDetails = await client.getCoinMetadata({ coinType: tokenIn });
+  private async decodeAggregator7KSwapTx(): Promise<DecodeResult> {
+    const { appContext } = this;
+    console.log('appContext', appContext);
 
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.Aggregator7KSwap,
       intentionData: {
-        tokenIn: { address: tokenIn, decimals: coinDetails.decimals },
-        tokenOut: { address: tokenOut },
-        amountIn: `1`, // hardcoded for now
-        maxSlippage: Decimal(1), // hardcoded for now
+        tokenIn: appContext.txParams.tokenIn,
+        tokenOut: appContext.txParams.tokenOut,
+        amountIn: String(appContext.txParams.amountIn),
+        maxSlippage: String(appContext.txParams.maxSlippage),
       } as Aggregator7KSwapIntentionData,
     };
   }
