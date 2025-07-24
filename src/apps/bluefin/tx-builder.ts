@@ -176,7 +176,10 @@ export default class TxBuilder {
     const txb = await buildTx({
       quoteResponse,
       accountAddress: account.address,
-      slippage: (typeof txParams.maxSlippage === 'string' || typeof txParams.maxSlippage === 'number') ? txParams.maxSlippage : txParams.maxSlippage.toNumber?.(),
+      slippage:
+        typeof txParams.maxSlippage === 'string' || typeof txParams.maxSlippage === 'number'
+          ? txParams.maxSlippage
+          : txParams.maxSlippage.toNumber?.(),
       commission: {
         partner: '0x956d6ea2da156a037952964badc51f997cc5581c86a0e05f74049e6effab9347',
         commissionBps: 0,
