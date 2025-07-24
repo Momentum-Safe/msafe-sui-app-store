@@ -24,7 +24,10 @@ import {
 } from './types';
 
 export class Decoder {
-  constructor(public readonly transaction: Transaction) {}
+  constructor(
+    public readonly transaction: Transaction,
+    public readonly appContext?: any,
+  ) {}
 
   async decode(client: SuiClient): Promise<DecodeResult> {
     if (this.isOpenPositionTx()) {
@@ -185,7 +188,8 @@ export class Decoder {
 
   private async decodeAggregator7KSwapTx(client: SuiClient): Promise<DecodeResult> {
     const settleCommand = this.getMoveCallCommand('settle');
-
+    const { appContext } = this;
+    console.log('appContext', appContext);
     const [tokenIn, tokenOut] = this.getTypeArguments(settleCommand);
     const coinDetails = await client.getCoinMetadata({ coinType: tokenIn });
 

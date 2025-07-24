@@ -45,7 +45,7 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
 
     const { transaction, suiClient } = input;
 
-    const decoder = new Decoder(transaction);
+    const decoder = new Decoder(transaction, input?.appContext || {});
 
     const result = await decoder.decode(suiClient);
 
