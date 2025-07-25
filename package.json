@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.292",
+  "version": "0.0.293",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -55,7 +55,7 @@
     "@cetusprotocol/vaults-sdk": "1.1.4",
     "@cetusprotocol/xcetus-sdk": "1.1.3",
     "@firefly-exchange/library-sui": "^2.4.18",
-    "@mmt-finance/clmm-sdk": "^1.3.9",
+    "@mmt-finance/clmm-sdk": "^1.3.11",
     "@mysten/bcs": "^1.5.0",
     "@mysten/sui": "^1.8.0",
     "@open-rpc/client-js": "^1.8.1",
