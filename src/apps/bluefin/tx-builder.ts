@@ -1,7 +1,10 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { buildTx, getQuote } from '@bluefin-exchange/bluefin7k-aggregator-sdk';
 import { BN, ClmmPoolUtil, LiquidityInput } from '@firefly-exchange/library-sui';
 import { Pool } from '@firefly-exchange/library-sui/dist/src/spot/types';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
+import { Decimal } from 'turbos-clmm-sdk';
 
 import { getBluefinSpotSDK } from './config';
 import {
@@ -13,6 +16,7 @@ import {
   ProvideLiquidityIntentionData,
   RemoveLiquidityIntentionData,
   SuiNetworks,
+  Aggregator7KSwapIntentionData,
 } from './types';
 
 export default class TxBuilder {
@@ -154,6 +158,37 @@ export default class TxBuilder {
     })) as any as Transaction;
 
     return txb;
+  }
+
+  static async aggregator7KSwap(
+    txParams: Aggregator7KSwapIntentionData,
+    account: WalletAccount,
+    network: SuiNetworks,
+  ): Promise<Transaction> {
+    const _ = getBluefinSpotSDK(network, account);
+
+    const quoteResponse = await getQuote({
+      tokenIn: txParams.tokenIn.address,
+      tokenOut: txParams.tokenOut.address,
+      amountIn: new Decimal(txParams.amountIn).mul(10 ** txParams.tokenIn.decimals).toString(),
+    });
+
+    const txb = await buildTx({
+      quoteResponse,
+      accountAddress: account.address,
+      slippage:
+        typeof txParams.maxSlippage === 'string' || typeof txParams.maxSlippage === 'number'
+          ? txParams.maxSlippage
+          : txParams.maxSlippage.toNumber?.(),
+      commission: {
+        partner: '0x956d6ea2da156a037952964badc51f997cc5581c86a0e05f74049e6effab9347',
+        commissionBps: 0,
+      },
+    });
+
+    (txb.tx as Transaction).setSender(account.address);
+
+    return txb.tx as Transaction;
   }
 
   /// Method to create the liquidity input payload

@@ -2,9 +2,12 @@ import { asIntN } from '@cetusprotocol/common-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
+import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+import { Decimal } from 'turbos-clmm-sdk';
 
 import {
+  Aggregator7KSwapIntentionData,
   ClosePositionIntentionData,
   CollectFeeIntentionData,
   CollectRewardsAndFeeIntentionData,
@@ -23,7 +26,7 @@ import {
 export class Decoder {
   constructor(public readonly transaction: Transaction) {}
 
-  decode() {
+  async decode(client: SuiClient): Promise<DecodeResult> {
     if (this.isOpenPositionTx()) {
       return this.decodeOpenPositionTx();
     }
@@ -45,6 +48,10 @@ export class Decoder {
     if (this.isCollectFeeTx()) {
       return this.decodeCollectFeeTx();
     }
+    if (this.isAggregator7KSwapTx()) {
+      return this.decodeAggregator7KSwapTx(client);
+    }
+
     throw new Error(`Unknown transaction type`);
   }
 
@@ -176,6 +183,24 @@ export class Decoder {
     return collectRewards;
   }
 
+  private async decodeAggregator7KSwapTx(client: SuiClient): Promise<DecodeResult> {
+    const settleCommand = this.getMoveCallCommand('settle');
+
+    const [tokenIn, tokenOut] = this.getTypeArguments(settleCommand);
+    const coinDetails = await client.getCoinMetadata({ coinType: tokenIn });
+
+    return {
+      txType: TransactionType.Other,
+      type: TransactionSubType.Aggregator7KSwap,
+      intentionData: {
+        tokenIn: { address: tokenIn, decimals: coinDetails.decimals },
+        tokenOut: { address: tokenOut },
+        amountIn: `1`, // hardcoded for now
+        maxSlippage: Decimal(1), // hardcoded for now
+      } as Aggregator7KSwapIntentionData,
+    };
+  }
+
   private collectTokens(): CollectTokens {
     const fee = this.getFeeCallData();
     const rewards = this.getCollectRewardCallData();
@@ -220,6 +245,12 @@ export class Decoder {
 
   private isClosePositionTx() {
     return !!this.getMoveCallCommand('close_position');
+  }
+
+  private isAggregator7KSwapTx() {
+    return !!this.commands.find(
+      (command) => command.$kind === 'MoveCall' && command.MoveCall.function.toLowerCase().includes('settle'),
+    );
   }
 
   private getMoveCallCommand(fn: string) {
