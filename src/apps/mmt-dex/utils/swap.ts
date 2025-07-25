@@ -1,12 +1,11 @@
-/* eslint-disable no-restricted-syntax */
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import type { TokenSchema } from '@mmt-finance/clmm-sdk/dist/types';
+import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { normalizeSuiCoinType } from './common';
 // eslint-disable-next-line import/no-cycle
 import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
-import { mappedMmtV3Pool } from '@mmt-finance/clmm-sdk/dist/utils/poolUtils';
+import { NormalizedPool, Tokens } from '../types';
 
 export type NormalizedRewarder = {
   coinType: string;
@@ -24,46 +23,6 @@ export type AprBreakdown = {
     apr: string;
     amountPerDay: number;
   }[];
-};
-
-export type NormalizedPool = {
-  poolSource: 'mmt-v3';
-  poolId: string;
-  tokenXType: string;
-  tokenYType: string;
-  tickSpacing: number;
-  lpFeesPercent: string;
-  feeRate: number;
-  protocolFeesPercent: string;
-  isStable: boolean;
-  currentSqrtPrice: string;
-  currentTickIndex: string;
-  liquidity: string;
-  liquidityHM: string;
-  tokenXReserve: string;
-  tokenYReserve: string;
-  tvl: string;
-  apy: string;
-  volume24h: string;
-  fees24h: string;
-  timestamp: string;
-  rewarders: NormalizedRewarder[];
-  tokenX: TokenSchema;
-  tokenY: TokenSchema;
-  aprBreakdown: AprBreakdown;
-};
-
-export type Tokens = {
-  coinType: string;
-  tokenName: string;
-  ticker: string;
-  iconUrl: string;
-  decimals: number;
-  price: string;
-  description: string;
-  source?: 'hop' | 'af';
-  tokenType?: 'lst' | 'meme' | 'bridged' | '';
-  isVerified?: boolean;
 };
 
 export const performMmtSwap = async (

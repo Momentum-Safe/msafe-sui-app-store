@@ -1,27 +1,7 @@
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import { Reward } from '@mmt-finance/clmm-sdk/dist/types';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { NormalizedPool } from './swap';
-
-export type V3PositionType = {
-  objectId: string;
-  poolId: string;
-  upperPrice: number;
-  lowerPrice: number;
-  upperTick: number;
-  lowerTick: number;
-  liquidity: string;
-  amount: number;
-  status: string;
-  claimableRewards: number;
-  rewarders: Reward[];
-  feeAmountXUsd: number;
-  feeAmountX: number;
-  feeAmountYUsd: number;
-  feeAmountY: number;
-  claimableMaya: number;
-};
+import { V3PositionType, ClaimRewardsAsParams, NormalizedPool } from '../types';
 
 export const claimV3Rewards = (
   mmt: MmtSDK,
@@ -64,16 +44,6 @@ export const claimV3Rewards = (
     position.objectId,
     address,
   );
-};
-
-export type ClaimRewardsAsParams = {
-  sdk: MmtSDK;
-  address: string;
-  positionId: string;
-  pool: NormalizedPool;
-  txb: Transaction;
-  targetCoinType: string;
-  slippage: number;
 };
 
 export async function claimRewardsAsTargetCoin({

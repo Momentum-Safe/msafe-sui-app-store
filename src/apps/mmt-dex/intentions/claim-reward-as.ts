@@ -23,13 +23,15 @@ export class ClaimRewardAsIntention extends BaseIntention<ClaimRewardsAsIntentio
     const { params } = this.data;
     const txb = new Transaction();
 
-    for (const param of params.claimParams) {
-      await claimRewardsAsTargetCoin({
-        ...param,
-        sdk,
-        txb,
-      });
-    }
+    await Promise.all(
+      params.claimParams.map((param) =>
+        claimRewardsAsTargetCoin({
+          ...param,
+          sdk,
+          txb,
+        }),
+      ),
+    );
 
     return txb;
   }

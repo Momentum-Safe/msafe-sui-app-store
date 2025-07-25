@@ -1,15 +1,14 @@
-/* eslint-disable no-bitwise */
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { convertI32ToSigned, TickMath } from '@mmt-finance/clmm-sdk/dist/utils/math/tickMath';
 import { SuiClient } from '@mysten/sui/dist/cjs/client';
 import { Transaction } from '@mysten/sui/transactions';
+import BigNumber from 'bignumber.js';
 import BN from 'bn.js';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
+import { claimV3Rewards } from './reward';
+import { V3PositionType, NormalizedPool } from '../types';
 // eslint-disable-next-line import/no-cycle
-import { NormalizedPool } from './swap';
-import BigNumber from 'bignumber.js';
-import { claimV3Rewards, V3PositionType } from './reward';
 
 function signedShiftRight(n0: BN, shiftBy: number, bitWidth: number) {
   const twoN0 = n0.toTwos(bitWidth).shrn(shiftBy);

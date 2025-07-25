@@ -9,6 +9,7 @@ import { SuiNetworks } from '@/types';
 import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { AddLiquiditySingleSideIntention } from './intentions/add-liquidity-single-side';
 import { ClaimAllRewardsIntention } from './intentions/claim-all-rewards';
+import { ClaimRewardAsIntention } from './intentions/claim-reward-as';
 import { ClaimRewardsIntention } from './intentions/claim-rewards';
 import { ManageLiquidityIntention } from './intentions/manage-liquidity';
 import { ManageLiquiditySingleSideIntention } from './intentions/manage-liquidity-single-side';
@@ -31,7 +32,6 @@ import {
   ManageLiquidityIntentionData,
   ClaimRewardsAsIntentionData,
 } from './types';
-import { ClaimRewardAsIntention } from './intentions/claim-reward-as';
 
 export type MMTDEXIntention =
   | AddLiquidityIntention

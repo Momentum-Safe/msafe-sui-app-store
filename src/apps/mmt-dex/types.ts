@@ -1,5 +1,64 @@
-import { ClaimRewardsAsParams, V3PositionType } from './utils/reward';
-import { NormalizedPool, Tokens } from './utils/swap';
+import { MmtSDK } from '@mmt-finance/clmm-sdk';
+import { Reward } from '@mmt-finance/clmm-sdk/dist/types';
+import { Transaction } from '@mysten/sui/dist/cjs/transactions';
+
+export type NormalizedRewarder = {
+  coinType: string;
+  flowRate: number;
+  hasEnded: boolean;
+  rewardAmount: number;
+  rewardsAllocated: number;
+};
+
+export type AprBreakdown = {
+  total: string;
+  fee: string;
+  rewards: {
+    coinType: string;
+    apr: string;
+    amountPerDay: number;
+  }[];
+};
+
+export type NormalizedPool = {
+  poolSource: 'mmt-v3';
+  poolId: string;
+  tokenXType: string;
+  tokenYType: string;
+  tickSpacing: number;
+  lpFeesPercent: string;
+  feeRate: number;
+  protocolFeesPercent: string;
+  isStable: boolean;
+  currentSqrtPrice: string;
+  currentTickIndex: string;
+  liquidity: string;
+  liquidityHM: string;
+  tokenXReserve: string;
+  tokenYReserve: string;
+  tvl: string;
+  apy: string;
+  volume24h: string;
+  fees24h: string;
+  timestamp: string;
+  rewarders: NormalizedRewarder[];
+  tokenX: any; // TokenSchema, but avoid import cycle
+  tokenY: any;
+  aprBreakdown: AprBreakdown;
+};
+
+export type Tokens = {
+  coinType: string;
+  tokenName: string;
+  ticker: string;
+  iconUrl: string;
+  decimals: number;
+  price: string;
+  description: string;
+  source?: 'hop' | 'af';
+  tokenType?: 'lst' | 'meme' | 'bridged' | '';
+  isVerified?: boolean;
+};
 
 export type MMTDEXIntentionData = {
   action: TransactionSubType;
@@ -137,3 +196,32 @@ export enum TransactionSubType {
 }
 
 export const Rpc = 'https://fullnode.mainnet.sui.io/';
+
+export type V3PositionType = {
+  objectId: string;
+  poolId: string;
+  upperPrice: number;
+  lowerPrice: number;
+  upperTick: number;
+  lowerTick: number;
+  liquidity: string;
+  amount: number;
+  status: string;
+  claimableRewards: number;
+  rewarders: Reward[];
+  feeAmountXUsd: number;
+  feeAmountX: number;
+  feeAmountYUsd: number;
+  feeAmountY: number;
+  claimableMaya: number;
+};
+
+export type ClaimRewardsAsParams = {
+  sdk: MmtSDK;
+  address: string;
+  positionId: string;
+  pool: NormalizedPool;
+  txb: Transaction;
+  targetCoinType: string;
+  slippage: number;
+};
