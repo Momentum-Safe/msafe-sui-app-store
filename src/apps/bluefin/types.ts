@@ -1,4 +1,3 @@
-import Decimal from '@firefly-exchange/library-sui/dist/src/spot/clmm/decimal';
 import { SuiAddress, TransactionType } from '@msafe/sui3-utils';
 
 export interface Token {
@@ -81,7 +80,7 @@ export type Aggregator7KSwapIntentionData = {
   tokenIn: Token | undefined;
   tokenOut: Token | undefined;
   amountIn: string;
-  maxSlippage: Decimal;
+  maxSlippage: string;
 };
 
 export type BluefinIntentionData =
