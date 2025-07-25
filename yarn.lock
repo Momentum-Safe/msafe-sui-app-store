@@ -2795,10 +2795,10 @@
     js-sha256 "^0.9.0"
     js-sha3 "^0.8.0"
 
-"@mmt-finance/clmm-sdk@^1.3.10-beta.1":
-  version "1.3.10-beta.1"
-  resolved "https://registry.yarnpkg.com/@mmt-finance/clmm-sdk/-/clmm-sdk-1.3.10-beta.1.tgz#7fbf1e03eea16844670a5798f9760737a13ebf98"
-  integrity sha512-ZF5pptxlbqPjRG4Fp2Csype4u0VaygZjjtp1NIBEteNjVHW6rbNRL/CeyCi2MO2V4+S6cIPcDYMKw4I5TpD4FA==
+"@mmt-finance/clmm-sdk@^1.3.11":
+  version "1.3.11"
+  resolved "https://registry.yarnpkg.com/@mmt-finance/clmm-sdk/-/clmm-sdk-1.3.11.tgz#58a562ba82a17780644619d051549a101b0b241a"
+  integrity sha512-DrpT7bNarrDEvuyNQOQAGA7NDdOg5/v24fS9ZIVc3HW9WXkS1/9YZB07Us50d7nV+LMTCxjpQL1UosJAttC96A==
   dependencies:
     "@syntsugar/cc-graph" "^0.1.1"
     tslib "^2.8.1"
