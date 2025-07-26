@@ -20,6 +20,11 @@
   resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.3.4.tgz#bfaffd6487212fcbb334ca940ce4157dd72182eb"
   integrity sha512-zoRPgPrSWwb8Bya/YN611TZ21uKLKuK2JkDxhz1ocrLJzQzIEb8HEaEmZLYszGiXTrapVQiiDWngQiF774DcBw==
 
+"@7kprotocol/sdk-ts@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@7kprotocol/sdk-ts/-/sdk-ts-2.4.1.tgz#ecf0458bb836890089084bcda756ceb703ca141a"
+  integrity sha512-BseY6JG9Nc4W9PEnO7tVr0+ewMob78ky3YJOPKrnm6WEEj6w+fdzQ7vgWDZx7/i258dSJaA16e5lGVniqocvlQ==
+
 "@adraffy/ens-normalize@1.10.1":
   version "1.10.1"
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.10.1.tgz#63430d04bd8c5e74f8d7d049338f1cd9d4f02069"
@@ -2291,15 +2296,16 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
-"@firefly-exchange/library-sui@^2.4.18":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.5.0.tgz#9bd7538b80c330e136a1aca7fb5c7fd21ef16d92"
-  integrity sha512-hCmdc3/7+cyvnwbZ8TUIZ9nCTaZB/JCXJvEO9Y8r4DSI3GQI4N5XVEiW4HJmPB8mkxgIF82I5YopSidoL0gcDw==
+"@firefly-exchange/library-sui@2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@firefly-exchange/library-sui/-/library-sui-2.7.0.tgz#7dc33d2571113060fef7eaec0685611f1d26cb61"
+  integrity sha512-EvLrFULGOe8v8yRqBj6HnWuXawpWrtZwr0CF1MJrubOmCteTnFB197CyWutOUTTtOymeFZw53v/nMBfwWC9lbA==
   dependencies:
+    "@7kprotocol/sdk-ts" "^2.4.1"
     "@aws-sdk/client-kms" "^3.438.0"
     "@mysten/bcs" "^1.1.0"
     "@mysten/dapp-kit" "^0.14.25"
-    "@mysten/sui" "^1.17.0"
+    "@mysten/sui" "^1.21.1"
     "@mysten/wallet-standard" "^0.13.7"
     "@mysten/zklogin" "^0.7.22"
     "@noble/hashes" "^1.2.0"
@@ -2316,6 +2322,7 @@
     eth-crypto "^2.6.0"
     ethereumjs-wallet "^1.0.2"
     lodash "^4.17.21"
+    shio-fast-sdk "0.0.5"
     socket.io-client "^4.6.2"
     ts-binary-serializer "^2.1.3"
     tweetnacl "^1.0.3"
@@ -2894,7 +2901,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.28.2", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.17.0", "@mysten/sui@^1.2.0", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
+"@mysten/sui@1.15.1", "@mysten/sui@1.21.1", "@mysten/sui@1.28.2", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.2.0", "@mysten/sui@^1.21.1", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
   version "1.21.1"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.21.1.tgz#a3f43aba5e970ff46dafabd160c4963276ef3619"
   integrity sha512-HVrcqiUUSPToxbQtEgARFCnLr6FMkDHhhwWdy/urk8dqr8jnNZkU3Ppr6YUgg3vRE3sXPhuIjXOCEL6Wyq6Esw==
@@ -4901,6 +4908,15 @@ axios@^1.4.0, axios@^1.5.1, axios@^1.6.7, axios@^1.7.7:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
+axios@^1.7.2:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.11.0.tgz#c2ec219e35e414c025b2095e8b8280278478fdb6"
+  integrity sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.4"
+    proxy-from-env "^1.1.0"
+
 axios@^1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.9.0.tgz#25534e3b72b54540077d33046f77e3b8d7081901"
@@ -6696,6 +6712,17 @@ form-data@^4.0.0:
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
+    mime-types "^2.1.12"
+
+form-data@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.4.tgz#784cdcce0669a9d68e94d11ac4eea98088edd2c4"
+  integrity sha512-KrGhL9Q4zjj0kiUt5OO4Mr/A/jlI2jDYs5eHBpYHPcBEVSiipAvn2Ko2HnPe20rmcuuvMHNdZFp+4IlGTMF0Ow==
+  dependencies:
+    asynckit "^0.4.0"
+    combined-stream "^1.0.8"
+    es-set-tostringtag "^2.1.0"
+    hasown "^2.0.2"
     mime-types "^2.1.12"
 
 formdata-polyfill@^4.0.10:
@@ -9395,6 +9422,15 @@ shebang-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
+
+shio-fast-sdk@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/shio-fast-sdk/-/shio-fast-sdk-0.0.5.tgz#394a0e6d81a86976a144da51035f8d07b85326fd"
+  integrity sha512-AjnV1M2eCFHzuyfDVvxZAetn9l5CeQTwTUCrNVFiR6LoMKLBZzlIuU1xR/zz0VmulAAjiA/qfye+4w8n9u9Qcw==
+  dependencies:
+    "@mysten/sui" "^1.21.1"
+    axios "^1.7.2"
+    dotenv "^16.4.7"
 
 side-channel-list@^1.0.0:
   version "1.0.0"
