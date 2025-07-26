@@ -1,13 +1,14 @@
-/* eslint-disable no-bitwise */
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { convertI32ToSigned, TickMath } from '@mmt-finance/clmm-sdk/dist/utils/math/tickMath';
 import { SuiClient } from '@mysten/sui/dist/cjs/client';
 import { Transaction } from '@mysten/sui/transactions';
+import BigNumber from 'bignumber.js';
 import BN from 'bn.js';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
+import { claimV3Rewards } from './reward';
+import { V3PositionType, NormalizedPool } from '../types';
 // eslint-disable-next-line import/no-cycle
-import { NormalizedPool } from './swap';
 
 function signedShiftRight(n0: BN, shiftBy: number, bitWidth: number) {
   const twoN0 = n0.toTwos(bitWidth).shrn(shiftBy);
@@ -512,5 +513,112 @@ export const executeAddSingleSidedLiquidityToExistingPosition = async (
   } catch (error) {
     console.error(error);
     throw error;
+  }
+};
+
+const getLiquidityAmountByPercentage = (liquidity: string, percentage: number) =>
+  BigInt(percentage === 100 ? liquidity : new BigNumber(liquidity).multipliedBy(percentage / 100).toFixed(0));
+
+export const removeClmmLiquidity = async (
+  sdk: MmtSDK,
+  address: string,
+  position: V3PositionType,
+  pool: NormalizedPool,
+  withdrawPercentage: number,
+  tx: Transaction,
+) => {
+  const removeLiqAmount = getLiquidityAmountByPercentage(position.liquidity, withdrawPercentage);
+  const typeX = pool.tokenX.coinType;
+  const typeY = pool.tokenY.coinType;
+
+  const poolModel = {
+    objectId: pool?.poolId,
+    tokenXType: typeX,
+    tokenYType: typeY,
+  };
+
+  sdk.Pool.removeLiquidity(tx, poolModel, position.objectId, removeLiqAmount, BigInt(0), BigInt(0), address);
+
+  claimV3Rewards(sdk, address, position, pool, tx);
+
+  if (withdrawPercentage === 100) {
+    sdk.Position.closePosition(tx, position.objectId);
+  }
+};
+
+export const removeLiquiditySingleSided = async ({
+  sdk,
+  address,
+  position,
+  pool,
+  withdrawPercentage,
+  txb,
+  targetCoinType,
+  slippage,
+}: {
+  sdk: MmtSDK;
+  address: string;
+  position: V3PositionType;
+  pool: NormalizedPool;
+  withdrawPercentage: number;
+  txb: Transaction;
+  targetCoinType: string;
+  slippage: number;
+}) => {
+  const removeLiqAmount = getLiquidityAmountByPercentage(position.liquidity, withdrawPercentage);
+
+  const typeX = normalizeSuiCoinType(pool.tokenX.coinType);
+  const typeY = normalizeSuiCoinType(pool.tokenY.coinType);
+  const isSwapXToY = normalizeSuiCoinType(targetCoinType) === typeY;
+
+  const poolModel = {
+    objectId: pool?.poolId,
+    tokenXType: typeX,
+    tokenYType: typeY,
+  };
+
+  const { removeLpCoinA, removeLpCoinB } = sdk.Pool.removeLiquidity(
+    txb,
+    poolModel,
+    position.objectId,
+    removeLiqAmount,
+    BigInt(0),
+    BigInt(0),
+  );
+
+  const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
+    suiClient: sdk.rpcClient,
+    poolId: pool.poolId,
+    currentSqrtPrice: pool.currentSqrtPrice,
+    tokenX: pool.tokenX,
+    tokenY: pool.tokenY,
+    isTokenX: isSwapXToY,
+    slippagePercentage: slippage,
+  });
+
+  const inputCoin = isSwapXToY ? removeLpCoinA : removeLpCoinB;
+
+  const amount = txb.moveCall({
+    target: '0x2::coin::value',
+    arguments: [inputCoin],
+    typeArguments: [isSwapXToY ? typeX : typeY],
+  });
+
+  txb.transferObjects([isSwapXToY ? removeLpCoinB : removeLpCoinA], address);
+
+  sdk.Pool.swapV2({
+    txb,
+    transferToAddress: address,
+    pool: poolModel,
+    limitSqrtPrice,
+    amount,
+    inputCoin,
+    isXtoY: isSwapXToY,
+  });
+
+  claimV3Rewards(sdk, address, position, pool, txb);
+
+  if (withdrawPercentage === 100) {
+    sdk.Position.closePosition(txb, position.objectId);
   }
 };

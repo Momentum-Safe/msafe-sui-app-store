@@ -1,27 +1,7 @@
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import { Reward } from '@mmt-finance/clmm-sdk/dist/types';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { NormalizedPool } from './swap';
-
-export type V3PositionType = {
-  objectId: string;
-  poolId: string;
-  upperPrice: number;
-  lowerPrice: number;
-  upperTick: number;
-  lowerTick: number;
-  liquidity: string;
-  amount: number;
-  status: string;
-  claimableRewards: number;
-  rewarders: Reward[];
-  feeAmountXUsd: number;
-  feeAmountX: number;
-  feeAmountYUsd: number;
-  feeAmountY: number;
-  claimableMaya: number;
-};
+import { V3PositionType, ClaimRewardsAsParams, NormalizedPool } from '../types';
 
 export const claimV3Rewards = (
   mmt: MmtSDK,
@@ -65,3 +45,55 @@ export const claimV3Rewards = (
     address,
   );
 };
+
+export async function claimRewardsAsTargetCoin({
+  sdk,
+  address,
+  positionId,
+  pool,
+  txb,
+  targetCoinType,
+  slippage,
+}: ClaimRewardsAsParams) {
+  const poolModel = {
+    objectId: pool.poolId,
+    tokenXType: pool.tokenXType,
+    tokenYType: pool.tokenYType,
+  };
+
+  const rewarderCoinTypes = pool.rewarders.map((rewarder) => rewarder.coinType);
+
+  if (rewarderCoinTypes.length > 0) {
+    console.log('claimRewardsAsTargetCoin input', {
+      pool: poolModel,
+      positionId,
+      rewarderCoinTypes,
+      targetCoinType,
+      slippage,
+      toAddress: address,
+    });
+    await sdk.Pool.claimRewardsAs({
+      txb,
+      pool: poolModel,
+      positionId,
+      rewarderCoinTypes,
+      targetCoinType,
+      slippage,
+      toAddress: address,
+    });
+  }
+
+  const pools = await sdk.Pool.getAllPools();
+
+  await sdk.Pool.claimFeeAs({
+    txb,
+    pool: poolModel,
+    positionId,
+    targetCoinType,
+    slippage,
+    toAddress: address,
+    pools,
+  });
+
+  return txb;
+}
