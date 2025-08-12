@@ -33,6 +33,13 @@ Demo dApp: https://sui-ptx.m-safe.io/
 
 ## How to develop
 
+### Summary
+There are two ways to integrate with the MSafe Sui App store:
+
+1. When dapp call signTransaction method, directly pass in the assembled Transaction (Transaction Block), and the user can then complete the subsequent transaction process.
+
+2. Through the create helper method(see below)
+
 ### Setup
 
 - Create your app folder under `src/apps/` folder
