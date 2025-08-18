@@ -58,6 +58,7 @@
     "@mmt-finance/clmm-sdk": "^1.3.11",
     "@mysten/bcs": "^1.5.0",
     "@mysten/sui": "^1.8.0",
+    "@nemoprotocol/vaults-sdk": "^0.2.4",
     "@open-rpc/client-js": "^1.8.1",
     "@pythnetwork/pyth-sui-js": "^2.1.0",
     "@scallop-io/sui-scallop-sdk": "^2.1.6",
