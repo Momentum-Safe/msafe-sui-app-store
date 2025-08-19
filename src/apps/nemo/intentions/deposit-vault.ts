@@ -2,13 +2,11 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
+import { Vaults } from '@nemoprotocol/vaults-sdk';
 
 import { BaseIntention } from '@/apps/interface/sui';
 
 import { DepositVaultIntentionData, TransactionSubType } from '../types';
-
-import { Vaults } from '@nemoprotocol/vaults-sdk';
-
 
 export class DepositVaultIntention extends BaseIntention<DepositVaultIntentionData> {
   txType: TransactionType.Other;
@@ -24,7 +22,7 @@ export class DepositVaultIntention extends BaseIntention<DepositVaultIntentionDa
     const vault = Vaults.createSDK({
       client: suiClient,
     });
-    let tx = new Transaction();
+    const tx = new Transaction();
     await vault.deposit(this.data, account.address, tx);
     return tx;
   }
