@@ -5,12 +5,16 @@ import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
 
-import { TransactionSubType, NemoIntentionData, SuiNetworks, DepositVaultIntentionData, WithdrawVaultIntentionData } from './types';
 import { DepositVaultIntention, WithdrawVaultIntention } from './intentions';
+import {
+  TransactionSubType,
+  NemoIntentionData,
+  SuiNetworks,
+  DepositVaultIntentionData,
+  WithdrawVaultIntentionData,
+} from './types';
 
-export type NemoIntention =
-  | DepositVaultIntention
-  | WithdrawVaultIntention;
+export type NemoIntention = DepositVaultIntention | WithdrawVaultIntention;
 
 export class NemoHelper implements IAppHelperInternal<NemoIntentionData> {
   application = 'nemo';
@@ -30,10 +34,11 @@ export class NemoHelper implements IAppHelperInternal<NemoIntentionData> {
     intentionData: any;
   }> {
     const isDeposit = input.transaction.blockData.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && (trans.target.toString().toLowerCase().includes('deposit::deposit_non_entry')),
+      (trans) =>
+        trans.kind === 'MoveCall' && trans.target.toString().toLowerCase().includes('deposit::deposit_non_entry'),
     );
     const isWithdraw = input.transaction.blockData.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && (trans.target.toString().toLowerCase().includes('withdraw::withdraw')),
+      (trans) => trans.kind === 'MoveCall' && trans.target.toString().toLowerCase().includes('withdraw::withdraw'),
     );
     if (isDeposit) {
       return {
