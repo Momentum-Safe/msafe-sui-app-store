@@ -29,6 +29,7 @@ import { XcetusClaimingStakeRewardsIntention } from './intentions/xcetus-claim';
 import { XcetusConvertIntention } from './intentions/xcetus-convert';
 import { XcetusRedeemIntention } from './intentions/xcetus-redeem';
 import { XcetusRedeemLockIntention } from './intentions/xcetus-redeem-lock';
+import { CreatePoolIntention} from './intentions/create-pool';
 import { SuiNetworks, CetusIntentionData, TransactionSubType } from './types';
 
 export type CetusIntention =
@@ -55,7 +56,8 @@ export type CetusIntention =
   | SwapIntention
   | AddVaultsPositionIntention
   | RemoveVaultsPositionIntention
-  | PosVestingRedeemIntention;
+  | PosVestingRedeemIntention
+  | CreatePoolIntention;
 
 export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
   application = 'cetus';
@@ -168,6 +170,9 @@ export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
         break;
       case TransactionSubType.PosVestingRedeem:
         intention = PosVestingRedeemIntention.fromData(input.intentionData);
+        break;
+      case TransactionSubType.CreatePool:
+        intention = CreatePoolIntention.fromData(input.intentionData);
         break;
       default:
         throw new Error('not implemented');
