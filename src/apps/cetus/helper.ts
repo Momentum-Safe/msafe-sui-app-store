@@ -7,6 +7,7 @@ import { IAppHelperInternal } from '@/apps/interface/sui';
 
 import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { ClaimFeeAndMiningIntention } from './intentions/claim-fee-and-mining';
+import { CreatePoolIntention } from './intentions/create-pool';
 import { DecreaseLiquidityIntention } from './intentions/decrease-liquidity';
 import { FarmingAddLiquidityIntention } from './intentions/farming-add';
 import { FarmingBatchHarvestIntention } from './intentions/farming-batch-harvest';
@@ -29,7 +30,6 @@ import { XcetusClaimingStakeRewardsIntention } from './intentions/xcetus-claim';
 import { XcetusConvertIntention } from './intentions/xcetus-convert';
 import { XcetusRedeemIntention } from './intentions/xcetus-redeem';
 import { XcetusRedeemLockIntention } from './intentions/xcetus-redeem-lock';
-import { CreatePoolIntention } from './intentions/create-pool';
 import { SuiNetworks, CetusIntentionData, TransactionSubType } from './types';
 
 export type CetusIntention =
