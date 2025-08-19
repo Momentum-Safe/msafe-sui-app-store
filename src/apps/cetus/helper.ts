@@ -29,7 +29,7 @@ import { XcetusClaimingStakeRewardsIntention } from './intentions/xcetus-claim';
 import { XcetusConvertIntention } from './intentions/xcetus-convert';
 import { XcetusRedeemIntention } from './intentions/xcetus-redeem';
 import { XcetusRedeemLockIntention } from './intentions/xcetus-redeem-lock';
-import { CreatePoolIntention} from './intentions/create-pool';
+import { CreatePoolIntention } from './intentions/create-pool';
 import { SuiNetworks, CetusIntentionData, TransactionSubType } from './types';
 
 export type CetusIntention =
