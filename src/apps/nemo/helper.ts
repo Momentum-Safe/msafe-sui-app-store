@@ -21,6 +21,7 @@ export class NemoHelper implements IAppHelperInternal<NemoIntentionData> {
 
   supportSDK = '@mysten/sui' as const;
 
+  // eslint-disable-next-line consistent-return
   async deserialize(input: {
     transaction: Transaction;
     chain: IdentifierString;
