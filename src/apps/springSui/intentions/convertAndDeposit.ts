@@ -1,7 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { createObligationIfNoneExists, sendObligationToUser } from '@suilend/sdk';
-import { convertLsts, LstClient } from '@suilend/springsui-sdk';
+import { LstClient, convertLstsAndRebalance } from '@suilend/springsui-sdk';
 
 import { ConvertAndDepositIntentionData } from '@/apps/springSui/types/intention';
 
@@ -48,7 +48,7 @@ export class ConvertAndDepositIntention extends SpringSuiBaseIntention<ConvertAn
       obligationOwnerCap,
     );
 
-    const lstCoin = convertLsts(inLstClient, outLstClient, transaction, account.address, this.data.amount);
+    const lstCoin = convertLstsAndRebalance(inLstClient, outLstClient, transaction, account.address, this.data.amount);
     suilendClient.deposit(lstCoin, this.data.outCoinType, obligationOwnerCapId, transaction);
 
     if (didCreate) {

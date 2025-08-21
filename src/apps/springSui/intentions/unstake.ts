@@ -36,7 +36,8 @@ export class UnstakeIntention extends SpringSuiBaseIntention<UnstakeIntentionDat
     //
 
     const transaction = new Transaction();
-    inLstClient.redeemAmountAndSendToUser(transaction, account.address, this.data.amount);
+    // inLstClient.redeemAmountAndSendToUser(transaction, account.address, this.data.amount);
+    inLstClient.redeemAmountAndRebalanceAndSendToUser(transaction, account.address, this.data.amount);
 
     return transaction;
   }
