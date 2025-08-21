@@ -34,7 +34,7 @@ export class WithdrawStakedScaIntention extends ScallopCoreBaseIntention<Withdra
     const tx = client.builder.createTxBlock();
     tx.setSender(sender);
 
-    await tx.redeemScaQuick(vescaKey);
+    await tx.redeemScaQuick({ veScaKey: vescaKey });
     return tx.txBlock;
   }
 

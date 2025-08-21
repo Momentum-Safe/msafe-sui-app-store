@@ -29,7 +29,7 @@ export class RedeemScaIntention extends ScallopCoreBaseIntention<RedeemScaIntent
     const tx = client.builder.createTxBlock();
     tx.setSender(sender);
 
-    await tx.redeemScaQuick(veScaKey);
+    await tx.redeemScaQuick({ veScaKey });
     return tx.txBlock;
   }
 

@@ -82,6 +82,7 @@
     "@msafe/sui3-utils": "^3.1.66",
     "@mysten/sui.js": "0.54.1",
     "@mysten/wallet-standard": "0.11.6",
+    "@sentry/nextjs": "^10.5.0",
     "@types/jest": "^29.2.1",
     "@types/luxon": "^3.4.2",
     "@typescript-eslint/eslint-plugin": "^5.41.0",

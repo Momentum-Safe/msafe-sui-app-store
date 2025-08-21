@@ -1,6 +1,6 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
-import { convertLstsAndSendToUser, LstClient } from '@suilend/springsui-sdk';
+import { LstClient, convertLstsAndRebalanceAndSendToUser } from '@suilend/springsui-sdk';
 
 import { ConvertIntentionData } from '@/apps/springSui/types/intention';
 
@@ -40,7 +40,7 @@ export class ConvertIntention extends SpringSuiBaseIntention<ConvertIntentionDat
     //
 
     const transaction = new Transaction();
-    convertLstsAndSendToUser(inLstClient, outLstClient, transaction, account.address, this.data.amount);
+    convertLstsAndRebalanceAndSendToUser(inLstClient, outLstClient, transaction, account.address, this.data.amount);
 
     return transaction;
   }
