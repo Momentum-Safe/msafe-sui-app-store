@@ -1485,19 +1485,18 @@
   resolved "https://registry.yarnpkg.com/@bluefin-exchange/bluefin7k-aggregator-sdk/-/bluefin7k-aggregator-sdk-4.3.0.tgz#5e0a3d67b40d8bbfa979d00d9e1c092474033876"
   integrity sha512-BHQsTTyPZcOBZEy2nnIkbFwHZYAS6uL+ojD0S6ckTAJiKMDi+D7jgR5p+UKZ6FE0jdrVIXhoVFVElwmwphNviQ==
 
-"@cetusprotocol/aggregator-sdk@0.16.0":
-  version "0.16.0"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-0.16.0.tgz#ed7f2a609e0a6a7ea9544a686d8e28b95fb641f6"
-  integrity sha512-BULoHN8PAPfPGUMCLcqt3TEYh56JLYl8L6Y84sykGJ+kx3U7Ezs0AEzqsVNlEu0kZSyTN+su+4+EFQZqWKICpg==
+"@cetusprotocol/aggregator-sdk@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-1.0.3.tgz#747907b861e60b520a904ed5a16495d7c5a98cbe"
+  integrity sha512-mJUK0tW2WrqWO1TcErqSw87eVALGuHTKKDZJCkH1vH3YT65h9BxLrrO7/X8XSKvjRC/S+eF4yLNdFclJ38in8w==
   dependencies:
     "@babel/core" "^7.24.5"
     "@babel/preset-env" "^7.24.5"
     "@babel/preset-typescript" "^7.24.1"
     "@jest/globals" "^29.7.0"
-    "@mysten/sui" "^1.6.0"
+    "@mysten/sui" "^1.0.5"
     "@pythnetwork/pyth-sui-js" "^2.1.0"
     "@types/jest" "^29.5.12"
-    "@types/json-bigint" "^1.0.4"
     "@types/node" "^20.12.12"
     babel-jest "^29.7.0"
     bip39 "^3.1.0"
@@ -2996,7 +2995,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.15.1", "@mysten/sui@1.24.0", "@mysten/sui@1.28.2", "@mysten/sui@^1.14.2", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.2.0", "@mysten/sui@^1.21.1", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.34.0", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
+"@mysten/sui@1.15.1", "@mysten/sui@1.24.0", "@mysten/sui@1.28.2", "@mysten/sui@^1.0.5", "@mysten/sui@^1.14.2", "@mysten/sui@^1.16.0", "@mysten/sui@^1.16.2", "@mysten/sui@^1.2.0", "@mysten/sui@^1.21.1", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.34.0", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
   version "1.37.3"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.37.3.tgz#977081efd1ee4bb42d35309858d68b52c41232af"
   integrity sha512-Sk4gBp1Nanqndyd1SUq+TSThMKj/20K8qf3QKIO8OHiSMSH2Z+UTWgbVfxk+EyUsmPYm4Zed18qEMqgifjkbpw==

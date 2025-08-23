@@ -15,7 +15,7 @@ export const getSwapRouterTxb = async (
   const txb = new Transaction();
   await aggregatorSdk.fastRouterSwap({
     ...txbParams,
-    routers: restituteMsafeFastRouterSwapParams(txbParams.routers),
+    router: restituteMsafeFastRouterSwapParams(txbParams.router),
     txb,
   });
   return txb;
