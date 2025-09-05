@@ -1,5 +1,5 @@
-import { pool } from 'navi-sdk';
+import { getPool } from '@naviprotocol/lending';
 
-export function getPoolConfigByAssetId(assetId: string | number) {
-  return Object.values(pool).find((item) => String(item.assetId) === String(assetId));
+export async function getPoolConfigByAssetId(assetId: string | number) {
+  return getPool(assetId);
 }

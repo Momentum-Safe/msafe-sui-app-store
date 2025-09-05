@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { WalletAccount, SuiSignTransactionBlockInput } from '@mysten/wallet-standard';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { IAppHelperInternal } from '@/apps/interface/sui';
 import { SuiNetworks } from '@/types';
 
 import { updatePackageId } from './config';
@@ -35,17 +35,25 @@ export type NAVIIntentionData =
   | ClaimRewardIntentionData
   | ClaimSupplyIntentionData;
 
-export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData> {
+export class NAVIAppHelper implements IAppHelperInternal<NAVIIntentionData> {
   application = 'navi';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui' as const;
 
-  async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
-  ): Promise<{ txType: TransactionType; txSubType: TransactionSubType; intentionData: NAVIIntentionData }> {
+  async deserialize(input: {
+    transaction: Transaction;
+    network: SuiNetworks;
+    suiClient: SuiClient;
+    account: WalletAccount;
+    appContext?: any;
+  }): Promise<{
+    txType: TransactionType;
+    txSubType: TransactionSubType;
+    intentionData: NAVIIntentionData;
+  }> {
     await updatePackageId();
-    const { transactionBlock } = input;
-    const decoder = new Decoder(transactionBlock);
+    const { transaction } = input;
+    const decoder = new Decoder(transaction);
     const result = decoder.decode();
     return {
       txType: TransactionType.Other,
@@ -60,7 +68,7 @@ export class NAVIAppHelper implements IAppHelperInternalLegacy<NAVIIntentionData
     txSubType: string;
     suiClient: SuiClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { suiClient, account } = input;
     let intention: NAVIIntention;
     await updatePackageId();
