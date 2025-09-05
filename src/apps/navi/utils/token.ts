@@ -1,4 +1,4 @@
-import { SuiClient } from '@mysten/sui.js/client';
+import { SuiClient } from '@mysten/sui/client';
 
 export async function getTokenAmount(client: SuiClient, sender: string, coinType: string): Promise<number> {
   if (!sender) {

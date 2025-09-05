@@ -1,6 +1,29 @@
+;(() => {
+  if ((globalThis.fetch as any).isWraped) {
+    return
+  }
+  const _fetch = fetch
+
+  globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    return _fetch(input, {
+      ...init,
+      headers: {
+        ...init?.headers,
+        Host: 'app.naviprotocol.io',
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+        Referer: 'https://app.naviprotocol.io/',
+        origin: 'app.naviprotocol.io'
+      }
+    })
+  }
+  ;(globalThis.fetch as any).isWraped = true
+})()
+
+
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
-import { depositCoin, pool, borrowCoin, repayDebt, withdrawCoin } from 'navi-sdk';
+import { depositCoinPTB, getPool, borrowCoinPTB, repayCoinPTB, withdrawCoinPTB, claimLendingRewardsPTB, getUserAvailableLendingRewards } from '@naviprotocol/lending';
 
 import { Decoder } from '@/apps/navi/decoder';
 import { EntryBorrowIntentionData } from '@/apps/navi/intentions/entry-borrow';
@@ -9,6 +32,7 @@ import { EntryRepayIntentionData } from '@/apps/navi/intentions/entry-repay';
 import { EntryWithdrawIntentionData } from '@/apps/navi/intentions/entry-withdraw';
 import { EntryMultiDepositIntentionData } from '@/apps/navi/intentions/multi-deposit';
 import { TransactionSubType } from '@/apps/navi/types';
+import { ClaimRewardIntentionData } from '@/apps/navi/intentions/claim-reward';
 
 const address = '0xfaba86400d9cc1d144bbc878bc45c4361d53a16c942202b22db5d26354801e8e';
 const client = new SuiClient({ url: getFullnodeUrl('mainnet') });
@@ -18,7 +42,10 @@ describe('Navi App', () => {
     const tx = new Transaction();
     const amount = 10000000000;
     const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
-    await depositCoin(tx as any, pool.Sui, toDeposit, amount);
+    const pool = await getPool(0);
+    await depositCoinPTB(tx as any, pool, toDeposit, {
+      amount
+    });
 
     const decoder = new Decoder(tx as any);
     const result = decoder.decode();
@@ -26,13 +53,14 @@ describe('Navi App', () => {
 
     expect(result.type).toBe(TransactionSubType.EntryDeposit);
     expect(intentionData.amount).toBe(amount);
-    expect(intentionData.assetId).toBe(pool.Sui.assetId);
+    expect(intentionData.assetId).toBe(pool.id);
   });
 
   it('Test borrow deserialize', async () => {
     const tx = new Transaction();
     const amount = 10000000000;
-    await borrowCoin(tx as any, pool.Sui, amount);
+    const pool = await getPool(0);
+    await borrowCoinPTB(tx as any, pool, amount);
 
     const decoder = new Decoder(tx as any);
     const result = decoder.decode();
@@ -40,14 +68,17 @@ describe('Navi App', () => {
 
     expect(result.type).toBe(TransactionSubType.EntryBorrow);
     expect(intentionData.amount).toBe(amount);
-    expect(intentionData.assetId).toBe(pool.Sui.assetId);
+    expect(intentionData.assetId).toBe(pool.id);
   });
 
   it('Test repay deserialize', async () => {
     const tx = new Transaction();
     const amount = 10000000000;
+    const pool = await getPool(0);
     const [toRepay] = tx.splitCoins(tx.gas, [amount]);
-    await repayDebt(tx as any, pool.Sui, toRepay, amount);
+    await repayCoinPTB(tx as any, pool, toRepay, {
+      amount
+    });
 
     const decoder = new Decoder(tx as any);
     const result = decoder.decode();
@@ -55,13 +86,14 @@ describe('Navi App', () => {
 
     expect(result.type).toBe(TransactionSubType.EntryRepay);
     expect(intentionData.amount).toBe(amount);
-    expect(intentionData.assetId).toBe(pool.Sui.assetId);
+    expect(intentionData.assetId).toBe(pool.id);
   });
 
   it('Test withdraw deserialize', async () => {
     const tx = new Transaction();
     const amount = 10000000000;
-    await withdrawCoin(tx as any, pool.Sui, amount);
+    const pool = await getPool(0);
+    await withdrawCoinPTB(tx as any, pool, amount);
 
     const decoder = new Decoder(tx as any);
     const result = decoder.decode();
@@ -69,15 +101,20 @@ describe('Navi App', () => {
 
     expect(result.type).toBe(TransactionSubType.EntryWithdraw);
     expect(intentionData.amount).toBe(amount);
-    expect(intentionData.assetId).toBe(pool.Sui.assetId);
+    expect(intentionData.assetId).toBe(pool.id);
   });
 
   it('Test multi-deposit deserialize', async () => {
     const tx = new Transaction();
     const amount = 10000000000;
     const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
-    await depositCoin(tx as any, pool.Sui, toDeposit, amount);
-    await depositCoin(tx as any, pool.Sui, toDeposit, amount);
+    const pool = await getPool(0);
+    await depositCoinPTB(tx as any, pool, toDeposit, {
+      amount
+    });
+    await depositCoinPTB(tx as any, pool, toDeposit, {
+      amount
+    });
 
     const decoder = new Decoder(tx as any);
     const result = decoder.decode();
@@ -85,19 +122,23 @@ describe('Navi App', () => {
 
     expect(result.type).toBe(TransactionSubType.EntryMultiDeposit);
     expect(intentionData.list[0].amount).toBe(amount);
-    expect(intentionData.list[0].assetId).toBe(pool.Sui.assetId);
+    expect(intentionData.list[0].assetId).toBe(pool.id);
     expect(intentionData.list[1].amount).toBe(amount);
-    expect(intentionData.list[1].assetId).toBe(pool.Sui.assetId);
+    expect(intentionData.list[1].assetId).toBe(pool.id);
   });
 
-  // it('Test claim reward deserialize', async () => {
-  //   const tx = await claimAllRewardsPTB(client as any, address);
+  it('Test claim reward deserialize', async () => {
+    const rewards = await getUserAvailableLendingRewards(address);
+    const tx = new Transaction();
+    await claimLendingRewardsPTB(tx, rewards);
 
-  //   const decoder = new Decoder(tx as any);
-  //   const result = decoder.decode();
-  //   const intentionData = result.intentionData as ClaimRewardIntentionData;
+    const decoder = new Decoder(tx as any);
+    const result = decoder.decode();
+    const intentionData = result.intentionData as ClaimRewardIntentionData;
 
-  //   expect(result.type).toBe(TransactionSubType.ClaimReward);
-  //   expect(intentionData.type).toBe('claim_reward');
-  // });
+    console.log('fuck', intentionData)
+
+    expect(result.type).toBe(TransactionSubType.ClaimReward);
+    expect(intentionData.type).toBe('claim_reward');
+  });
 });

@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { depositToken } from '../api/incentiveV2';
 import { TransactionSubType } from '../types';
@@ -15,7 +15,7 @@ export interface EntryDepositIntentionData {
   assetId: number;
 }
 
-export class EntryDepositIntention extends BaseIntentionLegacy<EntryDepositIntentionData> {
+export class EntryDepositIntention extends BaseIntention<EntryDepositIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.EntryDeposit;
@@ -24,13 +24,13 @@ export class EntryDepositIntention extends BaseIntentionLegacy<EntryDepositInten
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { suiClient, account } = input;
     const { assetId, amount } = this.data;
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
     console.log('build', this.data);
 
-    const pool = getPoolConfigByAssetId(assetId);
+    const pool = await getPoolConfigByAssetId(assetId);
 
     if (assetId === 0) {
       const [toDeposit] = tx.splitCoins(tx.gas, [amount]);
@@ -38,9 +38,9 @@ export class EntryDepositIntention extends BaseIntentionLegacy<EntryDepositInten
       return txb;
     }
 
-    const tokenInfo = await getTokenObjs(suiClient, account.address, pool.type);
+    const tokenInfo = await getTokenObjs(suiClient, account.address, pool.suiCoinType);
     if (!tokenInfo.data[0]) {
-      throw new Error(`Insufficient balance for ${pool.name} Token`);
+      throw new Error(`Insufficient balance for ${pool.suiCoinType} Token`);
     }
 
     const coinObj = tokenInfo.data[0].coinObjectId;
