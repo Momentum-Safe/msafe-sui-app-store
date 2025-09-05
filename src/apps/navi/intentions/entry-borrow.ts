@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { Transaction} from '@mysten/sui/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntention } from '@/apps/interface/sui';

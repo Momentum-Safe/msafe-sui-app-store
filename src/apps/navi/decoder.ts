@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 import { bcs } from '@mysten/sui.js/bcs';
 import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { Transaction } from '@mysten/sui/transactions';
 import { TransactionBlockInput } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 
 import config from './config';
 import { TransactionSubType } from './types';

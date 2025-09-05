@@ -3,7 +3,7 @@ import type { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention} from '@/apps/interface/sui';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { claimSupply } from '../api/incentiveV2';
 import { TransactionSubType } from '../types';
