@@ -1,8 +1,8 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { borrowToken } from '../api/incentiveV2';
 import { TransactionSubType } from '../types';
@@ -13,7 +13,7 @@ export interface EntryBorrowIntentionData {
   assetId: number;
 }
 
-export class EntryBorrowIntention extends BaseIntentionLegacy<EntryBorrowIntentionData> {
+export class EntryBorrowIntention extends BaseIntention<EntryBorrowIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.EntryBorrow;
@@ -22,12 +22,12 @@ export class EntryBorrowIntention extends BaseIntentionLegacy<EntryBorrowIntenti
     super(data);
   }
 
-  async build(input: { account: WalletAccount }): Promise<TransactionBlock> {
+  async build(input: { account: WalletAccount }): Promise<Transaction> {
     const { assetId, amount } = this.data;
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
     console.log('build', this.data);
 
-    const pool = getPoolConfigByAssetId(assetId);
+    const pool = await getPoolConfigByAssetId(assetId);
 
     const txb = await borrowToken(tx, pool, amount, input.account.address);
     return txb;

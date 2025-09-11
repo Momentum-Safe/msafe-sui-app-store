@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import type { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import type { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntention } from '@/apps/interface/sui';
 
 import { claimReward } from '../api/incentiveV2';
 import { TransactionSubType } from '../types';
@@ -12,7 +12,7 @@ export interface ClaimRewardIntentionData {
   type: string;
 }
 
-export class ClaimRewardIntention extends BaseIntentionLegacy<ClaimRewardIntentionData> {
+export class ClaimRewardIntention extends BaseIntention<ClaimRewardIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.ClaimReward;
@@ -21,7 +21,7 @@ export class ClaimRewardIntention extends BaseIntentionLegacy<ClaimRewardIntenti
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
+  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { type } = this.data;
     console.log('claim reward', type);
     const txb = await claimReward(input.suiClient, input.account.address);
