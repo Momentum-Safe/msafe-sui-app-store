@@ -46,7 +46,6 @@ describe('Ember Protocol', () => {
 
     const intentionData = await helper.deserialize({ transaction: resolvedTx, appContext } as any);
 
-
     ts.setIntention(intentionData);
 
     const txb = await ts.voteAndExecuteIntention();
