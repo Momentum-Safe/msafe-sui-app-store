@@ -1,5 +1,5 @@
 import { SuiClient } from '@firefly-exchange/library-sui';
-import { IDeployment, UserCalls } from '@firefly-exchange/library-sui/dist/src/vaults';
+import { UserCalls } from '@firefly-exchange/library-sui/vaults';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from './types';
@@ -97,8 +97,6 @@ export const config = {
         DepositCoinDecimals: 6,
       },
       'Gamma SUI': {
-        Admin: '0x640cb05a00f3cf5f872bc99f892bccd28cbe61fcaef402727263a18cd5b505e1',
-        Operator: '0x640cb05a00f3cf5f872bc99f892bccd28cbe61fcaef402727263a18cd5b505e1',
         Name: 'Gamma SUI',
         FeePercentage: '0',
         MinWithdrawalShares: '100000000',
@@ -109,8 +107,6 @@ export const config = {
         DepositCoinDecimals: 9,
       },
       'Gamma USDC': {
-        Admin: '0x640cb05a00f3cf5f872bc99f892bccd28cbe61fcaef402727263a18cd5b505e1',
-        Operator: '0x640cb05a00f3cf5f872bc99f892bccd28cbe61fcaef402727263a18cd5b505e1',
         Name: 'Gamma USDC',
         FeePercentage: '0',
         MinWithdrawalShares: '100000',
@@ -121,43 +117,34 @@ export const config = {
         DepositCoinDecimals: 6,
       },
       'Ember SUI': {
-        Admin: '0x37a8d55f29e5b4bdba0cb3fe0ba51a93db8c868fe0de649e1bf36bb42ea7d959',
-        Operator: '0x640cb05a00f3cf5f872bc99f892bccd28cbe61fcaef402727263a18cd5b505e1',
         Name: 'Ember SUI',
         FeePercentage: '0',
         MinWithdrawalShares: '100000000',
-        SubAccounts: [],
         ObjectId: '0xfaf4d0ec9b76147c926c0c8b2aba39ea21ec991500c1e3e53b60d447b0e5f655',
         ReceiptCoinType: '0x66629328922d609cf15af779719e248ae0e63fe0b9d9739623f763b33a9c97da::esui::ESUI',
         DepositCoinType: '0x2::sui::SUI',
         DepositCoinDecimals: 9,
       },
       'Ember BLUE': {
-        Admin: '0x37a8d55f29e5b4bdba0cb3fe0ba51a93db8c868fe0de649e1bf36bb42ea7d959',
-        Operator: '0x37a8d55f29e5b4bdba0cb3fe0ba51a93db8c868fe0de649e1bf36bb42ea7d959',
         Name: 'Ember BLUE',
         FeePercentage: '0',
         MinWithdrawalShares: '100000000',
-        SubAccounts: [],
         ObjectId: '0xf8d500875677345b6c0110ee8a48abc7c4974ca697df71eefd229827565168d0',
         ReceiptCoinType: '0xd84b887935d73110c8cb4b981f4925f83b7a20c41ac572840513422c5da283d6::eblue::EBLUE',
         DepositCoinType: '0xe1b45a0e641b9955a20aa0ad1c1f4ad86aad8afb07296d4085e349a50e90bdca::blue::BLUE',
         DepositCoinDecimals: 9,
       },
       'Bluefin Liquidity Provider': {
-        Admin: '0x37a8d55f29e5b4bdba0cb3fe0ba51a93db8c868fe0de649e1bf36bb42ea7d959',
-        Operator: '0x640cb05a00f3cf5f872bc99f892bccd28cbe61fcaef402727263a18cd5b505e1',
         Name: 'Bluefin Liquidity Provider',
         FeePercentage: '0',
         MinWithdrawalShares: '100000000',
-        SubAccounts: [],
         ObjectId: '0x60afd035fd99de179297902cebe5fd9a803e79086fbe812032473f4e3175e57c',
         ReceiptCoinType: '0x90cb9a8b94284a541e0501df915ebf5a248df832d1098a8b5ce4f5d9a03c77f0::blp::BLP',
         DepositCoinType: '0xdba34672e30cb065b1f93e3ab55318768fd6fef66c15942c9f7cb846e2f900e7::usdc::USDC',
         DepositCoinDecimals: 6,
       },
     },
-  } as IDeployment,
+  },
 };
 
 export const getEmberSDK = (network: SuiNetworks, account: WalletAccount) => {

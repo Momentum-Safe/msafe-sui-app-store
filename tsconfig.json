@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "isolatedModules": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "newLine": "LF",

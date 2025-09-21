@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SuiClient } from '@firefly-exchange/library-sui';
-import * as BluefinLibrary from '@firefly-exchange/library-sui';
-import { WalletAccount } from '@mysten/wallet-standard';
+import { IBluefinSpotContracts, OnChainCalls } from '@firefly-exchange/library-sui/spot';
+import type { WalletAccount } from '@mysten/wallet-standard';
 
-import { SuiNetworks } from './types';
+import type { SuiNetworks } from './types';
 
 export const config = {
   rpc: 'https://fullnode.mainnet.sui.io/',
@@ -21,7 +21,7 @@ export const getBluefinSpotSDK = (network: SuiNetworks, account: WalletAccount) 
 
   const client = new SuiClient({ url: config.rpc });
 
-  const spotSDK = new (BluefinLibrary as any).OnChainCalls(client, config.objects, {
+  const spotSDK = new OnChainCalls(client, config.objects as IBluefinSpotContracts, {
     address: account.address,
     isUIWallet: false,
   });
