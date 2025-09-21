@@ -1,5 +1,5 @@
+import { UserCalls } from '@ember-finance/sdk/vaults';
 import { SuiClient } from '@firefly-exchange/library-sui';
-import { UserCalls } from '@firefly-exchange/library-sui/vaults';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from './types';
