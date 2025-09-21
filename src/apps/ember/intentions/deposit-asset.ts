@@ -21,7 +21,7 @@ export class DepositAsset extends BaseIntention<EmberIntentionData> {
     const { account, network } = input;
     console.log(this.data);
 
-    const sdk = getEmberSDK(network, account);
+    const sdk = await getEmberSDK(network, account);
     const { vaultID, amount } = this.data as DepositAssetIntentionData;
     const tx = await sdk.depositAsset(vaultID, amount, { returnTxb: true, sender: account.address });
     return tx as unknown as Transaction;

@@ -26,7 +26,7 @@ export class CancelPendingWithdrawalRequest extends BaseIntention<EmberIntention
     const { account, network } = input;
     console.log(this.data);
 
-    const sdk = getEmberSDK(network, account);
+    const sdk = await getEmberSDK(network, account);
     const { vaultID, sequenceNumber } = this.data as CancelPendingWithdrawalRequestIntentionData;
     const tx = await sdk.cancelPendingWithdrawalRequest(vaultID, sequenceNumber, {
       returnTxb: true,

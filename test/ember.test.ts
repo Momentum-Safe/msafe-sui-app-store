@@ -21,12 +21,13 @@ describe('Ember Protocol', () => {
 
   const helper = new EmberHelper();
   const suiClient = new SuiClient({ url: 'https://fullnode.mainnet.sui.io/' });
-  const emberSDK = getEmberSDK('sui:mainnet', testWallet);
+  let emberSDK: any;
 
   let ts: TestSuite<EmberIntentionData>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     ts = new TestSuite(testWallet, 'sui:mainnet', helper);
+    emberSDK = await getEmberSDK('sui:mainnet', testWallet);
   });
 
   it('should deserialize and build deposit asset transaction', async () => {

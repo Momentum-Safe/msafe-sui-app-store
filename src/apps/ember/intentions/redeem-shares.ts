@@ -21,7 +21,7 @@ export class RedeemShares extends BaseIntention<EmberIntentionData> {
     const { account, network } = input;
     console.log(this.data);
 
-    const sdk = getEmberSDK(network, account);
+    const sdk = await getEmberSDK(network, account);
     const { vaultID, numShares } = this.data as RedeemSharesIntentionData;
     const tx = await sdk.redeemShares(vaultID, numShares, { returnTxb: true, sender: account.address });
     return tx as unknown as Transaction;
