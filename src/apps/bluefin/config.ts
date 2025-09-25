@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { SuiClient } from '@firefly-exchange/library-sui';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { IBluefinSpotContracts, OnChainCalls } from '@firefly-exchange/library-sui/dist/src/spot';
+import { IBluefinSpotContracts, OnChainCalls } from '@firefly-exchange/library-sui/spot';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from './types';
