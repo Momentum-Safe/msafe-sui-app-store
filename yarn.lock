@@ -1473,10 +1473,10 @@
   resolved "https://registry.yarnpkg.com/@bluefin-exchange/bluefin7k-aggregator-sdk/-/bluefin7k-aggregator-sdk-4.3.0.tgz#5e0a3d67b40d8bbfa979d00d9e1c092474033876"
   integrity sha512-BHQsTTyPZcOBZEy2nnIkbFwHZYAS6uL+ojD0S6ckTAJiKMDi+D7jgR5p+UKZ6FE0jdrVIXhoVFVElwmwphNviQ==
 
-"@cetusprotocol/aggregator-sdk@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-1.2.1.tgz#da9a81d5a00d5b5214c75158044e9745b785fa11"
-  integrity sha512-jfFNO2kF5Y9gDP4QT75GJ5qTOMIVkOMzm/XA5kPRGXr83FyQLDzehgFt8M7TjRD6Y1/50kGpG9dMibA+XBJwuw==
+"@cetusprotocol/aggregator-sdk@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-1.4.1.tgz#040514940317c3e0c56df61af6f13446f548dc25"
+  integrity sha512-chFLcIL3IM6VRgkfmrIswrHr7Mt2dMEoHMa/QO1E3WTxt53vgSx9MFsF/55Z+kBz92wUzkQ468hZ6Lb/Xdj9OQ==
   dependencies:
     "@mysten/sui" "^1.0.5"
     "@pythnetwork/pyth-sui-js" "^2.1.0"
