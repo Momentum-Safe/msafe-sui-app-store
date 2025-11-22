@@ -24,7 +24,7 @@
     "clean": "rm -rf ./dist",
     "build": "yarn clean && tsup --platform browser --format cjs,esm --minify --dts",
     "build-yalc": "yarn build && yalc publish --private",
-    "test": "jest ./test/navi.test.ts",
+    "test": "jest",
     "coverage": "jest --coverage",
     "prerelease": "yarn build && chmod +x ./scripts/prerelease.sh && ./scripts/prerelease.sh",
     "lint": "npx eslint . --ext .js,.ts,.jsx,.tsx",
