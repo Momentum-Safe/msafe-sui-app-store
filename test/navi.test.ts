@@ -143,8 +143,6 @@ describe('Navi App', () => {
     const result = decoder.decode();
     const intentionData = result.intentionData as ClaimRewardIntentionData;
 
-    console.log('fuck', intentionData);
-
     expect(result.type).toBe(TransactionSubType.ClaimReward);
     expect(intentionData.type).toBe('claim_reward');
   });

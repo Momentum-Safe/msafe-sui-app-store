@@ -2468,10 +2468,10 @@
     "@emnapi/runtime" "^1.4.3"
     "@tybys/wasm-util" "^0.10.0"
 
-"@naviprotocol/lending@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@naviprotocol/lending/-/lending-1.3.1.tgz#254d24ab67a03702af6651e597c5f9af248b8088"
-  integrity sha512-9kfD28qC82bdqEEipLOT/DWUM8398jSdOr2qozdgANDDMk3L8Wtd0xjutis5+vOErT6w4gJEFKhmNX8DIRgflA==
+"@naviprotocol/lending@1.3.2-dev.1":
+  version "1.3.2-dev.1"
+  resolved "https://registry.yarnpkg.com/@naviprotocol/lending/-/lending-1.3.2-dev.1.tgz#1280ae488b91c897593cbb25a0b948a451f47be8"
+  integrity sha512-TryQdBfb9Ef1BShP3vihifu7sjknvq7Ft/UbcEZ4wONNO8MjqiM5cP+weXewC6TY8zxnMPbo6qJ0QELg7TMRHw==
   dependencies:
     "@mysten/bcs" "1.6.3"
     "@pythnetwork/pyth-sui-js" "^2.0.0"
