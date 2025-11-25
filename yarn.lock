@@ -2330,6 +2330,14 @@
   dependencies:
     bs58 "^6.0.0"
 
+"@mysten/bcs@1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.6.3.tgz#49eb50ea8356b36971a82df7992182d3521ea1d7"
+  integrity sha512-QQ6u0U7a4+/o6rZ9tALTeGYMdf6V5z/HkRI/mhD5/fSr80DJoGzOWpFszcN/fhJpKb36vBaSQUMpS7yNQ10xBQ==
+  dependencies:
+    "@mysten/utils" "0.1.0"
+    "@scure/base" "^1.2.6"
+
 "@mysten/bcs@1.7.0", "@mysten/bcs@^1.1.0", "@mysten/bcs@^1.5.0", "@mysten/bcs@^1.6.0", "@mysten/bcs@^1.6.3":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-1.7.0.tgz#efe765d3ba13febd26a51c2fde2575758656c0c8"
@@ -2373,7 +2381,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.15.1", "@mysten/sui@1.24.0", "@mysten/sui@1.28.2", "@mysten/sui@1.34.0", "@mysten/sui@^1.0.5", "@mysten/sui@^1.14.2", "@mysten/sui@^1.2.0", "@mysten/sui@^1.21.1", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.34.0", "@mysten/sui@^1.37.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
+"@mysten/sui@1.15.1", "@mysten/sui@1.24.0", "@mysten/sui@1.28.2", "@mysten/sui@^1.0.5", "@mysten/sui@^1.14.2", "@mysten/sui@^1.2.0", "@mysten/sui@^1.21.1", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.34.0", "@mysten/sui@^1.37.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0":
   version "1.37.3"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.37.3.tgz#977081efd1ee4bb42d35309858d68b52c41232af"
   integrity sha512-Sk4gBp1Nanqndyd1SUq+TSThMKj/20K8qf3QKIO8OHiSMSH2Z+UTWgbVfxk+EyUsmPYm4Zed18qEMqgifjkbpw==
@@ -2390,6 +2398,13 @@
     graphql "^16.11.0"
     poseidon-lite "^0.2.0"
     valibot "^0.36.0"
+
+"@mysten/utils@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@mysten/utils/-/utils-0.1.0.tgz#115ba377d3962b0ab64bf0ad66e905da8411c3ed"
+  integrity sha512-nFxqArh4cr629elLsIk7UZmx5dFVshblwrfwaG7Dm2L/ii2C65bhK5tdTs6UiC3K0tCr8q8svrgzXyF9L0CN/A==
+  dependencies:
+    "@scure/base" "^1.2.6"
 
 "@mysten/utils@0.1.1":
   version "0.1.1"
@@ -2453,16 +2468,15 @@
     "@emnapi/runtime" "^1.4.3"
     "@tybys/wasm-util" "^0.10.0"
 
-"@naviprotocol/lending@^1.0.6":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@naviprotocol/lending/-/lending-1.0.6.tgz#30830921c158f7a84fa879acdf6f67baae526a5c"
-  integrity sha512-i1LflFtmoDDF2y+4r9S1x0KfNz5u4bJRVROKKSBiHw7yGkYwoIFIv2XrkrTXp8RBk16qeuVm7eojJI+Zjxg0gQ==
+"@naviprotocol/lending@1.3.2-dev.1":
+  version "1.3.2-dev.1"
+  resolved "https://registry.yarnpkg.com/@naviprotocol/lending/-/lending-1.3.2-dev.1.tgz#1280ae488b91c897593cbb25a0b948a451f47be8"
+  integrity sha512-TryQdBfb9Ef1BShP3vihifu7sjknvq7Ft/UbcEZ4wONNO8MjqiM5cP+weXewC6TY8zxnMPbo6qJ0QELg7TMRHw==
   dependencies:
-    "@mysten/bcs" "^1.6.3"
-    "@mysten/sui" "1.34.0"
+    "@mysten/bcs" "1.6.3"
     "@pythnetwork/pyth-sui-js" "^2.0.0"
     bignumber.js "9.1.2"
-    lodash.camelcase "^4.3.0"
+    lodash.camelcase "4.3.0"
 
 "@nemoprotocol/vaults-sdk@^0.2.4":
   version "0.2.6"
@@ -8127,7 +8141,7 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash.camelcase@^4.3.0:
+lodash.camelcase@4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
   integrity sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==

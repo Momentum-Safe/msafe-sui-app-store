@@ -73,11 +73,11 @@ export class Decoder {
   }
 
   private isEntryBorrowTransaction() {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::entry_borrow`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::entry_borrow_v2`);
   }
 
   private isEntryBorrowWithFeeTransaction() {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::borrow`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::borrow_v2`);
   }
 
   private isEntryMultiDepositTransaction() {
@@ -113,7 +113,7 @@ export class Decoder {
   }
 
   private isEntryWithdrawTransaction(): boolean {
-    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::withdraw`);
+    return !!this.getMoveCallTransaction(`${config.ProtocolPackage}::incentive_v3::withdraw_v2`);
   }
 
   private findPoolByAssetId(assetId: number) {
