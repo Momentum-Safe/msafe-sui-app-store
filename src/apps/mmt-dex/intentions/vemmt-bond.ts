@@ -27,16 +27,12 @@ export class BondVeMMTIntention extends BaseIntention<BondVeMMTIntentionData> {
     const sdk = MmtSDK.NEW({
       network: 'mainnet',
     });
+
     const veMMTSdk = new VeMMT(input.suiClient, Network.Mainnet);
     const { params } = this.data;
     const { token, amount, address, enableAutoMaxBond, unbondAt } = params;
     const tx = new Transaction();
     await performBond(sdk, veMMTSdk, token, amount, address, enableAutoMaxBond, unbondAt, tx);
-    const data = tx.getData();
-    console.log('BondVeMMTIntention.build tx', {
-      inputs: data.inputs.length,
-      commands: data.commands.length,
-    });
     return tx;
   }
 
