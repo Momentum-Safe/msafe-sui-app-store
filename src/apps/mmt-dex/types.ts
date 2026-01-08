@@ -1,6 +1,6 @@
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { Reward } from '@mmt-finance/clmm-sdk/dist/types';
-import { Transaction } from '@mysten/sui/dist/cjs/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 export type NormalizedRewarder = {
   coinType: string;
@@ -123,6 +123,7 @@ export interface ClaimAllRewardsIntentionData extends MMTDEXIntentionData {
     address: string;
     positions: V3PositionType[];
     pools: NormalizedPool[];
+    veMMTs: VeMMTData[];
   };
 }
 
@@ -139,6 +140,14 @@ export interface ClaimRewardsAsIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.ClaimRewardsAs;
   params: {
     claimParams: Omit<ClaimRewardsAsParams, 'sdk' | 'txb'>[];
+    claimVeMMTParams: {
+      address: string;
+      veMMTs: VeMMTData[];
+      targetCoinType: string;
+      slippage: number;
+      claimRoutes: ClaimRoutes;
+      pools: NormalizedPool[];
+    };
   };
 }
 export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
@@ -181,6 +190,46 @@ export interface UnstakeXSuiIntentionData extends MMTDEXIntentionData {
   };
 }
 
+export interface BondVeMMTIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.Bond;
+  params: {
+    token: Tokens;
+    address: string;
+    amount: string;
+    enableAutoMaxBond: boolean;
+    unbondAt: number | null;
+  };
+}
+
+export interface ExtendVeMMTIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.Extend;
+  params: {
+    address: string;
+    veId: string;
+    currentUnbondAt: number;
+    isCurrentlyMaxBond: boolean;
+    enableAutoMaxBond: boolean;
+    unbondAt: number | null;
+  };
+}
+
+export interface MergeVeMMTIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.Merge;
+  params: {
+    address: string;
+    veId: string;
+    selectedVeMMTIds: string[];
+  };
+}
+
+export interface UnbondVeMMTIntentionData extends MMTDEXIntentionData {
+  action: TransactionSubType.Unbond;
+  params: {
+    address: string;
+    veId: string;
+  };
+}
+
 export enum TransactionSubType {
   AddLiquidity = 'AddLiquidity',
   AddLiquiditySingleSide = 'AddLiquiditySingleSide',
@@ -193,6 +242,10 @@ export enum TransactionSubType {
   ManageLiquiditySingleSide = 'ManageLiquiditySingleSide',
   StakeXSui = 'StakeXSui',
   UnstakeXSui = 'UnstakeXSui',
+  Bond = 'Bond',
+  Extend = 'Extend',
+  Merge = 'Merge',
+  Unbond = 'Unbond',
 }
 
 export const Rpc = 'https://fullnode.mainnet.sui.io/';
@@ -225,3 +278,23 @@ export type ClaimRewardsAsParams = {
   targetCoinType: string;
   slippage: number;
 };
+
+export type VeMMTData = {
+  veId: string; // ID
+  bondAmount: bigint;
+  bondMode: number;
+  autoMaxBond: boolean;
+  unbondAt: bigint;
+  staked: boolean;
+  votePower: bigint;
+  totalVotePower: bigint;
+  userRewardAmount: bigint;
+  lastClaimedEpoch: bigint;
+  bondDurationInDays: number;
+  bondDurationInMS: bigint;
+  mergeableIds: string[];
+};
+
+export const MMT_TOKEN_TYPE = '0x35169bc93e1fddfcf3a82a9eae726d349689ed59e4b065369af8789fe59f8608::mmt::MMT';
+
+export type ClaimRoutes = Record<string, Record<string, string[]>>;

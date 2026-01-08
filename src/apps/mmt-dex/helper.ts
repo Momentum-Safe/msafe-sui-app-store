@@ -17,9 +17,17 @@ import { RemoveLiquidityIntention } from './intentions/remove-liquidity';
 import { StakeXSuiIntention } from './intentions/stake-xsui';
 import { SwapIntention } from './intentions/swap';
 import { UnstakeXSuiIntention } from './intentions/unstake-xsui';
+import { BondVeMMTIntention } from './intentions/vemmt-bond';
+import { ExtendVeMMTIntention } from './intentions/vemmt-extend';
+import { MergeVeMMTIntention } from './intentions/vemmt-merge';
+import { UnbondVeMMTIntention } from './intentions/vemmt-unbond';
 import {
   AddLiquidityIntentionData,
   AddLiquiditySingleSideIntentionData,
+  BondVeMMTIntentionData,
+  ExtendVeMMTIntentionData,
+  MergeVeMMTIntentionData,
+  UnbondVeMMTIntentionData,
   ClaimAllRewardsIntentionData,
   ClaimRewardsIntentionData,
   RemoveLiquidityIntentionData,
@@ -36,6 +44,10 @@ import {
 export type MMTDEXIntention =
   | AddLiquidityIntention
   | AddLiquiditySingleSideIntention
+  | BondVeMMTIntention
+  | ExtendVeMMTIntention
+  | MergeVeMMTIntention
+  | UnbondVeMMTIntention
   | ClaimRewardsIntention
   | ClaimAllRewardsIntention
   | ClaimRewardAsIntention
@@ -118,6 +130,18 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
         intention = ManageLiquiditySingleSideIntention.fromData(
           input.intentionData as ManageLiquiditySingleSideIntentionData,
         );
+        break;
+      case TransactionSubType.Bond:
+        intention = BondVeMMTIntention.fromData(input.intentionData as BondVeMMTIntentionData);
+        break;
+      case TransactionSubType.Extend:
+        intention = ExtendVeMMTIntention.fromData(input.intentionData as ExtendVeMMTIntentionData);
+        break;
+      case TransactionSubType.Merge:
+        intention = MergeVeMMTIntention.fromData(input.intentionData as MergeVeMMTIntentionData);
+        break;
+      case TransactionSubType.Unbond:
+        intention = UnbondVeMMTIntention.fromData(input.intentionData as UnbondVeMMTIntentionData);
         break;
       default:
         throw new Error(`not implemented ${input.txSubType}`);

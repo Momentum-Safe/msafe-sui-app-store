@@ -1,6 +1,6 @@
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { convertI32ToSigned, TickMath } from '@mmt-finance/clmm-sdk/dist/utils/math/tickMath';
-import { SuiClient } from '@mysten/sui/dist/cjs/client';
+import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import BigNumber from 'bignumber.js';
 import BN from 'bn.js';
