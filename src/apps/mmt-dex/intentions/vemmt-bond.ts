@@ -13,6 +13,7 @@ enum Network {
   Mainnet = 'mainnet',
   Testnet = 'testnet',
 }
+
 export class BondVeMMTIntention extends BaseIntention<BondVeMMTIntentionData> {
   txType: TransactionType.Other;
 
