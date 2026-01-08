@@ -59,7 +59,20 @@ const config: Config = {
         useESM: true,
       },
     ],
+    '^.+\\.jsx?$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
   },
+
+  // Transform ES modules in node_modules
+  // Allow Jest to transform @mmt-finance/ve-sdk-v1 and its dependencies (like p-lazy)
+  transformIgnorePatterns: ['node_modules/(?!(@mmt-finance/ve-sdk-v1|p-lazy)/)'],
+
+  // Treat .ts files as ES modules
+  extensionsToTreatAsEsm: ['.ts'],
 };
 
 export default config;
