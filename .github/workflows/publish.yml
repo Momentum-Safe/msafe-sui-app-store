@@ -29,6 +29,8 @@ jobs:
         run: yarn build
 
       - name: Publish
+        env:
+          GIT_TOKEN: ${{ secrets.AUTOMATION_PAT_TOKEN }}
         run: |
           git config --global user.name "MSafeAdmin"
           git config --global user.email "admin@m-safe.io"
