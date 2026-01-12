@@ -29,11 +29,7 @@ jobs:
         run: yarn build
 
       - name: Publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
-          GIT_TOKEN: ${{ secrets.AUTOMATION_PAT_TOKEN }}
         run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
           git config --global user.name "MSafeAdmin"
           git config --global user.email "admin@m-safe.io"
           git fetch
