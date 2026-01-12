@@ -20,6 +20,7 @@ const fetchSyncEpochInfo = async (veMMTSdk: VeMMT) => {
   return syncEpochInfo;
 };
 
+// Bond
 export const performBond = async (
   mmtSdk: MmtSDK,
   veMMTSdk: VeMMT,
