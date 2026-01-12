@@ -32,8 +32,6 @@ jobs:
         env:
           GIT_TOKEN: ${{ secrets.AUTOMATION_PAT_TOKEN }}
         run: |
-          git config --global user.name "MSafeAdmin"
-          git config --global user.email "admin@m-safe.io"
           git fetch
           git checkout main
           git clean -df
