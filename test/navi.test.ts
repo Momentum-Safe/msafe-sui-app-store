@@ -18,6 +18,7 @@ import { EntryRepayIntentionData } from '@/apps/navi/intentions/entry-repay';
 import { EntryWithdrawIntentionData } from '@/apps/navi/intentions/entry-withdraw';
 import { EntryMultiDepositIntentionData } from '@/apps/navi/intentions/multi-deposit';
 import { TransactionSubType } from '@/apps/navi/types';
+import { updatePackageId } from '@/apps/navi/config';
 
 (() => {
   if ((globalThis.fetch as any).isWraped) {
@@ -43,6 +44,10 @@ import { TransactionSubType } from '@/apps/navi/types';
 
 const address = '0xfaba86400d9cc1d144bbc878bc45c4361d53a16c942202b22db5d26354801e8e';
 const client = new SuiClient({ url: getFullnodeUrl('mainnet') });
+
+beforeAll(async () => {
+  await updatePackageId();
+});
 
 describe('Navi App', () => {
   it('Test deposit deserialize', async () => {
