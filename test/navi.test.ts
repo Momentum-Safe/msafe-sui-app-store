@@ -1,5 +1,7 @@
-import { Transaction } from '@mysten/sui/transactions';
+import { HexToUint8Array } from '@msafe/sui3-utils';
 import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 import {
   depositCoinPTB,
   getPool,
@@ -11,20 +13,16 @@ import {
 } from '@naviprotocol/lending';
 
 import { Decoder } from '@/apps/navi/decoder';
+import { NAVIIntentionData, NAVIAppHelper } from '@/apps/navi/helper';
 import { ClaimRewardIntentionData } from '@/apps/navi/intentions/claim-reward';
 import { EntryBorrowIntentionData } from '@/apps/navi/intentions/entry-borrow';
 import { EntryDepositIntentionData } from '@/apps/navi/intentions/entry-deposit';
 import { EntryRepayIntentionData } from '@/apps/navi/intentions/entry-repay';
 import { EntryWithdrawIntentionData } from '@/apps/navi/intentions/entry-withdraw';
 import { EntryMultiDepositIntentionData } from '@/apps/navi/intentions/multi-deposit';
-
-import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
-
 import { TransactionSubType } from '@/apps/navi/types';
 
 import { TestSuite } from './testSuite';
-import { NAVIIntentionData, NAVIAppHelper } from '@/apps/navi/helper';
-import { HexToUint8Array } from '@msafe/sui3-utils';
 
 (() => {
   if ((globalThis.fetch as any).isWraped) {
@@ -71,7 +69,7 @@ describe('Navi App', () => {
     const tx = new Transaction();
     await depositCoinPTB(tx, 0, tx.splitCoins(tx.gas, [tx.pure.u64(500000)]));
     tx.setSender(testWallet.address);
-    const txBytes = await tx.build({ client: client });
+    const txBytes = await tx.build({ client });
     const txBytes64 = Buffer.from(txBytes).toString('base64');
     const appContext = {
       content: txBytes64,

@@ -5,7 +5,6 @@ import { WalletAccount } from '@mysten/wallet-standard';
 import { BaseIntention } from '@/apps/interface/sui';
 
 import { TransactionSubType } from '../types';
-import { fromHex } from '@mysten/bcs';
 
 export interface PlainTransactionIntentionData {
   content: string;
