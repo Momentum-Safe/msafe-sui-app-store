@@ -15,6 +15,7 @@ import { EntryDepositIntention, EntryDepositIntentionData } from './intentions/e
 import { EntryRepayIntention, EntryRepayIntentionData } from './intentions/entry-repay';
 import { EntryWithdrawIntention, EntryWithdrawIntentionData } from './intentions/entry-withdraw';
 import { EntryMultiDepositIntention, EntryMultiDepositIntentionData } from './intentions/multi-deposit';
+import { PlainTransactionIntention, PlainTransactionIntentionData } from './intentions/plain-transaction';
 import { TransactionSubType } from './types';
 
 export type NAVIIntention =
@@ -24,7 +25,8 @@ export type NAVIIntention =
   | EntryWithdrawIntention
   | EntryMultiDepositIntention
   | ClaimRewardIntention
-  | ClaimSupplyIntention;
+  | ClaimSupplyIntention
+  | PlainTransactionIntention;
 
 export type NAVIIntentionData =
   | EntryDepositIntentionData
@@ -33,7 +35,8 @@ export type NAVIIntentionData =
   | EntryWithdrawIntentionData
   | EntryMultiDepositIntentionData
   | ClaimRewardIntentionData
-  | ClaimSupplyIntentionData;
+  | ClaimSupplyIntentionData
+  | PlainTransactionIntentionData;
 
 export class NAVIAppHelper implements IAppHelperInternal<NAVIIntentionData> {
   application = 'navi';
@@ -45,13 +48,26 @@ export class NAVIAppHelper implements IAppHelperInternal<NAVIIntentionData> {
     network: SuiNetworks;
     suiClient: SuiClient;
     account: WalletAccount;
-    appContext?: any;
+    appContext?: {
+      content?: string;
+      scene?: string;
+    };
   }): Promise<{
     txType: TransactionType;
     txSubType: TransactionSubType;
     intentionData: NAVIIntentionData;
   }> {
     await updatePackageId();
+    if (input.appContext?.content) {
+      return {
+        txType: TransactionType.Other,
+        txSubType: TransactionSubType.PlainTransaction,
+        intentionData: {
+          content: input.appContext.content,
+          scene: input.appContext.scene || 'unknown',
+        },
+      };
+    }
     const { transaction } = input;
     const decoder = new Decoder(transaction);
     const result = decoder.decode();
@@ -93,6 +109,9 @@ export class NAVIAppHelper implements IAppHelperInternal<NAVIIntentionData> {
         break;
       case TransactionSubType.EntryClaimAndDeposit:
         intention = ClaimSupplyIntention.fromData(input.intentionData as ClaimSupplyIntentionData);
+        break;
+      case TransactionSubType.PlainTransaction:
+        intention = PlainTransactionIntention.fromData(input.intentionData as PlainTransactionIntentionData);
         break;
       default:
         throw new Error('not implemented');
