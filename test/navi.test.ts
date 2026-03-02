@@ -1,5 +1,7 @@
+import { HexToUint8Array } from '@msafe/sui3-utils';
+import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
+import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 import {
   depositCoinPTB,
   getPool,
@@ -11,6 +13,7 @@ import {
 } from '@naviprotocol/lending';
 
 import { Decoder } from '@/apps/navi/decoder';
+import { NAVIIntentionData, NAVIAppHelper } from '@/apps/navi/helper';
 import { ClaimRewardIntentionData } from '@/apps/navi/intentions/claim-reward';
 import { EntryBorrowIntentionData } from '@/apps/navi/intentions/entry-borrow';
 import { EntryDepositIntentionData } from '@/apps/navi/intentions/entry-deposit';
@@ -18,6 +21,8 @@ import { EntryRepayIntentionData } from '@/apps/navi/intentions/entry-repay';
 import { EntryWithdrawIntentionData } from '@/apps/navi/intentions/entry-withdraw';
 import { EntryMultiDepositIntentionData } from '@/apps/navi/intentions/multi-deposit';
 import { TransactionSubType } from '@/apps/navi/types';
+
+import { TestSuite } from './testSuite';
 
 (() => {
   if ((globalThis.fetch as any).isWraped) {
@@ -44,7 +49,44 @@ import { TransactionSubType } from '@/apps/navi/types';
 const address = '0xfaba86400d9cc1d144bbc878bc45c4361d53a16c942202b22db5d26354801e8e';
 const client = new SuiClient({ url: getFullnodeUrl('mainnet') });
 
+const testWallet: WalletAccount = {
+  address: '0xbb63274d2bd428b460d01dbae9a43ecd2a791f8d6624968c4d670055354ebcff',
+  publicKey: HexToUint8Array('AL49gTnvhZ3+MB9MjKx0o/idjwa50+32wLizXKKHXkmo'),
+  chains: [SUI_MAINNET_CHAIN],
+  features: [],
+};
+
+const helper = new NAVIAppHelper();
+
 describe('Navi App', () => {
+  let ts: TestSuite<NAVIIntentionData>;
+
+  beforeEach(async () => {
+    ts = new TestSuite(testWallet, 'sui:mainnet', helper);
+  });
+
+  it('should deposit sui with app context', async () => {
+    const tx = new Transaction();
+    await depositCoinPTB(tx, 0, tx.splitCoins(tx.gas, [tx.pure.u64(500000)]));
+    tx.setSender(testWallet.address);
+    const txBytes = await tx.build({ client });
+    const txBytes64 = Buffer.from(txBytes).toString('base64');
+    const appContext = {
+      content: txBytes64,
+      scene: 'deposit',
+    };
+
+    const intentionData = await helper.deserialize({ transaction: tx, appContext } as any);
+
+    ts.setIntention(intentionData);
+
+    const txb = await ts.voteAndExecuteIntention();
+
+    expect(txb).toBeDefined();
+    expect(txb.tx.getData().sender).toBe(testWallet.address);
+    expect(txb.tx.getData().version).toBe(2);
+  }, 15000);
+
   it('Test deposit deserialize', async () => {
     const tx = new Transaction();
     const amount = 10000000000;
