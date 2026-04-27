@@ -35,6 +35,16 @@ export const getFarmingDecreaseLiquidityTxb = async (
   return txb;
 };
 
+export const getFarmingVestDecreaseLiquidityTxb = async (
+  txbParams: any,
+  account: WalletAccount,
+  network: SuiNetworks,
+): Promise<Transaction> => {
+  const peripherySdk = getFarmsSdk(network, account);
+  const txb: Transaction = await peripherySdk.Farms.removeAllLiquidityPayload(txbParams);
+  return txb;
+};
+
 export const getFarmingRemoveLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,

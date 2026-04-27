@@ -22,6 +22,7 @@ export enum TransactionSubType {
   FarmingBatchHarvest = 'FarmingBatchHarvest',
   FarmingStake = 'FarmingStake',
   FarmingUnstake = 'FarmingUnstake',
+  FarmingDecreaseAllLiquidity = 'FarmingDecreaseAllLiquidity',
   xCETUSConvert = 'xCETUSConvert',
   xCETUSRedeemLock = 'xCETUSRedeemLock',
   xCETUSClaimStakingRwewards = 'xCETUSClaimStakingRwewards',
