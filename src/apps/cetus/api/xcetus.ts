@@ -11,7 +11,7 @@ export const getXcetusConvertTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const xcetusSdk = getXcetusSdk(network, account);
+  const xcetusSdk = await getXcetusSdk(network, account);
   const txb: Transaction = await xcetusSdk.XCetusModule.convertPayload(txbParams);
   return txb;
 };
@@ -21,7 +21,7 @@ export const getXcetusRedeemLockTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const xcetusSdk = getXcetusSdk(network, account);
+  const xcetusSdk = await getXcetusSdk(network, account);
   const txb: Transaction = await xcetusSdk.XCetusModule.redeemLockPayload(txbParams);
   return txb;
 };
@@ -31,7 +31,7 @@ export const getXcetusClaimingStakeRewardsTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const xcetusSdk = getXcetusSdk(network, account);
+  const xcetusSdk = await getXcetusSdk(network, account);
   const txb: Transaction = await xcetusSdk.XCetusModule.redeemDividendV3Payload(
     txbParams.veNftId,
     txbParams.rewardList,
@@ -44,7 +44,7 @@ export const getXcetusCancelRedeemTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const xcetusSdk = getXcetusSdk(network, account);
+  const xcetusSdk = await getXcetusSdk(network, account);
   const txb: Transaction = await xcetusSdk.XCetusModule.cancelRedeemPayload(txbParams);
   return txb;
 };
@@ -54,7 +54,7 @@ export const getXcetusRedeemTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const xcetusSdk = getXcetusSdk(network, account);
+  const xcetusSdk = await getXcetusSdk(network, account);
   const txb: Transaction = await xcetusSdk.XCetusModule.redeemPayload(txbParams);
   return txb;
 };

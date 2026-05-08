@@ -1540,20 +1540,26 @@
   dependencies:
     "@mysten/sui" "2.6.0"
 
-"@cetusprotocol/sui-clmm-sdk@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/sui-clmm-sdk/-/sui-clmm-sdk-1.2.4.tgz#02707435771ba0f189f91419fe8adc17e54af509"
-  integrity sha512-viZMJ/5MT6/hQFXJg/vvmX0apu2j9XDOn+NAyF5q290w6nph7+Xm4TizbTkgYDY0XRBKi2qgJc0b1jPT+WEORQ==
+"@cetusprotocol/sui-clmm-sdk@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/sui-clmm-sdk/-/sui-clmm-sdk-1.4.1.tgz#587108c67199b0a1764eef541060356b59d42d06"
+  integrity sha512-/g9w9FvHNLdK0jm1AfHqp9VsesOX28hmaZd+MzQlEzOxpHEE5+2/g+B5hnCpz0X6ukDDwbdlXOe5C+PPc+Db6g==
+  dependencies:
+    "@mysten/sui" "2.6.0"
 
-"@cetusprotocol/vaults-sdk@1.3.2":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-1.3.2.tgz#51f22793ec3aba3def770e6fb2c0272e639827b6"
-  integrity sha512-bPLGTuQGRgoHmUY+9VQcVOG+fqfeAFqhL6Ku2a/aDdJv+MNRzndGOWjsYl+BzBLKnyYq0Oukn2BZjV0vpl3lFA==
+"@cetusprotocol/vaults-sdk@1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/vaults-sdk/-/vaults-sdk-1.7.2.tgz#758427fc29c47d1d1f184ff23ad56ffe09d6d660"
+  integrity sha512-qRgrqJiMPwMtgCVGW+LNvDdvkKnzhe9vLbS0K+vot8h/3whk4Toxy4UO84mQyJeePK/pvJHKrPBOnOaHnRPN/A==
+  dependencies:
+    "@mysten/sui" "2.6.0"
 
-"@cetusprotocol/xcetus-sdk@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/xcetus-sdk/-/xcetus-sdk-1.2.0.tgz#fac60ae2ec6a65c94176d3e823621461377980d1"
-  integrity sha512-mP/zuWRrYOhGOlD279sC/e+xh6Y/3/ZWzFJkiDoYtHZCxc9BmWRix9zIEJrgCU776vDJN3Y1+Ap/fZFVxxJxoA==
+"@cetusprotocol/xcetus-sdk@1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/xcetus-sdk/-/xcetus-sdk-1.2.2.tgz#e9b3213fe720dcdf41bb4c01463c03816ce90cb9"
+  integrity sha512-78AhPsSLB4+0c9ndMUZJZ6sex2lh/ebAs2yp6eNNOSyZQFx/Nw736yoo2DZlOsRcFVsek7mUwaazUdLvS7rr2g==
+  dependencies:
+    "@mysten/sui" "2.6.0"
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
