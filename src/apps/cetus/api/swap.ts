@@ -1,4 +1,3 @@
-import { restituteMsafeFastRouterSwapParams } from '@cetusprotocol/aggregator-sdk';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
@@ -11,7 +10,8 @@ export const getSwapRouterTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const aggregatorSdk = getAggregatorSdk(network, account);
+  const { restituteMsafeFastRouterSwapParams } = await import('@cetusprotocol/aggregator-sdk');
+  const aggregatorSdk = await getAggregatorSdk(network, account);
   const txb = new Transaction();
   await aggregatorSdk.fastRouterSwap({
     ...txbParams,

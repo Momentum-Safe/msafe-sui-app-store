@@ -10,7 +10,7 @@ export const getCreatePoolTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account);
   const txb: Transaction = await clmmSdk.Pool.createPoolPayload(txbParams);
   return txb;
 };
@@ -20,7 +20,7 @@ export const getAddLiquidityTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account);
   const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
@@ -33,7 +33,7 @@ export const getIncreaseLiquidityTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account);
   const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
     txbParams?.parameter,
     txbParams?.gasEstimateArg,
@@ -46,7 +46,7 @@ export const getRemoveLiquidityTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account);
   const txb: Transaction = await clmmSdk.Position.closePositionPayload(txbParams);
   return txb;
 };
@@ -56,7 +56,7 @@ export const getDecreaseLiquidityTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account);
   const txb: Transaction = await clmmSdk.Position.removeLiquidityPayload(txbParams);
   return txb;
 };
@@ -66,7 +66,7 @@ export const getClaimFeeAndMiningTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account);
   const txb: Transaction = await clmmSdk.Rewarder.collectRewarderPayload(txbParams);
   return txb;
 };

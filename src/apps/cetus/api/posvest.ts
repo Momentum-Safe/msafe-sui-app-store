@@ -11,7 +11,7 @@ export const getVaultReedeem = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const vaultsSdk = getVaultsSdk(network, account);
+  const vaultsSdk = await getVaultsSdk(network, account);
   const tx = new Transaction();
   tx.setSender(account.address);
   vaultsSdk.Vest.buildRedeemPayload(txbParams.params, tx);
@@ -31,8 +31,12 @@ export const getVolatileVaultReedeem = async (
   return tx;
 };
 
-export const getClmmPosReedeem = (txbParams: any, account: WalletAccount, network: SuiNetworks) => {
-  const clmmSdk = getClmmSdk(network, account);
+export const getClmmPosReedeem = async (
+  txbParams: any,
+  account: WalletAccount,
+  network: SuiNetworks,
+): Promise<Transaction> => {
+  const clmmSdk = await getClmmSdk(network, account);
   const tx = new Transaction();
   clmmSdk?.Vest.buildRedeemPayload(txbParams.params, tx);
   return tx;
@@ -43,8 +47,8 @@ export const getFarmsPosReedeem = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  const clmmSdk = getClmmSdk(network, account);
-  const farmsSdk = getFarmsSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account);
+  const farmsSdk = await getFarmsSdk(network, account);
   const tx = new Transaction();
   const pos = await farmsSdk!.Farms.withdrawReturnPayload(txbParams.withdrawParams, tx);
   clmmSdk!.Vest.buildRedeemPayload(
