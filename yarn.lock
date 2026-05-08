@@ -1473,13 +1473,13 @@
   resolved "https://registry.yarnpkg.com/@bluefin-exchange/bluefin7k-aggregator-sdk/-/bluefin7k-aggregator-sdk-4.3.0.tgz#5e0a3d67b40d8bbfa979d00d9e1c092474033876"
   integrity sha512-BHQsTTyPZcOBZEy2nnIkbFwHZYAS6uL+ojD0S6ckTAJiKMDi+D7jgR5p+UKZ6FE0jdrVIXhoVFVElwmwphNviQ==
 
-"@cetusprotocol/aggregator-sdk@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-1.2.1.tgz#da9a81d5a00d5b5214c75158044e9745b785fa11"
-  integrity sha512-jfFNO2kF5Y9gDP4QT75GJ5qTOMIVkOMzm/XA5kPRGXr83FyQLDzehgFt8M7TjRD6Y1/50kGpG9dMibA+XBJwuw==
+"@cetusprotocol/aggregator-sdk@1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/aggregator-sdk/-/aggregator-sdk-1.5.3.tgz#e2fc034a6ab0bb7b44ffc8855b84344bec0efb22"
+  integrity sha512-KT858RhCjjA1QgkhM0V7zNbQu6g+tKrvx7zrd+0hV3gHN93ORbbZTcrbWtOlUaYTJNDW3nXdGgGvnPqY1HpAfw==
   dependencies:
-    "@mysten/sui" "^1.0.5"
-    "@pythnetwork/pyth-sui-js" "^2.1.0"
+    "@mysten/sui" "^2.6.0"
+    "@pythnetwork/hermes-client" "^3.1.0"
     bip39 "^3.1.0"
     dotenv "^16.4.5"
     json-bigint "^1.0.0"
@@ -1533,10 +1533,12 @@
   resolved "https://registry.yarnpkg.com/@cetusprotocol/common-sdk/-/common-sdk-1.2.5.tgz#0d22a54557d5d6c2d0456da7d7a4b92ec04c0fa2"
   integrity sha512-hSAYMg45MWyIVf0dTQYIc5istisEqG8mlIl0IgPUY3G/PnST4NeCAJHHY8uIBpIH5f/k1lNSt+Wxy4ci4BZqlA==
 
-"@cetusprotocol/farms-sdk@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@cetusprotocol/farms-sdk/-/farms-sdk-1.2.1.tgz#9dc6cbb050b27f5fe3de8f655f4152353c184a24"
-  integrity sha512-bPE6E6v/Q2kHJ28Kh3ov6VCGcJFXab4Ek2bJsvEYrBSuRnfnT4ftdeP4p0D47/akvwTTcS6OAJ4IzvIt4DaAcw==
+"@cetusprotocol/farms-sdk@1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@cetusprotocol/farms-sdk/-/farms-sdk-1.4.2.tgz#ffcefdd5df6377e0eb7102adaf6f774b78d5cd59"
+  integrity sha512-aytXMq/sLrmQINfMU9Xe5+tQ0anvp7fsFmUjWvVYN2ArI7ZlNAm0LsaiZsDsQLuHU8Q0jRiqySmxf3J3OfHYpQ==
+  dependencies:
+    "@mysten/sui" "2.6.0"
 
 "@cetusprotocol/sui-clmm-sdk@1.2.4":
   version "1.2.4"
@@ -2520,7 +2522,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.15.1", "@mysten/sui@1.24.0", "@mysten/sui@1.28.2", "@mysten/sui@^1.0.5", "@mysten/sui@^1.14.2", "@mysten/sui@^1.2.0", "@mysten/sui@^1.21.1", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.34.0", "@mysten/sui@^1.37.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0", "@mysten/sui@~1.38.0":
+"@mysten/sui@1.15.1", "@mysten/sui@1.24.0", "@mysten/sui@1.28.2", "@mysten/sui@2.6.0", "@mysten/sui@^1.14.2", "@mysten/sui@^1.2.0", "@mysten/sui@^1.21.1", "@mysten/sui@^1.28.2", "@mysten/sui@^1.3.0", "@mysten/sui@^1.34.0", "@mysten/sui@^1.37.1", "@mysten/sui@^1.6.0", "@mysten/sui@^1.8.0", "@mysten/sui@^2.6.0", "@mysten/sui@~1.38.0":
   version "1.37.3"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.37.3.tgz#977081efd1ee4bb42d35309858d68b52c41232af"
   integrity sha512-Sk4gBp1Nanqndyd1SUq+TSThMKj/20K8qf3QKIO8OHiSMSH2Z+UTWgbVfxk+EyUsmPYm4Zed18qEMqgifjkbpw==
@@ -3022,6 +3024,15 @@
   integrity sha512-b97b0sBycGh89RQcqobSgjGl3jwPaC5cQIOFod6EX1v0zIxlXPmL3ckSXxoHpy+Js0QV/tgCzFvqicMJCtezBA==
   dependencies:
     "@opentelemetry/instrumentation" "^0.52.0 || ^0.53.0 || ^0.54.0 || ^0.55.0 || ^0.56.0 || ^0.57.0"
+
+"@pythnetwork/hermes-client@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@pythnetwork/hermes-client/-/hermes-client-3.1.0.tgz#e17d18561da20c2f84170f06a686f1a6d9fb5caf"
+  integrity sha512-KEILjOCtnq/CRfnmDSnNS3egBuSupDglAE/dIDy8Y9S+zMm69lFQJUP87fuymWdpkI0JKmGHWtVX6R9edEGNtA==
+  dependencies:
+    "@zodios/core" "^10.9.6"
+    eventsource "^3.0.5"
+    zod "^3.23.8"
 
 "@pythnetwork/price-service-client@1.9.0":
   version "1.9.0"
@@ -4925,6 +4936,11 @@
   resolved "https://registry.yarnpkg.com/@xstate/fsm/-/fsm-1.6.5.tgz#f599e301997ad7e3c572a0b1ff0696898081bea5"
   integrity sha512-b5o1I6aLNeYlU/3CPlj/Z91ybk1gUsKT+5NAJI+2W4UjvS5KLG28K9v5UvNoFVjHV8PajVZ00RH3vnjyQO7ZAw==
 
+"@zodios/core@^10.9.6":
+  version "10.9.6"
+  resolved "https://registry.yarnpkg.com/@zodios/core/-/core-10.9.6.tgz#64ad831216e6ffa71679ea6be8d1ed882bb04d83"
+  integrity sha512-aH4rOdb3AcezN7ws8vDgBfGboZMk2JGGzEq/DtW65MhnRxyTGRuLJRWVQ/2KxDgWvV2F5oTkAS+5pnjKbl0n+A==
+
 acorn-import-attributes@^1.9.5:
   version "1.9.5"
   resolved "https://registry.yarnpkg.com/acorn-import-attributes/-/acorn-import-attributes-1.9.5.tgz#7eb1557b1ba05ef18b5ed0ec67591bfab04688ef"
@@ -6807,6 +6823,18 @@ eventemitter3@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-5.0.1.tgz#53f5ffd0a492ac800721bb42c66b841de96423c4"
   integrity sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==
+
+eventsource-parser@^3.0.1:
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/eventsource-parser/-/eventsource-parser-3.0.8.tgz#1c792503e4080455d00701bb1f7a1d60734d0e58"
+  integrity sha512-70QWGkr4snxr0OXLRWsFLeRBIRPuQOvt4s8QYjmUlmlkyTZkRqS7EDVRZtzU3TiyDbXSzaOeF0XUKy8PchzukQ==
+
+eventsource@^3.0.5:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/eventsource/-/eventsource-3.0.7.tgz#1157622e2f5377bb6aef2114372728ba0c156989"
+  integrity sha512-CRT1WTyuQoD771GW56XEZFQ/ZoSfWid1alKGDYMmkt2yl8UXrVR4pspqWNEcqKvVIzg6PAltWjxcSSPrboA4iA==
+  dependencies:
+    eventsource-parser "^3.0.1"
 
 evp_bytestokey@^1.0.3:
   version "1.0.3"
