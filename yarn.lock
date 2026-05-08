@@ -3031,6 +3031,15 @@
   dependencies:
     "@opentelemetry/instrumentation" "^0.52.0 || ^0.53.0 || ^0.54.0 || ^0.55.0 || ^0.56.0 || ^0.57.0"
 
+"@pythnetwork/hermes-client@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@pythnetwork/hermes-client/-/hermes-client-2.1.0.tgz#ee06cb0b4945988d54c660c962b0832c9d766417"
+  integrity sha512-XOtP5dvHfKNl+uvFzXCMI9OL7VdJ8eXsv5ahy6ZB3ArZ+UMM4U4OrPYQPwLvJwlpkBXpEqsJKlMawcoyCB+yMA==
+  dependencies:
+    "@zodios/core" "^10.9.6"
+    eventsource "^3.0.5"
+    zod "^3.23.8"
+
 "@pythnetwork/hermes-client@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@pythnetwork/hermes-client/-/hermes-client-3.1.0.tgz#e17d18561da20c2f84170f06a686f1a6d9fb5caf"
@@ -3067,6 +3076,15 @@
   dependencies:
     "@mysten/sui" "^1.3.0"
     "@pythnetwork/price-service-client" "1.9.0"
+    buffer "^6.0.3"
+
+"@pythnetwork/pyth-sui-js@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@pythnetwork/pyth-sui-js/-/pyth-sui-js-2.4.0.tgz#987d050781227338e5b8111010792e6936f388fa"
+  integrity sha512-FvHlvU/fGcfAoHazU3UxZQBUMy90qER8SbcXcr0u2g+kwlq7qn4doadESZ7g1sgFfFwZgInLjRFIu7ZT4413zA==
+  dependencies:
+    "@mysten/sui" "^1.3.0"
+    "@pythnetwork/hermes-client" "2.1.0"
     buffer "^6.0.3"
 
 "@radix-ui/primitive@1.1.3":
@@ -7271,13 +7289,13 @@ graphql-tag@^2.12.6:
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.11.0.tgz#96d17f66370678027fdf59b2d4c20b4efaa8a633"
   integrity sha512-mS1lbMsxgQj6hge1XZ6p7GPhbrtFwUFYi3wRzXAC/FmYnyXMTvvI3td3rjmQ2u8ewXueaSvRPWaEcgVVOT9Jnw==
 
-haedal-vault-sdk@^1.0.3:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/haedal-vault-sdk/-/haedal-vault-sdk-1.2.0.tgz#38074662d3743dd95a31c32e98509f8bf0a8dedb"
-  integrity sha512-lrDipPf45g0o5v0Xl1kmbBLlwqc1SFJ1cbL1QFnHpuMlc+8dlnNzAYn0yCE21ZI2xH1GT9e8Fd286h+mB3JCUQ==
+haedal-vault-sdk@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/haedal-vault-sdk/-/haedal-vault-sdk-2.4.0.tgz#efb130bce8d785a0f067e0ee15c021c18ca67605"
+  integrity sha512-3hIUOL235fKb+p9UWzll76ltc5z+TW/5NAcxSsF94DHfBz8CELIj2EZf10+ltrznUSorJnmR6XYYOIXjQFTodw==
   dependencies:
+    "@pythnetwork/pyth-sui-js" "2.4.0"
     "@suchipi/femver" "^1.0.0"
-    "@types/bn.js" "^5.1.1"
     axios "^1.4.0"
     bn.js "^5.2.1"
     decimal.js "^10.4.1"
