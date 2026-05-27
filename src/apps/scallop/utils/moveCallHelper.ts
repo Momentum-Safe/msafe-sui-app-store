@@ -90,8 +90,8 @@ class MoveCallHelper {
 
   getNestedInputParam<T = SplitCoinTransactionType>(argIndex: number) {
     const arg = this.txBlockTransactions.arguments[argIndex] as MoveCallTransactionArgumentType;
-    if (arg.kind !== 'NestedResult') {
-      throw new Error('not input type');
+    if (arg.kind !== 'NestedResult' && arg.kind !== 'Result') {
+      throw new Error('not nested or result type');
     }
     return this.transaction.blockData.transactions[arg.index] as T;
   }
