@@ -34,7 +34,7 @@ export class WithdrawAndUnstakeLendingIntention extends ScallopCoreBaseIntention
     for (let i = 0; i < stakeAccountId.length; i++) {
       const { id: stakeAccount, coin: amount } = stakeAccountId[i];
       const stakeMarketCoinName = client.utils.parseMarketCoinName(coinName);
-      const [marketCoin] = await tx.unstakeQuick(amount, stakeMarketCoinName, stakeAccount);
+      const [marketCoin] = await tx.unstakeQuick(amount, stakeMarketCoinName, stakeAccount, false);
       if (marketCoin) {
         const wdScoin = tx.withdraw(marketCoin, coinName);
         withdrawCoins.push(wdScoin);
