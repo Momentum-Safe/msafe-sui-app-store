@@ -16,7 +16,7 @@ export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntent
 export class CoreHelper implements IAppHelperInternalGrpc<CoreIntentionData> {
   application = 'msafe-core';
 
-  supportSDK = '@mysten/sui/grpc' as const;
+  supportSDK = '@mysten/sui-v2' as const;
 
   constructor() {
     this.application = TransactionDefaultApplication;
