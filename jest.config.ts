@@ -68,10 +68,11 @@ const config: Config = {
   },
 
   // Transform ES modules in node_modules
-  // Allow Jest to transform @mmt-finance/ve-sdk-v1 and its dependencies (like p-lazy)
   transformIgnorePatterns: [
-    'node_modules/(?!\\.pnpm/|@mmt-finance/ve-sdk-v1|p-lazy|@noble/.+|@scure/.+|@mysten/.+|@scallop-io/.+)',
+    'node_modules/(?!(@mmt-finance/ve-sdk-v1|p-lazy|@scallop-io|@noble|@suilend|@mysten/sui)/)',
   ],
+
+  testTimeout: 30_000,
 
   // Treat .ts files as ES modules
   extensionsToTreatAsEsm: ['.ts'],

@@ -1,27 +1,21 @@
 import { HexToUint8Array, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client';
+import { getFullnodeUrl } from '@mysten/sui/client';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { CoreIntentionData, CoreHelper } from '@/apps/msafe-core/helper';
 import { ObjectTransferIntention, ObjectTransferIntentionData } from '@/apps/msafe-core/object-transfer';
-import { appHelpers } from '@/index';
+import { MSafeApps } from '@/apps/registry';
+import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 
 import { Account } from './config';
-import { TestSuiteLegacy } from './testSuite';
+import { TestSuiteGrpc } from './testSuite';
 
 const COIN_TRANSFER_TEST_INTENTION_DATA = {
   amount: '1000',
   coinType: '0x2::sui::SUI',
   recipient: '0x0df172b18d30935ad68b2f9d6180e5adcf8edfd7df874852817002e6eccada66',
 } as CoinTransferIntentionData;
-
-const OBJECT_TRANSFER_TEST_INTENTION_DATA = {
-  // test coin item (regard it as an object)
-  objectType: '0x2::coin::Coin<0x2::sui::SUI>',
-  objectId: '0xe8de48fb010e97fa763b0b653f9208bc36a3808819284f4344b8219493cfe739',
-  receiver: '0xa9743028e574b7abe4f0af88b08eb5a700a34ea3b1adc667d8d67dcdfa2b5233',
-} as ObjectTransferIntentionData;
 
 describe('MSafe Core main flow', () => {
   const testWallet: WalletAccount = {
@@ -30,24 +24,24 @@ describe('MSafe Core main flow', () => {
     chains: [SUI_MAINNET_CHAIN],
     features: [],
   };
-  let ts: TestSuiteLegacy<CoreIntentionData>;
+  let ts: TestSuiteGrpc<CoreIntentionData>;
 
   beforeEach(() => {
-    ts = new TestSuiteLegacy(testWallet, 'sui:mainnet', new CoreHelper());
+    ts = new TestSuiteGrpc(testWallet, 'sui:mainnet', new CoreHelper());
   });
 
   describe('Coin transfer', () => {
     it('build throw error', async () => {
-      const txb = await ts.appHelper.build({
+      const tx = await ts.appHelper.build({
         network: 'sui:mainnet',
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.coin.send,
-        suiClient: new SuiClient({ url: getFullnodeUrl('mainnet') }),
+        suiGrpcClient: getSuiGrpcClient('sui:mainnet'),
         account: Account,
         intentionData: COIN_TRANSFER_TEST_INTENTION_DATA,
       });
       expect(async () => {
-        await ts.signAndSubmitTransaction({ txb });
+        await ts.signAndSubmitTransaction({ txb: tx });
       }).rejects.toThrow('MSafe core transaction intention should be build from API');
     });
 
@@ -73,11 +67,11 @@ describe('MSafe Core main flow', () => {
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.coin.send,
       });
-      const txb = await ts.voteAndExecuteIntention();
+      const { tx } = await ts.voteAndExecuteIntention();
 
-      expect(txb).toBeDefined();
-      expect(txb.txb.blockData.sender).toBe(testWallet.address);
-      expect(txb.txb.blockData.version).toBe(1);
+      expect(tx).toBeDefined();
+      expect(tx.blockData.sender).toBe(testWallet.address);
+      expect(tx.blockData.version).toBe(1);
     });
   });
 
@@ -90,7 +84,7 @@ describe('MSafe Core main flow', () => {
         chains: [SUI_MAINNET_CHAIN],
         features: [],
       };
-      const helper = appHelpers.getAppHelper('msafe-core');
+      const helper = MSafeApps.fromHelpers([new CoreHelper()]).getAppHelper('msafe-core');
 
       expect(async () => {
         await helper.build({
@@ -112,18 +106,32 @@ describe('MSafe Core main flow', () => {
 
   describe('Object transfer', () => {
     it('build object transfer transaction', async () => {
-      const txb = await ts.appHelper.build({
-        network: 'sui:devnet',
+      const objectTransferData = {
+        objectType: '0x830fe26674dc638af7c3d84030e2575f44a2bdc1baa1f4757cfe010a4b106b6a::movescription::Movescription',
+        objectId: '0x01ddc370b11d259ab21b147ef26dddbc385637c4646fa0bcb7f1a1c0179ee071',
+        receiver: '0xa9743028e574b7abe4f0af88b08eb5a700a34ea3b1adc667d8d67dcdfa2b5233',
+      } as ObjectTransferIntentionData;
+
+      const suiGrpcClient = getSuiGrpcClient('sui:mainnet');
+      jest.spyOn(suiGrpcClient, 'getObject').mockResolvedValue({
+        object: {
+          type: objectTransferData.objectType,
+          owner: { $kind: 'AddressOwner', AddressOwner: testWallet.address },
+        },
+      } as any);
+
+      const tx = await ts.appHelper.build({
+        network: 'sui:mainnet',
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.object.send,
-        suiClient: new SuiClient({ url: getFullnodeUrl('mainnet') }),
+        suiGrpcClient,
         account: testWallet,
-        intentionData: OBJECT_TRANSFER_TEST_INTENTION_DATA,
+        intentionData: objectTransferData,
       });
 
-      expect(txb).toBeDefined();
-      expect(txb.blockData.sender).toBe(testWallet.address);
-      expect(txb.blockData.version).toBe(1);
+      expect(tx).toBeDefined();
+      expect(tx.blockData.sender).toBe(testWallet.address);
+      expect(tx.blockData.version).toBe(1);
     });
   });
 

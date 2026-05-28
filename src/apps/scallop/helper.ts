@@ -161,8 +161,6 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
     const { transaction, suiClient, account } = input;
     await this.initScallopClient(account.address, suiClient);
 
-    console.log('transaction', transaction);
-
     // const devInspectResult = await input.suiClient.devInspectTransactionBlock({
     //   transactionBlock: transaction,
     //   sender: input.account.address,
