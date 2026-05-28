@@ -1,10 +1,11 @@
 import { TransactionDefaultApplication, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
+import { SuiNetworks } from '@/types';
 
 import { ObjectTransferIntention, ObjectTransferIntentionData } from './object-transfer';
 
@@ -12,10 +13,10 @@ export type CoreIntention = CoinTransferIntention | ObjectTransferIntention;
 
 export type CoreIntentionData = CoinTransferIntentionData | ObjectTransferIntentionData;
 
-export class CoreHelper implements IAppHelperInternalLegacy<CoreIntentionData> {
+export class CoreHelper implements IAppHelperInternalGrpc<CoreIntentionData> {
   application = 'msafe-core';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui/grpc' as const;
 
   constructor() {
     this.application = TransactionDefaultApplication;
@@ -26,13 +27,14 @@ export class CoreHelper implements IAppHelperInternalLegacy<CoreIntentionData> {
   }
 
   async build(input: {
+    network: SuiNetworks;
     intentionData: CoreIntentionData;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
+  }): Promise<Transaction> {
+    const { account, network, suiGrpcClient } = input;
     let intention: CoreIntention;
     switch (input.txSubType) {
       case TransactionSubTypes.assets.coin.send:
@@ -44,6 +46,6 @@ export class CoreHelper implements IAppHelperInternalLegacy<CoreIntentionData> {
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account });
+    return intention.build({ suiGrpcClient, account, network });
   }
 }

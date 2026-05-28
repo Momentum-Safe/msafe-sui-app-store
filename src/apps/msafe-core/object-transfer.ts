@@ -1,9 +1,10 @@
 import { TransactionType, buildObjectTransferTxb } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 export interface ObjectTransferIntentionData {
   receiver: string;
@@ -11,7 +12,7 @@ export interface ObjectTransferIntentionData {
   objectId: string;
 }
 
-export class ObjectTransferIntention extends BaseIntentionLegacy<ObjectTransferIntentionData> {
+export class ObjectTransferIntention extends BaseIntentionGrpc<ObjectTransferIntentionData> {
   txType: TransactionType.Assets;
 
   txSubType: 'SendObject';
@@ -20,9 +21,13 @@ export class ObjectTransferIntention extends BaseIntentionLegacy<ObjectTransferI
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
-    return buildObjectTransferTxb(suiClient, this.data, account.address);
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const { suiGrpcClient, account } = input;
+    return buildObjectTransferTxb(suiGrpcClient, this.data, account.address);
   }
 
   static fromData(data: ObjectTransferIntentionData) {

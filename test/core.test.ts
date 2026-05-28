@@ -1,14 +1,15 @@
 import { HexToUint8Array, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client';
+import { getFullnodeUrl } from '@mysten/sui/client';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { CoreIntentionData, CoreHelper } from '@/apps/msafe-core/helper';
 import { ObjectTransferIntention, ObjectTransferIntentionData } from '@/apps/msafe-core/object-transfer';
 import { appHelpers } from '@/index';
+import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 
 import { Account } from './config';
-import { TestSuiteLegacy } from './testSuite';
+import { TestSuiteGrpc } from './testSuite';
 
 const COIN_TRANSFER_TEST_INTENTION_DATA = {
   amount: '1000',
@@ -30,24 +31,24 @@ describe('MSafe Core main flow', () => {
     chains: [SUI_MAINNET_CHAIN],
     features: [],
   };
-  let ts: TestSuiteLegacy<CoreIntentionData>;
+  let ts: TestSuiteGrpc<CoreIntentionData>;
 
   beforeEach(() => {
-    ts = new TestSuiteLegacy(testWallet, 'sui:mainnet', new CoreHelper());
+    ts = new TestSuiteGrpc(testWallet, 'sui:mainnet', new CoreHelper());
   });
 
   describe('Coin transfer', () => {
     it('build throw error', async () => {
-      const txb = await ts.appHelper.build({
+      const tx = await ts.appHelper.build({
         network: 'sui:mainnet',
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.coin.send,
-        suiClient: new SuiClient({ url: getFullnodeUrl('mainnet') }),
+        suiGrpcClient: getSuiGrpcClient('sui:mainnet'),
         account: Account,
         intentionData: COIN_TRANSFER_TEST_INTENTION_DATA,
       });
       expect(async () => {
-        await ts.signAndSubmitTransaction({ txb });
+        await ts.signAndSubmitTransaction({ txb: tx });
       }).rejects.toThrow('MSafe core transaction intention should be build from API');
     });
 
@@ -73,11 +74,11 @@ describe('MSafe Core main flow', () => {
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.coin.send,
       });
-      const txb = await ts.voteAndExecuteIntention();
+      const { tx } = await ts.voteAndExecuteIntention();
 
-      expect(txb).toBeDefined();
-      expect(txb.txb.blockData.sender).toBe(testWallet.address);
-      expect(txb.txb.blockData.version).toBe(1);
+      expect(tx).toBeDefined();
+      expect(tx.blockData.sender).toBe(testWallet.address);
+      expect(tx.blockData.version).toBe(1);
     });
   });
 
@@ -112,18 +113,18 @@ describe('MSafe Core main flow', () => {
 
   describe('Object transfer', () => {
     it('build object transfer transaction', async () => {
-      const txb = await ts.appHelper.build({
+      const tx = await ts.appHelper.build({
         network: 'sui:devnet',
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.object.send,
-        suiClient: new SuiClient({ url: getFullnodeUrl('mainnet') }),
+        suiGrpcClient: getSuiGrpcClient('sui:devnet'),
         account: testWallet,
         intentionData: OBJECT_TRANSFER_TEST_INTENTION_DATA,
       });
 
-      expect(txb).toBeDefined();
-      expect(txb.blockData.sender).toBe(testWallet.address);
-      expect(txb.blockData.version).toBe(1);
+      expect(tx).toBeDefined();
+      expect(tx.blockData.sender).toBe(testWallet.address);
+      expect(tx.blockData.version).toBe(1);
     });
   });
 

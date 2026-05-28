@@ -1,12 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
 
-// External interface to be use by msafe backend & sdk
-//
-// TODO: update to @mysten/sui after backend & sdk updated to @mysten/sui
+// External interface to be used by msafe backend & sdk
 export interface IAppHelper<T> {
   deserialize(
     input: SuiSignTransactionBlockInput & {
@@ -20,7 +18,6 @@ export interface IAppHelper<T> {
     txSubType: string;
     intentionData: T;
   }>;
-  // TODO: return @mysten/sui Transaction after backend & sdk updated to @mysten/sui
   build(input: {
     network: SuiNetworks;
     txType: TransactionType;
@@ -28,5 +25,5 @@ export interface IAppHelper<T> {
     intentionData: T;
     clientUrl: string;
     account: WalletAccount;
-  }): Promise<TransactionBlock>;
+  }): Promise<Transaction>;
 }
