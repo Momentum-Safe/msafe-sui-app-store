@@ -47,4 +47,4 @@ jobs:
           git pull
           npm version patch
           git push --follow-tags --force
-          bun publish --access public
+          yarn publish --non-interactive --access public
