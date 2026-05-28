@@ -14,19 +14,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: yarn
+        run: bun install --frozen-lockfile
 
       - name: Test
-        run: yarn test
+        run: bun run test
 
       - name: Build
-        run: yarn build
+        run: bun run build
 
       - name: Publish
         env:
@@ -43,4 +47,4 @@ jobs:
           git pull
           npm version patch
           git push --follow-tags --force
-          yarn publish --non-interactive --access public
+          bun publish --access public
