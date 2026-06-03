@@ -2,6 +2,8 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
+
+import { toSuiClientNetwork } from '@/lib/suiNetwork';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
 import { IAppHelper } from '@/apps/interface/common';
@@ -82,6 +84,7 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     },
   ) {
     const client = new SuiClient({
+      network: toSuiClientNetwork(input.network),
       transport: new MSafeHTTPTransport({
         url: input.clientUrl,
         rpc: {
@@ -111,6 +114,7 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     network: SuiNetworks;
   }): Promise<Transaction> {
     const client = new SuiClient({
+      network: toSuiClientNetwork(input.network),
       transport: new MSafeHTTPTransport({
         url: input.clientUrl,
         rpc: {
@@ -166,7 +170,7 @@ export class SuiGrpcSdkAdapter implements IAppHelper<any> {
   }): Promise<Transaction> {
     const suiGrpcClient = getSuiGrpcClient(input.network, input.clientUrl);
     const { balance } = await suiGrpcClient.core.getBalance({
-      address: input.account.address,
+      owner: input.account.address,
       coinType: SUI_COIN_TYPE,
     });
     if (Number(balance.balance) < MIN_GAS_BALANCE) {

@@ -1,10 +1,10 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.333",
+  "version": "0.0.334",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "private": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -81,6 +81,8 @@
     "turbos-clmm-sdk": "^3.6.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
     "@msafe/sui3-utils": "^5.0.8",
     "@mysten/sui.js": "0.54.1",
     "@mysten/wallet-standard": "0.11.6",
@@ -89,6 +91,7 @@
     "@types/luxon": "^3.4.2",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
+    "babel-jest": "29.7.0",
     "eslint": "^8.42.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
@@ -106,7 +109,7 @@
     "typescript": "^5.3.3"
   },
   "resolutions": {
-    "@mysten/sui": "^1.8.0",
+    "@mysten/sui": "2.16.2",
     "ansi-styles": "4.3.0",
     "chalk": "4.1.2"
   },

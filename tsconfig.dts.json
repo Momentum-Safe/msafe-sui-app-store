@@ -6,7 +6,6 @@
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "newLine": "LF",
-    "outDir": "./dist/",
     "target": "ES2022",
     "sourceMap": true,
     "declaration": true,
@@ -22,5 +21,5 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "test/**/*", "./tsconfig.json", "./jest.config.ts", "./tsup.config.ts"]
+  "include": ["src/**/*"]
 }

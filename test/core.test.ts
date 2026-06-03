@@ -7,6 +7,7 @@ import { CoreIntentionData, CoreHelper } from '@/apps/msafe-core/helper';
 import { ObjectTransferIntention, ObjectTransferIntentionData } from '@/apps/msafe-core/object-transfer';
 import { MSafeApps } from '@/apps/registry';
 import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
+import { getTransactionBlockData } from '@/lib/transactionBlockData';
 
 import { Account } from './config';
 import { TestSuiteGrpc } from './testSuite';
@@ -70,8 +71,9 @@ describe('MSafe Core main flow', () => {
       const { tx } = await ts.voteAndExecuteIntention();
 
       expect(tx).toBeDefined();
-      expect(tx.blockData.sender).toBe(testWallet.address);
-      expect(tx.blockData.version).toBe(1);
+      const blockData = getTransactionBlockData(tx);
+      expect(blockData.sender).toBe(testWallet.address);
+      expect(blockData.version).toBe(2);
     });
   });
 
@@ -130,8 +132,9 @@ describe('MSafe Core main flow', () => {
       });
 
       expect(tx).toBeDefined();
-      expect(tx.blockData.sender).toBe(testWallet.address);
-      expect(tx.blockData.version).toBe(1);
+      const blockData = getTransactionBlockData(tx);
+      expect(blockData.sender).toBe(testWallet.address);
+      expect(blockData.version).toBe(2);
     });
   });
 

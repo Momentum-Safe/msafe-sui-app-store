@@ -6,6 +6,7 @@ import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntention, IAppHelperInternal } from '@/apps/interface/sui';
 import { MSafeApps } from '@/apps/registry';
+import { getTransactionBlockData } from '@/lib/transactionBlockData';
 import { SuiNetworks } from '@/types';
 
 import { Account, clientUrl } from './config';
@@ -93,8 +94,9 @@ describe('New interface test', () => {
         message: 'empty',
       },
     });
-    expect(res.blockData.gasConfig).toBeDefined();
-    expect(res.blockData.gasConfig.payment.length).toBeGreaterThan(0);
+    const blockData = getTransactionBlockData(res);
+    expect(blockData.gasConfig).toBeDefined();
+    expect(blockData.gasConfig.payment?.length).toBeGreaterThan(0);
   });
 
   async function buildTxbForTest() {

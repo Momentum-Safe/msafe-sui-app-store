@@ -6,4 +6,12 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   target: 'es2022',
+  outExtension({ format }) {
+    return {
+      js: format === 'cjs' ? '.js' : '.mjs',
+    };
+  },
+  dts: {
+    tsconfig: './tsconfig.dts.json',
+  },
 });

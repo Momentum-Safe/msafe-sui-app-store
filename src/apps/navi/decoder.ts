@@ -6,6 +6,7 @@ import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
 import { TransactionBlockInput } from '@mysten/sui.js/transactions';
 
 import config from './config';
+import { getTransactionBlockData } from '@/lib/transactionBlockData';
 import { TransactionSubType } from './types';
 
 export function isSameCoinType(type1: string, type2: string) {
@@ -54,8 +55,12 @@ export class Decoder {
     throw new Error(`Unknown transaction type`);
   }
 
+  private get blockData() {
+    return getTransactionBlockData(this.txb);
+  }
+
   private get transactions() {
-    return this.txb.blockData.transactions;
+    return this.blockData.transactions;
   }
 
   private getMoveCallTransaction(target: string) {
@@ -280,7 +285,7 @@ export class MoveCallHelper {
     if (arg.kind !== 'Input') {
       throw new Error('not input type');
     }
-    return this.txb.blockData.inputs[arg.index];
+    return getTransactionBlockData(this.txb).inputs[arg.index];
   }
 
   static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
