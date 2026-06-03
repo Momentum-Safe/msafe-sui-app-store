@@ -135,7 +135,7 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
   private async initScallopClient(walletAddress: string, suiClient: SuiClient) {
     if (!this.scallopClient) {
       const scallop = new Scallop({
-        addressId: '67c44a103fe1b8c454eb9699',
+        addressId: '695fcdc084f790c04eb068dc',
         walletAddress,
         suiClients: [suiClient],
         fullnodeUrls: [
@@ -160,8 +160,6 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
   }> {
     const { transaction, suiClient, account } = input;
     await this.initScallopClient(account.address, suiClient);
-
-    console.log('transaction', transaction);
 
     // const devInspectResult = await input.suiClient.devInspectTransactionBlock({
     //   transactionBlock: transaction,
