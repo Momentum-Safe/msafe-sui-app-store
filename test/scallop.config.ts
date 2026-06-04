@@ -1,8 +1,9 @@
-import { ScallopAppHelper } from '@/apps/scallop/helper';
 import { HexToUint8Array } from '@msafe/sui3-utils';
 import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 import { ScallopClient } from '@scallop-io/sui-scallop-sdk';
+
+import { ScallopAppHelper } from '@/apps/scallop/helper';
 
 export const client = new SuiClient({ url: getFullnodeUrl('mainnet') });
 export const account: WalletAccount = {
@@ -31,6 +32,7 @@ export const accountWithSusdc: WalletAccount = {
 };
 
 export const helper = new ScallopAppHelper();
+
 export const scallopClient = new ScallopClient({
   addressId: '695fcdc084f790c04eb068dc',
 });

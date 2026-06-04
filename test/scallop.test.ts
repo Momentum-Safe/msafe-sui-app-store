@@ -31,7 +31,9 @@ const buildAndDeserialize = async (
 
 describe('Scallop App', () => {
   beforeEach(async () => {
-    if (initialized) return;
+    if (initialized) {
+      return;
+    }
     initialized = true;
     await scallopClient.init();
   });
@@ -241,7 +243,7 @@ describe('Scallop App', () => {
     expect(intention.serialize()).toBe(`{}`);
   });
 
-    it('Test Supply Lending intention deserialization', async () => {
+  it('Test Supply Lending intention deserialization', async () => {
     const intentionData = {
       amount: 1000,
       coinName: 'sui',
