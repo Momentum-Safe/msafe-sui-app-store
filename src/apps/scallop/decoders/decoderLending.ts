@@ -149,7 +149,10 @@ export class DecoderLending extends Decoder {
   }
 
   private isOpenObligationTransaction() {
-    return this.hasMoveCallCommand(`${this.coreId.protocolPkg}::open_obligation::open_obligation`);
+    return (
+      this.hasMoveCallCommand(`${this.coreId.protocolPkg}::open_obligation::open_obligation`) ||
+      this.hasMoveCallCommand(`${this.coreId.protocolPkg}::open_obligation::open_obligation_entry`)
+    );
   }
 
   private isMigrateAndClaim() {

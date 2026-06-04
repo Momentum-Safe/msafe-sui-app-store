@@ -1,9 +1,11 @@
+import { ScallopAppHelper } from '@/apps/scallop/helper';
 import { HexToUint8Array } from '@msafe/sui3-utils';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client';
+import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
+import { ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
-export const Client = new SuiClient({ url: getFullnodeUrl('mainnet') });
-export const Account: WalletAccount = {
+export const client = new SuiClient({ url: getFullnodeUrl('mainnet') });
+export const account: WalletAccount = {
   address: '0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b',
   publicKey: HexToUint8Array('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b'),
   chains: [SUI_MAINNET_CHAIN],
@@ -20,3 +22,15 @@ export const SpoolStakeAccount = {
 };
 
 export const vescaKey = '0x5e2c54651ca4e2352475e8419e3419cfcfe424af272ca59ae053e3c248c13c16';
+
+export const accountWithSusdc: WalletAccount = {
+  address: '0x61819c99588108d9f7710047e6ad8f2da598de8e98a26ea62bd7ad9847f5329c',
+  publicKey: HexToUint8Array('0x61819c99588108d9f7710047e6ad8f2da598de8e98a26ea62bd7ad9847f5329c'),
+  chains: [SUI_MAINNET_CHAIN],
+  features: [],
+};
+
+export const helper = new ScallopAppHelper();
+export const scallopClient = new ScallopClient({
+  addressId: '695fcdc084f790c04eb068dc',
+});

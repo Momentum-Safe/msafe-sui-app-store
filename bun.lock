@@ -24,7 +24,7 @@
         "@nemoprotocol/vaults-sdk": "^0.2.4",
         "@open-rpc/client-js": "^1.8.1",
         "@pythnetwork/pyth-sui-js": "^2.1.0",
-        "@scallop-io/sui-scallop-sdk": "^2.1.6",
+        "@scallop-io/sui-scallop-sdk": "^2.4.4",
         "@suilend/sdk": "^1.1.57",
         "@suilend/springsui-sdk": "^1.0.24",
         "@suilend/sui-fe": "^0.2.72",
