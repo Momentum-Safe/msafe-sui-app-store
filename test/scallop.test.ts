@@ -15,9 +15,12 @@ import { ClaimRevenueReferralIntention } from '@/apps/scallop/intentions/referra
 import { CreateReferralLinkIntention } from '@/apps/scallop/intentions/referral/create-referral-link';
 import { ExtendPeriodAndStakeMoreIntention } from '@/apps/scallop/intentions/staking/extend-period-and-stake-more';
 import { ExtendStakePeriodIntention } from '@/apps/scallop/intentions/staking/extend-stake-period';
+import { SplitVeScaIntention } from '@/apps/scallop/intentions/staking/split-ve-sca';
+import { StakeScaIntention } from '@/apps/scallop/intentions/staking/stake-sca';
+import { VeScaObligationBindingsIntention } from '@/apps/scallop/intentions/staking/ve-sca-obligation-bindings';
 import { WithdrawStakedScaIntention } from '@/apps/scallop/intentions/staking/withdraw-staked-sca';
 
-import { account, accountWithSusdc, client, Obligation, vescaKey, helper, scallopClient } from './scallop.config';
+import { account, accountWithSusdc, client, Obligation, veScaKey, helper, scallopClient } from './scallop.config';
 
 let initialized = false;
 // Build the intention's transaction then round-trip it back through the decoder.
@@ -102,11 +105,11 @@ describe('Scallop App', () => {
       coinName: 'sui',
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      veScaKey: vescaKey,
+      veScaKey,
     });
 
     expect(intention.serialize()).toBe(
-      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","veScaKey":"${vescaKey}"}`,
+      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","veScaKey":"${veScaKey}"}`,
     );
   });
 
@@ -128,11 +131,11 @@ describe('Scallop App', () => {
       amount: 1000,
       coinName: 'sui',
       obligationId: Obligation.obligationId,
-      veScaKey: vescaKey,
+      veScaKey,
     });
 
     expect(intention.serialize()).toBe(
-      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","veScaKey":"${vescaKey}"}`,
+      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","veScaKey":"${veScaKey}"}`,
     );
   });
 
@@ -151,7 +154,7 @@ describe('Scallop App', () => {
   it('Test extend lock period intention serialization', () => {
     const intentionData = {
       unlockTime,
-      veScaKey: vescaKey,
+      veScaKey,
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
       isObligationLocked: true,
@@ -163,7 +166,7 @@ describe('Scallop App', () => {
     const parsed = JSON.parse(serialized);
 
     expect(parsed.unlockTime).toBe(unlockTime);
-    expect(parsed.veScaKey).toBe(vescaKey);
+    expect(parsed.veScaKey).toBe(veScaKey);
     expect(parsed.obligationId).toBe(Obligation.obligationId);
     expect(parsed.obligationKey).toBe(Obligation.obligationKey);
     expect(parsed.isObligationLocked).toBe(true);
@@ -176,7 +179,7 @@ describe('Scallop App', () => {
       unlockTime,
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      veScaKey: vescaKey,
+      veScaKey,
       isObligationLocked: true,
       isOldBorrowIncentive: false,
     });
@@ -188,7 +191,7 @@ describe('Scallop App', () => {
     expect(parsed.unlockTime).toBe(unlockTime);
     expect(parsed.obligationId).toBe(Obligation.obligationId);
     expect(parsed.obligationKey).toBe(Obligation.obligationKey);
-    expect(parsed.veScaKey).toBe(vescaKey);
+    expect(parsed.veScaKey).toBe(veScaKey);
     expect(parsed.isObligationLocked).toBe(true);
     expect(parsed.isOldBorrowIncentive).toBe(false);
   });
@@ -213,28 +216,53 @@ describe('Scallop App', () => {
       coinName: 'sui',
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      veScaKey: vescaKey,
+      veScaKey,
     });
 
     expect(intention.serialize()).toBe(
-      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","veScaKey":"${vescaKey}"}`,
+      `{"amount":1000,"coinName":"sui","obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","veScaKey":"${veScaKey}"}`,
     );
+  });
+
+  it('Test stake sca intention serialization', () => {
+    const intention = StakeScaIntention.fromData({
+      amount: 10e9,
+      isObligationLocked: false,
+      isOldBorrowIncentive: false,
+      obligationId: Obligation.obligationId,
+      obligationKey: Obligation.obligationKey,
+      unlockTime,
+      veScaKey: undefined,
+    });
+
+    expect(intention.serialize()).toBe(
+      `{"amount":10000000000,"isObligationLocked":false,"isOldBorrowIncentive":false,"obligationId":"${Obligation.obligationId}","obligationKey":"${Obligation.obligationKey}","unlockTime":${unlockTime}}`,
+    );
+  });
+
+  it('Test Split VeSca serialization', () => {
+    const intention = SplitVeScaIntention.fromData({
+      splitAmount: 1e9,
+      targetVeScaKey: veScaKey,
+    });
+
+    expect(intention.serialize()).toBe(`{"splitAmount":1000000000,"targetVeScaKey":"${veScaKey}"}`);
   });
 
   it('Test Referral Bind Referral', () => {
     const intention = BindReferralIntention.fromData({
-      veScaKey: vescaKey,
+      veScaKey,
     });
 
-    expect(intention.serialize()).toBe(`{"veScaKey":"${vescaKey}"}`);
+    expect(intention.serialize()).toBe(`{"veScaKey":"${veScaKey}"}`);
   });
   it('Test Referral Claim Revenue', () => {
     const intention = ClaimRevenueReferralIntention.fromData({
-      veScaKey: vescaKey,
+      veScaKey,
       coins: ['usdt', 'usdc'],
     });
 
-    expect(intention.serialize()).toBe(`{"coins":["usdc","usdt"],"veScaKey":"${vescaKey}"}`);
+    expect(intention.serialize()).toBe(`{"coins":["usdc","usdt"],"veScaKey":"${veScaKey}"}`);
   });
 
   it('Test Create Referral Link', () => {
@@ -315,7 +343,7 @@ describe('Scallop App', () => {
       coinName: 'sui',
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      veScaKey: vescaKey,
+      veScaKey,
     };
     const d = await buildAndDeserialize(BorrowWithBoostIntention.fromData(intentionData));
     expect(d.txType).toBe('Other');
@@ -343,7 +371,7 @@ describe('Scallop App', () => {
       amount: 1000,
       coinName: 'sui',
       obligationId: Obligation.obligationId,
-      veScaKey: vescaKey,
+      veScaKey,
     };
     const d = await buildAndDeserialize(RepayWithBoostIntention.fromData(intentionData));
     expect(d.txType).toBe('Other');
@@ -371,7 +399,7 @@ describe('Scallop App', () => {
   it('Test extend lock period intention deserialization', async () => {
     const intentionData = {
       unlockTime,
-      veScaKey: vescaKey,
+      veScaKey,
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
       isObligationLocked: true,
@@ -390,7 +418,7 @@ describe('Scallop App', () => {
       unlockTime,
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      veScaKey: vescaKey,
+      veScaKey,
       isObligationLocked: true,
       isOldBorrowIncentive: false,
     };
@@ -420,7 +448,7 @@ describe('Scallop App', () => {
       coinName: 'sui',
       obligationId: Obligation.obligationId,
       obligationKey: Obligation.obligationKey,
-      veScaKey: vescaKey,
+      veScaKey,
     };
     const d = await buildAndDeserialize(BorrowWithReferralIntention.fromData(intentionData));
     expect(d.txType).toBe('Other');
@@ -429,7 +457,7 @@ describe('Scallop App', () => {
   });
 
   it('Test Referral Bind Referral deserialization', async () => {
-    const intentionData = { veScaKey: vescaKey };
+    const intentionData = { veScaKey };
     const d = await buildAndDeserialize(BindReferralIntention.fromData(intentionData));
     expect(d.txType).toBe('Other');
     expect(d.txSubType).toBe('BindReferral');
@@ -439,7 +467,7 @@ describe('Scallop App', () => {
   it('Test Referral Claim Revenue deserialization', async () => {
     // Use a single valid revenue coin: 'usdt' is not a claimable revenue coin (resolves to an empty type),
     // and multi-coin resolution is non-deterministic.
-    const intentionData = { veScaKey: vescaKey, coins: ['usdc'] };
+    const intentionData = { veScaKey, coins: ['usdc'] };
     const d = await buildAndDeserialize(ClaimRevenueReferralIntention.fromData(intentionData));
     expect(d.txType).toBe('Other');
     expect(d.txSubType).toBe('ClaimRevenueReferral');
@@ -451,6 +479,91 @@ describe('Scallop App', () => {
     const d = await buildAndDeserialize(CreateReferralLinkIntention.fromData(intentionData));
     expect(d.txType).toBe('Other');
     expect(d.txSubType).toBe('CreateReferralLink');
+    expect(d.intentionData).toEqual(intentionData);
+  });
+
+  it('Test VeSca Obligation Bindings (deactivate) serialization', () => {
+    const intention = VeScaObligationBindingsIntention.fromData({
+      bindingDatas: [{ action: 'deactivate', args: { veScaKey, obligationId: Obligation.obligationId } }],
+    });
+
+    expect(intention.serialize()).toBe(
+      `{"bindingDatas":[{"action":"deactivate","args":{"veScaKey":"${veScaKey}","obligationId":"${Obligation.obligationId}"}}]}`,
+    );
+  });
+
+  it('Test VeSca Obligation Bindings (deactivate) deserialization', async () => {
+    const intentionData = {
+      bindingDatas: [{ action: 'deactivate' as const, args: { veScaKey, obligationId: Obligation.obligationId } }],
+    };
+    const d = await buildAndDeserialize(VeScaObligationBindingsIntention.fromData(intentionData));
+    expect(d.txType).toBe('Other');
+    expect(d.txSubType).toBe('VeScaObligationBindings');
+    expect(d.intentionData).toEqual(intentionData);
+  });
+
+  it('Test VeSca Obligation Bindings (unstake + stake) deserialization', async () => {
+    const intentionData = {
+      bindingDatas: [
+        {
+          action: 'unstake' as const,
+          args: { obligationId: Obligation.obligationId, obligationKey: Obligation.obligationKey },
+        },
+        {
+          action: 'stake' as const,
+          args: { veScaKey, obligationId: Obligation.obligationId, obligationKey: Obligation.obligationKey },
+        },
+      ],
+    };
+    const d = await buildAndDeserialize(VeScaObligationBindingsIntention.fromData(intentionData));
+    expect(d.txType).toBe('Other');
+    expect(d.txSubType).toBe('VeScaObligationBindings');
+    expect(d.intentionData).toEqual(intentionData);
+  });
+
+  it('Test Stake Sca without veScaKey deserialization', async () => {
+    const intentionData = {
+      amount: 1000,
+      isObligationLocked: true,
+      isOldBorrowIncentive: false,
+      obligationId: Obligation.obligationId,
+      obligationKey: Obligation.obligationKey,
+      unlockTime,
+      veScaKey: undefined as string | undefined,
+    };
+
+    const d = await buildAndDeserialize(StakeScaIntention.fromData(intentionData));
+    expect(d.txType).toBe('Other');
+    expect(d.txSubType).toBe('StakeSca');
+    expect(d.intentionData).toEqual(intentionData);
+  });
+
+  it.skip('Test Stake Sca with veScaKey deserialization', async () => {
+    const intentionData = {
+      amount: 1000,
+      isObligationLocked: true,
+      isOldBorrowIncentive: false,
+      obligationId: Obligation.obligationId,
+      obligationKey: Obligation.obligationKey,
+      unlockTime,
+      veScaKey,
+    };
+
+    const d = await buildAndDeserialize(StakeScaIntention.fromData(intentionData));
+    expect(d.txType).toBe('Other');
+    expect(d.txSubType).toBe('StakeSca');
+    expect(d.intentionData).toEqual(intentionData);
+  });
+
+  it('Test Split VeSca deserialization', async () => {
+    const intentionData = {
+      splitAmount: 1e9,
+      targetVeScaKey: veScaKey,
+    };
+
+    const d = await buildAndDeserialize(SplitVeScaIntention.fromData(intentionData));
+    expect(d.txType).toBe('Other');
+    expect(d.txSubType).toBe('SplitVeSca');
     expect(d.intentionData).toEqual(intentionData);
   });
 });

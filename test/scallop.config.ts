@@ -22,7 +22,7 @@ export const SpoolStakeAccount = {
   susdc: '0x7ba3aae255483cdb6f0b733a63534de49c6883222e7b4a9ffc0be43d6737ed50',
 };
 
-export const vescaKey = '0x5e2c54651ca4e2352475e8419e3419cfcfe424af272ca59ae053e3c248c13c16';
+export const veScaKey = '0x5e2c54651ca4e2352475e8419e3419cfcfe424af272ca59ae053e3c248c13c16';
 
 export const accountWithSusdc: WalletAccount = {
   address: '0x61819c99588108d9f7710047e6ad8f2da598de8e98a26ea62bd7ad9847f5329c',
