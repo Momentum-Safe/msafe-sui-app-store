@@ -35,9 +35,8 @@ export class ClaimRevenueReferralIntention extends ScallopCoreBaseIntention<Clai
     const tx = client.builder.createTxBlock();
     tx.setSender(sender);
 
-    const coinsName = coins.map((coin) => client.utils.parseCoinNameFromType(coin));
-
-    await tx.claimReferralRevenueQuick(veScaKey, coinsName);
+    // `coins` are already coin names (e.g. 'usdc'); claimReferralRevenueQuick expects names.
+    await tx.claimReferralRevenueQuick(veScaKey, coins);
     return tx.txBlock;
   }
 
