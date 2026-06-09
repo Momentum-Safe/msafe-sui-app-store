@@ -18,7 +18,7 @@ export interface TransferVeScaKeysIntentionData {
 export class TransferVeScaKeysIntention extends ScallopCoreBaseIntention<TransferVeScaKeysIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.MergeVeSca;
+  txSubType: TransactionSubType.TransferVeScaKeys;
 
   constructor(public readonly data: TransferVeScaKeysIntentionData) {
     super(data);

@@ -60,7 +60,8 @@ export class DecoderReferral extends Decoder {
 
   private decodeClaimRevenueReferral(): DecodeResult {
     const veScaKey = this.helperClaimRevenueReferral[0].decodeOwnedObjectId(2);
-    const coins = this.helperClaimRevenueReferral.map((helper) => helper.typeArg(0));
+    // typeArg(0) is the full coin type; intentionData uses coin names.
+    const coins = this.helperClaimRevenueReferral.map((helper) => this.utils.parseCoinNameFromType(helper.typeArg(0)));
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.ClaimRevenueReferral,

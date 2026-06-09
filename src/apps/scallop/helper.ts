@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
+import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
@@ -138,9 +138,6 @@ export class ScallopAppHelper implements IAppHelperInternal<ScallopIntentionData
         addressId: '695fcdc084f790c04eb068dc',
         walletAddress,
         suiClients: [suiClient],
-        fullnodeUrls: [
-          (suiClient as any).transport.rpcClient.requestManager.transports[0]?.uri ?? getFullnodeUrl('mainnet'),
-        ],
       });
       this.scallopClient = await scallop.createScallopClient();
     }

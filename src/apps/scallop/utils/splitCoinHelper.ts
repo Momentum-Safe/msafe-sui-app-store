@@ -10,14 +10,15 @@ class SplitCoinHelper {
   ) {}
 
   getAmountInput() {
-    return this.splitCoin.amounts
-      .map((input) => {
-        if (input.kind === 'Input') {
+    return this.splitCoin.SplitCoins.amounts
+      .map((arg) => {
+        if (arg.$kind === 'Input') {
+          const input = this.txb.getData().inputs[arg.Input];
           return Number(MoveCallHelper.getPureInputValue<number>(input, 'U64'));
         }
         return undefined;
       })
-      .filter((input) => input !== undefined);
+      .filter((amount): amount is number => amount !== undefined);
   }
 }
 

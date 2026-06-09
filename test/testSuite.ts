@@ -5,8 +5,8 @@ import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { IAppHelperInternal } from '@/apps/interface/sui';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
 import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 import { SuiNetworks } from '@/types';

@@ -15,7 +15,7 @@ export interface SplitVeScaIntentionData {
 export class SplitVeScaIntention extends ScallopCoreBaseIntention<SplitVeScaIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.MergeVeSca;
+  txSubType: TransactionSubType.SplitVeSca;
 
   constructor(public readonly data: SplitVeScaIntentionData) {
     super(data);
