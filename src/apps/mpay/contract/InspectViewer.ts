@@ -1,49 +1,39 @@
-import { Buffer } from 'buffer';
-
-import { DevInspectResults, SuiExecutionResult } from '@mysten/sui.js/client';
-import { normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { bcs } from '@mysten/bcs';
 
 import { InvalidRpcResultError } from '../error/InvalidRpcResultError';
+import { MpaySimulateResult, readU64FromCommandResult } from '../utils/rpc';
 
 export class InspectViewer {
-  constructor(readonly results: DevInspectResults) {}
-
-  callResult(index: number) {
-    return this.results.results![index];
-  }
-
-  returnValue(returned: SuiExecutionResult, index: number) {
-    return returned.returnValues![index];
-  }
-
-  getValue(callIndex = 0, returnIndex = 0) {
-    const callResult = this.callResult(callIndex);
-    return this.returnValue(callResult, returnIndex);
-  }
-
-  getAddress(callIndex = 0, returnIndex = 0) {
-    const [value, type] = this.getValue(callIndex, returnIndex);
-    if (type !== 'address') {
-      throw new InvalidRpcResultError('Invalid contract return type.', {
-        ctx: {
-          expectType: 'address',
-          gotType: type,
-        },
-      });
-    }
-    return normalizeSuiAddress(Buffer.from(value).toString('hex'));
-  }
+  constructor(readonly results: MpaySimulateResult) {}
 
   getU64(callIndex = 0, returnIndex = 0) {
-    const [value, type] = this.getValue(callIndex, returnIndex);
-    if (type !== 'u64') {
+    try {
+      return readU64FromCommandResult(this.results, callIndex, returnIndex);
+    } catch {
+      const [value, type] = this.getLegacyValue(callIndex, returnIndex);
+      if (type !== 'u64') {
+        throw new InvalidRpcResultError('Invalid contract return type.', {
+          ctx: {
+            expectType: 'u64',
+            gotType: type,
+          },
+        });
+      }
+      return bcs.u64().parse(Uint8Array.from(value));
+    }
+  }
+
+  private getLegacyValue(callIndex = 0, returnIndex = 0) {
+    const callResult = this.results.results?.[callIndex];
+    const returnValues = callResult?.returnValues;
+    if (!returnValues?.[returnIndex]) {
       throw new InvalidRpcResultError('Invalid contract return type.', {
         ctx: {
           expectType: 'u64',
-          gotType: type,
+          gotType: 'missing',
         },
       });
     }
-    return Buffer.from(value).readBigInt64LE();
+    return returnValues[returnIndex];
   }
 }

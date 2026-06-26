@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import type { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntention } from '@/apps/interface/sui';
+import type { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 import { claimReward } from '../api/incentiveV2';
 import { TransactionSubType } from '../types';

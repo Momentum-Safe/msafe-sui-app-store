@@ -1,10 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction, TransactionResult } from '@mysten/sui/transactions';
 import { SUI_TYPE_ARG } from '@mysten/sui/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { Lending, ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 import { SuiNetworks } from '@/types';
 
 import { TransactionSubType } from '../../types/utils';

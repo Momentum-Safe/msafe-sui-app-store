@@ -1,11 +1,22 @@
-import { CoinBalance, CoinMetadata, SuiTransactionBlockResponse, DevInspectResults } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import type { SuiClientTypes } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
 import { DateTime, Duration } from 'luxon';
 
 import { StreamFilterStatus } from './backend';
 import { IStream, IStreamGroup, StreamStatus } from './stream';
 import { IMSafeAccount, ISingleWallet } from './wallet';
+import { MpayCoinMetadata, MpaySimulateResult } from '../utils/rpc';
 import { SuiIterator } from '../sui/iterator/iterator';
+
+export type MpayTransactionResponse = {
+  effects?: {
+    status: {
+      status: 'success' | 'failure';
+      error?: string;
+    };
+  };
+  objectTypes?: Record<string, string>;
+};
 
 export interface IMPayClient {
   helper: IMPayHelper;
@@ -20,7 +31,7 @@ export interface IMPayClient {
   getRecipientsForStreamFilter(options?: StreamFilterStatus): Promise<string[]>;
   getCreatorsForStreamFilter(options?: StreamFilterStatus): Promise<string[]>;
 
-  createStream(info: CreateStreamInfo): Promise<TransactionBlock>;
+  createStream(info: CreateStreamInfo): Promise<Transaction>;
 }
 
 export interface PaymentWithFee {
@@ -38,15 +49,15 @@ export interface MPayFees {
 export interface IMPayHelper {
   getBalance(address: string, coinType?: string | null): Promise<CoinBalanceWithMeta>;
   getAllBalance(address: string): Promise<CoinBalanceWithMeta[]>;
-  getCoinMeta(coinType: string): Promise<CoinMetadata | undefined>;
+  getCoinMeta(coinType: string): Promise<MpayCoinMetadata | undefined>;
 
-  getStreamIdsFromCreateStreamResponse(res: SuiTransactionBlockResponse): string[];
+  getStreamIdsFromCreateStreamResponse(res: MpayTransactionResponse): string[];
   calculateCreateStreamFees(info: CreateStreamInfo): PaymentWithFee;
   feeParams(): MPayFees;
   calculateStreamAmount(input: { totalAmount: bigint; steps: bigint; cliff?: Fraction }): CalculatedStreamAmount;
   calculateTimelineByInterval(input: { timeStart: DateTime; interval: Duration; steps: bigint }): CalculatedTimeline;
   calculateTimelineByTotalDuration(input: { timeStart: DateTime; total: Duration; steps: bigint }): CalculatedTimeline;
-  simulateTransactionBlock(txb: TransactionBlock): Promise<DevInspectResults>;
+  simulateTransactionBlock(txb: Transaction): Promise<MpaySimulateResult>;
 }
 
 export type IPagedStreamListIterator = SuiIterator<(IStream | IStreamGroup)[]>;
@@ -114,6 +125,10 @@ export interface Fraction {
   denominator: bigint;
 }
 
-export type CoinBalanceWithMeta = CoinBalance & {
-  coinMeta: CoinMetadata | undefined;
+export type CoinBalanceWithMeta = {
+  coinType: string;
+  totalBalance: string;
+  coinMeta: MpayCoinMetadata | undefined;
 };
+
+export type { SuiClientTypes };

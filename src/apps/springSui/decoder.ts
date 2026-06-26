@@ -1,5 +1,4 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
 
@@ -10,6 +9,7 @@ import {
   StakeIntentionData,
   UnstakeIntentionData,
 } from '@/apps/springSui/types/intention';
+import { DevInspectResults } from '@/compat/mysten-sui-json-rpc';
 
 import { DecodeResult, TransactionSubType } from './types/helper';
 

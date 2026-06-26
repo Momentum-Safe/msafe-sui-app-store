@@ -1,8 +1,9 @@
 import { coinsList, poolIdPoolNameMap, poolInfo, PoolName, singleAssetPoolCoinMap } from '@alphafi/alphafi-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { bcs, fromBase64 } from '@mysten/bcs';
-import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+
+import { DevInspectResults } from '@/compat/mysten-sui-json-rpc';
 
 import {
   DecodeResult,

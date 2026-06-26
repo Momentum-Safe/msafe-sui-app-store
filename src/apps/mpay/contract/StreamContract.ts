@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { BaseContract } from './BaseContract';
 import { ContractConfig, Globals } from '../common';
@@ -25,7 +25,7 @@ export class StreamContract extends BaseContract {
   }
 
   createStream(
-    txb: TransactionBlock,
+    txb: Transaction,
     input: {
       paymentCoin: Ref<ObjectId>;
       flatFeeCoin: Ref<ObjectId>;
@@ -67,7 +67,7 @@ export class StreamContract extends BaseContract {
   }
 
   setAutoClaim(
-    txb: TransactionBlock,
+    txb: Transaction,
     input: {
       streamId: Ref<ObjectId>;
       enabled: boolean;
@@ -83,7 +83,7 @@ export class StreamContract extends BaseContract {
   }
 
   cancelStream(
-    txb: TransactionBlock,
+    txb: Transaction,
     input: {
       streamId: Ref<ObjectId>;
       coinType: string;
@@ -99,7 +99,7 @@ export class StreamContract extends BaseContract {
   }
 
   claimStream(
-    txb: TransactionBlock,
+    txb: Transaction,
     input: {
       streamId: Ref<ObjectId>;
       coinType: string;
@@ -115,7 +115,7 @@ export class StreamContract extends BaseContract {
   }
 
   claimStreamByProxy(
-    txb: TransactionBlock,
+    txb: Transaction,
     input: {
       streamId: Ref<ObjectId>;
       coinType: string;

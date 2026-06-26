@@ -1,11 +1,11 @@
 import { HexToUint8Array, TransactionSubTypes, TransactionType } from '@msafe/sui3-utils';
-import { getFullnodeUrl } from '@mysten/sui/client';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 
 import { CoinTransferIntention, CoinTransferIntentionData } from '@/apps/msafe-core/coin-transfer';
 import { CoreIntentionData, CoreHelper } from '@/apps/msafe-core/helper';
 import { ObjectTransferIntention, ObjectTransferIntentionData } from '@/apps/msafe-core/object-transfer';
 import { MSafeApps } from '@/apps/registry';
+import { getFullnodeUrl } from '@/compat/mysten-sui-json-rpc';
 import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 
 import { Account } from './config';
@@ -70,8 +70,9 @@ describe('MSafe Core main flow', () => {
       const { tx } = await ts.voteAndExecuteIntention();
 
       expect(tx).toBeDefined();
-      expect(tx.blockData.sender).toBe(testWallet.address);
-      expect(tx.blockData.version).toBe(1);
+      const txData = tx.getData();
+      expect(txData.sender).toBe(testWallet.address);
+      expect(txData.version).toBe(2);
     });
   });
 
@@ -130,8 +131,9 @@ describe('MSafe Core main flow', () => {
       });
 
       expect(tx).toBeDefined();
-      expect(tx.blockData.sender).toBe(testWallet.address);
-      expect(tx.blockData.version).toBe(1);
+      const txData = tx.getData();
+      expect(txData.sender).toBe(testWallet.address);
+      expect(txData.version).toBe(2);
     });
   });
 

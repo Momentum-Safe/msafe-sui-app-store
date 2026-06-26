@@ -1,13 +1,14 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
+import { AppName, AppRegistry } from '@/apps/app-registry';
 import { IAppHelper } from '@/apps/interface/common';
 import { IAppHelperInternal } from '@/apps/interface/sui';
 import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { SuiClient, toSuiNetworkName } from '@/compat/mysten-sui-json-rpc';
 import { MSafeHTTPTransport } from '@/lib/MSafeHTTPTransport';
 import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 import { SuiNetworks } from '@/types';
@@ -17,11 +18,13 @@ const MIN_GAS_BALANCE = 100_000_000;
 
 type InternalAppHelper<T> = IAppHelperInternalLegacy<T> | IAppHelperInternal<T> | IAppHelperInternalGrpc<T>;
 
+type RegisteredAppHelper = IAppHelper<AppRegistry[AppName]>;
+
 export class MSafeApps {
-  apps: Map<string, IAppHelper<any>>;
+  apps: Map<AppName, RegisteredAppHelper>;
 
   private constructor() {
-    this.apps = new Map<string, IAppHelper<any>>();
+    this.apps = new Map<AppName, RegisteredAppHelper>();
   }
 
   static fromHelpers(apps: InternalAppHelper<any>[]) {
@@ -38,33 +41,39 @@ export class MSafeApps {
         case '@mysten/sui-v2':
           mApps.addGrpcHelper(app);
           break;
-        default:
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          throw new Error(`${app.application}: ${app.supportSDK} SDK not supported`);
+        default: {
+          const unsupported = app as InternalAppHelper<unknown>;
+          throw new Error(`${unsupported.application}: ${unsupported.supportSDK} SDK not supported`);
+        }
       }
     }
     return mApps;
   }
 
   addLegacyHelper(app: IAppHelperInternalLegacy<any>) {
-    this.apps.set(app.application, new SuiJsSdkAdapter(app));
+    this.setApp(app.application, new SuiJsSdkAdapter(app));
   }
 
   addHelper(app: IAppHelperInternal<any>) {
-    this.apps.set(app.application, new SuiSdkAdapter(app));
+    this.setApp(app.application, new SuiSdkAdapter(app));
   }
 
   addGrpcHelper(app: IAppHelperInternalGrpc<any>) {
-    this.apps.set(app.application, new SuiGrpcSdkAdapter(app));
+    this.setApp(app.application, new SuiGrpcSdkAdapter(app));
   }
 
-  getAppHelper(appName: string): IAppHelper<any> {
-    const app = this.apps.get(appName);
+  getAppHelper<K extends AppName>(appName: K): IAppHelper<AppRegistry[K]>;
+  getAppHelper(appName: string): IAppHelper<unknown>;
+  getAppHelper(appName: string): IAppHelper<unknown> {
+    const app = this.apps.get(appName as AppName);
     if (!app) {
       throw new Error(`${appName} not registered`);
     }
     return app;
+  }
+
+  private setApp(appName: string, helper: RegisteredAppHelper) {
+    this.apps.set(appName as AppName, helper);
   }
 }
 
@@ -82,6 +91,7 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     },
   ) {
     const client = new SuiClient({
+      network: toSuiNetworkName(input.network),
       transport: new MSafeHTTPTransport({
         url: input.clientUrl,
         rpc: {
@@ -111,6 +121,7 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     network: SuiNetworks;
   }): Promise<Transaction> {
     const client = new SuiClient({
+      network: toSuiNetworkName(input.network),
       transport: new MSafeHTTPTransport({
         url: input.clientUrl,
         rpc: {
@@ -166,7 +177,7 @@ export class SuiGrpcSdkAdapter implements IAppHelper<any> {
   }): Promise<Transaction> {
     const suiGrpcClient = getSuiGrpcClient(input.network, input.clientUrl);
     const { balance } = await suiGrpcClient.core.getBalance({
-      address: input.account.address,
+      owner: input.account.address,
       coinType: SUI_COIN_TYPE,
     });
     if (Number(balance.balance) < MIN_GAS_BALANCE) {

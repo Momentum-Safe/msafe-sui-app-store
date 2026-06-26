@@ -1,11 +1,10 @@
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { CreateStreamDecodeHelper } from './create';
 import { MoveCallHelper } from './moveCall';
 import { Globals } from '../common';
 import { StreamContract } from '../contract/StreamContract';
-import { isSameTarget } from '../sui/utils';
+import { getMoveCallTarget, isSameTarget } from '../sui/utils';
 import {
   DecodedCancelStream,
   DecodedClaimByProxy,
@@ -17,7 +16,7 @@ import {
 } from '../types/decode';
 
 export class StreamTransactionDecoder {
-  static decodeTransaction(globals: Globals, txb: TransactionBlock): StreamDecodedTransaction {
+  static decodeTransaction(globals: Globals, txb: Transaction): StreamDecodedTransaction {
     const helper = new DecodeHelper(globals, txb);
     return helper.decode();
   }
@@ -28,7 +27,7 @@ export class DecodeHelper {
 
   constructor(
     public readonly globals: Globals,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {
     this.contract = new StreamContract(globals.envConfig.contract, globals);
   }
@@ -52,46 +51,47 @@ export class DecodeHelper {
     throw new Error('Unknown stream transaction type');
   }
 
-  private get transactions() {
-    return this.txb.blockData.transactions;
+  private get commands() {
+    return this.txb.getData().commands;
   }
 
   private isCreateStreamTransaction() {
-    const createStreamIndex = this.transactions.findIndex(
-      (tx) => tx.kind === 'MoveCall' && isSameTarget(tx.target, this.contract.createStreamTarget),
+    const createStreamIndex = this.commands.findIndex(
+      (command) =>
+        command.$kind === 'MoveCall' && isSameTarget(getMoveCallTarget(command)!, this.contract.createStreamTarget),
     );
     return createStreamIndex !== -1;
   }
 
   private isSetAutoClaimTransaction() {
     return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, this.contract.setAutoClaimTarget)
+      this.commands.length === 1 &&
+      this.commands[0].$kind === 'MoveCall' &&
+      isSameTarget(getMoveCallTarget(this.commands[0])!, this.contract.setAutoClaimTarget)
     );
   }
 
   private isCancelStreamTransaction() {
     return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, this.contract.cancelStreamTarget)
+      this.commands.length === 1 &&
+      this.commands[0].$kind === 'MoveCall' &&
+      isSameTarget(getMoveCallTarget(this.commands[0])!, this.contract.cancelStreamTarget)
     );
   }
 
   private isClaimStreamTransaction(): boolean {
     return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, this.contract.claimStreamTarget)
+      this.commands.length === 1 &&
+      this.commands[0].$kind === 'MoveCall' &&
+      isSameTarget(getMoveCallTarget(this.commands[0])!, this.contract.claimStreamTarget)
     );
   }
 
   private isClaimByProxyTransaction(): boolean {
     return (
-      this.transactions.length === 1 &&
-      this.transactions[0].kind === 'MoveCall' &&
-      isSameTarget(this.transactions[0].target, this.contract.claimStreamByProxyTarget)
+      this.commands.length === 1 &&
+      this.commands[0].$kind === 'MoveCall' &&
+      isSameTarget(getMoveCallTarget(this.commands[0])!, this.contract.claimStreamByProxyTarget)
     );
   }
 
@@ -135,7 +135,10 @@ export class DecodeHelper {
   }
 
   private get helper() {
-    const moveCall = this.transactions[0] as MoveCallTransaction;
+    const moveCall = this.commands[0];
+    if (moveCall.$kind !== 'MoveCall') {
+      throw new Error('MoveCall not found');
+    }
     return new MoveCallHelper(moveCall, this.txb);
   }
 }

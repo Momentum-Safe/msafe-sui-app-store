@@ -1,10 +1,10 @@
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { VeMMT } from '@mmt-finance/ve-sdk-v1';
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { BaseIntention } from '@/apps/interface/sui';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 import { ClaimAllRewardsIntentionData, TransactionSubType } from '../types';
 import { claimV3Rewards } from '../utils/reward';

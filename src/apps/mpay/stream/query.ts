@@ -1,5 +1,4 @@
-import { SuiObjectResponse } from '@mysten/sui.js/client';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 import { DateTime } from 'luxon';
 
 import { Stream } from './Stream';
@@ -17,6 +16,7 @@ import {
 } from '../types/backend';
 import { IPagedStreamListIterator, IncomingStreamQuery, OutgoingStreamQuery } from '../types/client';
 import { IStream, IStreamGroup, StreamStatus } from '../types/stream';
+import { MpayObjectResponse } from '../utils/rpc';
 
 export class PagedStreamListIterator implements IPagedStreamListIterator {
   private constructor(
@@ -208,7 +208,7 @@ async function getStreamFromIterator(globals: Globals, streamId: string, it: Obj
 }
 
 async function getStreamGroupFromIterator(globals: Globals, streamIds: string[], it: ObjectBatchIterator) {
-  const objResponses: SuiObjectResponse[] = [];
+  const objResponses: MpayObjectResponse[] = [];
   while (objResponses.length < streamIds.length) {
     const data = await getStreamObjectResponseFromIter(it, streamIds[objResponses.length]);
     objResponses.push(data);

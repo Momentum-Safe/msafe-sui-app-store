@@ -1,10 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntention } from '@/apps/interface/sui';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 import { prixConfig } from '../config';
 import { PrixClaimIntentionData, SuiNetworks, TransactionSubType } from '../types';

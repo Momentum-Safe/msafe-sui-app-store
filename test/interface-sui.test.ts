@@ -1,11 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntention, IAppHelperInternal } from '@/apps/interface/sui';
 import { MSafeApps } from '@/apps/registry';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 import { SuiNetworks } from '@/types';
 
 import { Account, clientUrl } from './config';
@@ -93,8 +93,9 @@ describe('New interface test', () => {
         message: 'empty',
       },
     });
-    expect(res.blockData.gasConfig).toBeDefined();
-    expect(res.blockData.gasConfig.payment.length).toBeGreaterThan(0);
+    const txData = res.getData();
+    expect(txData.gasData).toBeDefined();
+    expect(txData.gasData.payment?.length).toBeGreaterThan(0);
   });
 
   async function buildTxbForTest() {

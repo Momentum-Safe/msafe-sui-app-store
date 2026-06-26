@@ -1,6 +1,5 @@
-import { SuiObjectData, SuiObjectResponse, SuiParsedData } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, parseStructTag } from '@mysten/sui.js/utils';
+import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag, parseStructTag } from '@mysten/sui/utils';
 import { DateTime, Duration } from 'luxon';
 
 import { decodeMetadata } from './metadata';
@@ -15,6 +14,8 @@ import { RawStreamData, RawStreamStatusEnum } from '../types/data';
 import { StreamEvent } from '../types/events';
 import { PaginationOptions, Paginated } from '../types/pagination';
 import { IStream, StreamInfo, StreamGroupCommonInfo, StreamProgress, StreamStatus } from '../types/stream';
+import { readCoinOrBalanceAmount, unwrapMoveFields } from '../utils/moveObjectFields';
+import { MpayObjectResponse, mpayGetObject } from '../utils/rpc';
 import { MAX_U64, roundDateTime, roundDuration } from '../utils/utils';
 
 export class Stream implements IStream {
@@ -35,7 +36,7 @@ export class Stream implements IStream {
     return new Stream(globals, streamId, rawData);
   }
 
-  static fromObjectData(globals: Globals, streamId: string, data: SuiObjectResponse) {
+  static fromObjectData(globals: Globals, streamId: string, data: MpayObjectResponse) {
     const rawData = Stream.parseRawStreamData(streamId, data);
     return new Stream(globals, streamId, rawData);
   }
@@ -80,7 +81,7 @@ export class Stream implements IStream {
     this.rawData = await Stream.fetchStreamData(this.globals, this.streamId);
   }
 
-  refreshWithData(data: SuiObjectResponse) {
+  refreshWithData(data: MpayObjectResponse) {
     if (data.data?.objectId !== this.streamId) {
       throw new SanityError('Object Id does not align');
     }
@@ -98,7 +99,7 @@ export class Stream implements IStream {
     if ((await this.globals.walletAddress()) !== this.creator) {
       throw new NotCreatorError();
     }
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.cancelStream(txb, {
       streamId: this.streamId,
       coinType: this.coinType,
@@ -110,7 +111,7 @@ export class Stream implements IStream {
     if ((await this.globals.walletAddress()) !== this.recipient) {
       throw new NotRecipientError();
     }
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.claimStream(txb, {
       streamId: this.streamId,
       coinType: this.coinType,
@@ -122,7 +123,7 @@ export class Stream implements IStream {
     if ((await this.globals.walletAddress()) !== this.recipient) {
       throw new NotRecipientError();
     }
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.setAutoClaim(txb, {
       streamId: this.streamId,
       coinType: this.coinType,
@@ -132,7 +133,7 @@ export class Stream implements IStream {
   }
 
   async claimByProxy() {
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     this.streamContract.claimStreamByProxy(txb, {
       streamId: this.streamId,
       coinType: this.coinType,
@@ -308,17 +309,11 @@ export class Stream implements IStream {
   }
 
   private static async fetchStreamData(globals: Globals, streamId: string) {
-    const res = await globals.suiClient.getObject({
-      id: streamId,
-      options: {
-        showContent: true,
-        showType: true,
-      },
-    });
+    const res = await mpayGetObject(globals.suiClient, streamId);
     return Stream.parseRawStreamData(streamId, res);
   }
 
-  static parseRawStreamData(streamId: string, res: SuiObjectResponse): RawStreamData {
+  static parseRawStreamData(streamId: string, res: MpayObjectResponse): RawStreamData {
     if (res.error) {
       if (res.error.code === 'notExists') {
         throw new StreamNotFoundError(streamId);
@@ -328,38 +323,38 @@ export class Stream implements IStream {
         ...res.error,
       });
     }
-    const content = (res.data as SuiObjectData).content as SuiParsedData;
-    if (content.dataType !== 'moveObject') {
+    const content = res.data?.content;
+    if (!content || content.dataType !== 'moveObject') {
       throw new RpcError('Unexpected object type', {
-        gotType: content.dataType,
+        gotType: content?.dataType,
       });
     }
     const { typeParams } = parseStructTag(content.type);
     const coinType = normalizeStructTag(typeParams[0]);
 
-    const dataFields = content.fields as any;
-    const config = dataFields.config.fields as any;
-    const status = dataFields.status.fields as any;
+    const dataFields = content.fields as Record<string, unknown>;
+    const config = unwrapMoveFields(dataFields.config);
+    const status = unwrapMoveFields(dataFields.status);
 
     return {
       coinType,
       autoClaim: dataFields.auto_claim as boolean,
-      balance: BigInt(dataFields.balance.fields.balance),
+      balance: readCoinOrBalanceAmount(dataFields.balance),
       config: {
-        amountPerEpoch: BigInt(config.amount_per_epoch),
-        cancelable: config.cancelable,
-        cliff: BigInt(config.cliff),
-        creator: config.creator,
-        epochInterval: BigInt(config.epoch_interval),
-        metadata: config.metadata,
-        recipient: config.recipient,
-        timeStart: BigInt(config.time_start),
-        totalEpoch: BigInt(config.total_epoch),
+        amountPerEpoch: BigInt(String(config.amount_per_epoch)),
+        cancelable: config.cancelable as boolean,
+        cliff: BigInt(String(config.cliff)),
+        creator: String(config.creator),
+        epochInterval: BigInt(String(config.epoch_interval)),
+        metadata: String(config.metadata),
+        recipient: String(config.recipient),
+        timeStart: BigInt(String(config.time_start)),
+        totalEpoch: BigInt(String(config.total_epoch)),
       },
       status: {
         status: status.status as RawStreamStatusEnum,
-        epochCanceled: BigInt(status.epoch_canceled),
-        epochClaimed: BigInt(status.epoch_claimed),
+        epochCanceled: BigInt(String(status.epoch_canceled)),
+        epochClaimed: BigInt(String(status.epoch_claimed)),
       },
     };
   }

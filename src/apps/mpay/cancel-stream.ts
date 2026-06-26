@@ -1,6 +1,6 @@
 import { CancelStreamIntentionData, TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
@@ -19,11 +19,11 @@ export class CancelStreamIntention extends StreamIntention<CancelStreamIntention
 
   async build(input: {
     network: SuiNetworks;
-    suiClient: SuiClient;
+    suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
-    const { network, account } = input;
-    const mpayClient = this.getClient(network, account);
+  }): Promise<Transaction> {
+    const { network, account, suiGrpcClient } = input;
+    const mpayClient = this.getClient(network, account, suiGrpcClient);
     const stream = await mpayClient.getStream(this.data.streamId);
     return stream.cancel();
   }

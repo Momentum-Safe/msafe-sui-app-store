@@ -1,4 +1,5 @@
-import { SuiClient } from '@mysten/sui.js/client';
+import { getSuiGrpcClient, MsafeSuiGrpcClient } from '@/lib/suiGrpcClient';
+import { SuiNetworks } from '@/types';
 
 import { EnvConfig, Env, EnvConfigOptions, getConfig } from './env';
 import { NoBackendError } from '../error/NoBackendError';
@@ -7,18 +8,26 @@ import { Backend } from '../stream/backend';
 import { IBackend } from '../types/backend';
 import { IWallet, WalletType } from '../types/wallet';
 
+const ENV_NETWORK: Record<Env, SuiNetworks> = {
+  [Env.dev]: 'sui:testnet',
+  [Env.stg]: 'sui:testnet',
+  [Env.prev]: 'sui:mainnet',
+  [Env.prod]: 'sui:mainnet',
+};
+
 export class Globals {
   public signer: IWallet | undefined;
 
-  public readonly suiClient: SuiClient;
+  public readonly suiClient: MsafeSuiGrpcClient;
 
   public readonly envConfig: EnvConfig;
 
   public _backend?: IBackend;
 
-  constructor(envConfig: EnvConfig) {
+  constructor(envConfig: EnvConfig, suiGrpcClient?: MsafeSuiGrpcClient) {
     this.envConfig = envConfig;
-    this.suiClient = new SuiClient({ url: envConfig.rpc.url });
+    this.suiClient =
+      suiGrpcClient ?? getSuiGrpcClient(ENV_NETWORK[envConfig.env], envConfig.rpc.url);
     if (envConfig.backend) {
       this._backend = new Backend(envConfig.backend.url);
     }
@@ -26,7 +35,7 @@ export class Globals {
 
   static new(env: Env, options?: EnvConfigOptions) {
     const ec = getConfig(env, options);
-    return new Globals(ec);
+    return new Globals(ec, options?.suiGrpcClient);
   }
 
   get walletType(): WalletType | 'disconnected' {

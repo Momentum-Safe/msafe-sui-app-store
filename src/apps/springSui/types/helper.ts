@@ -1,5 +1,4 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { LiquidStakingInfo } from '@suilend/springsui-sdk/_generated/liquid_staking/liquid-staking/structs';
 import { WeightHook } from '@suilend/springsui-sdk/_generated/liquid_staking/weight/structs';
@@ -7,6 +6,7 @@ import { LiquidStakingObjectInfo } from '@suilend/springsui-sdk/client';
 import { API_URL } from '@suilend/sui-fe';
 
 import { SpringSuiIntentionData } from '@/apps/springSui/types/intention';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 import { SuiNetworks } from '@/types';
 
 import { getUtils as getSuilendUtils, Utils as SuilendUtils } from '../../suilend/helper';

@@ -1,4 +1,4 @@
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction, TransactionObjectArgument } from '@mysten/sui/transactions';
 
 export type MoveNumber = bigint | string | number;
 export type Ref<T> = T | ResultRef;
@@ -7,7 +7,7 @@ export type ObjectId = string;
 export class MoveObject {
   constructor(public readonly object: string) {}
 
-  moveArg(txb: TransactionBlock) {
+  moveArg(txb: Transaction) {
     return txb.object(this.object);
   }
 }
@@ -15,13 +15,13 @@ export class MoveObject {
 export class ObjectVector {
   constructor(public readonly objects: string[]) {}
 
-  moveArgs(txb: TransactionBlock) {
-    return txb.makeMoveVec({ objects: this.objects.map((o) => txb.object(o)) });
+  moveArgs(txb: Transaction) {
+    return txb.makeMoveVec({ elements: this.objects.map((o) => txb.object(o)) });
   }
 }
 
 export class ResultRef {
-  constructor(public readonly result: TransactionArgument & TransactionArgument[]) {
+  constructor(public readonly result: TransactionObjectArgument) {
     // eslint-disable-next-line no-constructor-return
     return new Proxy(this, {
       set() {
@@ -33,7 +33,8 @@ export class ResultRef {
           return Reflect.get(target, property);
         }
 
-        const nestedResultFor = (resultIndex: number) => new ResultRef(target.result[resultIndex] as any);
+        const nestedResultFor = (resultIndex: number) =>
+          new ResultRef((target.result as unknown as TransactionObjectArgument[])[resultIndex]);
 
         // Support destructuring:
         if (property === Symbol.iterator) {
@@ -65,4 +66,23 @@ export class ResultRef {
   moveArg() {
     return this.result;
   }
+}
+
+export function toPureArg(txb: Transaction, arg: unknown) {
+  if (typeof arg === 'bigint') {
+    return txb.pure.u64(arg);
+  }
+  if (typeof arg === 'number') {
+    return txb.pure.u64(arg);
+  }
+  if (typeof arg === 'boolean') {
+    return txb.pure.bool(arg);
+  }
+  if (typeof arg === 'string') {
+    if (/^0x[0-9a-fA-F]+$/.test(arg)) {
+      return txb.pure.address(arg);
+    }
+    return txb.pure.string(arg);
+  }
+  throw new Error(`Unsupported pure argument type: ${typeof arg}`);
 }

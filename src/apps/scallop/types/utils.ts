@@ -1,6 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiObjectRef } from '@mysten/sui/client';
 import type { Inputs } from '@mysten/sui/transactions';
+
+import { SuiObjectRef } from '@/compat/mysten-sui-json-rpc';
 
 export type OptionalKeys<T> = {
   [K in keyof T]?: T[K];

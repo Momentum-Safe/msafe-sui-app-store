@@ -1,6 +1,6 @@
 {
   "name": "@msafe/sui-app-store",
-  "version": "0.0.335",
+  "version": "0.0.340",
   "description": "MSafe Sui app store repository",
   "author": "Momentum Safe",
   "license": "MIT",
@@ -22,8 +22,8 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "yarn clean && tsup --platform browser --format cjs,esm --minify --dts",
-    "build-yalc": "yarn build && yalc publish --private",
+    "build": "bun run clean && tsup --platform browser --format cjs,esm --minify --dts",
+    "build-yalc": "bun run build && yalc publish --private",
     "test": "jest",
     "coverage": "jest --coverage",
     "prerelease": "yarn build && chmod +x ./scripts/prerelease.sh && ./scripts/prerelease.sh",
@@ -106,7 +106,7 @@
     "typescript": "^5.3.3"
   },
   "resolutions": {
-    "@mysten/sui": "^1.8.0",
+    "@mysten/sui": "2.16.2",
     "ansi-styles": "4.3.0",
     "chalk": "4.1.2"
   },

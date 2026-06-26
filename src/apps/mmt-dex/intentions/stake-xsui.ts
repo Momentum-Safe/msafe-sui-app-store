@@ -1,8 +1,8 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { BaseIntention } from '@/apps/interface/sui';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 import { StakeXSuiIntentionData, TransactionSubType } from '../types';
 import { getStakeTxPayload } from '../utils/stake';

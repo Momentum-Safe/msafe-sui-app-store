@@ -1,6 +1,7 @@
-import { PaginatedCoins } from '@mysten/sui/client';
 import { Transaction, TransactionObjectArgument } from '@mysten/sui/transactions';
 import { TurbosSdk, unstable_getObjectId } from 'turbos-clmm-sdk';
+
+import { PaginatedCoins } from '@/compat/mysten-sui-json-rpc';
 
 import { deepbookConfig } from '../config';
 

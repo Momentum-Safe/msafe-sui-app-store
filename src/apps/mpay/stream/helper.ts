@@ -1,12 +1,5 @@
-import {
-  CoinMetadata,
-  SuiClient,
-  SuiObjectChangeCreated,
-  SuiTransactionBlockResponse,
-  DevInspectResults,
-} from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, SUI_TYPE_ARG } from '@mysten/sui.js/utils';
+import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag, SUI_TYPE_ARG } from '@mysten/sui/utils';
 import { DateTime, Duration } from 'luxon';
 
 import { CreateStreamHelper } from '../builder/CreateStreamHelper';
@@ -22,7 +15,15 @@ import {
   Fraction,
   CalculatedStreamAmount,
   CalculatedTimeline,
+  MpayTransactionResponse,
 } from '../types/client';
+import {
+  mpayGetAllBalances,
+  mpayGetBalance,
+  mpayGetCoinMetadata,
+  mpaySimulateTransaction,
+  MpayCoinMetadata,
+} from '../utils/rpc';
 
 // Minimum time interval is 1 second
 export const MIN_INTERVAL_MS = 1000;
@@ -37,17 +38,15 @@ export class MPayHelper implements IMPayHelper {
     this.createStreamHelper = new MPayBuilder(globals).createStreamHelper();
   }
 
-  getStreamIdsFromCreateStreamResponse(res: SuiTransactionBlockResponse) {
+  getStreamIdsFromCreateStreamResponse(res: MpayTransactionResponse) {
     if (res.effects?.status.status !== 'success') {
       throw new TransactionFailedError(res.effects?.status.status, res.effects?.status.error);
     }
-    return res
-      .objectChanges!.filter(
-        (change) =>
-          change.type === 'created' &&
-          change.objectType.startsWith(`${this.globals.envConfig.contract.contractId}::stream::Stream`),
+    return Object.entries(res.objectTypes ?? {})
+      .filter(([, objectType]) =>
+        objectType.startsWith(`${this.globals.envConfig.contract.contractId}::stream::Stream`),
       )
-      .map((change) => (change as SuiObjectChangeCreated).objectId);
+      .map(([objectId]) => objectId);
   }
 
   calculateCreateStreamFees(info: CreateStreamInfo): PaymentWithFee {
@@ -114,7 +113,7 @@ export class MPayHelper implements IMPayHelper {
   }
 
   async getBalance(address: string, coinType?: string | null) {
-    const balance = await this.globals.suiClient.getBalance({
+    const balance = await mpayGetBalance(this.globals.suiClient, {
       owner: address,
       coinType,
     });
@@ -127,9 +126,7 @@ export class MPayHelper implements IMPayHelper {
   }
 
   async getAllBalance(address: string) {
-    const allBalance = await this.globals.suiClient.getAllBalances({
-      owner: address,
-    });
+    const allBalance = await mpayGetAllBalances(this.globals.suiClient, address);
     const coinMetas = await Promise.all(allBalance.map((bal) => this.getCoinMeta(bal.coinType)));
     return allBalance.map((bal, i) => ({
       ...bal,
@@ -142,9 +139,9 @@ export class MPayHelper implements IMPayHelper {
     return this.coinMetaHelper.getCoinMeta(coinType);
   }
 
-  async simulateTransactionBlock(txb: TransactionBlock): Promise<DevInspectResults> {
-    return this.globals.suiClient.devInspectTransactionBlock({
-      transactionBlock: txb,
+  async simulateTransactionBlock(txb: Transaction) {
+    return mpaySimulateTransaction(this.globals.suiClient, {
+      transaction: txb,
       sender: await this.globals.wallet.address(),
     });
   }
@@ -166,13 +163,13 @@ export class MPayHelper implements IMPayHelper {
 }
 
 export class CoinMetaHelper {
-  private coinMetaReg: Map<string, CoinMetadata>;
+  private coinMetaReg: Map<string, MpayCoinMetadata>;
 
-  constructor(private readonly suiClient: SuiClient) {
+  constructor(private readonly suiClient: Globals['suiClient']) {
     this.coinMetaReg = new Map();
   }
 
-  async getCoinMeta(coinType: string | null | undefined): Promise<CoinMetadata | undefined> {
+  async getCoinMeta(coinType: string | null | undefined): Promise<MpayCoinMetadata | undefined> {
     const normalized = normalizeStructTag(coinType || SUI_TYPE_ARG);
     if (this.coinMetaReg.has(normalized)) {
       return this.coinMetaReg.get(normalized);
@@ -181,11 +178,10 @@ export class CoinMetaHelper {
     if (meta) {
       this.coinMetaReg.set(normalized, meta);
     }
-    return meta;
+    return meta ?? undefined;
   }
 
-  private async queryCoinMeta(coinType: string): Promise<CoinMetadata | undefined> {
-    const res = await this.suiClient.getCoinMetadata({ coinType });
-    return res || undefined;
+  private async queryCoinMeta(coinType: string): Promise<MpayCoinMetadata | null> {
+    return mpayGetCoinMetadata(this.suiClient, coinType);
   }
 }

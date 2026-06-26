@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { BaseContract } from './BaseContract';
 import { ContractConfig, Globals } from '../common';
@@ -24,7 +24,7 @@ export class FeeContract extends BaseContract {
     super(FeeContract.ModuleName, config, globals);
   }
 
-  setStreamingFee(txb: TransactionBlock, createFeeNumerator: MoveNumber) {
+  setStreamingFee(txb: Transaction, createFeeNumerator: MoveNumber) {
     const roleObject = this.roleObject();
     const feeObject = this.feeObject();
     return this.addContractCall(txb, {
@@ -34,7 +34,7 @@ export class FeeContract extends BaseContract {
     });
   }
 
-  setStreamingFlatFee(txb: TransactionBlock, flatFee: MoveNumber) {
+  setStreamingFlatFee(txb: Transaction, flatFee: MoveNumber) {
     const roleObject = this.roleObject();
     const feeObject = this.feeObject();
     return this.addContractCall(txb, {
@@ -44,7 +44,7 @@ export class FeeContract extends BaseContract {
     });
   }
 
-  setClaimFee(txb: TransactionBlock, claimFee: MoveNumber) {
+  setClaimFee(txb: Transaction, claimFee: MoveNumber) {
     const roleObject = this.roleObject();
     const feeObject = this.feeObject();
     return this.addContractCall(txb, {
@@ -54,7 +54,7 @@ export class FeeContract extends BaseContract {
     });
   }
 
-  streamingFee(txb: TransactionBlock, amount: MoveNumber) {
+  streamingFee(txb: Transaction, amount: MoveNumber) {
     const feeObject = this.feeObject();
     return this.addContractCall(txb, {
       method: FeeContract.MethodName.streaming_fee,
@@ -63,7 +63,7 @@ export class FeeContract extends BaseContract {
     });
   }
 
-  claimFee(txb: TransactionBlock, amount: MoveNumber) {
+  claimFee(txb: Transaction, amount: MoveNumber) {
     return this.addContractCall(txb, {
       method: FeeContract.MethodName.claim_fee,
       arguments: [this.feeObject(), amount],
@@ -71,7 +71,7 @@ export class FeeContract extends BaseContract {
     });
   }
 
-  feeDenominator(txb: TransactionBlock) {
+  feeDenominator(txb: Transaction) {
     return this.addContractCall(txb, {
       method: FeeContract.MethodName.fee_denominator,
       arguments: [this.feeObject()],

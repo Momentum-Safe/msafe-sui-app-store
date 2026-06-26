@@ -1,7 +1,7 @@
-import { TransactionBlock, Transactions } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { ContractConfig, Globals } from '../common';
-import { ObjectVector, MoveObject, ResultRef, Ref, ObjectId } from '../common/transaction';
+import { ObjectVector, MoveObject, ResultRef, Ref, ObjectId, toPureArg } from '../common/transaction';
 import { CLOCK_ID } from '../const';
 
 export class BaseContract {
@@ -11,49 +11,26 @@ export class BaseContract {
     public readonly globals: Globals,
   ) {}
 
-  addContractCall(txb: TransactionBlock, input: { method: string; arguments: any[]; typeArgs?: string[] }) {
+  addContractCall(txb: Transaction, input: { method: string; arguments: unknown[]; typeArgs?: string[] }) {
     const target =
       `${this.config.contractId}::${this.moduleName}::${input.method}` as `${string}::${string}::${string}`;
-    txb.add(
-      Transactions.MoveCall({
-        target,
-        arguments: input.arguments.map((arg) => {
-          if (arg instanceof ObjectVector) {
-            return arg.moveArgs(txb);
-          }
-          if (arg instanceof MoveObject) {
-            return arg.moveArg(txb);
-          }
-          if (arg instanceof ResultRef) {
-            return arg.moveArg();
-          }
-          return txb.pure(arg);
-        }),
-        typeArguments: input.typeArgs,
+    txb.moveCall({
+      target,
+      arguments: input.arguments.map((arg) => {
+        if (arg instanceof ObjectVector) {
+          return arg.moveArgs(txb);
+        }
+        if (arg instanceof MoveObject) {
+          return arg.moveArg(txb);
+        }
+        if (arg instanceof ResultRef) {
+          return arg.moveArg();
+        }
+        return toPureArg(txb, arg);
       }),
-    );
+      typeArguments: input.typeArgs,
+    });
     return txb;
-  }
-
-  private addTransactionBlock(txb: TransactionBlock, target: string, callArgs: any[] = [], typeArgs: string[] = []) {
-    txb.add(
-      Transactions.MoveCall({
-        target: target as `${string}::${string}::${string}`,
-        arguments: callArgs.map((arg) => {
-          if (arg instanceof ObjectVector) {
-            return arg.moveArgs(txb);
-          }
-          if (arg instanceof MoveObject) {
-            return arg.moveArg(txb);
-          }
-          if (arg instanceof ResultRef) {
-            return arg.moveArg();
-          }
-          return txb.pure(arg);
-        }),
-        typeArguments: typeArgs,
-      }),
-    );
   }
 
   makeObject(object: Ref<ObjectId>) {

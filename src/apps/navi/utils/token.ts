@@ -1,4 +1,4 @@
-import { SuiClient } from '@mysten/sui/client';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 export async function getTokenAmount(client: SuiClient, sender: string, coinType: string): Promise<number> {
   if (!sender) {

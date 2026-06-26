@@ -1,4 +1,4 @@
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { BaseContract } from './BaseContract';
 import { ContractConfig, Globals } from '../common';
@@ -22,7 +22,7 @@ export class RoleContract extends BaseContract {
     super(RoleContract.ModuleName, config, globals);
   }
 
-  setCollector(txb: TransactionBlock, newCollector: string) {
+  setCollector(txb: Transaction, newCollector: string) {
     const roleObject = this.roleObject();
     return this.addContractCall(txb, {
       method: RoleContract.MethodName.set_collector,
@@ -31,7 +31,7 @@ export class RoleContract extends BaseContract {
     });
   }
 
-  transferAdmin(txb: TransactionBlock, newAdmin: string) {
+  transferAdmin(txb: Transaction, newAdmin: string) {
     const roleObject = this.roleObject();
     return this.addContractCall(txb, {
       method: RoleContract.MethodName.transfer_admin,
@@ -40,7 +40,7 @@ export class RoleContract extends BaseContract {
     });
   }
 
-  acceptAdmin(txb: TransactionBlock) {
+  acceptAdmin(txb: Transaction) {
     const roleObject = this.roleObject();
     return this.addContractCall(txb, {
       method: RoleContract.MethodName.accept_admin,
@@ -49,7 +49,7 @@ export class RoleContract extends BaseContract {
     });
   }
 
-  getCollector(txb: TransactionBlock) {
+  getCollector(txb: Transaction) {
     const roleObject = this.roleObject();
     return this.addContractCall(txb, {
       method: RoleContract.MethodName.get_collector,
@@ -58,7 +58,7 @@ export class RoleContract extends BaseContract {
     });
   }
 
-  getPendingAdmin(txb: TransactionBlock) {
+  getPendingAdmin(txb: Transaction) {
     const roleObject = this.roleObject();
     return this.addContractCall(txb, {
       method: RoleContract.MethodName.get_pending_admin,
@@ -67,7 +67,7 @@ export class RoleContract extends BaseContract {
     });
   }
 
-  getAdmin(txb: TransactionBlock) {
+  getAdmin(txb: Transaction) {
     const roleObject = this.roleObject();
     return this.addContractCall(txb, {
       method: RoleContract.MethodName.get_admin,

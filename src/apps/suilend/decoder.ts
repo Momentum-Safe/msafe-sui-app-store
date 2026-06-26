@@ -1,6 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64, toHex } from '@mysten/bcs';
-import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag } from '@mysten/sui/utils';
 import { MAX_U64 } from '@suilend/sui-fe';
@@ -15,6 +14,7 @@ import {
   SuilendIntentionData,
   WithdrawIntentionData,
 } from '@/apps/suilend/types/helper';
+import { DevInspectResults } from '@/compat/mysten-sui-json-rpc';
 
 import { TransactionSubType } from './types';
 

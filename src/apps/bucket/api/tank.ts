@@ -5,6 +5,7 @@ import { buildTankClaimTx, buildTankDepositTx, buildTankWithdrawTx } from 'bucke
 import { TankClaimIntentionData, TankDepositIntentionData, TankWithdrawIntentionData } from '@/apps/bucket/types/api';
 import { SuiNetworks } from '@/types';
 
+import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
 
 export const getTankDepositTx = async (
@@ -16,7 +17,7 @@ export const getTankDepositTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildTankDepositTx(client, tx, coinType, amount, account.address);
+  await buildTankDepositTx(client, toBucketSdkTransaction(tx), coinType, amount, account.address);
 
   return tx;
 };
@@ -30,7 +31,7 @@ export const getTankWithdrawTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildTankWithdrawTx(client, tx, coinType, amount, account.address);
+  await buildTankWithdrawTx(client, toBucketSdkTransaction(tx), coinType, amount, account.address);
 
   return tx;
 };
@@ -44,7 +45,7 @@ export const getTankClaimTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildTankClaimTx(client, tx, coinType, account.address);
+  await buildTankClaimTx(client, toBucketSdkTransaction(tx), coinType, account.address);
 
   return tx;
 };

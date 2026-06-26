@@ -1,5 +1,4 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { LENDING_MARKET_ID, LENDING_MARKET_TYPE, SuilendClient } from '@suilend/sdk';
@@ -17,6 +16,7 @@ import {
   WithdrawIntentionData,
 } from '@/apps/suilend/types/helper';
 import { IntentionInput } from '@/apps/suilend/types/intention';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';

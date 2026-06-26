@@ -1,11 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { ScallopClient, ScallopTxBlock } from '@scallop-io/sui-scallop-sdk';
 import sortKeys from 'sort-keys-recursive';
 
 import { BaseIntention } from '@/apps/interface/sui';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 import { SuiNetworks } from '@/types';
 
 import { SuiObjectArg } from '../types';

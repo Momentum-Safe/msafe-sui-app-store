@@ -1,13 +1,13 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
 import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { IAppHelperInternal } from '@/apps/interface/sui';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { getFullnodeUrl, SuiClient, toSuiNetworkName } from '@/compat/mysten-sui-json-rpc';
 import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 import { SuiNetworks } from '@/types';
 
@@ -93,7 +93,7 @@ export class TestSuite<IntentionData> {
       appContext: input.appContent,
       chain: this.network,
       network: this.network,
-      suiClient: new SuiClient({ url: SuiNetworkUrls[this.network] }),
+      suiClient: new SuiClient({ url: SuiNetworkUrls[this.network], network: toSuiNetworkName(this.network) }),
       account: this.testWalletAddress,
     });
     return {
@@ -116,7 +116,7 @@ export class TestSuite<IntentionData> {
     const tx = await this.appHelper.build({
       ...this.pendingIntention,
       network: this.network,
-      suiClient: new SuiClient({ url: SuiNetworkUrls[this.network] }),
+      suiClient: new SuiClient({ url: SuiNetworkUrls[this.network], network: toSuiNetworkName(this.network) }),
       account: this.testWalletAddress,
     });
     tx.setSender(this.testWalletAddress.address);

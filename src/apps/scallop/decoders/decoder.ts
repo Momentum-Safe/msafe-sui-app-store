@@ -1,4 +1,4 @@
-// import { DevInspectResults } from '@mysten/sui/client';
+// import { DevInspectResults } from '@/compat/mysten-sui-json-rpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { parseStructTag } from '@mysten/sui/utils';
 import { ScallopClient } from '@scallop-io/sui-scallop-sdk';

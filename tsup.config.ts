@@ -6,4 +6,10 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   target: 'es2022',
+  dts: {
+    compilerOptions: {
+      moduleResolution: 'bundler',
+      module: 'ESNext',
+    },
+  },
 });

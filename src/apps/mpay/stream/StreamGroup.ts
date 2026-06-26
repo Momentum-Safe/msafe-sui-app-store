@@ -1,11 +1,10 @@
-import { SuiObjectResponse } from '@mysten/sui.js/client';
-
 import { Stream } from './Stream';
 import { Globals } from '../common';
 import { InvalidInputError } from '../error/InvalidInputError';
 import { InvalidStreamGroupError } from '../error/InvalidStreamGroupError';
 import { SanityError } from '../error/SanityError';
 import { getObjectsById } from '../sui/iterator/object';
+import { MpayObjectResponse } from '../utils/rpc';
 import { StreamEvent } from '../types/events';
 import { PaginationOptions, Paginated } from '../types/pagination';
 import { IStreamGroup, StreamGroupInfo, StreamGroupProgress, StreamGroupCommonInfo } from '../types/stream';
@@ -34,10 +33,10 @@ export class StreamGroup implements IStreamGroup {
         throw new SanityError('stream group object data undefined');
       }
     });
-    return StreamGroup.newFromObjectResponse(globals, ids, streamObjs as SuiObjectResponse[]);
+    return StreamGroup.newFromObjectResponse(globals, ids, streamObjs as MpayObjectResponse[]);
   }
 
-  static async newFromObjectResponse(globals: Globals, ids: string[], responses: SuiObjectResponse[]) {
+  static async newFromObjectResponse(globals: Globals, ids: string[], responses: MpayObjectResponse[]) {
     const streams = await StreamGroup.parseGroupStreams(globals, ids, responses);
     return new StreamGroup(globals, streams);
   }
@@ -60,7 +59,7 @@ export class StreamGroup implements IStreamGroup {
       this.streams.map((stream) => stream.streamId),
     );
     this.streams.forEach((stream, i) => {
-      stream.refreshWithData(streamObjs[i] as SuiObjectResponse);
+      stream.refreshWithData(streamObjs[i] as MpayObjectResponse);
     });
   }
 
@@ -116,7 +115,7 @@ export class StreamGroup implements IStreamGroup {
     });
   }
 
-  private static async parseGroupStreams(globals: Globals, ids: string[], responses: SuiObjectResponse[]) {
+  private static async parseGroupStreams(globals: Globals, ids: string[], responses: MpayObjectResponse[]) {
     const streams = responses
       .map((obj, i) => Stream.fromObjectData(globals, ids[i], obj))
       .filter((stream) => !!stream) as Stream[];

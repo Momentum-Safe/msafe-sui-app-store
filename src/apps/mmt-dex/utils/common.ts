@@ -1,7 +1,8 @@
 /* eslint-disable no-restricted-syntax */
 import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import { CoinStruct, SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+
+import { CoinStruct, SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 export const suiCoinType = '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI';
 

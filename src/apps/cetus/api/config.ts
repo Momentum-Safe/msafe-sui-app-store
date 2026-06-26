@@ -1,5 +1,6 @@
-import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 import { WalletAccount } from '@mysten/wallet-standard';
+
+import { SuiClient, getFullnodeUrl } from '@/compat/mysten-sui-json-rpc';
 
 import { SuiNetworks } from '../types';
 
@@ -7,7 +8,7 @@ export const getClmmSdk = async (network: SuiNetworks, account: WalletAccount) =
   const { CetusClmmSDK } = await import('@cetusprotocol/sui-clmm-sdk');
   const clmmSdk = CetusClmmSDK.createSDK({
     env: 'mainnet',
-    sui_client: new SuiClient({ url: getFullnodeUrl('mainnet') }),
+    sui_client: new SuiClient({ url: getFullnodeUrl('mainnet'), network: 'mainnet' }),
   });
   clmmSdk.setSenderAddress(account.address);
   return clmmSdk;
@@ -17,7 +18,7 @@ export const getFarmsSdk = async (network: SuiNetworks, account: WalletAccount) 
   const { CetusFarmsSDK } = await import('@cetusprotocol/farms-sdk');
   const farmsSdk = CetusFarmsSDK.createSDK({
     env: 'mainnet',
-    sui_client: new SuiClient({ url: getFullnodeUrl('mainnet') }),
+    sui_client: new SuiClient({ url: getFullnodeUrl('mainnet'), network: 'mainnet' }),
   });
   farmsSdk.setSenderAddress(account.address);
   return farmsSdk;
@@ -28,6 +29,7 @@ export const getAggregatorSdk = async (network: SuiNetworks, account: WalletAcco
   const { AggregatorClient, Env } = await import('@cetusprotocol/aggregator-sdk');
   const suiClient = new SuiClient({
     url: 'https://fullnode.mainnet.sui.io/',
+    network: 'mainnet',
   });
   const aggregatorSdk = new AggregatorClient({
     endpoint: aggregatorURL,

@@ -1,5 +1,4 @@
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionArgument, TransactionBlock } from '@mysten/sui.js/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { CreateStreamHelper } from '../builder/CreateStreamHelper';
 import { Globals } from '../common';
@@ -9,14 +8,14 @@ import { StreamContract } from '../contract/StreamContract';
 import { InvalidInputError } from '../error/InvalidInputError';
 import { SanityError } from '../error/SanityError';
 import { decodeMetadata } from '../stream/metadata';
-import { isSameTarget } from '../sui/utils';
+import { getMoveCallTarget, isSameTarget } from '../sui/utils';
 import { CreateStreamInfo, RecipientWithAmount } from '../types/client';
 import { DecodedCreateStream, StreamTransactionType } from '../types/decode';
 
 export class CreateStreamDecodeHelper {
   constructor(
     public readonly globals: Globals,
-    public readonly txb: TransactionBlock,
+    public readonly txb: Transaction,
   ) {}
 
   decode(): DecodedCreateStream {
@@ -36,9 +35,10 @@ export class CreateStreamDecodeHelper {
   }
 
   private createStreamTransactions(): MoveCallHelper[] {
-    const txs = this.transactions.filter(
-      (tx) => tx.kind === 'MoveCall' && isSameTarget(tx.target, this.contract.createStreamTarget),
-    ) as MoveCallTransaction[];
+    const txs = this.commands.filter(
+      (command) =>
+        command.$kind === 'MoveCall' && isSameTarget(getMoveCallTarget(command)!, this.contract.createStreamTarget),
+    );
     if (txs.length === 0) {
       throw new SanityError('No create stream transactions');
     }
@@ -105,12 +105,8 @@ export class CreateStreamDecodeHelper {
     };
   }
 
-  private mergeCoinTransactions() {
-    return this.transactions.filter((tx) => tx.kind === 'MergeCoins');
-  }
-
-  private get transactions() {
-    return this.txb.blockData.transactions;
+  private get commands() {
+    return this.txb.getData().commands;
   }
 
   private get contract() {
@@ -123,13 +119,6 @@ export class CreateStreamDecodeHelper {
 
   private createStreamHelper() {
     return new CreateStreamHelper(this.globals, this.feeContract, this.contract);
-  }
-
-  private getInputArg(arg: TransactionArgument) {
-    if (arg.kind !== 'Input') {
-      throw new Error('not input type');
-    }
-    return 'value' in arg ? arg : this.txb.blockData.inputs[arg.index];
   }
 }
 

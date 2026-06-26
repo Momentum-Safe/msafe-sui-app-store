@@ -1,4 +1,3 @@
-import { getFullnodeUrl } from '@mysten/sui/client';
 import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
 
 import { BorrowIntention } from '@/apps/scallop/intentions/lending/borrow';
@@ -16,6 +15,7 @@ import { CreateReferralLinkIntention } from '@/apps/scallop/intentions/referral/
 import { ExtendPeriodAndStakeMoreIntention } from '@/apps/scallop/intentions/staking/extend-period-and-stake-more';
 import { ExtendStakePeriodIntention } from '@/apps/scallop/intentions/staking/extend-stake-period';
 import { WithdrawStakedScaIntention } from '@/apps/scallop/intentions/staking/withdraw-staked-sca';
+import { getFullnodeUrl } from '@/compat/mysten-sui-json-rpc';
 
 import { Account, Obligation, vescaKey } from './scallop.config';
 

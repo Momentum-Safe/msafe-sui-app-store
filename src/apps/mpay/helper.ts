@@ -6,11 +6,10 @@ import {
   SetAutoClaimIntentionData,
   TransactionType,
 } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
+import { Transaction } from '@mysten/sui/transactions';
+import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { SuiNetworks } from '@/types';
 
 import { CancelStreamIntention } from './cancel-stream';
@@ -36,17 +35,21 @@ export type MPayIntentionData =
   | ClaimByProxyStreamIntentionData
   | CancelStreamIntentionData;
 
-export class MPayAppHelper implements IAppHelperInternalLegacy<MPayIntentionData> {
+export class MPayAppHelper implements IAppHelperInternalGrpc<MPayIntentionData> {
   application = 'mpay';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui-v2' as const;
 
-  async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
-  ): Promise<{ txType: TransactionType; txSubType: string; intentionData: MPayIntentionData }> {
-    const { network, transactionBlock } = input;
-    const globals = Globals.new(network === 'sui:mainnet' ? Env.prod : Env.dev);
-    const decoder = new DecodeHelper(globals, transactionBlock);
+  async deserialize(input: {
+    transaction: Transaction;
+    chain: IdentifierString;
+    network: SuiNetworks;
+    suiGrpcClient: Parameters<IAppHelperInternalGrpc<MPayIntentionData>['deserialize']>[0]['suiGrpcClient'];
+    account: WalletAccount;
+  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: MPayIntentionData }> {
+    const { network, transaction, suiGrpcClient } = input;
+    const globals = Globals.new(network === 'sui:mainnet' ? Env.prod : Env.dev, { suiGrpcClient });
+    const decoder = new DecodeHelper(globals, transaction);
     const result = decoder.decode();
 
     let intention: MPayIntention;
@@ -82,10 +85,10 @@ export class MPayAppHelper implements IAppHelperInternalLegacy<MPayIntentionData
     intentionData: MPayIntentionData;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    suiGrpcClient: Parameters<IAppHelperInternalGrpc<MPayIntentionData>['build']>[0]['suiGrpcClient'];
     account: WalletAccount;
     network: SuiNetworks;
-  }): Promise<TransactionBlock> {
+  }): Promise<Transaction> {
     const { intentionData } = input;
     let intention: MPayIntention;
     switch (input.txSubType as StreamTransactionType) {

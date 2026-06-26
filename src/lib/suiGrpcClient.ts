@@ -1,17 +1,8 @@
-import { getFullnodeUrl } from '@mysten/sui/client';
 import type { SuiClientTypes } from '@mysten/sui/client';
 import { SuiGrpcClient } from '@mysten/sui/grpc';
 
+import { getFullnodeUrl, toSuiNetworkName } from '@/compat/mysten-sui-json-rpc';
 import { SuiNetworks } from '@/types';
-
-type SuiNetworkName = 'mainnet' | 'testnet' | 'devnet' | 'localnet';
-
-const NETWORK_MAP: Record<SuiNetworks, SuiNetworkName> = {
-  'sui:mainnet': 'mainnet',
-  'sui:testnet': 'testnet',
-  'sui:devnet': 'devnet',
-  'sui:localnet': 'localnet',
-};
 
 export type MsafeSuiGrpcClient = SuiGrpcClient & {
   getObject(options: { objectId: string }): ReturnType<SuiGrpcClient['core']['getObject']>;
@@ -28,8 +19,8 @@ function attachMsafeGrpcHelpers(client: SuiGrpcClient): MsafeSuiGrpcClient {
       return client.core.getObject(options);
     },
     async listCoins(options: { owner: string; coinType?: string; cursor?: string | null }) {
-      const response = await client.core.getCoins({
-        address: options.owner,
+      const response = await client.core.listCoins({
+        owner: options.owner,
         coinType: options.coinType,
         cursor: options.cursor ?? undefined,
       });
@@ -37,7 +28,7 @@ function attachMsafeGrpcHelpers(client: SuiGrpcClient): MsafeSuiGrpcClient {
       return {
         objects: response.objects.map((coin) => ({
           coinType: options.coinType ?? '',
-          objectId: coin.id,
+          objectId: coin.objectId,
           version: coin.version,
           digest: coin.digest,
           balance: coin.balance ?? '0',
@@ -50,7 +41,7 @@ function attachMsafeGrpcHelpers(client: SuiGrpcClient): MsafeSuiGrpcClient {
 }
 
 export function getSuiGrpcClient(network: SuiNetworks, baseUrl?: string): MsafeSuiGrpcClient {
-  const networkName = NETWORK_MAP[network];
+  const networkName = toSuiNetworkName(network);
   const client = new SuiGrpcClient({
     network: networkName,
     baseUrl: baseUrl ?? getFullnodeUrl(networkName),

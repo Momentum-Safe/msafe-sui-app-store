@@ -4,6 +4,7 @@ import { buildLockedClaimTx } from 'bucket-protocol-sdk';
 
 import { SuiNetworks } from '@/types';
 
+import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
 
 export interface LockClaimIntentionData {
@@ -20,7 +21,7 @@ export const getLockClaimTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildLockedClaimTx(client, tx, coinType, proofCount, account.address);
+  await buildLockedClaimTx(client, toBucketSdkTransaction(tx), coinType, proofCount, account.address);
 
   return tx;
 };

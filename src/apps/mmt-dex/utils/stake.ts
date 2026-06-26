@@ -1,6 +1,7 @@
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { LstClient } from '@suilend/springsui-sdk';
+
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 const LIQUID_STAKING_INFO = {
   id: '0x0431232199873db77a92aa645cd43521437e9cc5c6fff07fd03edb88afe0b25a',

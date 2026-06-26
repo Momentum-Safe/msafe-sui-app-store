@@ -15,7 +15,8 @@ import { VoloAppHelper } from '@/apps/volo/helper';
 
 import { BluefinHelper } from './apps/bluefin/helper';
 import { MMTDEXAppHelper } from './apps/mmt-dex/helper';
-import { NemoHelper } from './apps/nemo/helper';
+
+export type { AppIntentionData, AppName, AppRegistry } from '@/apps/app-registry';
 
 export const appHelpers = MSafeApps.fromHelpers([
   new CoreHelper(),
@@ -33,5 +34,4 @@ export const appHelpers = MSafeApps.fromHelpers([
   new AlphaFiHelper(),
   new BluefinHelper(),
   new StSuiHelper(),
-  new NemoHelper(),
 ]);

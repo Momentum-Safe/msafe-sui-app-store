@@ -10,6 +10,7 @@ import {
 } from '@/apps/bucket/types/api';
 import { SuiNetworks } from '@/types';
 
+import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
 
 export const getSBUCKDepositTx = async (
@@ -21,7 +22,7 @@ export const getSBUCKDepositTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildSBUCKDepositTx(client, tx, coinType, amount, account.address, isStake);
+  await buildSBUCKDepositTx(client, toBucketSdkTransaction(tx), coinType, amount, account.address, isStake);
 
   return tx;
 };
@@ -35,7 +36,15 @@ export const getSBUCKUnstakeTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildSBUCKUnstakeTx(client, tx, stakeProofs, amount, account.address, isStake, toBuck);
+  await buildSBUCKUnstakeTx(
+    client,
+    toBucketSdkTransaction(tx),
+    stakeProofs,
+    amount,
+    account.address,
+    isStake,
+    toBuck,
+  );
 
   return tx;
 };
@@ -49,7 +58,7 @@ export const getSBUCKWithdrawTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildSBUCKWithdrawTx(client, tx, amount, account.address);
+  await buildSBUCKWithdrawTx(client, toBucketSdkTransaction(tx), amount, account.address);
 
   return tx;
 };
@@ -63,7 +72,7 @@ export const getSBUCKClaimTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildSBUCKClaimTx(client, tx, stakeProofs, account.address);
+  await buildSBUCKClaimTx(client, toBucketSdkTransaction(tx), stakeProofs, account.address);
 
   return tx;
 };

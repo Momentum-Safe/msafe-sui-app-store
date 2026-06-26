@@ -1,7 +1,9 @@
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SUI_TYPE_ARG, normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
+import { Transaction } from '@mysten/sui/transactions';
+import { SUI_TYPE_ARG, normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
+
+import type { MsafeSuiGrpcClient } from '@/lib/suiGrpcClient';
 
 import { MPayBuilder } from '../builder/MPayBuilder';
 import { Env, EnvConfigOptions, Globals } from '../common';
@@ -57,7 +59,7 @@ export class MSafeSingleWallet {
 export class SingleWalletAdapter implements IWallet {
   constructor(
     private readonly singleWallet: ISingleWallet,
-    private readonly suiClient: SuiClient,
+    private readonly suiClient: MsafeSuiGrpcClient,
   ) {}
 
   get type() {
@@ -112,7 +114,7 @@ export class MPayClient implements IMPayClient {
     this.globals.connectWallet(adapter);
   }
 
-  async createStream(info: CreateStreamInfo): Promise<TransactionBlock> {
+  async createStream(info: CreateStreamInfo): Promise<Transaction> {
     return this.builder().createStreams(info);
   }
 
@@ -162,3 +164,5 @@ export class MPayClient implements IMPayClient {
     return new MPayBuilder(this.globals);
   }
 }
+
+export type { SuiGrpcClient };

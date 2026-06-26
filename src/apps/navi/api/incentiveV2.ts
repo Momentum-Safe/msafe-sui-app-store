@@ -1,4 +1,3 @@
-import type { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import {
   depositCoinPTB,
@@ -9,6 +8,8 @@ import {
   Pool,
   getUserAvailableLendingRewards,
 } from '@naviprotocol/lending';
+
+import type { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 export async function depositToken(txb: Transaction, pool: Pool, coinObject: any, amount: number) {
   await depositCoinPTB(txb as any, pool, coinObject, { amount });

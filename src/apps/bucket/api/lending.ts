@@ -10,6 +10,7 @@ import {
 } from '@/apps/bucket/types/api';
 import { SuiNetworks } from '@/types';
 
+import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
 
 export const getBorrowTx = async (
@@ -23,7 +24,7 @@ export const getBorrowTx = async (
   const client = getBucketClient(network, account);
   await buildBorrowTx(
     client,
-    tx,
+    toBucketSdkTransaction(tx),
     collateralType,
     collateralAmount,
     borrowAmount,
@@ -44,7 +45,15 @@ export const getWithdrawTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildWithdrawTx(client, tx, collateralType, withdrawAmount, account.address, insertionPlace, strapId);
+  await buildWithdrawTx(
+    client,
+    toBucketSdkTransaction(tx),
+    collateralType,
+    withdrawAmount,
+    account.address,
+    insertionPlace,
+    strapId,
+  );
 
   return tx;
 };
@@ -60,7 +69,7 @@ export const getRepayTx = async (
   const client = getBucketClient(network, account);
   await buildRepayTx(
     client,
-    tx,
+    toBucketSdkTransaction(tx),
     collateralType,
     repayAmount,
     withdrawAmount,
@@ -82,7 +91,7 @@ export const getCloseTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildCloseTx(client, tx, collateralType, recipient, strapId);
+  await buildCloseTx(client, toBucketSdkTransaction(tx), collateralType, recipient, strapId);
 
   return tx;
 };

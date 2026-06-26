@@ -1,8 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { Scallop, ScallopClient } from '@scallop-io/sui-scallop-sdk';
+
+import { getFullnodeUrl, SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 import { DecoderLending } from './decoders/decoderLending';
 import { DecoderReferral } from './decoders/decoderReferral';

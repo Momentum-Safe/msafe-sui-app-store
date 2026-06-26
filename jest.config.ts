@@ -36,6 +36,7 @@ const config: Config = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@mysten/sui/client$': '<rootDir>/src/compat/mysten-sui-client-shim.ts',
   },
 
   // A preset that is used as a base for Jest's configuration
@@ -59,17 +60,19 @@ const config: Config = {
         useESM: true,
       },
     ],
-    '^.+\\.jsx?$': [
+    '^.+\\.m?[jt]sx?$': [
       'ts-jest',
       {
+        tsconfig: './tsconfig.json',
         useESM: true,
       },
     ],
   },
 
-  // Transform ES modules in node_modules
+  // Transform ES modules in node_modules (including nested deps under @mysten/sui)
   transformIgnorePatterns: [
-    'node_modules/(?!(@mmt-finance/ve-sdk-v1|p-lazy|@scallop-io|@noble|@suilend|@mysten/sui)/)',
+    'node_modules/(?!(@mmt-finance/ve-sdk-v1|p-lazy|@scallop-io|@noble|@suilend|@mysten|@msafe|@alphafi|@cetusprotocol|@ember-finance|@naviprotocol|@nemoprotocol|@mmt-finance|@bluefin-exchange|turbos-clmm-sdk|bucket-protocol-sdk|haedal-vault-sdk|@firefly-exchange|@scure)/)',
+    'node_modules/.+/node_modules/(?!(@mysten|@scure|@noble)/)',
   ],
 
   testTimeout: 30_000,

@@ -1,6 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { DevInspectResults } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+
+import { DevInspectResults } from '@/compat/mysten-sui-json-rpc';
 
 import { MintIntentionData, RedeemIntentionData, StSuiIntentionData, TransactionSubType } from './types';
 

@@ -1,4 +1,6 @@
-import { getFullnodeUrl } from '@mysten/sui.js/client';
+import { getFullnodeUrl } from '@/compat/mysten-sui-json-rpc';
+
+import type { MsafeSuiGrpcClient } from '@/lib/suiGrpcClient';
 
 import * as devContractConfig from '../config/dev.json';
 import * as prodContractConfig from '../config/prod.json';
@@ -21,6 +23,7 @@ export interface EnvConfigOptions {
   rpc?: SuiConfig;
   backend?: BackendConfig;
   contract?: ContractConfig;
+  suiGrpcClient?: MsafeSuiGrpcClient;
 }
 
 export interface BackendConfig {

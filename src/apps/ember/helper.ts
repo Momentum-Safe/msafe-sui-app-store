@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
 import { IAppHelperInternal } from '@/apps/interface/sui';
+import { SuiClient } from '@/compat/mysten-sui-json-rpc';
 
 import { Decoder } from './decoder';
 import { CancelPendingWithdrawalRequest } from './intentions/cancel-pending-withdrawal-request';
