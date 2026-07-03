@@ -1,5 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { Transaction } from '@mysten/sui/transactions';
+import { Transaction, isTransaction } from '@mysten/sui/transactions';
 import { SuiClient as SuiClientLegacy } from '@mysten/sui.js/client';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
@@ -15,6 +15,30 @@ import { SuiNetworks } from '@/types';
 
 const SUI_COIN_TYPE = '0x2::sui::SUI';
 const MIN_GAS_BALANCE = 100_000_000;
+
+function createLegacySuiClient(clientUrl: string) {
+  return new SuiClientLegacy({
+    transport: new MSafeHTTPTransport({
+      url: clientUrl,
+      rpc: {
+        url: clientUrl,
+      },
+    }),
+  });
+}
+
+async function toDeserializeTransaction(transactionBlock: unknown, clientUrl: string): Promise<Transaction> {
+  if (isTransaction(transactionBlock)) {
+    return transactionBlock as Transaction;
+  }
+
+  // Legacy @mysten/sui.js TransactionBlock still expects the old client.
+  const legacyClient = createLegacySuiClient(clientUrl);
+  const build = await (transactionBlock as { build: (options: { client: unknown }) => Promise<Uint8Array> }).build({
+    client: legacyClient,
+  });
+  return Transaction.from(build);
+}
 
 type InternalAppHelper<T> = IAppHelperInternalLegacy<T> | IAppHelperInternal<T> | IAppHelperInternalGrpc<T>;
 
@@ -99,16 +123,7 @@ export class SuiSdkAdapter implements IAppHelper<any> {
         },
       }),
     });
-    const clientLegacy = new SuiClientLegacy({
-      transport: new MSafeHTTPTransport({
-        url: input.clientUrl,
-        rpc: {
-          url: input.clientUrl,
-        },
-      }),
-    });
-    const build = await input.transactionBlock.build({ client: clientLegacy });
-    const tx = Transaction.from(build);
+    const tx = await toDeserializeTransaction(input.transactionBlock, input.clientUrl);
     return this.helper.deserialize({ ...input, suiClient: client, transaction: tx });
   }
 
@@ -154,16 +169,7 @@ export class SuiGrpcSdkAdapter implements IAppHelper<any> {
     },
   ) {
     const suiGrpcClient = getSuiGrpcClient(input.network, input.clientUrl);
-    const clientLegacy = new SuiClientLegacy({
-      transport: new MSafeHTTPTransport({
-        url: input.clientUrl,
-        rpc: {
-          url: input.clientUrl,
-        },
-      }),
-    });
-    const build = await input.transactionBlock.build({ client: clientLegacy });
-    const tx = Transaction.from(build);
+    const tx = await toDeserializeTransaction(input.transactionBlock, input.clientUrl);
     return this.helper.deserialize({ ...input, suiGrpcClient, transaction: tx });
   }
 
@@ -203,14 +209,7 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
       account: WalletAccount;
     },
   ) {
-    const client = new SuiClientLegacy({
-      transport: new MSafeHTTPTransport({
-        url: input.clientUrl,
-        rpc: {
-          url: input.clientUrl,
-        },
-      }),
-    });
+    const client = createLegacySuiClient(input.clientUrl);
     return this.helper.deserialize({ ...input, transactionBlock: input.transactionBlock, suiClient: client });
   }
 
@@ -222,14 +221,7 @@ export class SuiJsSdkAdapter implements IAppHelper<any> {
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<Transaction> {
-    const client = new SuiClientLegacy({
-      transport: new MSafeHTTPTransport({
-        url: input.clientUrl,
-        rpc: {
-          url: input.clientUrl,
-        },
-      }),
-    });
+    const client = createLegacySuiClient(input.clientUrl);
     const accountSuiBalance = await client.getBalance({ owner: input.account.address });
     if (Number(accountSuiBalance.totalBalance) < MIN_GAS_BALANCE) {
       throw new Error('Insufficient gas fee');
