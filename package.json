@@ -50,6 +50,7 @@
     "@bluefin-exchange/bluefin7k-aggregator-sdk": "^4.0.1-alpha.0",
     "@cetusprotocol/aggregator-sdk": "1.6.3",
     "@cetusprotocol/common-sdk": "1.4.0",
+    "@cetusprotocol/dlmm-sdk": "^1.3.0",
     "@cetusprotocol/farms-sdk": "1.4.3",
     "@cetusprotocol/sui-clmm-sdk": "1.4.7",
     "@cetusprotocol/vaults-sdk": "1.7.4",
