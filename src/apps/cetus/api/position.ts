@@ -21,10 +21,7 @@ export const getAddLiquidityTxb = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const clmmSdk = await getClmmSdk(network, account);
-  const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
-    txbParams?.parameter,
-    txbParams?.gasEstimateArg,
-  );
+  const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(txbParams?.parameter);
   return txb;
 };
 
@@ -34,10 +31,7 @@ export const getIncreaseLiquidityTxb = async (
   network: SuiNetworks,
 ): Promise<Transaction> => {
   const clmmSdk = await getClmmSdk(network, account);
-  const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(
-    txbParams?.parameter,
-    txbParams?.gasEstimateArg,
-  );
+  const txb: Transaction = await clmmSdk.Position.createAddLiquidityFixTokenPayload(txbParams?.parameter);
   return txb;
 };
 

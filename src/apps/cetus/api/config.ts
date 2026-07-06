@@ -8,7 +8,7 @@ export const getClmmSdk = async (network: SuiNetworks, account: WalletAccount) =
   const { CetusClmmSDK } = await import('@cetusprotocol/sui-clmm-sdk');
   const clmmSdk = CetusClmmSDK.createSDK({
     env: 'mainnet',
-    sui_client: new SuiClient({ url: getFullnodeUrl('mainnet'), network: 'mainnet' }),
+    full_rpc_url: getFullnodeUrl('mainnet'),
   });
   clmmSdk.setSenderAddress(account.address);
   return clmmSdk;
@@ -18,7 +18,7 @@ export const getFarmsSdk = async (network: SuiNetworks, account: WalletAccount) 
   const { CetusFarmsSDK } = await import('@cetusprotocol/farms-sdk');
   const farmsSdk = CetusFarmsSDK.createSDK({
     env: 'mainnet',
-    sui_client: new SuiClient({ url: getFullnodeUrl('mainnet'), network: 'mainnet' }),
+    full_rpc_url: getFullnodeUrl('mainnet'),
   });
   farmsSdk.setSenderAddress(account.address);
   return farmsSdk;
@@ -43,14 +43,20 @@ export const getAggregatorSdk = async (network: SuiNetworks, account: WalletAcco
 
 export const getVaultsSdk = async (network: SuiNetworks, account: WalletAccount) => {
   const { CetusVaultsSDK } = await import('@cetusprotocol/vaults-sdk');
-  const vaultsSDK = CetusVaultsSDK.createSDK({ env: 'mainnet' });
+  const vaultsSDK = CetusVaultsSDK.createSDK({
+    env: 'mainnet',
+    full_rpc_url: getFullnodeUrl('mainnet'),
+  });
   vaultsSDK.setSenderAddress(account.address);
   return vaultsSDK;
 };
 
 export const getXcetusSdk = async (network: SuiNetworks, account: WalletAccount) => {
   const { CetusXcetusSDK } = await import('@cetusprotocol/xcetus-sdk');
-  const xcetusSDk = CetusXcetusSDK.createSDK({ env: 'mainnet' });
+  const xcetusSDk = CetusXcetusSDK.createSDK({
+    env: 'mainnet',
+    full_rpc_url: getFullnodeUrl('mainnet'),
+  });
   xcetusSDk.setSenderAddress(account.address);
   return xcetusSDk;
 };
