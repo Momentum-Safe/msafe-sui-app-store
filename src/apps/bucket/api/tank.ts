@@ -5,8 +5,8 @@ import { buildTankClaimTx, buildTankDepositTx, buildTankWithdrawTx } from 'bucke
 import { TankClaimIntentionData, TankDepositIntentionData, TankWithdrawIntentionData } from '@/apps/bucket/types/api';
 import { SuiNetworks } from '@/types';
 
-import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
+import { toBucketSdkTransaction } from '../utils/transaction';
 
 export const getTankDepositTx = async (
   txbParams: TankDepositIntentionData,

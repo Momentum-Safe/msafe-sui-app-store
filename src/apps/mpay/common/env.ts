@@ -1,5 +1,4 @@
 import { getFullnodeUrl } from '@/compat/mysten-sui-json-rpc';
-
 import type { MsafeSuiGrpcClient } from '@/lib/suiGrpcClient';
 
 import * as devContractConfig from '../config/dev.json';

@@ -10,8 +10,8 @@ import {
 } from '@/apps/bucket/types/api';
 import { SuiNetworks } from '@/types';
 
-import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
+import { toBucketSdkTransaction } from '../utils/transaction';
 
 export const getBorrowTx = async (
   txbParams: BorrowIntentionData,

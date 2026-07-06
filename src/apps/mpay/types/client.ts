@@ -5,8 +5,8 @@ import { DateTime, Duration } from 'luxon';
 import { StreamFilterStatus } from './backend';
 import { IStream, IStreamGroup, StreamStatus } from './stream';
 import { IMSafeAccount, ISingleWallet } from './wallet';
-import { MpayCoinMetadata, MpaySimulateResult } from '../utils/rpc';
 import { SuiIterator } from '../sui/iterator/iterator';
+import { MpayCoinMetadata, MpaySimulateResult } from '../utils/rpc';
 
 export type MpayTransactionResponse = {
   effects?: {

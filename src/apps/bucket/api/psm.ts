@@ -5,8 +5,8 @@ import { buildPsmTx } from 'bucket-protocol-sdk';
 import { PsmIntentionData } from '@/apps/bucket/types/api';
 import { SuiNetworks } from '@/types';
 
-import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
+import { toBucketSdkTransaction } from '../utils/transaction';
 
 export const getPsmTx = async (
   txbParams: PsmIntentionData,

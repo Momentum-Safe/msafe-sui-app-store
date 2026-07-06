@@ -10,8 +10,8 @@ import {
 } from '@/apps/bucket/types/api';
 import { SuiNetworks } from '@/types';
 
-import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
+import { toBucketSdkTransaction } from '../utils/transaction';
 
 export const getSBUCKDepositTx = async (
   txbParams: SBUCKDepositIntentionData,
@@ -36,15 +36,7 @@ export const getSBUCKUnstakeTx = async (
 
   const tx = new Transaction();
   const client = getBucketClient(network, account);
-  await buildSBUCKUnstakeTx(
-    client,
-    toBucketSdkTransaction(tx),
-    stakeProofs,
-    amount,
-    account.address,
-    isStake,
-    toBuck,
-  );
+  await buildSBUCKUnstakeTx(client, toBucketSdkTransaction(tx), stakeProofs, amount, account.address, isStake, toBuck);
 
   return tx;
 };

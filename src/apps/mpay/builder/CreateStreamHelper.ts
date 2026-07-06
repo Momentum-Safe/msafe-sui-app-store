@@ -9,7 +9,6 @@ import { InspectViewer } from '../contract/InspectViewer';
 import { StreamContract } from '../contract/StreamContract';
 import { encodeMetadata } from '../stream/metadata';
 import { isSameCoinType } from '../sui/utils';
-import { mpaySimulateTransaction } from '../utils/rpc';
 import {
   CreateStreamInfo,
   CreateStreamInfoInternal,
@@ -19,6 +18,7 @@ import {
 } from '../types/client';
 import { CoinRequest, CoinRequestResponse, GAS_OBJECT_SPEC } from '../types/wallet';
 import { generateGroupId } from '../utils/random';
+import { mpaySimulateTransaction } from '../utils/rpc';
 
 export class CreateStreamHelper {
   constructor(

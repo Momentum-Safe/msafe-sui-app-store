@@ -4,8 +4,8 @@ import { buildLockedClaimTx } from 'bucket-protocol-sdk';
 
 import { SuiNetworks } from '@/types';
 
-import { toBucketSdkTransaction } from '../utils/transaction';
 import { getBucketClient } from './config';
+import { toBucketSdkTransaction } from '../utils/transaction';
 
 export interface LockClaimIntentionData {
   coinType: string;

@@ -4,10 +4,10 @@ import { InvalidInputError } from '../error/InvalidInputError';
 import { InvalidStreamGroupError } from '../error/InvalidStreamGroupError';
 import { SanityError } from '../error/SanityError';
 import { getObjectsById } from '../sui/iterator/object';
-import { MpayObjectResponse } from '../utils/rpc';
 import { StreamEvent } from '../types/events';
 import { PaginationOptions, Paginated } from '../types/pagination';
 import { IStreamGroup, StreamGroupInfo, StreamGroupProgress, StreamGroupCommonInfo } from '../types/stream';
+import { MpayObjectResponse } from '../utils/rpc';
 
 export class StreamGroup implements IStreamGroup {
   public readonly type = 'StreamGroup';

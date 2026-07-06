@@ -26,8 +26,7 @@ export class Globals {
 
   constructor(envConfig: EnvConfig, suiGrpcClient?: MsafeSuiGrpcClient) {
     this.envConfig = envConfig;
-    this.suiClient =
-      suiGrpcClient ?? getSuiGrpcClient(ENV_NETWORK[envConfig.env], envConfig.rpc.url);
+    this.suiClient = suiGrpcClient ?? getSuiGrpcClient(ENV_NETWORK[envConfig.env], envConfig.rpc.url);
     if (envConfig.backend) {
       this._backend = new Backend(envConfig.backend.url);
     }
