@@ -28,7 +28,8 @@
     "coverage": "jest --coverage",
     "prerelease": "yarn build && chmod +x ./scripts/prerelease.sh && ./scripts/prerelease.sh",
     "lint": "npx eslint . --ext .js,.ts,.jsx,.tsx",
-    "lint:fix": "npx eslint . --ext .js,.ts,.jsx,.tsx --fix"
+    "lint:fix": "npx eslint . --ext .js,.ts,.jsx,.tsx --fix",
+    "preversion": "bun run build && bun run test"
   },
   "repository": {
     "type": "git",
