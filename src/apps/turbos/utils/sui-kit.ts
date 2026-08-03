@@ -1,26 +1,38 @@
 import { Transaction, TransactionObjectArgument } from '@mysten/sui/transactions';
-import { TurbosSdk, unstable_getObjectId } from 'turbos-clmm-sdk';
-
-import { PaginatedCoins } from '@/compat/mysten-sui-json-rpc';
+import { TurbosSdk } from 'turbos-clmm-sdk';
 
 import { deepbookConfig } from '../config';
 
-type CoinData = PaginatedCoins['data'];
+type CoinData = {
+  coinObjectId: string;
+  balance: string;
+  coinType: string;
+}[];
 
 export class SuiKit {
   constructor(public readonly turbosSdk: TurbosSdk) {}
 
   async getCoinsData(currentAddress: string, type: string, amount: number): Promise<CoinData> {
     const coinObjects: CoinData = [];
-    let coinFields: PaginatedCoins | undefined;
-    do {
-      coinFields = await this.turbosSdk.provider.getCoins({
+    let cursor: string | null | undefined;
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+      const coinFields = await this.turbosSdk.provider.core.listCoins({
         owner: currentAddress,
         coinType: type,
-        cursor: coinFields?.nextCursor,
+        cursor: cursor ?? undefined,
       });
-      coinObjects.push(...coinFields.data);
-    } while (coinFields.hasNextPage);
+      coinObjects.push(
+        ...coinFields.objects.map((coin) => ({
+          coinObjectId: coin.objectId,
+          balance: coin.balance,
+          coinType: coin.type,
+        })),
+      );
+      hasNextPage = coinFields.hasNextPage;
+      cursor = coinFields.cursor;
+    }
 
     const resultCoinObjects: CoinData = [];
     let currentBalance = 0;
@@ -68,14 +80,11 @@ export class SuiKit {
   }
 
   async IsAccountCap(currentAddress: string): Promise<string | undefined> {
-    const dynamicFields = await this.turbosSdk.provider.getOwnedObjects({
+    const ownedObjects = await this.turbosSdk.provider.core.listOwnedObjects({
       owner: currentAddress,
-      options: { showContent: true, showType: true, showOwner: true },
-      filter: {
-        StructType: `${deepbookConfig.PackageId}::custodian_v2::AccountCap`,
-      },
+      type: `${deepbookConfig.PackageId}::custodian_v2::AccountCap`,
     });
-    return dynamicFields.data[0]?.data ? unstable_getObjectId(dynamicFields.data[0].data) : undefined;
+    return ownedObjects.objects[0]?.objectId;
   }
 
   createAccount(txb: Transaction): TransactionObjectArgument {

@@ -1,14 +1,14 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
 
 import { DecreaseLiquidityWithReturnIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
-export class DecreaseLiquidityWithReturnIntention extends BaseIntention<DecreaseLiquidityWithReturnIntentionData> {
+export class DecreaseLiquidityWithReturnIntention extends BaseIntentionGrpc<DecreaseLiquidityWithReturnIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.DecreaseLiquidityWithReturn;
@@ -17,8 +17,12 @@ export class DecreaseLiquidityWithReturnIntention extends BaseIntention<Decrease
     super(data);
   }
 
-  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
-    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
+  async build(input: {
+    network: SuiNetworks;
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+  }): Promise<Transaction> {
+    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiGrpcClient);
     const { pool, address, amountA, amountB, slippage, nft, decreaseLiquidity, deadline } = this.data;
 
     const {

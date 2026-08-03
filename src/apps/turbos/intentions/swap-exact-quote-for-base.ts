@@ -1,15 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
 
 import { swap_exact_quote_for_base } from '../api/deepbook';
 import { SuiNetworks, SwapExactQuoteForBaseIntentionData, TransactionSubType } from '../types';
 
-export class SwapExactQuoteForBaseIntention extends BaseIntention<SwapExactQuoteForBaseIntentionData> {
+export class SwapExactQuoteForBaseIntention extends BaseIntentionGrpc<SwapExactQuoteForBaseIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.SwapExactQuoteForBase;
@@ -18,8 +18,12 @@ export class SwapExactQuoteForBaseIntention extends BaseIntention<SwapExactQuote
     super(data);
   }
 
-  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
-    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiClient);
+  async build(input: {
+    network: SuiNetworks;
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+  }): Promise<Transaction> {
+    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiGrpcClient);
     const txb = await swap_exact_quote_for_base({ ...this.data, turbosSdk, currentAddress: input.account.address });
     return txb;
   }

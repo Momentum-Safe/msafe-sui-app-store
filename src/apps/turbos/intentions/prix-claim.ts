@@ -1,15 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { SUI_CLOCK_OBJECT_ID } from '@mysten/sui/utils';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
 
 import { prixConfig } from '../config';
 import { PrixClaimIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
-export class PrixClaimIntention extends BaseIntention<PrixClaimIntentionData> {
+export class PrixClaimIntention extends BaseIntentionGrpc<PrixClaimIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixClaim;
@@ -19,7 +19,11 @@ export class PrixClaimIntention extends BaseIntention<PrixClaimIntentionData> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
+  async build(input: {
+    network: SuiNetworks;
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+  }): Promise<Transaction> {
     const txb = new Transaction();
     txb.moveCall({
       target: `${prixConfig.PackageId}::claim::claim`,
