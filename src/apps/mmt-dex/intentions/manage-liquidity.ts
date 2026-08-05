@@ -1,13 +1,16 @@
-import { MmtSDK } from '@mmt-finance/clmm-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 import { TransactionSubType, ManageLiquidityIntentionData } from '../types';
 import { executeAddLiquidityToExistingPosition } from '../utils/liquidity';
+import { createMmtSdk } from '../utils/sdk';
 
-export class ManageLiquidityIntention extends BaseIntention<ManageLiquidityIntentionData> {
+export class ManageLiquidityIntention extends BaseIntentionGrpc<ManageLiquidityIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.ManageLiquidity;
@@ -16,10 +19,12 @@ export class ManageLiquidityIntention extends BaseIntention<ManageLiquidityInten
     super(data);
   }
 
-  async build(): Promise<Transaction> {
-    const sdk = MmtSDK.NEW({
-      network: 'mainnet',
-    });
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const sdk = createMmtSdk(input.suiGrpcClient);
     const { params } = this.data;
     const { address, amountA, amountB, pool, positionObjectId, slippage } = params;
     const tx = new Transaction();

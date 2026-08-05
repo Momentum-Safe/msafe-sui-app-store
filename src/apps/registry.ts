@@ -13,6 +13,13 @@ import { MSafeHTTPTransport } from '@/lib/MSafeHTTPTransport';
 import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 import { SuiNetworks } from '@/types';
 
+function createSuiClient(network: SuiNetworks, clientUrl: string) {
+  return new SuiClient({
+    network: toSuiNetworkName(network),
+    baseUrl: clientUrl,
+  });
+}
+
 const SUI_COIN_TYPE = '0x2::sui::SUI';
 const MIN_GAS_BALANCE = 100_000_000;
 
@@ -114,15 +121,7 @@ export class SuiSdkAdapter implements IAppHelper<any> {
       account: WalletAccount;
     },
   ) {
-    const client = new SuiClient({
-      network: toSuiNetworkName(input.network),
-      transport: new MSafeHTTPTransport({
-        url: input.clientUrl,
-        rpc: {
-          url: input.clientUrl,
-        },
-      }),
-    });
+    const client = createSuiClient(input.network, input.clientUrl);
     const tx = await toDeserializeTransaction(input.transactionBlock, input.clientUrl);
     return this.helper.deserialize({ ...input, suiClient: client, transaction: tx });
   }
@@ -135,17 +134,12 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<Transaction> {
-    const client = new SuiClient({
-      network: toSuiNetworkName(input.network),
-      transport: new MSafeHTTPTransport({
-        url: input.clientUrl,
-        rpc: {
-          url: input.clientUrl,
-        },
-      }),
+    const client = createSuiClient(input.network, input.clientUrl);
+    const { balance } = await client.getBalance({
+      owner: input.account.address,
+      coinType: SUI_COIN_TYPE,
     });
-    const accountSuiBalance = await client.getBalance({ owner: input.account.address });
-    if (Number(accountSuiBalance.totalBalance) < MIN_GAS_BALANCE) {
+    if (Number(balance.balance) < MIN_GAS_BALANCE) {
       throw new Error('Insufficient gas fee');
     }
     const tx = await this.helper.build({ ...input, suiClient: client });

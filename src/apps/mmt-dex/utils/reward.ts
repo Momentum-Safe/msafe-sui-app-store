@@ -1,4 +1,4 @@
-import { MmtSDK } from '@mmt-finance/clmm-sdk';
+import { MmtSDK } from '@mmt-finance/clmm-sui-sdk';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { V3PositionType, ClaimRewardsAsParams, NormalizedPool } from '../types';
@@ -11,39 +11,35 @@ export const claimV3Rewards = (
   tx: Transaction,
 ) => {
   const poolModel = {
-    objectId: pool.poolId,
+    poolId: pool.poolId,
     tokenXType: pool.tokenXType,
     tokenYType: pool.tokenYType,
+    tickSpacing: pool.tickSpacing,
+    isStable: pool.isStable,
   };
 
   if (pool?.rewarders && pool?.rewarders.length > 0) {
-    mmt.Pool.collectAllRewards(
-      tx,
-      poolModel,
-      pool.rewarders.map((rewarder) => ({
+    mmt.Pool.collectAllRewards({
+      txb: tx,
+      pool: poolModel,
+      rewarders: pool.rewarders.map((rewarder) => ({
         coin_type: rewarder.coinType,
         flow_rate: rewarder.flowRate,
         reward_amount: rewarder.rewardAmount,
         rewards_allocated: rewarder.rewardsAllocated,
         hasEnded: rewarder.hasEnded,
-      })), // Assert non-null
-      position.objectId,
-      address,
-    );
+      })),
+      positionId: position.objectId,
+      transferToAddress: address,
+    });
   }
 
-  mmt.Pool.collectFee(
-    tx,
-    {
-      objectId: pool.poolId,
-      tokenXType: pool.tokenXType,
-      tokenYType: pool.tokenYType,
-      isStable: pool.isStable,
-      tickSpacing: pool.tickSpacing,
-    },
-    position.objectId,
-    address,
-  );
+  mmt.Pool.collectFee({
+    txb: tx,
+    pool: poolModel,
+    positionId: position.objectId,
+    transferToAddress: address,
+  });
 };
 
 export async function claimRewardsAsTargetCoin({
@@ -56,12 +52,16 @@ export async function claimRewardsAsTargetCoin({
   slippage,
 }: ClaimRewardsAsParams) {
   const poolModel = {
-    objectId: pool.poolId,
+    poolId: pool.poolId,
     tokenXType: pool.tokenXType,
     tokenYType: pool.tokenYType,
+    tickSpacing: pool.tickSpacing,
+    isStable: pool.isStable,
   };
 
   const rewarderCoinTypes = pool.rewarders.map((rewarder) => rewarder.coinType);
+  // Align with mmt-dex-v3: pass pools into both claimRewardsAs and claimFeeAs.
+  const pools = await sdk.Pool.getAllPools();
 
   if (rewarderCoinTypes.length > 0) {
     console.log('claimRewardsAsTargetCoin input', {
@@ -80,10 +80,9 @@ export async function claimRewardsAsTargetCoin({
       targetCoinType,
       slippage,
       toAddress: address,
+      pools,
     });
   }
-
-  const pools = await sdk.Pool.getAllPools();
 
   await sdk.Pool.claimFeeAs({
     txb,

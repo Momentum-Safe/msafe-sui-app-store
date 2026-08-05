@@ -1,20 +1,16 @@
-import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import { VeMMT } from '@mmt-finance/ve-sdk-v1';
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 import { TransactionSubType, BondVeMMTIntentionData } from '../types';
+import { createMmtSdk, createVeMmtSdk } from '../utils/sdk';
 import { performBond } from '../utils/vemmt';
 
-enum Network {
-  Mainnet = 'mainnet',
-  Testnet = 'testnet',
-}
-
-export class BondVeMMTIntention extends BaseIntention<BondVeMMTIntentionData> {
+export class BondVeMMTIntention extends BaseIntentionGrpc<BondVeMMTIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.Bond;
@@ -23,12 +19,13 @@ export class BondVeMMTIntention extends BaseIntention<BondVeMMTIntentionData> {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient }): Promise<Transaction> {
-    const sdk = MmtSDK.NEW({
-      network: 'mainnet',
-    });
-
-    const veMMTSdk = new VeMMT(input.suiClient, Network.Mainnet);
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const sdk = createMmtSdk(input.suiGrpcClient);
+    const veMMTSdk = createVeMmtSdk(input.suiGrpcClient);
     const { params } = this.data;
     const { token, amount, address, enableAutoMaxBond, unbondAt } = params;
     const tx = new Transaction();

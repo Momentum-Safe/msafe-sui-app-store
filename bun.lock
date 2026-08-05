@@ -17,7 +17,7 @@
         "@cetusprotocol/xcetus-sdk": "1.2.3",
         "@ember-finance/sdk": "^1.0.8",
         "@firefly-exchange/library-sui": "^2.8.22",
-        "@mmt-finance/clmm-sdk": "1.3.16",
+        "@mmt-finance/clmm-sui-sdk": "1.0.3-beta.1",
         "@mmt-finance/ve-sdk-v1": "^0.1.2",
         "@mysten/bcs": "^1.5.0",
         "@mysten/sui": "2.16.2",
@@ -598,6 +598,8 @@
     "@mixpanel/rrweb-utils": ["@mixpanel/rrweb-utils@2.0.0-alpha.18.4", "", {}, "sha512-c3nUbQl19kxHjf8nowFMeXlJw0ZqLesIVBb9t4g1nC4WtaNEPkFotWRdGt5V2cJNQ+aY38/v2uYb8Ren4IcdSQ=="],
 
     "@mmt-finance/clmm-sdk": ["@mmt-finance/clmm-sdk@1.3.16", "", { "dependencies": { "@syntsugar/cc-graph": "^0.1.1", "tslib": "^2.8.1" }, "peerDependencies": { "@mysten/sui": "^1.3.0", "axios": "^1.4.0", "bn.js": "^5.2.1", "decimal.js": "^10.4.3" } }, "sha512-F4wd5hb2UgdS/Nx9bRSxEmTcPesMl0Bhb0XLE5wNxguWd4FNrKpbZmyuDZz9jMVGeycxGQZ1IAp2P1tFtO04Tg=="],
+
+    "@mmt-finance/clmm-sui-sdk": ["@mmt-finance/clmm-sui-sdk@1.0.3-beta.1", "", { "dependencies": { "@syntsugar/cc-graph": "^0.1.1", "tslib": "^2.8.1" }, "peerDependencies": { "@mysten/sui": "^1.28.2", "axios": "^1.4.0", "bn.js": "^5.2.1", "decimal.js": "^10.4.3" } }, "sha512-oWrWrB0sDTlLN5VwdjfGKuTZi4KYgDv+kqYr38lEEidDkg3ZcYTrumdzNfI83O8n2qW/C3irCV31t9N5t1UklQ=="],
 
     "@mmt-finance/ve-sdk-v1": ["@mmt-finance/ve-sdk-v1@0.1.2", "", { "dependencies": { "@typemove/sui": "^1.13.3", "p-lazy": "^4.0.0", "tsup": "^8.5.0" }, "peerDependencies": { "@mysten/sui": "1.38.0", "bignumber.js": "^9.3.1" } }, "sha512-9E9o+B9qc4tJ35Qkxry5JEYKb0h/D122ZZgg0uNnQxq5j8a0EhuTlonmgr2k5e2J73E6lHp/mf/fNvxtSDXlFg=="],
 

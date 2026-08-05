@@ -11,7 +11,9 @@ export abstract class StreamIntention<T> extends BaseIntentionGrpc<T> {
   public application = 'mpay';
 
   getClient(network: SuiNetworks, account: WalletAccount, suiGrpcClient: SuiGrpcClient): MPayClient {
-    const mpayClient = new MPayClient(network === 'sui:mainnet' ? Env.prod : Env.dev, { suiGrpcClient });
+    const mpayClient = new MPayClient(network === 'sui:mainnet' ? Env.prod : Env.dev, {
+      suiGrpcClient: suiGrpcClient as never,
+    });
     mpayClient.connectSingleWallet(new MSafeSingleWallet(account));
     return mpayClient;
   }

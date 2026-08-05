@@ -1,6 +1,8 @@
-import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import { Reward } from '@mmt-finance/clmm-sdk/dist/types';
+import { MmtSDK } from '@mmt-finance/clmm-sui-sdk';
+import type { Types } from '@mmt-finance/clmm-sui-sdk';
 import { Transaction } from '@mysten/sui/transactions';
+
+type Reward = Types.Reward;
 
 export type NormalizedRewarder = {
   coinType: string;
@@ -163,15 +165,33 @@ export interface RemoveLiquidityIntentionData extends MMTDEXIntentionData {
   };
 }
 
+/**
+ * Legacy (web-app): full pool objects + token object + human-readable amountIn.
+ * New (mmt-dex-v3): poolId[] + tokenIn coinType string + amountIn already in base units.
+ */
+export type SwapIntentionParams =
+  | {
+      route: NormalizedPool[];
+      tokenIn: Tokens;
+      amountIn: string;
+      address: string;
+      slippage: number;
+      mode?: 'mmt';
+    }
+  | {
+      route: string[];
+      tokenIn: string;
+      tokenOut?: string;
+      amountIn: string;
+      address: string;
+      slippage: number;
+      slippagePct?: number;
+      mode?: 'mmt' | 'aggregator';
+    };
+
 export interface SwapIntentionData extends MMTDEXIntentionData {
   action: TransactionSubType.Swap;
-  params: {
-    route: NormalizedPool[];
-    tokenIn: Tokens;
-    amountIn: string;
-    address: string;
-    slippage: number;
-  };
+  params: SwapIntentionParams;
 }
 
 export interface StakeXSuiIntentionData extends MMTDEXIntentionData {

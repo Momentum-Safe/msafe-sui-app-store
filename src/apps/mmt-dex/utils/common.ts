@@ -1,10 +1,18 @@
 /* eslint-disable no-restricted-syntax */
-import { MmtSDK } from '@mmt-finance/clmm-sdk';
+import { MmtSDK } from '@mmt-finance/clmm-sui-sdk';
+import type { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 
-import { CoinStruct, SuiClient } from '@/compat/mysten-sui-json-rpc';
-
 export const suiCoinType = '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI';
+
+type MmtCoinStruct = {
+  coinType: string;
+  coinObjectId: string;
+  version: string;
+  digest: string;
+  balance: string;
+  previousTransaction: string;
+};
 
 export const normalizeSuiCoinType = (coinType: string) => {
   if (coinType !== '0x2::sui::SUI') {
@@ -18,23 +26,32 @@ export const getUserCoins = async ({
   address,
   type,
 }: {
-  suiClient: SuiClient;
+  suiClient: Pick<SuiGrpcClient, 'listCoins'>;
   address: string;
   type: string;
 }) => {
-  let cursor;
-  let coins: CoinStruct[] = [];
+  let cursor: string | null | undefined;
+  let coins: MmtCoinStruct[] = [];
   let iter = 0;
   do {
     try {
-      const res = await suiClient.getCoins({
+      const res = await suiClient.listCoins({
         owner: address,
         coinType: type,
-        cursor,
+        cursor: cursor ?? undefined,
         limit: 50,
       });
-      coins = coins.concat(res.data);
-      cursor = res.nextCursor;
+      coins = coins.concat(
+        res.objects.map((coin) => ({
+          coinType: coin.type,
+          coinObjectId: coin.objectId,
+          version: coin.version,
+          digest: coin.digest,
+          balance: coin.balance,
+          previousTransaction: '0x0',
+        })),
+      );
+      cursor = res.cursor;
       if (!res.hasNextPage || iter === 8) {
         cursor = null;
       }

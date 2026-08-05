@@ -26,22 +26,14 @@ export abstract class ScallopCoreBaseIntention<D> implements BaseIntention<D> {
   }
 
   private isObligationLocked = async (suiClient: SuiClient, obligationId: SuiObjectArg) => {
-    const obligationObjectData = await suiClient.getObject({
-      id: typeof obligationId === 'string' ? obligationId : obligationId.objectId,
-      options: {
-        showContent: true,
-      },
+    const objectId = typeof obligationId === 'string' ? obligationId : obligationId.objectId;
+    // gRPC getObject returns Move fields under object.json when include.json is set.
+    const { object } = await suiClient.getObject({
+      objectId,
+      include: { json: true },
     });
-    let obligationLocked = false;
-    if (
-      obligationObjectData &&
-      obligationObjectData?.data.content?.dataType === 'moveObject' &&
-      'lock_key' in obligationObjectData.data.content.fields
-    ) {
-      obligationLocked = Boolean(obligationObjectData.data.content.fields.lock_key);
-    }
-
-    return obligationLocked;
+    const fields = object.json as { lock_key?: unknown } | null | undefined;
+    return Boolean(fields?.lock_key);
   };
 
   protected async buildTxWithRefreshObligation(

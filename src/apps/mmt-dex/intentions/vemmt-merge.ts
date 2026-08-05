@@ -1,19 +1,16 @@
-import { VeMMT } from '@mmt-finance/ve-sdk-v1';
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 import { TransactionSubType, MergeVeMMTIntentionData } from '../types';
+import { createVeMmtSdk } from '../utils/sdk';
 import { performMerge } from '../utils/vemmt';
 
-enum Network {
-  Mainnet = 'mainnet',
-  Testnet = 'testnet',
-}
-
-export class MergeVeMMTIntention extends BaseIntention<MergeVeMMTIntentionData> {
+export class MergeVeMMTIntention extends BaseIntentionGrpc<MergeVeMMTIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.Merge;
@@ -22,8 +19,12 @@ export class MergeVeMMTIntention extends BaseIntention<MergeVeMMTIntentionData> 
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient }): Promise<Transaction> {
-    const veMMTSdk = new VeMMT(input.suiClient, Network.Mainnet);
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const veMMTSdk = createVeMmtSdk(input.suiGrpcClient);
     const { params } = this.data;
     const { address, veId, selectedVeMMTIds } = params;
     const tx = new Transaction();

@@ -1,41 +1,129 @@
-import type { SuiClientTypes } from '@mysten/sui/client';
 import { SuiGrpcClient } from '@mysten/sui/grpc';
+import type { DevInspectResults } from '@mysten/sui/jsonRpc';
+import { Transaction } from '@mysten/sui/transactions';
 
-import { getFullnodeUrl, toSuiNetworkName } from '@/compat/mysten-sui-json-rpc';
 import { SuiNetworks } from '@/types';
 
+export type SuiNetworkName = 'mainnet' | 'testnet' | 'devnet' | 'localnet';
+
+const NETWORK_MAP: Record<SuiNetworks, SuiNetworkName> = {
+  'sui:mainnet': 'mainnet',
+  'sui:testnet': 'testnet',
+  'sui:devnet': 'devnet',
+  'sui:localnet': 'localnet',
+};
+
+export function toSuiNetworkName(network: SuiNetworks): SuiNetworkName {
+  return NETWORK_MAP[network];
+}
+
+/** Default fullnode base URLs (same hosts as former JSON-RPC helpers; used for gRPC). */
+export function getFullnodeUrl(network: SuiNetworkName): string {
+  switch (network) {
+    case 'mainnet':
+      return 'https://fullnode.mainnet.sui.io:443';
+    case 'testnet':
+      return 'https://fullnode.testnet.sui.io:443';
+    case 'devnet':
+      return 'https://fullnode.devnet.sui.io:443';
+    case 'localnet':
+      return 'http://127.0.0.1:9000';
+    default:
+      throw new Error(`Unknown network: ${network}`);
+  }
+}
+
 export type MsafeSuiGrpcClient = SuiGrpcClient & {
-  getObject(options: { objectId: string }): ReturnType<SuiGrpcClient['core']['getObject']>;
-  listCoins(options: { owner: string; coinType?: string; cursor?: string | null }): Promise<{
-    objects: SuiClientTypes.Coin[];
+  getCoins(input: { owner: string; coinType?: string; cursor?: string | null; limit?: number }): Promise<{
+    data: {
+      coinType: string;
+      coinObjectId: string;
+      version: string;
+      digest: string;
+      balance: string;
+      previousTransaction: string;
+    }[];
     hasNextPage: boolean;
-    cursor: string | null;
+    nextCursor: string | null;
   }>;
+  devInspectTransactionBlock(input: {
+    sender: string;
+    transactionBlock: Transaction | Uint8Array | string;
+  }): Promise<DevInspectResults>;
 };
 
 function attachMsafeGrpcHelpers(client: SuiGrpcClient): MsafeSuiGrpcClient {
   return Object.assign(client, {
-    getObject(options: { objectId: string }) {
-      return client.core.getObject(options);
-    },
-    async listCoins(options: { owner: string; coinType?: string; cursor?: string | null }) {
-      const response = await client.core.listCoins({
-        owner: options.owner,
-        coinType: options.coinType,
-        cursor: options.cursor ?? undefined,
+    async getCoins(input: { owner: string; coinType?: string; cursor?: string | null; limit?: number }) {
+      const response = await client.listCoins({
+        owner: input.owner,
+        coinType: input.coinType,
+        cursor: input.cursor ?? undefined,
+        limit: input.limit,
       });
 
       return {
-        objects: response.objects.map((coin) => ({
-          coinType: options.coinType ?? '',
-          objectId: coin.objectId,
+        data: response.objects.map((coin) => ({
+          coinType: coin.type,
+          coinObjectId: coin.objectId,
           version: coin.version,
           digest: coin.digest,
-          balance: coin.balance ?? '0',
+          balance: coin.balance,
+          previousTransaction: '0x0',
         })),
         hasNextPage: response.hasNextPage,
-        cursor: response.cursor,
+        nextCursor: response.cursor,
       };
+    },
+
+    async devInspectTransactionBlock(input: {
+      sender: string;
+      transactionBlock: Transaction | Uint8Array | string;
+    }): Promise<DevInspectResults> {
+      const tx =
+        typeof input.transactionBlock === 'object' &&
+        input.transactionBlock !== null &&
+        'setSenderIfNotSet' in input.transactionBlock
+          ? (input.transactionBlock as Transaction)
+          : Transaction.from(input.transactionBlock as Uint8Array | string);
+
+      tx.setSenderIfNotSet(input.sender);
+
+      const result = await client.simulateTransaction({
+        transaction: tx,
+        checksEnabled: false,
+        include: {
+          effects: true,
+          events: true,
+          commandResults: true,
+        },
+      });
+
+      const transaction = result.$kind === 'Transaction' ? result.Transaction : result.FailedTransaction;
+      const success = transaction.effects?.status?.success ?? false;
+
+      // Map core simulation output onto the legacy DevInspectResults shape used by SDKs.
+      return {
+        error: success ? null : (transaction.effects?.status?.error?.message ?? 'Simulation failed'),
+        effects: {
+          status: {
+            status: success ? 'success' : 'failure',
+            error: transaction.effects?.status?.error?.message,
+          },
+        },
+        events: (transaction.events ?? []).map((event) => ({
+          type: event.eventType,
+          parsedJson: event.json,
+          packageId: event.packageId,
+          transactionModule: event.module,
+          sender: event.sender,
+          bcs: '',
+          id: { txDigest: '', eventSeq: '0' },
+        })),
+        results: result.commandResults?.map((commandResult) => ({
+          returnValues: commandResult.returnValues.map((value) => [Array.from(value.bcs), 'u64'] as [number[], string]),
+        })),
+      } as DevInspectResults;
     },
   });
 }

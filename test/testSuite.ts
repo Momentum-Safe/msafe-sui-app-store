@@ -93,7 +93,10 @@ export class TestSuite<IntentionData> {
       appContext: input.appContent,
       chain: this.network,
       network: this.network,
-      suiClient: new SuiClient({ url: SuiNetworkUrls[this.network], network: toSuiNetworkName(this.network) }),
+      suiClient: new SuiClient({
+        baseUrl: SuiNetworkUrls[this.network],
+        network: toSuiNetworkName(this.network),
+      }),
       account: this.testWalletAddress,
     });
     return {
@@ -116,7 +119,10 @@ export class TestSuite<IntentionData> {
     const tx = await this.appHelper.build({
       ...this.pendingIntention,
       network: this.network,
-      suiClient: new SuiClient({ url: SuiNetworkUrls[this.network], network: toSuiNetworkName(this.network) }),
+      suiClient: new SuiClient({
+        baseUrl: SuiNetworkUrls[this.network],
+        network: toSuiNetworkName(this.network),
+      }),
       account: this.testWalletAddress,
     });
     tx.setSender(this.testWalletAddress.address);

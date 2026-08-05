@@ -1,3 +1,5 @@
+import type { SuiGrpcClient } from '@mysten/sui/grpc';
+
 import { getSuiGrpcClient, MsafeSuiGrpcClient } from '@/lib/suiGrpcClient';
 import { SuiNetworks } from '@/types';
 
@@ -24,9 +26,11 @@ export class Globals {
 
   public _backend?: IBackend;
 
-  constructor(envConfig: EnvConfig, suiGrpcClient?: MsafeSuiGrpcClient) {
+  constructor(envConfig: EnvConfig, suiGrpcClient?: SuiGrpcClient) {
     this.envConfig = envConfig;
-    this.suiClient = suiGrpcClient ?? getSuiGrpcClient(ENV_NETWORK[envConfig.env], envConfig.rpc.url);
+    this.suiClient =
+      (suiGrpcClient as MsafeSuiGrpcClient | undefined) ??
+      getSuiGrpcClient(ENV_NETWORK[envConfig.env], envConfig.rpc.url);
     if (envConfig.backend) {
       this._backend = new Backend(envConfig.backend.url);
     }

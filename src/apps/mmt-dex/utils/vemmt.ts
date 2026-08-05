@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-import { MmtSDK } from '@mmt-finance/clmm-sdk';
+import { MmtSDK } from '@mmt-finance/clmm-sui-sdk';
 import { VeMMT } from '@mmt-finance/ve-sdk-v1';
 import {
   Transaction,
@@ -241,9 +241,11 @@ export const claimVeMMTRewardsAsTargetCoin = async (
     const isXtoY = normalizedTokenX === currentCoinType;
 
     const poolModel = {
-      objectId: swapPool.poolId,
+      poolId: swapPool.poolId,
       tokenXType: swapPool.tokenXType || swapPool.tokenX?.coinType || '',
       tokenYType: swapPool.tokenYType || swapPool.tokenY?.coinType || '',
+      tickSpacing: swapPool.tickSpacing,
+      isStable: swapPool.isStable,
     };
 
     const limitSqrtPrice = await getLimitSqrtPriceUsingSlippage({
@@ -256,14 +258,20 @@ export const claimVeMMTRewardsAsTargetCoin = async (
       isTokenX: isXtoY,
     });
 
-    const { outputCoin, leftoverCoin } = mmtSdk.Pool.swapV2({
-      txb: tx,
-      pool: poolModel,
-      amount: currentAmount,
-      inputCoin: currentCoin,
-      isXtoY,
-      limitSqrtPrice,
-    });
+    // Align with mmt-dex-v3 rewards.ts claim route swaps.
+    const { outputCoin, leftoverCoin } =
+      mmtSdk.Pool.swap({
+        txb: tx,
+        pool: poolModel,
+        amount: currentAmount,
+        inputCoin: currentCoin,
+        isXtoY,
+        limitSqrtPrice,
+      }) || {};
+
+    if (!outputCoin || !leftoverCoin) {
+      throw new Error(`Swap Failed: empty swap result for pool ${poolId}`);
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tx.transferObjects([leftoverCoin as any], tx.pure.address(address));

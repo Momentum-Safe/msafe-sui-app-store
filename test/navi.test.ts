@@ -47,7 +47,7 @@ import { TestSuite } from './testSuite';
 })();
 
 const address = '0xfaba86400d9cc1d144bbc878bc45c4361d53a16c942202b22db5d26354801e8e';
-const client = new SuiClient({ url: getFullnodeUrl('mainnet'), network: 'mainnet' });
+const client = new SuiClient({ baseUrl: getFullnodeUrl('mainnet'), network: 'mainnet' });
 
 const testWallet: WalletAccount = {
   address: '0xbb63274d2bd428b460d01dbae9a43ecd2a791f8d6624968c4d670055354ebcff',

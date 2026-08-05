@@ -1,21 +1,17 @@
-import { MmtSDK } from '@mmt-finance/clmm-sdk';
-import { VeMMT } from '@mmt-finance/ve-sdk-v1';
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 import { ClaimRewardsAsIntentionData, TransactionSubType } from '../types';
 import { claimRewardsAsTargetCoin } from '../utils/reward';
+import { createMmtSdk, createVeMmtSdk } from '../utils/sdk';
 import { claimVeMMTRewardsAsTargetCoin } from '../utils/vemmt';
 
-enum Network {
-  Mainnet = 'mainnet',
-  Testnet = 'testnet',
-}
-
-export class ClaimRewardAsIntention extends BaseIntention<ClaimRewardsAsIntentionData> {
+export class ClaimRewardAsIntention extends BaseIntentionGrpc<ClaimRewardsAsIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.ClaimRewardsAs;
@@ -24,11 +20,13 @@ export class ClaimRewardAsIntention extends BaseIntention<ClaimRewardsAsIntentio
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient }): Promise<Transaction> {
-    const sdk = MmtSDK.NEW({
-      network: 'mainnet',
-    });
-    const veMMTSdk = new VeMMT(input.suiClient, Network.Mainnet);
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const sdk = createMmtSdk(input.suiGrpcClient);
+    const veMMTSdk = createVeMmtSdk(input.suiGrpcClient);
     const { params } = this.data;
     const { claimVeMMTParams } = params;
     const { address, veMMTs, targetCoinType, slippage, claimRoutes, pools } = claimVeMMTParams;

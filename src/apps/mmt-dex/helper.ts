@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternal } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { SuiNetworks } from '@/types';
 
 import { AddLiquidityIntention } from './intentions/add-liquidity';
@@ -58,15 +58,15 @@ export type MMTDEXIntention =
   | ManageLiquidityIntention
   | ManageLiquiditySingleSideIntention;
 
-export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> {
+export class MMTDEXAppHelper implements IAppHelperInternalGrpc<MMTDEXIntentionData> {
   application = 'mmt-dex';
 
-  supportSDK = '@mysten/sui' as const;
+  supportSDK = '@mysten/sui-v2' as const;
 
   async deserialize(
     input: SuiSignTransactionBlockInput & {
       network: SuiNetworks;
-      suiClient: SuiClient;
+      suiGrpcClient: SuiGrpcClient;
       account: WalletAccount;
       transaction: Transaction;
       appContext: MMTDEXIntentionData;
@@ -88,7 +88,7 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
     intentionData: MMTDEXIntentionData;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<Transaction> {
@@ -146,6 +146,10 @@ export class MMTDEXAppHelper implements IAppHelperInternal<MMTDEXIntentionData> 
       default:
         throw new Error(`not implemented ${input.txSubType}`);
     }
-    return intention.build({ suiClient: input.suiClient });
+    return intention.build({
+      suiGrpcClient: input.suiGrpcClient,
+      account: input.account,
+      network: input.network,
+    });
   }
 }

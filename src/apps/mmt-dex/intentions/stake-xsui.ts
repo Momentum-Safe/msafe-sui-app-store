@@ -1,13 +1,15 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 import { StakeXSuiIntentionData, TransactionSubType } from '../types';
 import { getStakeTxPayload } from '../utils/stake';
 
-export class StakeXSuiIntention extends BaseIntention<StakeXSuiIntentionData> {
+export class StakeXSuiIntention extends BaseIntentionGrpc<StakeXSuiIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.StakeXSui;
@@ -16,12 +18,14 @@ export class StakeXSuiIntention extends BaseIntention<StakeXSuiIntentionData> {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient }): Promise<Transaction> {
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
     const { params } = this.data;
     const { address, amount } = params;
-    const tx = await getStakeTxPayload(input.suiClient, address, amount);
-
-    return tx;
+    return getStakeTxPayload(input.suiGrpcClient, address, amount);
   }
 
   static fromData(data: StakeXSuiIntentionData) {
