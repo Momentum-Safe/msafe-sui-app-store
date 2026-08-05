@@ -1,3 +1,4 @@
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
@@ -9,8 +10,9 @@ export const getFarmingAddLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.openPositionAddLiquidityStakePayload(txbParams);
   return txb;
 };
@@ -19,8 +21,9 @@ export const getFarmingIncreaseLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.addLiquidityFixCoinPayload(txbParams);
   return txb;
 };
@@ -29,8 +32,9 @@ export const getFarmingDecreaseLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.removeLiquidityPayload(txbParams);
   return txb;
 };
@@ -39,8 +43,9 @@ export const getFarmingVestDecreaseLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.removeAllLiquidityPayload(txbParams);
   return txb;
 };
@@ -49,8 +54,9 @@ export const getFarmingRemoveLiquidityTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.removeLiquidityPayload(txbParams);
   return txb;
 };
@@ -59,8 +65,9 @@ export const getFarmingClaimFeeAndRewardTxb = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.claimFeeAndClmmReward(txbParams);
   return txb;
 };
@@ -69,8 +76,9 @@ export const getFarmingHarvest = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.harvestPayload(txbParams);
   return txb;
 };
@@ -79,8 +87,9 @@ export const getFarmingBatchHarvest = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const params: any = Object.values(txbParams);
   const txb: Transaction = await peripherySdk.Farms.batchHarvestPayload(params);
   return txb;
@@ -90,8 +99,9 @@ export const getFarmingStake = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.depositPayload(txbParams);
   return txb;
 };
@@ -100,8 +110,9 @@ export const getFarmingUnstake = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const peripherySdk = await getFarmsSdk(network, account);
+  const peripherySdk = await getFarmsSdk(network, account, suiGrpcClient);
   const txb: Transaction = await peripherySdk.Farms.withdrawPayload(txbParams);
   return txb;
 };

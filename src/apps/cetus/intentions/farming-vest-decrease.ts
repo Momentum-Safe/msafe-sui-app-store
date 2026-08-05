@@ -1,27 +1,31 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
 import { SuiNetworks } from '@/types';
 
 import { getFarmingVestDecreaseLiquidityTxb } from '../api/farming';
 import { CetusIntentionData, TransactionSubType } from '../types';
 
-export class FarmingVestDecreaseLiquidityIntention extends BaseIntention<CetusIntentionData> {
+export class FarmingVestDecreaseLiquidityIntention extends BaseIntentionGrpc<CetusIntentionData> {
   txType = TransactionType.Other;
 
   txSubType = TransactionSubType.FarmingDecreaseAllLiquidity;
 
-  constructor(public readonly data: CetusIntentionData) {
+  constructor(public override readonly data: CetusIntentionData) {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount; network: SuiNetworks }): Promise<Transaction> {
-    const { account, network } = input;
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const { suiGrpcClient, account, network } = input;
     const { txbParams } = this.data;
-    const txb = await getFarmingVestDecreaseLiquidityTxb(txbParams, account, network);
+    const txb = await getFarmingVestDecreaseLiquidityTxb(txbParams, account, network, suiGrpcClient);
     return txb;
   }
 
