@@ -2,7 +2,6 @@ import { HexToUint8Array, TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
-import { normalizeSuiAddress } from '@mysten/sui/utils';
 
 import { Decoder } from '@/apps/turbos/decoder';
 import {
@@ -21,6 +20,13 @@ const TurbosAccount: WalletAccount = {
   publicKey: HexToUint8Array('0xc851a734b97870c41435b06c8254f1ef4cef0d53cfe1bcb0ba21a175b528311e'),
   chains: [SUI_MAINNET_CHAIN],
   features: [],
+};
+
+export const normalizeSuiCoinType = (coinType: string) => {
+  if (coinType !== '0x2::sui::SUI') {
+    return coinType;
+  }
+  return '0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI';
 };
 
 describe('Turbos App', () => {
@@ -349,7 +355,7 @@ describe('Turbos App', () => {
     expect(result.type).toBe(TransactionSubType.Swap);
 
     const intentionData = result.intentionData as SwapIntentionData;
-    expect(intentionData.coinTypeA).toBe(normalizeSuiAddress(swapData.coinTypeA));
+    expect(intentionData.coinTypeA).toBe(normalizeSuiCoinType(swapData.coinTypeA));
     expect(intentionData.coinTypeB).toBe(swapData.coinTypeB);
     expect(intentionData.address).toBe(swapData.address);
     expect(intentionData.amountA).toBe(Number(swapData.amountA));
