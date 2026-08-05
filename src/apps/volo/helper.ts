@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
+import { Transaction } from '@mysten/sui/transactions';
+import { WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternalLegacy } from '@/apps/interface/sui-js';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 import { SuiNetworks } from '@/types';
 
 import { Decoder } from './decoder';
@@ -16,16 +16,18 @@ export type VoloIntention = StakeIntention | UnStakeIntention | ClaimTicketInten
 
 export type VoloIntentionData = StakeIntentionData | UnStakeIntentionData | ClaimTicketIntentionData;
 
-export class VoloAppHelper implements IAppHelperInternalLegacy<VoloIntentionData> {
+export class VoloAppHelper implements IAppHelperInternalGrpc<VoloIntentionData> {
   application = 'volo';
 
-  supportSDK = '@mysten/sui.js' as const;
+  supportSDK = '@mysten/sui-v2' as const;
 
-  async deserialize(
-    input: SuiSignTransactionBlockInput & { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount },
-  ): Promise<{ txType: TransactionType; txSubType: TransactionSubType; intentionData: VoloIntentionData }> {
-    const { transactionBlock } = input;
-    const decoder = new Decoder(transactionBlock);
+  async deserialize(input: {
+    transaction: Transaction;
+    network: SuiNetworks;
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+  }): Promise<{ txType: TransactionType; txSubType: TransactionSubType; intentionData: VoloIntentionData }> {
+    const decoder = new Decoder(input.transaction);
     const result = decoder.decode();
     return {
       txType: TransactionType.Other,
@@ -38,10 +40,11 @@ export class VoloAppHelper implements IAppHelperInternalLegacy<VoloIntentionData
     intentionData: VoloIntentionData;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
-  }): Promise<TransactionBlock> {
-    const { suiClient, account } = input;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const { suiGrpcClient, account, network } = input;
     let intention: VoloIntention;
     switch (input.txSubType) {
       case TransactionSubType.Stake:
@@ -56,6 +59,6 @@ export class VoloAppHelper implements IAppHelperInternalLegacy<VoloIntentionData
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account });
+    return intention.build({ suiGrpcClient, account, network });
   }
 }

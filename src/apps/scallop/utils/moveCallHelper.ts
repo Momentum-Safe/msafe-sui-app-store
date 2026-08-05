@@ -1,7 +1,6 @@
 import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
-import { TransactionBlockInput } from '@mysten/sui.js/transactions';
 
 import {
   BcsType,
@@ -10,6 +9,15 @@ import {
   SplitCoinTransactionType,
   TransactionCommand,
 } from '../types/sui';
+
+/** Legacy Transaction.blockData input / argument shape still used by scallop decoders. */
+type LegacyTxInput = {
+  type?: string;
+  value?: any;
+  kind?: string;
+  index?: number;
+  Pure?: number[];
+};
 
 class MoveCallHelper {
   private cmdIdx: number;
@@ -96,19 +104,18 @@ class MoveCallHelper {
     return this.transaction.blockData.transactions[arg.index] as T;
   }
 
-  static getPureInputValue<T>(input: TransactionBlockInput, type: BcsType) {
+  static getPureInputValue<T>(input: LegacyTxInput, type: BcsType) {
     if (input.type !== 'pure') {
       throw new Error('not pure argument');
     }
     if (typeof input.value === 'object' && 'Pure' in input.value) {
       const bcsNums = input.value.Pure;
-      const a = bcs[type];
       return bcs[type].parse(new Uint8Array(bcsNums)) as T;
     }
     return input.value as T;
   }
 
-  static getOwnedObjectId(input: TransactionBlockInput) {
+  static getOwnedObjectId(input: LegacyTxInput) {
     if (input.type !== 'object') {
       throw new Error(`not object argument: ${JSON.stringify(input)}`);
     }
@@ -121,7 +128,7 @@ class MoveCallHelper {
     return normalizeSuiAddress(input.value as string);
   }
 
-  static getSharedObjectId(input: TransactionBlockInput) {
+  static getSharedObjectId(input: LegacyTxInput) {
     if (input.type !== 'object') {
       throw new Error(`not object argument: ${JSON.stringify(input)}`);
     }
@@ -134,7 +141,7 @@ class MoveCallHelper {
     return normalizeSuiAddress(input.value.Object.Shared.objectId as string);
   }
 
-  static getPureInput<T>(input: TransactionBlockInput) {
+  static getPureInput<T>(input: LegacyTxInput) {
     if (input.type !== 'pure') {
       throw new Error('not pure argument');
     }

@@ -1,17 +1,25 @@
 // gRPC-backed client exports with legacy SuiClient names for app-store helpers.
 // Public JSON-RPC fullnodes are deprecated; runtime traffic goes through SuiGrpcClient.
 import { SuiGrpcClient, isSuiGrpcClient } from '@mysten/sui/grpc';
-import type { DevInspectResults } from '@mysten/sui/jsonRpc';
 import { Transaction } from '@mysten/sui/transactions';
 
 import { getFullnodeUrl, type SuiNetworkName } from '@/lib/suiGrpcClient';
+import type { DevInspectResults, PaginatedCoins } from '@/lib/suiTypes';
 
 export { getFullnodeUrl, toSuiNetworkName, type SuiNetworkName } from '@/lib/suiGrpcClient';
 
 export { isSuiGrpcClient as isSuiClient };
 
-// Legacy response/type shapes still referenced by decoders and utils.
-export type { CoinStruct, DevInspectResults, PaginatedCoins, SuiObjectRef } from '@mysten/sui/jsonRpc';
+export type {
+  CoinStruct,
+  DevInspectResults,
+  PaginatedCoins,
+  SuiObjectRef,
+  SuiObjectResponse,
+  SuiObjectData,
+  SuiParsedData,
+  CoinBalance,
+} from '@/lib/suiTypes';
 
 export type SuiClientOptions = {
   network: SuiNetworkName;
@@ -21,7 +29,7 @@ export type SuiClientOptions = {
 };
 
 /**
- * SuiClient backed by gRPC, with a few JSON-RPC-shaped helpers still used by apps
+ * SuiClient backed by gRPC, with a few legacy-shaped helpers still used by apps
  * (getCoins, devInspectTransactionBlock) until those call sites migrate fully.
  */
 export class SuiClient extends SuiGrpcClient {
@@ -33,7 +41,12 @@ export class SuiClient extends SuiGrpcClient {
     });
   }
 
-  async getCoins(input: { owner: string; coinType?: string; cursor?: string | null; limit?: number }) {
+  async getCoins(input: {
+    owner: string;
+    coinType?: string;
+    cursor?: string | null;
+    limit?: number;
+  }): Promise<PaginatedCoins> {
     const response = await this.listCoins({
       owner: input.owner,
       coinType: input.coinType,
@@ -81,7 +94,6 @@ export class SuiClient extends SuiGrpcClient {
     const transaction = result.$kind === 'Transaction' ? result.Transaction : result.FailedTransaction;
     const success = transaction.effects?.status?.success ?? false;
 
-    // Map core simulation output onto the legacy DevInspectResults shape used by decoders.
     return {
       error: success ? null : (transaction.effects?.status?.error?.message ?? 'Simulation failed'),
       effects: {
@@ -102,6 +114,6 @@ export class SuiClient extends SuiGrpcClient {
       results: result.commandResults?.map((commandResult) => ({
         returnValues: commandResult.returnValues.map((value) => [Array.from(value.bcs), 'u64'] as [number[], string]),
       })),
-    } as DevInspectResults;
+    };
   }
 }

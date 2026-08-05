@@ -1,6 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 
 import { BaseIntention, IAppHelperInternal } from '@/apps/interface/sui';
@@ -99,7 +98,7 @@ describe('New interface test', () => {
   });
 
   async function buildTxbForTest() {
-    const txb = new TransactionBlock();
+    const txb = new Transaction();
     txb.setSender(Account.address);
     return txb;
   }
@@ -111,7 +110,8 @@ describe('New interface test', () => {
     const txb = await buildTxbForTest();
 
     const { txType, txSubType, intentionData } = await appHelper.deserialize({
-      transactionBlock: txb,
+      // Wallet-standard still types this as legacy TransactionBlock; runtime accepts Transaction.
+      transactionBlock: txb as never,
       chain: 'sui:devnet',
       network: 'sui:devnet',
       clientUrl,
@@ -119,7 +119,8 @@ describe('New interface test', () => {
     });
     expect(txType).toBe(TransactionType.Other);
     expect(txSubType).toBe('empty subtype');
-    expect(intentionData.message).toBeDefined();
-    expect(intentionData.message).toBe('empty message');
+    const data = intentionData as EmptyIntentionData;
+    expect(data.message).toBeDefined();
+    expect(data.message).toBe('empty message');
   });
 });

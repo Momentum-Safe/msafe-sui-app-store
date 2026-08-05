@@ -1,8 +1,9 @@
 import { HexToUint8Array } from '@msafe/sui3-utils';
-import { getFullnodeUrl, SuiClient } from '@mysten/sui.js/client';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 
-export const Client = new SuiClient({ url: getFullnodeUrl('mainnet') });
+import { getFullnodeUrl, SuiClient } from '@/compat/mysten-sui-json-rpc';
+
+export const Client = new SuiClient({ baseUrl: getFullnodeUrl('mainnet'), network: 'mainnet' });
 export const Account: WalletAccount = {
   address: '0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b',
   publicKey: HexToUint8Array('0x0367313b28fd88118bb4795ff2961028b2be594256074bba1a0052737d6db56b'),

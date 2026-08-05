@@ -1,9 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 import config from '../config';
 import { TransactionSubType } from '../types';
@@ -12,7 +13,7 @@ export interface StakeIntentionData {
   amount: number;
 }
 
-export class StakeIntention extends BaseIntentionLegacy<StakeIntentionData> {
+export class StakeIntention extends BaseIntentionGrpc<StakeIntentionData> {
   txType: TransactionType.Other;
 
   txSubType: TransactionSubType.Stake;
@@ -21,11 +22,14 @@ export class StakeIntention extends BaseIntentionLegacy<StakeIntentionData> {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    console.log(input);
-    const tx = new TransactionBlock();
+  async build(_input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const tx = new Transaction();
     const { amount } = this.data;
-    const [coin] = tx.splitCoins(tx.gas, [tx.pure(amount)]);
+    const [coin] = tx.splitCoins(tx.gas, [amount]);
     tx.moveCall({
       target: `${config.packageId}::native_pool::stake`,
       arguments: [

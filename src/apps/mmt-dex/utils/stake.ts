@@ -9,7 +9,7 @@ const LIQUID_STAKING_INFO = {
 };
 
 export const getStakeTxPayload = async (suiGrpcClient: SuiGrpcClient, address: string, amount: string) => {
-  // jsonRpcClient is unused for mint/redeem; pass gRPC client to satisfy current SDK signature.
+  // pass gRPC client to satisfy current SDK signature.
   const lstClient = await LstClient.initialize(suiGrpcClient, suiGrpcClient as never, LIQUID_STAKING_INFO);
 
   const tx = new Transaction();

@@ -1,7 +1,7 @@
 import { SuiGrpcClient } from '@mysten/sui/grpc';
-import type { DevInspectResults } from '@mysten/sui/jsonRpc';
 import { Transaction } from '@mysten/sui/transactions';
 
+import type { DevInspectResults, PaginatedCoins } from '@/lib/suiTypes';
 import { SuiNetworks } from '@/types';
 
 export type SuiNetworkName = 'mainnet' | 'testnet' | 'devnet' | 'localnet';
@@ -34,18 +34,12 @@ export function getFullnodeUrl(network: SuiNetworkName): string {
 }
 
 export type MsafeSuiGrpcClient = SuiGrpcClient & {
-  getCoins(input: { owner: string; coinType?: string; cursor?: string | null; limit?: number }): Promise<{
-    data: {
-      coinType: string;
-      coinObjectId: string;
-      version: string;
-      digest: string;
-      balance: string;
-      previousTransaction: string;
-    }[];
-    hasNextPage: boolean;
-    nextCursor: string | null;
-  }>;
+  getCoins(input: {
+    owner: string;
+    coinType?: string;
+    cursor?: string | null;
+    limit?: number;
+  }): Promise<PaginatedCoins>;
   devInspectTransactionBlock(input: {
     sender: string;
     transactionBlock: Transaction | Uint8Array | string;
@@ -54,7 +48,12 @@ export type MsafeSuiGrpcClient = SuiGrpcClient & {
 
 function attachMsafeGrpcHelpers(client: SuiGrpcClient): MsafeSuiGrpcClient {
   return Object.assign(client, {
-    async getCoins(input: { owner: string; coinType?: string; cursor?: string | null; limit?: number }) {
+    async getCoins(input: {
+      owner: string;
+      coinType?: string;
+      cursor?: string | null;
+      limit?: number;
+    }): Promise<PaginatedCoins> {
       const response = await client.listCoins({
         owner: input.owner,
         coinType: input.coinType,
@@ -102,7 +101,6 @@ function attachMsafeGrpcHelpers(client: SuiGrpcClient): MsafeSuiGrpcClient {
       const transaction = result.$kind === 'Transaction' ? result.Transaction : result.FailedTransaction;
       const success = transaction.effects?.status?.success ?? false;
 
-      // Map core simulation output onto the legacy DevInspectResults shape used by SDKs.
       return {
         error: success ? null : (transaction.effects?.status?.error?.message ?? 'Simulation failed'),
         effects: {
@@ -123,7 +121,7 @@ function attachMsafeGrpcHelpers(client: SuiGrpcClient): MsafeSuiGrpcClient {
         results: result.commandResults?.map((commandResult) => ({
           returnValues: commandResult.returnValues.map((value) => [Array.from(value.bcs), 'u64'] as [number[], string]),
         })),
-      } as DevInspectResults;
+      };
     },
   });
 }

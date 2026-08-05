@@ -1,9 +1,10 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { SuiClient } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
+import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntentionLegacy } from '@/apps/interface/sui-js';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
+import { SuiNetworks } from '@/types';
 
 import config from '../config';
 import { TransactionSubType } from '../types';
@@ -12,37 +13,41 @@ export interface UnStakeIntentionData {
   amount: number;
 }
 
-export class UnStakeIntention extends BaseIntentionLegacy<UnStakeIntentionData> {
+export class UnStakeIntention extends BaseIntentionGrpc<UnStakeIntentionData> {
   txType: TransactionType.Other;
 
-  txSubType: TransactionSubType.Stake;
+  txSubType: TransactionSubType.UnStake;
 
   constructor(public readonly data: UnStakeIntentionData) {
     super(data);
   }
 
-  async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<TransactionBlock> {
-    console.log(input);
-    const tx = new TransactionBlock();
+  async build(input: {
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+    network: SuiNetworks;
+  }): Promise<Transaction> {
+    const tx = new Transaction();
     const { amount } = this.data;
-    const coins = (
-      await input.suiClient.getAllCoins({
-        owner: input.account.address,
-        limit: 100,
-      })
-    ).data;
-    const [primaryCoin, ...mergeCoins] = coins.filter(
-      (coin) => coin.coinType.split('::')[0] === config.certType.split('::')[0],
-    );
+    const coins = await input.suiGrpcClient.listCoins({
+      owner: input.account.address,
+      coinType: config.certType,
+      limit: 100,
+    });
 
-    const primaryCoinInput = tx.object(primaryCoin.coinObjectId);
+    if (coins.objects.length === 0) {
+      throw new Error('No cert coins found');
+    }
+
+    const [primaryCoin, ...mergeCoins] = coins.objects;
+    const primaryCoinInput = tx.object(primaryCoin.objectId);
     if (mergeCoins.length) {
       tx.mergeCoins(
         primaryCoinInput,
-        mergeCoins.map((coin) => tx.object(coin.coinObjectId)),
+        mergeCoins.map((coin) => tx.object(coin.objectId)),
       );
     }
-    const coin = tx.splitCoins(tx.object(primaryCoin.coinObjectId), [tx.pure(amount)]);
+    const [coin] = tx.splitCoins(tx.object(primaryCoin.objectId), [amount]);
 
     tx.moveCall({
       target: `${config.packageId}::native_pool::unstake`,

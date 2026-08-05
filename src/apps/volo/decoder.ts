@@ -1,8 +1,7 @@
 import { TransactionType } from '@msafe/sui3-utils';
-import { bcs } from '@mysten/sui.js/bcs';
-import { MoveCallTransaction } from '@mysten/sui.js/dist/cjs/transactions';
-import { TransactionBlock, TransactionBlockInput } from '@mysten/sui.js/transactions';
-import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui.js/utils';
+import { bcs, fromBase64 } from '@mysten/bcs';
+import { Transaction } from '@mysten/sui/transactions';
+import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 
 import config from './config';
 import { TransactionSubType } from './types';
@@ -21,11 +20,23 @@ type DecodeResult = {
   intentionData: any;
 };
 
+type TxData = ReturnType<Transaction['getData']>;
+type TransactionCommand = TxData['commands'][number];
+type TransactionInput = TxData['inputs'][number];
+type MoveCallCommand = Extract<TransactionCommand, { $kind: 'MoveCall' }>;
+
+function getMoveCallTarget(command: TransactionCommand): string | null {
+  if (command.$kind !== 'MoveCall') {
+    return null;
+  }
+  const { package: pkg, module, function: fn } = command.MoveCall;
+  return `${pkg}::${module}::${fn}`;
+}
+
 export class Decoder {
-  constructor(public readonly txb: TransactionBlock) {}
+  constructor(public readonly txb: Transaction) {}
 
   decode() {
-    console.log('txb', this.txb);
     if (this.isStakeTransaction()) {
       return this.decodeStake();
     }
@@ -41,52 +52,61 @@ export class Decoder {
     throw new Error(`Unknown transaction type`);
   }
 
-  private get transactions() {
-    return this.txb.blockData.transactions;
+  private get commands() {
+    return this.txb.getData().commands;
   }
 
-  private getMoveCallTransaction(target: string) {
-    return this.transactions.find((trans) => trans.kind === 'MoveCall' && trans.target === target);
+  private getMoveCallCommand(target: string) {
+    return this.commands.find((command) => getMoveCallTarget(command) === target);
   }
 
   private isStakeTransaction() {
-    return !!this.getMoveCallTransaction(`${config.packageId}::native_pool::stake`);
+    return !!this.getMoveCallCommand(`${config.packageId}::native_pool::stake`);
   }
 
   private isUnStakeTransaction() {
-    return !!this.getMoveCallTransaction(`${config.packageId}::native_pool::unstake`);
+    return !!this.getMoveCallCommand(`${config.packageId}::native_pool::unstake`);
   }
 
   private isClaimTicketTransaction() {
-    return !!this.getMoveCallTransaction(`${config.packageId}::native_pool::burn_ticket`);
+    return !!this.getMoveCallCommand(`${config.packageId}::native_pool::burn_ticket`);
+  }
+
+  private decodeSplitAmount(): number {
+    const splitCoin = this.commands.find((command) => command.$kind === 'SplitCoins');
+    if (!splitCoin || splitCoin.$kind !== 'SplitCoins') {
+      throw new Error('SplitCoins command not found');
+    }
+    const amountArg = splitCoin.SplitCoins.amounts[0];
+    if (amountArg.$kind !== 'Input') {
+      throw new Error('SplitCoins amount is not an Input');
+    }
+    const input = this.txb.getData().inputs[amountArg.Input];
+    return Number(bcs.u64().parse(Uint8Array.from(fromBase64(input.Pure!.bytes))));
   }
 
   private decodeStake(): DecodeResult {
-    const amount = (this.transactions[0] as any).amounts[0].value.toNumber() as number;
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.Stake,
       intentionData: {
-        amount,
+        amount: this.decodeSplitAmount(),
       },
     };
   }
 
   private decodeUnStake(): DecodeResult {
-    const splitCoinTrans = this.transactions.find((trans) => trans.kind === 'SplitCoins') as any;
-    const amount = splitCoinTrans.amounts[0].value.toNumber() as number;
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.UnStake,
       intentionData: {
-        amount,
+        amount: this.decodeSplitAmount(),
       },
     };
   }
 
   private decodeClaimTicket(): DecodeResult {
     const ticketId = this.helper.decodeOwnedObjectId(2);
-    console.log(ticketId);
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.ClaimTicket,
@@ -97,22 +117,43 @@ export class Decoder {
   }
 
   private get helper() {
-    const moveCall = this.transactions.find(
-      (trans) => trans.kind === 'MoveCall' && trans.target.startsWith(config.packageId),
-    ) as MoveCallTransaction;
+    const moveCall = this.commands.find(
+      (command) => command.$kind === 'MoveCall' && command.MoveCall.package === config.packageId,
+    );
+    if (!moveCall) {
+      throw new Error('MoveCall not found');
+    }
     return new MoveCallHelper(moveCall, this.txb);
   }
 }
 
 export class MoveCallHelper {
   constructor(
-    public readonly moveCall: MoveCallTransaction,
-    public readonly txb: TransactionBlock,
+    public readonly moveCall: TransactionCommand,
+    public readonly txb: Transaction,
   ) {}
 
-  decodeSharedObjectId(argIndex: number) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getSharedObjectId(input);
+  private get moveCallData(): MoveCallCommand['MoveCall'] {
+    if (this.moveCall.$kind !== 'MoveCall') {
+      throw new Error('not move call command');
+    }
+    return this.moveCall.MoveCall;
+  }
+
+  private get inputs() {
+    return this.txb.getData().inputs;
+  }
+
+  private getInputIndex(argIndex: number): number {
+    const arg = this.moveCallData.arguments[argIndex];
+    if (arg.$kind !== 'Input') {
+      throw new Error('not input type');
+    }
+    return arg.Input;
+  }
+
+  private getInputParam(argIndex: number): TransactionInput {
+    return this.inputs[this.getInputIndex(argIndex)];
   }
 
   decodeOwnedObjectId(argIndex: number) {
@@ -120,98 +161,12 @@ export class MoveCallHelper {
     return MoveCallHelper.getOwnedObjectId(input);
   }
 
-  decodeInputU64(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u64');
-    return Number(strVal);
-  }
-
-  decodeInputU8(argIndex: number) {
-    const strVal = this.decodePureArg<string>(argIndex, 'u8');
-    return Number(strVal);
-  }
-
-  decodeInputAddress(argIndex: number) {
-    const input = this.decodePureArg<string>(argIndex, 'address');
-    return normalizeSuiAddress(input);
-  }
-
-  decodeInputString(argIndex: number) {
-    return this.decodePureArg<string>(argIndex, 'string');
-  }
-
-  decodeInputBool(argIndex: number) {
-    return this.decodePureArg<boolean>(argIndex, 'bool');
-  }
-
-  decodePureArg<T>(argIndex: number, bcsType: string) {
-    const input = this.getInputParam(argIndex);
-    return MoveCallHelper.getPureInputValue<T>(input, bcsType);
-  }
-
-  getInputParam(argIndex: number) {
-    const arg = this.moveCall.arguments[argIndex];
-    if (arg.kind !== 'Input') {
-      throw new Error('not input type');
-    }
-    return this.txb.blockData.inputs[arg.index];
-  }
-
-  static getPureInputValue<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
-    }
-    if (typeof input.value === 'object' && 'Pure' in input.value) {
-      const bcsNums = input.value.Pure;
-      return bcs.de(bcsType, new Uint8Array(bcsNums)) as T;
-    }
-    return input.value as T;
-  }
-
-  static getOwnedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
+  static getOwnedObjectId(input: TransactionInput) {
+    const objectId =
+      input.Object?.ImmOrOwnedObject?.objectId ?? input.Object?.Receiving?.objectId ?? input.UnresolvedObject?.objectId;
+    if (!objectId) {
       throw new Error(`not object argument: ${JSON.stringify(input)}`);
     }
-    if (typeof input.value === 'object') {
-      if (!('Object' in input.value) || !('ImmOrOwned' in input.value.Object)) {
-        throw new Error('not ImmOrOwned');
-      }
-      return normalizeSuiAddress(input.value.Object.ImmOrOwned.objectId as string);
-    }
-    return normalizeSuiAddress(input.value as string);
-  }
-
-  static getSharedObjectId(input: TransactionBlockInput) {
-    if (input.type !== 'object') {
-      throw new Error(`not object argument: ${JSON.stringify(input)}`);
-    }
-    if (typeof input.value !== 'object') {
-      return normalizeSuiAddress(input.value as string);
-    }
-    if (!('Object' in input.value) || !('Shared' in input.value.Object)) {
-      throw new Error('not Shared');
-    }
-    return normalizeSuiAddress(input.value.Object.Shared.objectId as string);
-  }
-
-  static getPureInput<T>(input: TransactionBlockInput, bcsType: string) {
-    if (input.type !== 'pure') {
-      throw new Error('not pure argument');
-    }
-    if (typeof input.value !== 'object') {
-      return input.value as T;
-    }
-    if (!('Pure' in input.value)) {
-      throw new Error('Pure not in value');
-    }
-    const bcsVal = input.value.Pure;
-    return bcs.de(bcsType, new Uint8Array(bcsVal)) as T;
-  }
-
-  typeArg(index: number) {
-    return normalizeStructTag(this.moveCall.typeArguments[index]);
-  }
-
-  txArg(index: number) {
-    return this.moveCall.arguments[index];
+    return normalizeSuiAddress(objectId);
   }
 }

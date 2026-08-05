@@ -1,5 +1,5 @@
 // Jest shim: legacy packages import SuiClient/getFullnodeUrl from @mysten/sui/client.
-// Runtime client is gRPC-backed; keep legacy type re-exports for older SDK typings.
+// Runtime client is gRPC-backed; keep type re-exports for older SDK typings.
 export { SuiClient } from '@/compat/mysten-sui-json-rpc';
 export { getFullnodeUrl } from '@/lib/suiGrpcClient';
 
@@ -12,4 +12,4 @@ export type {
   SuiObjectData,
   SuiParsedData,
   CoinBalance,
-} from '@mysten/sui/jsonRpc';
+} from '@/lib/suiTypes';
