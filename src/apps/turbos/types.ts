@@ -1,4 +1,4 @@
-import { NFT, Pool, Trade } from 'turbos-clmm-sdk';
+import { Pool, Position, Trade } from 'turbos-clmm-sdk';
 
 export type SuiNetworks = 'sui:devnet' | 'sui:testnet' | 'sui:localnet' | 'sui:mainnet';
 
@@ -40,7 +40,7 @@ export type TURBOSIntentionData =
 
 export type CreatePoolIntentionData = Pool.CreatePoolOptions;
 export type AddLiquidityIntentionData = Pool.AddLiquidityOptions;
-export type BurnIntentionData = NFT.BurnOptions;
+export type BurnIntentionData = Position.BurnOptions;
 
 interface ClaimAllParams extends Pool.CollectFeeOptions, Pool.CollectRewardOptions {}
 

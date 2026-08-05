@@ -1,11 +1,11 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
 
 // eslint-disable-next-line import/no-cycle
-import { IAppHelperInternal } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 
 import { Decoder } from './decoder';
 import { AddLiquidityIntention } from './intentions/add-liquidity';
@@ -61,16 +61,16 @@ export type TURBOSIntention =
   | SwapExactQuoteForBaseIntention
   | SwapExactBaseForQuoteIntention;
 
-export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> {
+export class TURBOSAppHelper implements IAppHelperInternalGrpc<TURBOSIntentionData> {
   application = 'turbos';
 
-  supportSDK = '@mysten/sui' as const;
+  supportSDK = '@mysten/sui-v2' as const;
 
   async deserialize(input: {
     transaction: Transaction;
     chain: IdentifierString;
     network: SuiNetworks;
-    suiClient: SuiClient;
+    suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
     action?: string;
     txbParams?: any;
@@ -80,7 +80,7 @@ export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> 
     intentionData: TURBOSIntentionData;
   }> {
     console.log(input, 'input');
-    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network);
+    const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiGrpcClient);
     const contract = await turbosSdk.contract.getConfig();
     const { transaction, account } = input;
     const decoder = new Decoder(transaction, turbosSdk, contract);
@@ -96,11 +96,11 @@ export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> 
     intentionData: TURBOSIntentionData;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<Transaction> {
-    const { suiClient, account, network } = input;
+    const { suiGrpcClient, account, network } = input;
     console.log(input.intentionData, 'intentionData');
 
     let intention: TURBOSIntention;
@@ -158,6 +158,6 @@ export class TURBOSAppHelper implements IAppHelperInternal<TURBOSIntentionData> 
       default:
         throw new Error('not implemented');
     }
-    return intention.build({ suiClient, account, network });
+    return intention.build({ suiGrpcClient, account, network });
   }
 }

@@ -1,14 +1,14 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
-import { BaseIntention } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { BaseIntentionGrpc } from '@/apps/interface/sui-grpc';
 
 import { prixConfig } from '../config';
 import { PrixJoinIntentionData, SuiNetworks, TransactionSubType } from '../types';
 
-export class PrixJoinIntention extends BaseIntention<PrixJoinIntentionData> {
+export class PrixJoinIntention extends BaseIntentionGrpc<PrixJoinIntentionData> {
   txType!: TransactionType.Other;
 
   txSubType!: TransactionSubType.PrixJoin;
@@ -17,7 +17,11 @@ export class PrixJoinIntention extends BaseIntention<PrixJoinIntentionData> {
     super(data);
   }
 
-  async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
+  async build(input: {
+    network: SuiNetworks;
+    suiGrpcClient: SuiGrpcClient;
+    account: WalletAccount;
+  }): Promise<Transaction> {
     const txb = new Transaction();
     txb.moveCall({
       target: `${prixConfig.PackageId}::claim::join`,
