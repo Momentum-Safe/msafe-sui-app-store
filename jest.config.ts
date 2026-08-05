@@ -37,6 +37,9 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@mysten/sui/client$': '<rootDir>/src/compat/mysten-sui-client-shim.ts',
+    // turbos-clmm-sdk v4 is ESM-only (`exports` has `import`, no `require`/`default`).
+    // Jest CJS resolution cannot load it without an explicit entry mapping.
+    '^turbos-clmm-sdk$': '<rootDir>/node_modules/turbos-clmm-sdk/dist/index.mjs',
   },
 
   // A preset that is used as a base for Jest's configuration
