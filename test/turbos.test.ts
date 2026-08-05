@@ -2,7 +2,7 @@ import { HexToUint8Array, TransactionType } from '@msafe/sui3-utils';
 import { Transaction } from '@mysten/sui/transactions';
 import { SUI_MAINNET_CHAIN, WalletAccount } from '@mysten/wallet-standard';
 import { Network, TurbosSdk } from 'turbos-clmm-sdk';
-import { normalizeSuiCoinType } from '@/apps/mmt-dex/utils/common'; 
+import { normalizeSuiAddress } from '@mysten/sui/utils';
 
 import { Decoder } from '@/apps/turbos/decoder';
 import {
@@ -349,7 +349,7 @@ describe('Turbos App', () => {
     expect(result.type).toBe(TransactionSubType.Swap);
 
     const intentionData = result.intentionData as SwapIntentionData;
-    expect(intentionData.coinTypeA).toBe(normalizeSuiCoinType(swapData.coinTypeA));
+    expect(intentionData.coinTypeA).toBe(normalizeSuiAddress(swapData.coinTypeA));
     expect(intentionData.coinTypeB).toBe(swapData.coinTypeB);
     expect(intentionData.address).toBe(swapData.address);
     expect(intentionData.amountA).toBe(Number(swapData.amountA));
