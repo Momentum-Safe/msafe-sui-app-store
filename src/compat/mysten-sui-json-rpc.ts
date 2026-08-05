@@ -22,7 +22,7 @@ export type {
 } from '@/lib/suiTypes';
 
 export type SuiClientOptions = {
-  network: SuiNetworkName;
+  network?: SuiNetworkName;
   /** @deprecated Prefer baseUrl. Accepted for existing call sites. */
   url?: string;
   baseUrl?: string;
@@ -32,11 +32,19 @@ export type SuiClientOptions = {
  * SuiClient backed by gRPC, with a few legacy-shaped helpers still used by apps
  * (getCoins, devInspectTransactionBlock) until those call sites migrate fully.
  */
+function inferNetworkFromUrl(url?: string): SuiNetworkName {
+  if (!url) return 'mainnet';
+  if (url.includes('testnet')) return 'testnet';
+  if (url.includes('devnet')) return 'devnet';
+  if (url.includes('127.0.0.1') || url.includes('localhost')) return 'localnet';
+  return 'mainnet';
+}
+
 export class SuiClient extends SuiGrpcClient {
   constructor(options: SuiClientOptions) {
-    const baseUrl = options.baseUrl ?? options.url ?? getFullnodeUrl(options.network);
+    const baseUrl = options.baseUrl ?? options.url ?? getFullnodeUrl(options.network ?? 'mainnet');
     super({
-      network: options.network,
+      network: options.network ?? inferNetworkFromUrl(baseUrl),
       baseUrl,
     });
   }
@@ -62,6 +70,61 @@ export class SuiClient extends SuiGrpcClient {
         digest: coin.digest,
         balance: coin.balance,
         previousTransaction: '0x0',
+      })),
+      hasNextPage: response.hasNextPage,
+      nextCursor: response.cursor,
+    };
+  }
+
+  /**
+   * Legacy JSON-RPC-shaped getOwnedObjects for third-party SDKs (e.g. bucket-protocol-sdk).
+   * Backed by gRPC listOwnedObjects.
+   */
+  async getOwnedObjects(input: {
+    owner: string;
+    cursor?: string | null;
+    limit?: number | null;
+    filter?: { StructType?: string; Package?: string; MatchAll?: unknown[]; MatchAny?: unknown[] } | null;
+    options?: { showContent?: boolean; showType?: boolean; showDisplay?: boolean; showOwner?: boolean } | null;
+  }) {
+    const structType = input.filter && 'StructType' in input.filter ? input.filter.StructType : undefined;
+
+    const response = await this.listOwnedObjects({
+      owner: input.owner,
+      type: structType,
+      cursor: input.cursor ?? undefined,
+      limit: input.limit ?? undefined,
+      include: {
+        content: !!input.options?.showContent,
+        json: !!input.options?.showContent,
+        type: true,
+      },
+    });
+
+    return {
+      data: response.objects.map((object) => ({
+        data: {
+          objectId: object.objectId,
+          version: object.version,
+          digest: object.digest,
+          type: object.type,
+          owner: object.owner,
+          content: object.json
+            ? {
+                dataType: 'moveObject' as const,
+                type: object.type,
+                fields: object.json,
+                hasPublicTransfer: false,
+              }
+            : object.content
+              ? {
+                  dataType: 'moveObject' as const,
+                  type: object.type,
+                  fields: object.content,
+                  hasPublicTransfer: false,
+                }
+              : undefined,
+        },
       })),
       hasNextPage: response.hasNextPage,
       nextCursor: response.cursor,

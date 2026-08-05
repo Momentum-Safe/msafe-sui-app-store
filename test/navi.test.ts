@@ -30,7 +30,12 @@ import { TestSuite } from './testSuite';
   }
   const _fetch = globalThis.fetch;
   globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    const response = await _fetch(input, {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    // Only spoof browser headers for Navi backend APIs; do not break fullnode gRPC-web.
+    if (!url.includes('naviprotocol.io')) {
+      return _fetch(input, init);
+    }
+    return _fetch(input, {
       ...init,
       headers: {
         ...init?.headers,
@@ -41,9 +46,8 @@ import { TestSuite } from './testSuite';
         origin: 'app.naviprotocol.io',
       },
     });
-    (globalThis.fetch as any).isWraped = true;
-    return response;
   };
+  (globalThis.fetch as any).isWraped = true;
 })();
 
 const address = '0xfaba86400d9cc1d144bbc878bc45c4361d53a16c942202b22db5d26354801e8e';

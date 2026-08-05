@@ -40,9 +40,9 @@ describe('MSafe Core main flow', () => {
         account: Account,
         intentionData: COIN_TRANSFER_TEST_INTENTION_DATA,
       });
-      expect(async () => {
-        await ts.signAndSubmitTransaction({ txb: tx });
-      }).rejects.toThrow('MSafe core transaction intention should be build from API');
+      await expect(ts.signAndSubmitTransaction({ txb: tx })).rejects.toThrow(
+        'MSafe core transaction intention should be build from API',
+      );
     });
 
     it('Test intention serialization', () => {
@@ -87,8 +87,8 @@ describe('MSafe Core main flow', () => {
       };
       const helper = MSafeApps.fromHelpers([new CoreHelper()]).getAppHelper('msafe-core');
 
-      expect(async () => {
-        await helper.build({
+      await expect(
+        helper.build({
           network: 'sui:mainnet',
           txType: TransactionType.Assets,
           txSubType: TransactionSubTypes.assets.object.send,
@@ -100,8 +100,8 @@ describe('MSafe Core main flow', () => {
             objectId: '0x01ddc370b11d259ab21b147ef26dddbc385637c4646fa0bcb7f1a1c0179ee071',
             receiver: '0xa9743028e574b7abe4f0af88b08eb5a700a34ea3b1adc667d8d67dcdfa2b5233',
           } as ObjectTransferIntentionData,
-        });
-      }).rejects.toThrow('Insufficient gas fee');
+        }),
+      ).rejects.toThrow('Insufficient gas fee');
     });
   });
 

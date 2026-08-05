@@ -31,6 +31,7 @@ import {
   TankWithdrawIntentionData,
 } from '@/apps/bucket/api';
 import { Decoder } from '@/apps/bucket/decoder';
+import { toBucketSdkTransaction } from '@/apps/bucket/utils/transaction';
 
 const address = '0x3662e00a85fdae17d5732770b8d0658105fe9c0ca91c259790e6fb1498686abc';
 
@@ -41,7 +42,7 @@ describe('Bucket App', () => {
     const coinType = COINS_TYPE_LIST.SUI;
     const amount = '10000000000';
     const buckToCoin = true;
-    await buildPsmTx(bucketClient, tx, coinType, amount, buckToCoin, address);
+    await buildPsmTx(bucketClient, toBucketSdkTransaction(tx), coinType, amount, buckToCoin, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -59,7 +60,7 @@ describe('Bucket App', () => {
     const coinType = COINS_TYPE_LIST.AUSD;
     const amount = '10000000000';
     const buckToCoin = false;
-    await buildPsmTx(bucketClient, tx, coinType, amount, buckToCoin, address);
+    await buildPsmTx(bucketClient, toBucketSdkTransaction(tx), coinType, amount, buckToCoin, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -76,7 +77,7 @@ describe('Bucket App', () => {
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.AUSD;
     const amount = '10000000000';
-    await buildTankDepositTx(bucketClient, tx, coinType, amount, address);
+    await buildTankDepositTx(bucketClient, toBucketSdkTransaction(tx), coinType, amount, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -92,7 +93,7 @@ describe('Bucket App', () => {
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.AUSD;
     const amount = '10000000000';
-    await buildTankWithdrawTx(bucketClient, tx, coinType, amount, address);
+    await buildTankWithdrawTx(bucketClient, toBucketSdkTransaction(tx), coinType, amount, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -108,7 +109,7 @@ describe('Bucket App', () => {
   //   const tx = new Transaction();
   //   const bucketClient = new BucketClient();
   //   const coinType = COINS_TYPE_LIST.SCA;
-  //   await buildTankClaimTx(bucketClient, tx, coinType, address);
+  //   await buildTankClaimTx(bucketClient, toBucketSdkTransaction(tx), coinType, address);
 
   //   const decoder = new Decoder(tx);
   //   const result = decoder.decode();
@@ -128,7 +129,7 @@ describe('Bucket App', () => {
     const strapId: string | undefined = 'new';
     await buildBorrowTx(
       bucketClient,
-      tx,
+      toBucketSdkTransaction(tx),
       collateralType,
       collateralAmount,
       borrowAmount,
@@ -159,7 +160,7 @@ describe('Bucket App', () => {
     const strapId: string | undefined = undefined;
     await buildBorrowTx(
       bucketClient,
-      tx,
+      toBucketSdkTransaction(tx),
       collateralType,
       collateralAmount,
       borrowAmount,
@@ -190,7 +191,7 @@ describe('Bucket App', () => {
     const strapId: string | undefined = 'locked';
     await buildBorrowTx(
       bucketClient,
-      tx,
+      toBucketSdkTransaction(tx),
       collateralType,
       collateralAmount,
       borrowAmount,
@@ -221,7 +222,7 @@ describe('Bucket App', () => {
     const strapId: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010002';
     await buildBorrowTx(
       bucketClient,
-      tx,
+      toBucketSdkTransaction(tx),
       collateralType,
       collateralAmount,
       borrowAmount,
@@ -249,7 +250,15 @@ describe('Bucket App', () => {
     const withdrawAmount = '50000';
     const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
     const strapId: string | undefined = undefined;
-    await buildWithdrawTx(bucketClient, tx, collateralType, withdrawAmount, address, insertionPlace, strapId);
+    await buildWithdrawTx(
+      bucketClient,
+      toBucketSdkTransaction(tx),
+      collateralType,
+      withdrawAmount,
+      address,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -269,7 +278,15 @@ describe('Bucket App', () => {
     const withdrawAmount = '50000';
     const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
     const strapId: string | undefined = 'locked';
-    await buildWithdrawTx(bucketClient, tx, collateralType, withdrawAmount, address, insertionPlace, strapId);
+    await buildWithdrawTx(
+      bucketClient,
+      toBucketSdkTransaction(tx),
+      collateralType,
+      withdrawAmount,
+      address,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -289,7 +306,15 @@ describe('Bucket App', () => {
     const withdrawAmount = '50000';
     const insertionPlace: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010001';
     const strapId: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010002';
-    await buildWithdrawTx(bucketClient, tx, collateralType, withdrawAmount, address, insertionPlace, strapId);
+    await buildWithdrawTx(
+      bucketClient,
+      toBucketSdkTransaction(tx),
+      collateralType,
+      withdrawAmount,
+      address,
+      insertionPlace,
+      strapId,
+    );
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -313,7 +338,7 @@ describe('Bucket App', () => {
     const strapId: string | undefined = undefined;
     await buildRepayTx(
       bucketClient,
-      tx,
+      toBucketSdkTransaction(tx),
       collateralType,
       repayAmount,
       withdrawAmount,
@@ -345,7 +370,7 @@ describe('Bucket App', () => {
     const strapId: string | undefined = 'locked';
     await buildRepayTx(
       bucketClient,
-      tx,
+      toBucketSdkTransaction(tx),
       collateralType,
       repayAmount,
       withdrawAmount,
@@ -377,7 +402,7 @@ describe('Bucket App', () => {
     const strapId: string | undefined = '0x0000000000000000000000000000000000000000000000000000000000010002';
     await buildRepayTx(
       bucketClient,
-      tx,
+      toBucketSdkTransaction(tx),
       collateralType,
       repayAmount,
       withdrawAmount,
@@ -403,7 +428,7 @@ describe('Bucket App', () => {
     const bucketClient = new BucketClient();
     const collateralType = COINS_TYPE_LIST.afSUI;
     const strapId: string | undefined = 'locked';
-    await buildCloseTx(bucketClient, tx, collateralType, address, strapId);
+    await buildCloseTx(bucketClient, toBucketSdkTransaction(tx), collateralType, address, strapId);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -419,7 +444,7 @@ describe('Bucket App', () => {
     const coinType = COINS_TYPE_LIST.BUCK;
     const amount = '10000000000';
     const isStake = true;
-    await buildSBUCKDepositTx(bucketClient, tx, coinType, amount, address, isStake);
+    await buildSBUCKDepositTx(bucketClient, toBucketSdkTransaction(tx), coinType, amount, address, isStake);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -441,7 +466,7 @@ describe('Bucket App', () => {
       '0x0000000000000000000000000000000000000000000000000000000000000002',
       '0x0000000000000000000000000000000000000000000000000000000000000003',
     ];
-    await buildSBUCKUnstakeTx(bucketClient, tx, stakeProofs, amount, address, isStake, toBuck);
+    await buildSBUCKUnstakeTx(bucketClient, toBucketSdkTransaction(tx), stakeProofs, amount, address, isStake, toBuck);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -458,7 +483,7 @@ describe('Bucket App', () => {
     const tx = new Transaction();
     const bucketClient = new BucketClient();
     const amount = '1000000000';
-    await buildSBUCKWithdrawTx(bucketClient, tx, amount, address);
+    await buildSBUCKWithdrawTx(bucketClient, toBucketSdkTransaction(tx), amount, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -475,7 +500,7 @@ describe('Bucket App', () => {
       '0x0000000000000000000000000000000000000000000000000000000000000002',
       '0x0000000000000000000000000000000000000000000000000000000000000003',
     ];
-    await buildSBUCKClaimTx(bucketClient, tx, stakeProofs, address);
+    await buildSBUCKClaimTx(bucketClient, toBucketSdkTransaction(tx), stakeProofs, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
@@ -490,7 +515,7 @@ describe('Bucket App', () => {
     const bucketClient = new BucketClient();
     const coinType = COINS_TYPE_LIST.sBUCK;
     const proofCount = 4;
-    await buildLockedClaimTx(bucketClient, tx, COINS_TYPE_LIST.sBUCK, proofCount, address);
+    await buildLockedClaimTx(bucketClient, toBucketSdkTransaction(tx), COINS_TYPE_LIST.sBUCK, proofCount, address);
 
     const decoder = new Decoder(tx);
     const result = decoder.decode();
