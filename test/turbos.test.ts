@@ -7,6 +7,7 @@ import { Decoder } from '@/apps/turbos/decoder';
 import {
   AddLiquidityIntentionData,
   CollectFeeIntentionData,
+  CollectRewardIntentionData,
   RemoveLiquidityIntentionData,
   SwapIntentionData,
   TransactionSubType,
@@ -94,6 +95,46 @@ describe('Turbos App', () => {
     expect(JSON.stringify(collectFeeData)).toBe(expectedSerialization);
   });
 
+  it('Test `decodeCollectReward` decoder', async () => {
+    const tx = new Transaction();
+
+    const collectRewardData: CollectRewardIntentionData = {
+      pool: '0x0df4f02d0e210169cb6d5aabd03c3058328c06f2c4dbb0804faa041159c78443',
+      nft: '0x73c95efe048a84338989a2189f7494c2f6276bd9d76fa933f6420dd5d8d0a3e1',
+      address: '0xc851a734b97870c41435b06c8254f1ef4cef0d53cfe1bcb0ba21a175b528311e',
+      rewardAmounts: ['18446744073709551615', '1844674407370', '0'],
+    };
+    const turbosSdk = new TurbosSdk(Network.mainnet);
+
+    const config = await turbosSdk.contract.getConfig();
+
+    const collectFeeTx = await turbosSdk.pool.collectReward({
+      pool: collectRewardData.pool,
+      address: collectRewardData.address,
+      nft: collectRewardData.nft,
+      rewardAmounts: collectRewardData.rewardAmounts,
+      deadline: 1735689600000,
+      txb: tx as any,
+    });
+
+    const decoder = new Decoder(collectFeeTx as any, turbosSdk, config);
+    const result = await decoder.decode(Account.address);
+    console.log(result, 'result');
+
+    expect(result.txType).toBe(TransactionType.Other);
+    expect(result.type).toBe(TransactionSubType.CollectReward);
+    console.log(result, 'linjie');
+    const intentionData = result.intentionData as CollectRewardIntentionData;
+    expect(collectRewardData.rewardAmounts[0]).toBe(intentionData.rewardAmounts[0].toString());
+    expect(collectRewardData.rewardAmounts[1]).toBe(intentionData.rewardAmounts[1].toString());
+    expect(collectRewardData.rewardAmounts[2]).toBe(intentionData.rewardAmounts[2].toString());
+    // expect(intentionData.address).toBe(collectFeeData.address);
+    // expect(intentionData.nft).toBe(collectFeeData.nft);
+    // expect(intentionData.collectAmountA).toBe(Number(collectFeeData.collectAmountA));
+    // expect(intentionData.collectAmountB).toBe(Number(collectFeeData.collectAmountB));
+    // expect(intentionData.deadline).toBe(collectFeeData.deadline.toString());
+  });
+
   it('Test `decodeRemoveLiquidity` decoder', async () => {
     const tx = new Transaction();
 
@@ -105,9 +146,9 @@ describe('Turbos App', () => {
       amountB: '709209',
       slippage: 30,
       address: Account.address,
-      collectAmountA: '1004161450',
-      collectAmountB: '1015750',
-      rewardAmounts: ['0', '5698820', '0'],
+      collectAmountA: '18446744073709551615',
+      collectAmountB: '18446744073709551615',
+      rewardAmounts: ['0', '18446744073709551615', '0'],
       deadline: 3600000,
     };
 
@@ -138,18 +179,20 @@ describe('Turbos App', () => {
     expect(result.type).toBe(TransactionSubType.RemoveLiquidity);
 
     const intentionData = result.intentionData as RemoveLiquidityIntentionData;
+    console.log(intentionData ,'linjie')
     expect(intentionData.pool).toBe(removeLiquidityData.pool);
     expect(intentionData.address).toBe(removeLiquidityData.address);
     expect(intentionData.nft).toBe(removeLiquidityData.nft);
     expect(intentionData.amountA).toBe(removeLiquidityData.amountA);
     expect(intentionData.amountB).toBe(removeLiquidityData.amountB);
-    expect(intentionData.collectAmountA).toBe(Number(removeLiquidityData.collectAmountA));
-    expect(intentionData.collectAmountB).toBe(Number(removeLiquidityData.collectAmountB));
+    expect(intentionData.collectAmountA.toString()).toBe(removeLiquidityData.collectAmountA);
+    expect(intentionData.collectAmountB.toString()).toBe(removeLiquidityData.collectAmountB);
     expect(intentionData.decreaseLiquidity).toBe(Number(removeLiquidityData.decreaseLiquidity));
     expect(intentionData.slippage).toBe(30);
 
+    console.log(intentionData.rewardAmounts, 'intentionData.rewardAmounts');
     removeLiquidityData.rewardAmounts.forEach((item, index) => {
-      expect(intentionData.rewardAmounts[index]).toBe(Number(item));
+      expect(intentionData.rewardAmounts[index].toString()).toBe(item);
     });
   });
 
