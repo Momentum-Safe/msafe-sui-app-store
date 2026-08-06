@@ -2,7 +2,7 @@ import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
 import { Transaction } from '@mysten/sui/transactions';
-import { BN, Contract, TurbosSdk } from 'turbos-clmm-sdk';
+import { BN, Contract, TurbosSdk, Decimal } from 'turbos-clmm-sdk';
 
 import { deepbookConfig, prixConfig } from './config';
 import { TransactionSubType, TURBOSIntentionData } from './types';
@@ -426,11 +426,11 @@ export class Decoder {
     const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6));
 
-    const rewardAmounts = [0, 0, 0];
+    const rewardAmounts: (number | string)[] = [0, 0, 0];
     this.collectRewardHelper.forEach((helper) => {
       const index = helper.decodeInputU64(helper.getInputsIndex(4));
       const value = helper.decodeInputU64(helper.getInputsIndex(5));
-      rewardAmounts[index] = value;
+      rewardAmounts[index as number] = value;
     });
     const deadline = this.helper.decodeInputU64(7);
 
@@ -683,7 +683,12 @@ export class MoveCallHelper {
   }
 
   decodeInputU64(argIndex: number) {
-    return Number(bcs.u64().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
+    const parsed = new Decimal(bcs.u64().parse(Uint8Array.from(fromBase64(this.inputs[argIndex].Pure.bytes))));
+    // Number can't precisely represent values > MAX_SAFE_INTEGER
+    if (parsed.gt(Number.MAX_SAFE_INTEGER)) {
+      return parsed.toString();
+    }
+    return parsed.toNumber();
   }
 
   decodeInputU32(argIndex: number) {
