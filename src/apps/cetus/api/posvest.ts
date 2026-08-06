@@ -1,3 +1,4 @@
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { WalletAccount } from '@mysten/wallet-standard';
 
 import { SuiNetworks } from '@/types';
@@ -15,8 +16,9 @@ export const getVaultReedeem = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const vaultsSdk = await getVaultsSdk(network, account);
+  const vaultsSdk = await getVaultsSdk(network, account, suiGrpcClient);
   const tx = await createTransaction();
   tx.setSender(account.address);
   vaultsSdk.Vest.buildRedeemPayload(txbParams.params, tx);
@@ -37,8 +39,9 @@ export const getClmmPosReedeem = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const clmmSdk = await getClmmSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account, suiGrpcClient);
   const tx = await createTransaction();
   clmmSdk?.Vest.buildRedeemPayload(txbParams.params, tx);
   return tx;
@@ -48,9 +51,10 @@ export const getFarmsPosReedeem = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const clmmSdk = await getClmmSdk(network, account);
-  const farmsSdk = await getFarmsSdk(network, account);
+  const clmmSdk = await getClmmSdk(network, account, suiGrpcClient);
+  const farmsSdk = await getFarmsSdk(network, account, suiGrpcClient);
   const tx = await createTransaction();
   const pos = await farmsSdk!.Farms.withdrawReturnPayload(txbParams.withdrawParams, tx);
   clmmSdk!.Vest.buildRedeemPayload(
@@ -74,18 +78,19 @@ export const getPosReedeem = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
   if (txbParams.type === 'clmm') {
-    return getClmmPosReedeem(txbParams, account, network);
+    return getClmmPosReedeem(txbParams, account, network, suiGrpcClient);
   }
   if (txbParams.type === 'farms') {
-    return getFarmsPosReedeem(txbParams, account, network);
+    return getFarmsPosReedeem(txbParams, account, network, suiGrpcClient);
   }
   if (txbParams.type === 'vaults') {
-    return getVaultReedeem(txbParams, account, network);
+    return getVaultReedeem(txbParams, account, network, suiGrpcClient);
   }
   if (txbParams.type === 'haedalVaults') {
     return getVolatileVaultReedeem(txbParams, account);
   }
-  return getClmmPosReedeem(txbParams, account, network);
+  return getClmmPosReedeem(txbParams, account, network, suiGrpcClient);
 };

@@ -1,3 +1,4 @@
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
 import { WalletAccount } from '@mysten/wallet-standard';
 
@@ -9,8 +10,9 @@ export const getAddVaultsPositionPayload = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const vaultsSdk = await getVaultsSdk(network, account);
+  const vaultsSdk = await getVaultsSdk(network, account, suiGrpcClient);
   const tx = new Transaction();
   tx.setSender(account.address);
   await vaultsSdk.Vaults.deposit(txbParams, tx);
@@ -21,8 +23,9 @@ export const getRemoveVaultsPositionPayload = async (
   txbParams: any,
   account: WalletAccount,
   network: SuiNetworks,
+  suiGrpcClient: SuiGrpcClient,
 ): Promise<Transaction> => {
-  const vaultsSdk = await getVaultsSdk(network, account);
+  const vaultsSdk = await getVaultsSdk(network, account, suiGrpcClient);
   const tx = new Transaction();
   await vaultsSdk.Vaults.withdraw(txbParams, tx);
   return tx;

@@ -1,9 +1,9 @@
 import { TransactionType } from '@msafe/sui3-utils';
+import { SuiGrpcClient } from '@mysten/sui/grpc';
 import { Transaction } from '@mysten/sui/transactions';
-import { IdentifierString, WalletAccount } from '@mysten/wallet-standard';
+import { SuiSignTransactionBlockInput, WalletAccount } from '@mysten/wallet-standard';
 
-import { IAppHelperInternal } from '@/apps/interface/sui';
-import { SuiClient } from '@/compat/mysten-sui-json-rpc';
+import { IAppHelperInternalGrpc } from '@/apps/interface/sui-grpc';
 
 import { AddLiquidityIntention } from './intentions/add-liquidity';
 import { ClaimFeeAndMiningIntention } from './intentions/claim-fee-and-mining';
@@ -59,31 +59,27 @@ export type CetusIntention =
   | PosVestingRedeemIntention
   | CreatePoolIntention;
 
-export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
+export class CetusHelper implements IAppHelperInternalGrpc<CetusIntentionData> {
   application = 'cetus';
 
-  supportSDK = '@mysten/sui' as const;
+  supportSDK = '@mysten/sui-v2' as const;
 
-  // TODO: Please refer to the documentation and move the `action` and `txbParams` params into the `appContext` structure.
-  async deserialize(input: {
-    transaction: Transaction;
-    chain: IdentifierString;
-    network: SuiNetworks;
-    suiClient: SuiClient;
-    account: WalletAccount;
-    action?: string;
-    txbParams?: any;
-  }): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
+  async deserialize(
+    input: SuiSignTransactionBlockInput & {
+      network: SuiNetworks;
+      suiGrpcClient: SuiGrpcClient;
+      account: WalletAccount;
+      transaction: Transaction;
+      appContext: CetusIntentionData;
+    },
+  ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
     console.log('Cetus helper deserialize input: ', input);
-    const { txbParams, action } = input;
+    const { appContext } = input;
 
     return {
       txType: TransactionType.Other,
-      txSubType: action,
-      intentionData: {
-        txbParams: { ...txbParams },
-        action,
-      },
+      txSubType: appContext.action,
+      intentionData: appContext,
     };
   }
 
@@ -91,11 +87,11 @@ export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
     intentionData: CetusIntentionData;
     txType: TransactionType;
     txSubType: string;
-    suiClient: SuiClient;
+    suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
     network: SuiNetworks;
   }): Promise<Transaction> {
-    const { suiClient, account, network } = input;
+    const { suiGrpcClient, account, network } = input;
 
     let intention: CetusIntention;
     switch (input.txSubType) {
@@ -178,6 +174,6 @@ export class CetusHelper implements IAppHelperInternal<CetusIntentionData> {
         throw new Error('not implemented');
     }
 
-    return intention.build({ suiClient, account, network });
+    return intention.build({ suiGrpcClient, account, network });
   }
 }
