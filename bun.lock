@@ -38,7 +38,7 @@
         "luxon": "^3.4.4",
         "nanoid": "3",
         "sort-keys-recursive": "^2.1.10",
-        "turbos-clmm-sdk": "^4.0.0",
+        "turbos-clmm-sdk": "^4.0.1",
       },
       "devDependencies": {
         "@msafe/sui3-utils": "^5.0.8",
@@ -2516,7 +2516,7 @@
 
     "tsutils": ["tsutils@3.21.0", "", { "dependencies": { "tslib": "^1.8.1" }, "peerDependencies": { "typescript": ">=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta" } }, "sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA=="],
 
-    "turbos-clmm-sdk": ["turbos-clmm-sdk@4.0.0", "", { "dependencies": { "@scure/bip39": "^1.2.1", "@types/bn.js": "^5.1.1", "bn.js": "^5.2.1", "decimal.js": "^10.4.3", "jsbi": "^4.3.0", "lru-cache": "^9.1.1" }, "peerDependencies": { "@mysten/sui": "^2.20.0" } }, "sha512-ev47Jnaytj93MFc3NO7PsSG+N45aPXpQzm0pyIJ+mVhuIHa1b3tkcFvQaJVcgtu8rAcHRtHVooRS/k09bMsl4w=="],
+    "turbos-clmm-sdk": ["turbos-clmm-sdk@4.0.1", "", { "dependencies": { "@scure/bip39": "^1.2.1", "@types/bn.js": "^5.1.1", "bn.js": "^5.2.1", "decimal.js": "^10.4.3", "jsbi": "^4.3.0", "lru-cache": "^9.1.1" }, "peerDependencies": { "@mysten/sui": "^2.20.0" } }, "sha512-X4AEE2FBeZZUYRH3eBgbpHjxXc6LixQNmVnyf5ve9AUKCYM2QM2l0/rQxpJUh2JeHhB8wAKmTR/7z4m+NNqi+Q=="],
 
     "tweetnacl": ["tweetnacl@1.0.3", "", {}, "sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw=="],
 
