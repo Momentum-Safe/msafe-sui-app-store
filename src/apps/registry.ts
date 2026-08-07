@@ -132,13 +132,16 @@ export class SuiSdkAdapter implements IAppHelper<any> {
       owner: input.account.address,
       coinType: SUI_COIN_TYPE,
     });
+    // Prefer total spendable (coin objects + address balance).
     if (Number(balance.balance) < MIN_GAS_BALANCE) {
       throw new Error('Insufficient gas fee');
     }
     const tx = await this.helper.build({ ...input, suiClient: client });
     tx.setSender(input.account.address);
-    const bytes = await tx.build({ client });
-    return Transaction.from(bytes);
+    // Do not tx.build() here. Early build triggers Mysten/node doGasSelection and can
+    // bake gasData.budget="0" + payment=[] for Address Balance txs. Callers (sui3-sdk
+    // simulate/propose) run prepareGasFunding + build later with the correct gas policy.
+    return tx;
   }
 }
 
@@ -173,12 +176,15 @@ export class SuiGrpcSdkAdapter implements IAppHelper<any> {
       owner: input.account.address,
       coinType: SUI_COIN_TYPE,
     });
+    // Prefer total spendable (coin objects + address balance).
     if (Number(balance.balance) < MIN_GAS_BALANCE) {
       throw new Error('Insufficient gas fee');
     }
     const tx = await this.helper.build({ ...input, suiGrpcClient });
     tx.setSender(input.account.address);
-    const bytes = await tx.build({ client: suiGrpcClient });
-    return Transaction.from(bytes);
+    // Do not tx.build() here. Early build triggers Mysten/node doGasSelection and can
+    // bake gasData.budget="0" + payment=[] for Address Balance txs. Callers (sui3-sdk
+    // simulate/propose) run prepareGasFunding + build later with the correct gas policy.
+    return tx;
   }
 }

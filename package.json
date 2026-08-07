@@ -80,7 +80,7 @@
     "turbos-clmm-sdk": "^4.0.1"
   },
   "devDependencies": {
-    "@msafe/sui3-utils": "^5.0.8",
+    "@msafe/sui3-utils": "^5.1.0",
     "@mysten/wallet-standard": "0.11.6",
     "@sentry/nextjs": "^10.5.0",
     "@types/jest": "^29.2.1",

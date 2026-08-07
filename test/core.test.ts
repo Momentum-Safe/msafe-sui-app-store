@@ -8,7 +8,6 @@ import { MSafeApps } from '@/apps/registry';
 import { getFullnodeUrl } from '@/compat/mysten-sui-json-rpc';
 import { getSuiGrpcClient } from '@/lib/suiGrpcClient';
 
-import { Account } from './config';
 import { TestSuiteGrpc } from './testSuite';
 
 const COIN_TRANSFER_TEST_INTENTION_DATA = {
@@ -32,12 +31,14 @@ describe('MSafe Core main flow', () => {
 
   describe('Coin transfer', () => {
     it('build throw error', async () => {
+      // Use testWallet (funded) so coin-transfer build can succeed; the error under test
+      // is CoreHelper.deserialize refusing dApp-style propose (must come from API).
       const tx = await ts.appHelper.build({
         network: 'sui:mainnet',
         txType: TransactionType.Assets,
         txSubType: TransactionSubTypes.assets.coin.send,
         suiGrpcClient: getSuiGrpcClient('sui:mainnet'),
-        account: Account,
+        account: testWallet,
         intentionData: COIN_TRANSFER_TEST_INTENTION_DATA,
       });
       await expect(ts.signAndSubmitTransaction({ txb: tx })).rejects.toThrow(

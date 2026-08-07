@@ -93,8 +93,11 @@ describe('New interface test', () => {
       },
     });
     const txData = res.getData();
+    // Adapter returns an unresolved PTB: sender set, gas left for the caller (SDK) to fund.
+    expect(txData.sender).toBe(Account.address);
     expect(txData.gasData).toBeDefined();
-    expect(txData.gasData.payment?.length).toBeGreaterThan(0);
+    expect(txData.gasData.payment).toBeNull();
+    expect(txData.gasData.budget).toBeNull();
   });
 
   async function buildTxbForTest() {
