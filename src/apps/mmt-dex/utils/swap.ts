@@ -130,7 +130,7 @@ export async function resolveSwapIntentionParams(
     throw new Error('Swap Failed: aggregator mode is not supported in MSafe rebuild path yet');
   }
 
-  const address = params.address;
+  const { address } = params;
   const slippage = params.slippage ?? (params as { slippagePct?: number }).slippagePct;
   if (typeof slippage !== 'number') {
     throw new Error('Swap Failed: missing slippage');
@@ -218,9 +218,7 @@ export const performMmtSwap = async (
     const { poolId, tokenX: routeTokenX, tokenY: routeTokenY, isStable, currentSqrtPrice } = routePool;
 
     if (!routeTokenX?.coinType || !routeTokenY?.coinType) {
-      throw new Error(
-        `Swap Failed: route[${i}] is missing tokenX/tokenY after resolve. poolId=${routePool.poolId}`,
-      );
+      throw new Error(`Swap Failed: route[${i}] is missing tokenX/tokenY after resolve. poolId=${routePool.poolId}`);
     }
 
     const { id: v3PoolId, isReverse } = Utils.mappedMmtV3Pool[poolId as keyof typeof Utils.mappedMmtV3Pool] || {

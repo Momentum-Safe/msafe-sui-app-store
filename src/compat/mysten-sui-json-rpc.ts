@@ -33,10 +33,18 @@ export type SuiClientOptions = {
  * (getCoins, devInspectTransactionBlock) until those call sites migrate fully.
  */
 function inferNetworkFromUrl(url?: string): SuiNetworkName {
-  if (!url) return 'mainnet';
-  if (url.includes('testnet')) return 'testnet';
-  if (url.includes('devnet')) return 'devnet';
-  if (url.includes('127.0.0.1') || url.includes('localhost')) return 'localnet';
+  if (!url) {
+    return 'mainnet';
+  }
+  if (url.includes('testnet')) {
+    return 'testnet';
+  }
+  if (url.includes('devnet')) {
+    return 'devnet';
+  }
+  if (url.includes('127.0.0.1') || url.includes('localhost')) {
+    return 'localnet';
+  }
   return 'mainnet';
 }
 
