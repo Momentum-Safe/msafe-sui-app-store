@@ -110,30 +110,27 @@ export class SuiClient extends SuiGrpcClient {
     });
 
     return {
-      data: response.objects.map((object) => ({
-        data: {
-          objectId: object.objectId,
-          version: object.version,
-          digest: object.digest,
-          type: object.type,
-          owner: object.owner,
-          content: object.json
-            ? {
-                dataType: 'moveObject' as const,
-                type: object.type,
-                fields: object.json,
-                hasPublicTransfer: false,
-              }
-            : object.content
+      data: response.objects.map((object) => {
+        // Prefer the decoded `json` payload, falling back to raw `content`.
+        const fields = object.json || object.content;
+        return {
+          data: {
+            objectId: object.objectId,
+            version: object.version,
+            digest: object.digest,
+            type: object.type,
+            owner: object.owner,
+            content: fields
               ? {
                   dataType: 'moveObject' as const,
                   type: object.type,
-                  fields: object.content,
+                  fields,
                   hasPublicTransfer: false,
                 }
               : undefined,
-        },
-      })),
+          },
+        };
+      }),
       hasNextPage: response.hasNextPage,
       nextCursor: response.cursor,
     };

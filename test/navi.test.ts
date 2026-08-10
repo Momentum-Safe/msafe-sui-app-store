@@ -29,8 +29,17 @@ import { TestSuite } from './testSuite';
     return;
   }
   const _fetch = globalThis.fetch;
+  const resolveUrl = (input: RequestInfo | URL): string => {
+    if (typeof input === 'string') {
+      return input;
+    }
+    if (input instanceof URL) {
+      return input.toString();
+    }
+    return input.url;
+  };
   globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    const url = resolveUrl(input);
     // Only spoof browser headers for Navi backend APIs; do not break fullnode gRPC-web.
     if (!url.includes('naviprotocol.io')) {
       return _fetch(input, init);

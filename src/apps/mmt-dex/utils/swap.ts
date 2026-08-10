@@ -106,15 +106,14 @@ function toNormalizedPool(pool: Types.ExtendedPoolWithApr): NormalizedPool {
 
 function findTokenInRoute(route: NormalizedPool[], coinType: string): Tokens | undefined {
   const normalized = normalizeSuiCoinType(coinType);
-  for (const pool of route) {
-    if (normalizeSuiCoinType(pool.tokenX?.coinType || '') === normalized) {
-      return pool.tokenX as Tokens;
-    }
-    if (normalizeSuiCoinType(pool.tokenY?.coinType || '') === normalized) {
-      return pool.tokenY as Tokens;
-    }
+  const matchesX = (pool: NormalizedPool) => normalizeSuiCoinType(pool.tokenX?.coinType || '') === normalized;
+  const matchesY = (pool: NormalizedPool) => normalizeSuiCoinType(pool.tokenY?.coinType || '') === normalized;
+
+  const match = route.find((pool) => matchesX(pool) || matchesY(pool));
+  if (!match) {
+    return undefined;
   }
-  return undefined;
+  return (matchesX(match) ? match.tokenX : match.tokenY) as Tokens;
 }
 
 /**
