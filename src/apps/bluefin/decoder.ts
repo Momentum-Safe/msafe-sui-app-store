@@ -256,12 +256,26 @@ export class Decoder {
     return this.commands.find((command) => command.$kind === 'MoveCall' && command.MoveCall.function === fn);
   }
 
+  // Object inputs only carry a resolved `Object` variant once the transaction has been
+  // resolved against the network. A transaction that still holds `tx.object(id)` references
+  // exposes them as `UnresolvedObject`, which is what reaches the decoder in production.
   private getSharedObjectID(index: number): string {
-    return this.inputs[index].Object.SharedObject.objectId as string;
+    const input = this.inputs[index];
+    const objectId = input.Object?.SharedObject?.objectId ?? input.UnresolvedObject?.objectId;
+    if (!objectId) {
+      throw new Error(`not shared object argument: ${JSON.stringify(input)}`);
+    }
+    return objectId as string;
   }
 
   private getOwnedObjectID(index: number): string {
-    return this.inputs[index].Object.ImmOrOwnedObject.objectId as string;
+    const input = this.inputs[index];
+    const objectId =
+      input.Object?.ImmOrOwnedObject?.objectId ?? input.Object?.Receiving?.objectId ?? input.UnresolvedObject?.objectId;
+    if (!objectId) {
+      throw new Error(`not object argument: ${JSON.stringify(input)}`);
+    }
+    return objectId as string;
   }
 
   private getU32(index: number): string {
