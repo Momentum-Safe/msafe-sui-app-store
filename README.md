@@ -1,56 +1,182 @@
 # MSafe Sui App Store
 
-## Background
+**This package is closed to new applications.**
 
-Due to Sui blockchain version limitations, multisig account can't propose multiple transactions at the same time. It's needed to be create as transaction intention first and propose transaction 1 by 1 for vote & execution.
+New dApps integrate with MSafe the same way they integrate any Sui wallet: assemble a real `Transaction` and submit it through `@msafe/sui-wallet`. You do **not** add a helper under `src/apps/**`, open a pull request against this repository, or wait for an `@msafe/sui-app-store` release.
 
-## Overview
+Existing helpers (Cetus, NAVI, MMT, mpay, `msafe-core`, `msafe-plain-tx`, and other already-registered apps) stay in this package for compatibility only. Do not extend them for new products.
 
-![Overview](./diagram.png)
+| Audience | What to read |
+| --- | --- |
+| New dApp / new listing | [Integrate a new dApp](#integrate-a-new-dapp) |
+| Already listed with a helper | [Existing registered apps](#existing-registered-apps) |
+| Historical helper guide | [Deprecated: helper-based integration](#deprecated-helper-based-integration) |
 
-## Demos
+---
 
-We provide a demo dApp for MSafe app store integration. please refer below GitHub repository: https://github.com/Momentum-Safe/msafe-sui-app-arbitrary-transaction
+## Integrate a new dApp
 
-In this demo, we implement a dApp that allows users to execute arbitrary transaction on Sui.
+Treat MSafe as a wallet-standard wallet inside the MSafe store iframe. Build the programmable transaction yourself. MSafe simulates it, collects multisig votes, and executes it. Transaction details for new apps use the generic payload view (simulation + raw transaction). There is no per-protocol “swap / deposit” card unless MSafe later ships one as a separate product request.
 
-You can see how to implement with `@msafe/sui-app-store` in this demo.
+### 1. Register the MSafe wallet
 
-Including:
-- Initiate MSafe Wallet
-- Connect to MSafe Wallet using `@mysten/dapp-kit`
-- Sign transaction with MSafe Wallet (also using `@msafe/dapp-kit`)
+Install `@msafe/sui-wallet` and register it with **your application name**. Use the same name you want to appear in MSafe history.
 
-The main logic is implemented in `src/App.tsx`
+```ts
+import { MSafeWallet } from '@msafe/sui-wallet';
+import { registerWallet } from '@mysten/wallet-standard';
 
-Demo dApp: https://sui-ptx.m-safe.io/
+const rpcUrl = 'https://fullnode.mainnet.sui.io:443';
 
-## How to contribute
+registerWallet(new MSafeWallet('your-app-name', rpcUrl, 'sui:mainnet'));
+```
 
-- Fork the repository
-- Create a new branch for your app development
-- Create pull request for review
+Register once at app startup (typically `main.tsx`). Detect the iframe with `MSafeWallet.inMSafeWallet()` if you need different wallet UX inside MSafe versus a standalone page.
 
-## How to develop
+Connect with `@mysten/dapp-kit` (or any wallet-standard client) as you would for Slush or any other Sui wallet.
 
-### Summary
-There are two ways to integrate with the MSafe Sui App store:
+### 2. Submit a fully assembled transaction
 
-1. When dapp call signTransaction method, directly pass in the assembled Transaction (Transaction Block), and the user can then complete the subsequent transaction process.
+```ts
+import { Transaction } from '@mysten/sui/transactions';
 
-2. Through the create helper method(see below)
+const tx = new Transaction();
+tx.setSender(multisigAddress);
+// Add real commands. An empty Transaction is rejected.
+tx.moveCall(/* ... */);
 
-### Setup
+await dAppKit.signAndExecuteTransaction({ transaction: tx });
+```
 
-- Create your app folder under `src/apps/` folder
+Requirements:
 
-### Create intentions
+| Rule | Detail |
+| --- | --- |
+| Real PTB | `tx.getData().commands.length > 0`. Do not send `new Transaction()`. |
+| Sender | The connected MSafe **multisig** address. |
+| No helper | Do not import `@msafe/sui-app-store`. Do not pass `appContext`. |
+| Serialization | Prefer Mysten V2 (`Transaction` / `toJSON()`). Do not use V1 `serialize()`. |
 
-- Create your dapp intentions under `src/apps/<your app>` folder
+`signAndExecuteTransaction` and `signTransaction` both **propose** the transaction to the MSafe queue. The Promise does **not** resolve with an on-chain digest. Owners approve and execute inside MSafe.
 
-Here is an example for transaction intention, if your dapp have multiple transaction types, you need to define 1 by 1 for each type of transaction intention.
+| Wallet API | Behavior |
+| --- | --- |
+| `signTransaction({ transaction })` | Propose. Preferred. |
+| `signAndExecuteTransaction({ transaction })` | Same propose path. No digest in the result. |
+| `signTransactionBlock` / `signAndExecuteTransactionBlock` | Legacy aliases. |
 
-If you are using @mysten/sui.js, you can refer to the following code:
+### 3. Empty and queued transactions
+
+- An unregistered app that submits an empty transaction is rejected: *Empty transaction. Unregistered apps must pass a fully assembled Transaction (`commands.length > 0`). Do not send `new Transaction()`.*
+- The store iframe allows **one** in-flight proposal at a time. If the multisig already has a pending transaction or future intentions, a new submit from the iframe is rejected until that queue is cleared.
+
+### 4. List the app in the MSafe store
+
+Listing is a **store card only**: name, icon, and URL. MSafe adds the card in the web app (`id` / `image` / `dappLink`). There is no adapter to write, no review of helper code, and no `@msafe/sui-app-store` publish.
+
+Send the MSafe team:
+
+- Application name (must match `new MSafeWallet('...')`)
+- Icon
+- Production dApp URL (the iframe `dappLink`)
+
+After the card is live, users open your app from the MSafe store and sign with the flow above.
+
+### Reference
+
+A sample dApp that talks to MSafe as a wallet:
+
+- Repository: https://github.com/Momentum-Safe/msafe-sui-app-arbitrary-transaction
+- Live: https://sui-ptx.m-safe.io/
+
+Follow the **wallet `Transaction` path** in that project. Do not copy helper / `appContext` patterns from older commits.
+
+Wallet SDK notes: [`@msafe/sui-wallet`](https://github.com/Momentum-Safe/msafe-sui-wallet).
+
+---
+
+## Existing registered apps
+
+Apps that already ship a helper in this package may keep the previous contract:
+
+- Call `signTransaction` with an empty `Transaction` plus `appContext`, **or**
+- Pass a real `Transaction` that the helper can `deserialize`.
+
+Do not add new helpers for new features or new protocols. New work goes through [Integrate a new dApp](#integrate-a-new-dapp).
+
+Frozen examples include Cetus, NAVI, MMT, mpay, `msafe-core`, and `msafe-plain-tx`.
+
+---
+
+## This repository
+
+`@msafe/sui-app-store` is a **compatibility library** for those frozen helpers. MSafe still publishes it when an already-listed helper needs a fix. It is not an onboarding surface.
+
+- Do **not** create `src/apps/<your-app>`.
+- Do **not** open a pull request to register a new helper.
+- Do **not** wait on this package’s version to go live in the store.
+
+---
+
+## Deprecated: helper-based integration
+
+> [!CAUTION]
+> The remainder of this document is the previous contribution guide. It is **deprecated**. New dApps must not follow it. New pull requests that add helpers will not be accepted.
+
+### ~~Background~~
+
+~~Due to Sui blockchain version limitations, multisig account can't propose multiple transactions at the same time. It's needed to be create as transaction intention first and propose transaction 1 by 1 for vote & execution.~~
+
+### ~~Overview~~
+
+~~![Overview](./diagram.png)~~
+
+### ~~Demos~~
+
+~~We provide a demo dApp for MSafe app store integration. please refer below GitHub repository: https://github.com/Momentum-Safe/msafe-sui-app-arbitrary-transaction~~
+
+~~In this demo, we implement a dApp that allows users to execute arbitrary transaction on Sui.~~
+
+~~You can see how to implement with `@msafe/sui-app-store` in this demo.~~
+
+~~Including:~~
+
+- ~~Initiate MSafe Wallet~~
+- ~~Connect to MSafe Wallet using `@mysten/dapp-kit`~~
+- ~~Sign transaction with MSafe Wallet (also using `@msafe/dapp-kit`)~~
+
+~~The main logic is implemented in `src/App.tsx`~~
+
+~~Demo dApp: https://sui-ptx.m-safe.io/~~
+
+### ~~How to contribute~~
+
+- ~~Fork the repository~~
+- ~~Create a new branch for your app development~~
+- ~~Create pull request for review~~
+
+### ~~How to develop~~
+
+#### ~~Summary~~
+
+~~There are two ways to integrate with the MSafe Sui App store:~~
+
+1. ~~When dapp call signTransaction method, directly pass in the assembled Transaction (Transaction Block), and the user can then complete the subsequent transaction process.~~
+2. ~~Through the create helper method (see below)~~
+
+#### ~~Setup~~
+
+- ~~Create your app folder under `src/apps/` folder~~
+
+#### ~~Create intentions~~
+
+- ~~Create your dapp intentions under `src/apps/<your app>` folder~~
+
+~~Here is an example for transaction intention, if your dapp have multiple transaction types, you need to define 1 by 1 for each type of transaction intention.~~
+
+~~If you are using @mysten/sui.js, you can refer to the following code:~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 import { SuiClient } from '@mysten/sui.js/client';
@@ -82,7 +208,9 @@ export class ExampleIntention extends BaseIntentionLegacy<ExampleIntentionData> 
 }
 ```
 
-If you are using @mysten/sui, you can refer to the following code:
+~~If you are using @mysten/sui, you can refer to the following code:~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 import { SuiClient } from '@mysten/sui/client';
@@ -114,16 +242,18 @@ export class ExampleIntention extends BaseIntention<ExampleIntentionData> {
 }
 ```
 
-Each intention should have one data structure to store transaction information for future build.
-This structure can be defined according to your own business logic, it can be any type of data, (should be JSON serializable)
+~~Each intention should have one data structure to store transaction information for future build.~~
+~~This structure can be defined according to your own business logic, it can be any type of data, (should be JSON serializable)~~
 
-Transaction intention implement mainly one API `build(): Promise<TransactionBlock>` which will build Sui transaction block from your defined business data.
+~~Transaction intention implement mainly one API `build(): Promise<TransactionBlock>` which will build Sui transaction block from your defined business data.~~
 
-### Create helper
+#### ~~Create helper~~
 
-- Create helper ts at `src/apps/<your app>/intention.ts`
+- ~~Create helper ts at `src/apps/<your app>/intention.ts`~~
 
-Here is an example of intention.ts file
+~~Here is an example of intention.ts file~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 export type CoreIntention = CoinTransferIntention | ObjectTransferIntention;
@@ -165,13 +295,15 @@ export class CoreHelper implements IAppHelperInternalLegacy<CoreIntention, CoreI
 }
 ```
 
-The helper is responsible for convert a transaction block to your own transaction intention business data. this is call by SuiWallet standard API `sui:signTransactionBlock` feature.
+~~The helper is responsible for convert a transaction block to your own transaction intention business data. this is call by SuiWallet standard API `sui:signTransactionBlock` feature.~~
 
-### Write test for your business logic
+#### ~~Write test for your business logic~~
 
-- Create your test at `test/<your app>.test.ts`
+- ~~Create your test at `test/<your app>.test.ts`~~
 
-You can follow be example to write test
+~~You can follow be example to write test~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 import { TransactionType } from '@msafe/sui3-utils';
@@ -214,9 +346,11 @@ describe('MSafe Core Wallet', () => {
 });
 ```
 
-### App custom parameters
+#### ~~App custom parameters~~
 
-- You can pass custom parameters into the `appContext` parameter of the Helper.deserialize method. 
+- ~~You can pass custom parameters into the `appContext` parameter of the Helper.deserialize method.~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 deserialize(input: {
@@ -233,9 +367,11 @@ deserialize(input: {
   }>;
 ```
 
-- When implementing your app's `Helper.deserialize`, you can write your business logic based on the custom parameters you've passed in.
+- ~~When implementing your app's `Helper.deserialize`, you can write your business logic based on the custom parameters you've passed in.~~
 
-- For reference, you can review the implementation logic demo code below.
+- ~~For reference, you can review the implementation logic demo code below.~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 export class DemoHelper implements IAppHelperInternal<DemoIntentionData> {
@@ -262,22 +398,27 @@ async deserialize(input: {
     };
   }
 
-... 
+...
 
+}
 ```
 
-### Register your app helper
+#### ~~Register your app helper~~
 
-- Add your app helper to file `src/index.ts`
+- ~~Add your app helper to file `src/index.ts`~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 export const appHelpers = new MSafeApps([new CoreHelper(), <your app helper instance here>]);
 ```
 
-### Test your integration with our test framework `TestSuite`
+#### ~~Test your integration with our test framework `TestSuite`~~
 
-- before create pull request, you should test your helper with test suite, add at least one test case before creating the PR.
-- here is an example for using test suite to test your helper
+- ~~before create pull request, you should test your helper with test suite, add at least one test case before creating the PR.~~
+- ~~here is an example for using test suite to test your helper~~
+
+Historical example — do not copy for new apps:
 
 ```typescript
 import { TestSuite, TestSuiteLegacy } from './TestSuite';
@@ -292,7 +433,7 @@ describe('Main flow', () => {
 
   // Choose one of the following to instantiate TestSuite according to your implementation (helper.supportSDK:  @mysten/sui or @mysten/sui.js)
   // Instantiate TestSuite with your test wallet, network, and the app helper(implement with @mysten/sui)
-  
+
   let ts: TestSuite<YourIntentionData>;
 
   // (implement with @mysten/sui.js)
@@ -336,19 +477,21 @@ describe('Main flow', () => {
   });
 });
 ```
-You can refer to `test/core.test.ts` for more details implementation.
 
+~~You can refer to `test/core.test.ts` for more details implementation.~~
 
-### Create pull request for submit
+#### ~~Create pull request for submit~~
 
-Once you finish development, you can create a PR to submit your changes.
+~~Once you finish development, you can create a PR to submit your changes.~~
 
-## Integrate MSafe wallet with your app
+### ~~Integrate MSafe wallet with your app~~
 
-The last step is to integrate MSafe wallet with your application
+~~The last step is to integrate MSafe wallet with your application~~
 
-- Run command `yarn add @msafe/sui-wallet` to add MSafe wallet package to your project
-- Add below code to your application, basically it should be added to your `main.tsx` file
+- ~~Run command `yarn add @msafe/sui-wallet` to add MSafe wallet package to your project~~
+- ~~Add below code to your application, basically it should be added to your `main.tsx` file~~
+
+Historical example — superseded by [Register the MSafe wallet](#1-register-the-msafe-wallet). The constructor also requires `rpcUrl` and `network`:
 
 ```typescript
 import { MSafeWallet } from '@msafe/sui-wallet';
@@ -357,6 +500,6 @@ import { registerWallet } from '@mysten/wallet-standard';
 registerWallet(new MSafeWallet('<your app name>'));
 ```
 
-### Next Step
+#### ~~Next Step~~
 
-Once the development mentioned above is complete, MSafe team will assist in verifying the integration. Feedback will be provided to your team upon completion of the verification process.
+~~Once the development mentioned above is complete, MSafe team will assist in verifying the integration. Feedback will be provided to your team upon completion of the verification process.~~
