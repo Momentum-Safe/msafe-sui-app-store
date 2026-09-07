@@ -10,18 +10,46 @@
   <tr>
     <td align="center">
 
-### This repository is not an onboarding surface
+### Integration is now the same as any Sui wallet
 
-**Writing a helper, forking `src/apps/**`, or opening a PR here will not list your dApp.**
+You **do not write a helper**. You **do not wait for this package to publish**. You build a real `Transaction` in your dApp — the same object you already send to Slush — and submit it with `@msafe/sui-wallet`.
 
-MSafe no longer accepts new App Store adapters. Integrate the same way you integrate Slush: build a real Sui `Transaction` in your dApp and submit it with `@msafe/sui-wallet`.
+Writing a helper, forking `src/apps/**`, or opening a PR here will **not** list your dApp.
 
-**If you already started the old helper work → [How to change your dApp](#how-to-change-your-dapp)**  
-**If you are new → [Current integration](#current-integration)**
+**New listing → [What you gain](#what-you-gain-in-this-version)** then [Current integration](#current-integration)  
+**Already started a helper → [How to change your dApp](#how-to-change-your-dapp)**
 
 </td>
   </tr>
 </table>
+
+> [!TIP]
+> **This version’s point:** drop the adapter. If your dApp can sign with a normal wallet, it can sign with MSafe. Listing is a store card (name, icon, URL), usually done in a day — not a week of helper review and an MSafe release.
+
+---
+
+## What you gain in this version
+
+The old path existed because a queued multisig tx had to be **rebuilt** later, so every protocol needed an MSafe-owned helper. That is no longer how new apps enter the store. You submit the finished transaction once; MSafe simulates, votes, and executes **that** PTB.
+
+| | ~~Before (helper)~~ | **Now (wallet `Transaction`)** |
+| --- | --- | --- |
+| What you write | Intention class + `deserialize` / `build` + tests + PR in **this** repo | The PTB you already build for other wallets |
+| Extra dependency | `@msafe/sui-app-store` + `appContext` | `@msafe/sui-wallet` only |
+| Who ships your adapter | MSafe reviews, merges, and **publishes a new app-store version** | **Nobody.** There is no adapter. |
+| Time to first live tx | Often **weeks** (review + our release train) | **Days** — usually the time to wire the wallet and send a card |
+| Blocked on | Our sprint, this repo’s CI, npm publish | Your own PTB being correct |
+| Mysten / protocol SDK upgrades | Helper in this repo had to follow; you waited on us | You upgrade **your** dApp; we are not in the loop |
+| Three new protocols at once | Three helper PRs, serialized on our side | Three teams in parallel; we only add three cards |
+
+**You delete work, you do not add a new integration style.**
+
+- No `BaseIntention` / `YourHelper` / `src/apps/<name>`
+- No empty `new Transaction()` + `appContext` so we can rebuild later
+- No “please merge our helper” email
+- No holding a launch for `@msafe/sui-app-store@x.y.z`
+
+Users still get the full multisig flow (simulate → approve → execute). New apps use a generic transaction view instead of a custom swap card. That is the trade for **not** being on our release calendar.
 
 > [!CAUTION]
 > **DEPRECATED:** `BaseIntention`, `IAppHelperInternal`, `src/apps/<your-app>`, `appContext`, and “fork this repo + wait for our release” are retired for **all new listings**.
