@@ -4,7 +4,7 @@
 
 New dApps integrate with MSafe the same way they integrate any Sui wallet: assemble a real `Transaction` and submit it through `@msafe/sui-wallet`. You do **not** add a helper under `src/apps/**`, open a pull request against this repository, or wait for an `@msafe/sui-app-store` release.
 
-Existing helpers (Cetus, NAVI, MMT, mpay, `msafe-core`, `msafe-plain-tx`, and other already-registered apps) stay in this package for compatibility only. Do not extend them for new products.
+Existing helpers stay in this package for compatibility only. Do not extend them for new products.
 
 | Audience | What to read |
 | --- | --- |
