@@ -17,7 +17,8 @@ You **do not write a helper**. You **do not wait for this package to publish**. 
 Writing a helper, forking `src/apps/**`, or opening a PR here will **not** list your dApp.
 
 **New listing → [What you gain](#what-you-gain-in-this-version)** then [Current integration](#current-integration)  
-**Already started a helper → [How to change your dApp](#how-to-change-your-dapp)**
+**Already started a helper → [How to change your dApp](#how-to-change-your-dapp)**  
+**Have an agent do the edit → [Prompt for your coding agent](#prompt-for-your-coding-agent)**
 
 </td>
   </tr>
@@ -58,6 +59,56 @@ Users still get the full multisig flow (simulate → approve → execute). New a
 
 > [!IMPORTANT]
 > **Do this instead:** assemble the PTB yourself → `registerWallet(new MSafeWallet('your-app-name', rpcUrl, network))` → `signAndExecuteTransaction({ transaction: tx })`. Ask MSafe only for a store **card** (name, icon, URL).
+
+---
+
+## Prompt for your coding agent
+
+Copy the block below into Cursor, Claude, Codex, or any repo agent. It will read this README and apply the migration in **your dApp** (not in `msafe-sui-app-store`).
+
+```text
+You are migrating this dApp onto the current MSafe store integration.
+
+1. Read this README first and treat it as the only spec:
+   https://github.com/Momentum-Safe/msafe-sui-app-store/blob/main/README.md
+   If the user attached or opened a local copy of that README, use the local copy.
+   Follow “How to change your dApp” and “Current integration”.
+   Ignore the collapsed “DEPRECATED archive”. Do not implement a helper.
+
+2. Goal: MSafe is a normal Sui wallet. We submit a fully assembled Transaction.
+   We do NOT write BaseIntention / IAppHelperInternal / src/apps helpers.
+   We do NOT open a PR against Momentum-Safe/msafe-sui-app-store.
+   We do NOT wait for @msafe/sui-app-store to publish.
+
+3. Search the repo for and remove MSafe-helper-only code:
+   - imports of @msafe/sui-app-store, appHelpers, BaseIntention, IAppHelperInternal
+   - appContext passed into signTransaction / signAndExecuteTransaction / signTransactionBlock
+   - empty `new Transaction()` (or TransactionBlock) created only so a helper can build() later
+   - local forks or copies of msafe-sui-app-store helpers
+   Keep protocol SDKs and the real PTB those SDKs already produce.
+
+4. Implement the wallet path:
+   - Add @msafe/sui-wallet if missing.
+   - Register once at app startup:
+     registerWallet(new MSafeWallet('<stable-app-name>', rpcUrl, 'sui:mainnet' | 'sui:testnet'));
+     Use a stable app name (same string we will put on the MSafe store card).
+   - Connect with @mysten/dapp-kit or wallet-standard, same as other wallets.
+   - Every MSafe sign call must pass a Transaction with commands.length > 0.
+   - tx.setSender(...) must be the connected MSafe multisig address.
+   - Do not pass appContext.
+   - Prefer signTransaction / signAndExecuteTransaction. Do not expect a digest:
+     signAndExecuteTransaction only proposes; owners vote and execute inside MSafe.
+
+5. Remove @msafe/sui-app-store from package.json / lockfile if nothing else needs it.
+
+6. Do not edit files under a clone of msafe-sui-app-store to “register” us.
+   After code lands, tell the human what to send MSafe for the store card:
+   app name, icon, production URL.
+
+7. When done, list changed files and remaining checklist items from the README.
+```
+
+After the agent finishes: send MSafe the app name, icon, and production URL so the store card can go up.
 
 ---
 
