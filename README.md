@@ -38,7 +38,6 @@ The old path existed because a queued multisig tx had to be **rebuilt** later, s
 | What you write | Intention class + `deserialize` / `build` + tests + PR in **this** repo | The PTB you already build for other wallets |
 | Extra dependency | `@msafe/sui-app-store` + `appContext` | `@msafe/sui-wallet` only |
 | Who ships your adapter | MSafe reviews, merges, and **publishes a new app-store version** | **Nobody.** There is no adapter. |
-| Time to first live tx | Often **weeks** (review + our release train) | **Days** — usually the time to wire the wallet and send a card |
 | Blocked on | Our sprint, this repo’s CI, npm publish | Your own PTB being correct |
 | Mysten / protocol SDK upgrades | Helper in this repo had to follow; you waited on us | You upgrade **your** dApp; we are not in the loop |
 | Three new protocols at once | Three helper PRs, serialized on our side | Three teams in parallel; we only add three cards |
