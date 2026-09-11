@@ -17,6 +17,7 @@ You **do not write a helper**. You **do not wait for this package to publish**. 
 Writing a helper, forking `src/apps/**`, or opening a PR here will **not** list your dApp.
 
 **New listing → [What you gain](#what-you-gain-in-this-version)** then [Current integration](#current-integration)  
+**Test in the MSafe iframe → [Test on preview](#test-on-preview)**  
 **Already started a helper → [How to change your dApp](#how-to-change-your-dapp)**  
 **Have an agent do the edit → [Prompt for your coding agent](#prompt-for-your-coding-agent)**
 
@@ -71,7 +72,7 @@ You are migrating this dApp onto the current MSafe store integration.
 1. Read this README first and treat it as the only spec:
    https://github.com/Momentum-Safe/msafe-sui-app-store/blob/main/README.md
    If the user attached or opened a local copy of that README, use the local copy.
-   Follow “How to change your dApp” and “Current integration”.
+   Follow “How to change your dApp”, “Current integration”, and “Test on preview”.
    Ignore the collapsed “DEPRECATED archive”. Do not implement a helper.
 
 2. Goal: MSafe is a normal Sui wallet. We submit a fully assembled Transaction.
@@ -105,9 +106,10 @@ You are migrating this dApp onto the current MSafe store integration.
    app name, icon, production URL.
 
 7. When done, list changed files and remaining checklist items from the README.
+   Tell the human to verify in the MSafe preview iframe (https://sui-preview.m-safe.io/) before asking for a store card.
 ```
 
-After the agent finishes: send MSafe the app name, icon, and production URL so the store card can go up.
+After the agent finishes: test on [preview](#test-on-preview), then send MSafe the app name, icon, and production URL so the store card can go up.
 
 ---
 
@@ -187,6 +189,7 @@ Keep your protocol SDK (Cetus SDK, NAVI SDK, your own `moveCall`s). Those alread
 - [ ] No `appContext` on `signTransaction` / `signAndExecuteTransaction`
 - [ ] `tx.setSender` is the **multisig** address (the connected MSafe account)
 - [ ] Close any helper PR against this repository
+- [ ] Verify in the [preview iframe](#test-on-preview) (`https://sui-preview.m-safe.io/`)
 - [ ] Send MSafe: app name, icon, production URL — for the store card only
 
 `signAndExecuteTransaction` **proposes** to the multisig queue. It does **not** return an on-chain digest. Owners vote and execute in MSafe.
@@ -245,11 +248,67 @@ The store iframe accepts **one** in-flight proposal. If the multisig already has
 
 Listing is a **card**: name, icon, URL. MSafe adds `id` / `image` / `dappLink` on the web app. There is no adapter review and no `@msafe/sui-app-store` release on the critical path.
 
+Test the iframe path on [preview](#test-on-preview) before you ask for the card.
+
 ### Reference
 
 - Wallet SDK: https://github.com/Momentum-Safe/msafe-sui-wallet
 - Sample dApp: https://github.com/Momentum-Safe/msafe-sui-app-arbitrary-transaction — follow the **wallet `Transaction`** path, not old `appContext` commits
 - Live sample: https://sui-ptx.m-safe.io/
+- Preview (mainnet iframe): https://sui-preview.m-safe.io/
+
+---
+
+## Test on preview
+
+Use this to debug the real store iframe (simulate → propose → vote). Preview is **Sui mainnet** and talks to the production MSafe backend. Use a mainnet multisig you control. Do not send large amounts.
+
+Preview: https://sui-preview.m-safe.io/
+
+### Open your dApp in the iframe
+
+1. Open https://sui-preview.m-safe.io/ and log in.
+2. Select your mainnet MSafe account.
+3. Go to **App Store → Custom dApp**.
+4. Paste your **HTTPS** staging URL and click **Open dApp**.
+
+Or, after you are logged in:
+
+```
+https://sui-preview.m-safe.io/store/sandbox?msafe=<YOUR_MSAFE_ADDRESS>&url=<encodeURIComponent(YOUR_HTTPS_URL)>
+```
+
+`http://localhost` will not load here (HTTPS parent). Deploy a public HTTPS preview (Vercel, Cloudflare Tunnel, ngrok, …).
+
+### iframe / CSP
+
+Your page must allow MSafe to embed it:
+
+```
+Content-Security-Policy: frame-ancestors https://sui-preview.m-safe.io https://sui.m-safe.io;
+```
+
+Do not send `X-Frame-Options: DENY` / `SAMEORIGIN`. A blank iframe is almost always CSP or `X-Frame-Options`.
+
+### Expected flow
+
+Your dApp builds a real PTB → MSafe wallet prompt → simulation → Propose → the tx appears in the MSafe **Transactions** queue → owners vote → execute.
+
+`signAndExecuteTransaction` does **not** return an on-chain digest. That is expected.
+
+The store iframe accepts **one** in-flight proposal. If the account already has a pending or future tx, finish or clear the queue before testing again.
+
+### Common failures
+
+| Symptom | Likely cause |
+| --- | --- |
+| Blank iframe | CSP / `X-Frame-Options` blocks embedding, or the URL is not HTTPS |
+| `Empty transaction...` | You sent `new Transaction()` or an empty PTB |
+| `Cannot destructure property 'content' of 'appContext'` | Still on the helper path; remove `appContext` and submit the real PTB |
+| Simulation / propose works, no digest | Expected. Check the MSafe **Transactions** queue |
+| Network mismatch | Register `MSafeWallet` with `'sui:mainnet'` |
+
+When it works, send MSafe: **app name** (same string as `MSafeWallet('...')`), **icon**, **production URL**.
 
 ---
 
