@@ -28,7 +28,6 @@ export class EntryRepayIntention extends BaseIntention<EntryRepayIntentionData> 
     const { suiClient, account } = input;
     const { assetId, amount } = this.data;
     const tx = new Transaction();
-    console.log('build', this.data);
 
     const pool = await getPoolConfigByAssetId(assetId);
 

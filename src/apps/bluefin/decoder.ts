@@ -186,7 +186,6 @@ export class Decoder {
 
   private async decodeAggregator7KSwapTx(): Promise<DecodeResult> {
     const { appContext } = this;
-    console.log('appContext', appContext);
 
     return {
       txType: TransactionType.Other,

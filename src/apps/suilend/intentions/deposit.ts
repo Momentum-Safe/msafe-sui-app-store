@@ -18,7 +18,6 @@ export class DepositIntention extends SuilendBaseIntention<DepositIntentionData>
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
-    console.log('DepositIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
     const transaction = new Transaction();
     await suilendClient.depositIntoObligation(
@@ -33,7 +32,6 @@ export class DepositIntention extends SuilendBaseIntention<DepositIntentionData>
   }
 
   static fromData(data: DepositIntentionData) {
-    console.log('DepositIntention.fromData', data);
     return new DepositIntention(data);
   }
 }

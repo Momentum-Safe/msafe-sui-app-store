@@ -22,7 +22,6 @@ export class SwapIntention extends BaseIntentionGrpc<SwapIntentionData> {
     suiGrpcClient: SuiGrpcClient;
     account: WalletAccount;
   }): Promise<Transaction> {
-    console.log(this.data, 'this.data');
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiGrpcClient);
     const { routes, coinTypeA, coinTypeB, address, amountA, amountB, slippage, amountSpecifiedIsInput, deadline, txb } =
       this.data;

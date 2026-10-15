@@ -151,7 +151,6 @@ export default class TxBuilder {
 
     const pool = await sdk.queryChain.getPool(txParams.pool);
 
-    console.log(txParams.position);
     const txb: Transaction = (await sdk.collectFeeAndRewards(pool, txParams.position, {
       returnTx: true,
       sender: account.address,

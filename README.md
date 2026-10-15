@@ -1,5 +1,13 @@
 # MSafe Sui App Store
 
+## 项目介绍
+
+`@msafe/sui-app-store` 给已经上架的 Sui dApp 登记交易意图（intention）。MSafe 多签先把意图存下来，所有者投票之后，再按同一份数据把 `Transaction` 重建出来并签名执行。Momentum DEX（MMT）、Cetus、NAVI、Scallop，以及 Turbos、Bucket、Suilend、SpringSui、AlphaFi、Bluefin、stSUI、Volo、MPay 和 MSafe 核心转账都走这条存量路径。
+
+新接入的 dApp 用 `@msafe/sui-wallet` 提交已经组好的交易，并只向 MSafe 要一张商店卡片（名称、图标、URL）。本包继续给 `msafe-sui-api`、`@msafe/sui3-sdk` 和 `msafe-sui-web-v3` 重建已入库的意图。
+
+技术栈是 TypeScript、tsup（浏览器端 CJS/ESM）和 Jest。对外入口是 `src/index.ts` 里的 `appHelpers`。每个协议的反序列化与重建在 `src/apps/<name>/helper.ts`。下面的 intention / helper 说明保留，供维护存量协议；新应用按文首的当前接入方式提交完整交易。
+
 <p align="center">
   <img alt="Helper integration deprecated" src="https://img.shields.io/badge/helper_PRs-DEPRECATED-dc2626?style=for-the-badge">
   <img alt="Closed to new apps" src="https://img.shields.io/badge/this_repo-CLOSED_to_new_apps-111827?style=for-the-badge">

@@ -24,7 +24,6 @@ export class CancelPendingWithdrawalRequest extends BaseIntention<EmberIntention
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    console.log(this.data);
 
     const sdk = await getEmberSDK(network, account);
     const { vaultID, sequenceNumber } = this.data as CancelPendingWithdrawalRequestIntentionData;

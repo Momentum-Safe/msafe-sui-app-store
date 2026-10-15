@@ -111,7 +111,6 @@ export class Decoder {
 
     const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
     const amount = (events.MintEvent.parsedJson as any).event.sui_amount_in as string;
-    console.log('Decoder.decodeStake', amount);
 
     return {
       txType: TransactionType.Other,
@@ -130,7 +129,6 @@ export class Decoder {
 
     const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
     const amount = (events.MintEvent.parsedJson as any).event.sui_amount_in as string;
-    console.log('Decoder.decodeStakeAndDeposit', amount);
 
     return {
       txType: TransactionType.Other,
@@ -151,7 +149,6 @@ export class Decoder {
     const inCoinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).event.typename.name as string);
     const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
     const amount = (events.RedeemEvent.parsedJson as any).event.lst_amount_in as string;
-    console.log('Decoder.decodeConvert', amount);
 
     return {
       txType: TransactionType.Other,
@@ -173,7 +170,6 @@ export class Decoder {
     const inCoinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).event.typename.name as string);
     const outCoinType = normalizeStructTag((events.MintEvent.parsedJson as any).event.typename.name as string);
     const amount = (events.RedeemEvent.parsedJson as any).event.lst_amount_in as string;
-    console.log('Decoder.decodeConvertAndDeposit', amount);
 
     return {
       txType: TransactionType.Other,
@@ -193,7 +189,6 @@ export class Decoder {
 
     const inCoinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).event.typename.name as string);
     const amount = (events.RedeemEvent.parsedJson as any).event.lst_amount_in as string;
-    console.log('Decoder.decodeUnstake', amount);
 
     return {
       txType: TransactionType.Other,

@@ -41,8 +41,6 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
     txSubType: string;
     intentionData: BluefinIntentionData & { appContext?: any };
   }> {
-    console.log('Bluefin helper deserialize input: ', input);
-
     const { transaction, appContext } = input;
 
     const decoder = new Decoder(transaction, appContext);
@@ -69,7 +67,6 @@ export class BluefinHelper implements IAppHelperInternal<BluefinIntentionData> {
   }): Promise<Transaction> {
     const { suiClient, account, network } = input;
 
-    console.log(input.txSubType);
     let intention: BluefinIntention;
     switch (input.txSubType) {
       case TransactionSubType.OpenPosition:

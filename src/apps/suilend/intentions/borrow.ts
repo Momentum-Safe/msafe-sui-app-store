@@ -18,7 +18,6 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
-    console.log('BorrowIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
@@ -38,7 +37,6 @@ export class BorrowIntention extends SuilendBaseIntention<BorrowIntentionData> {
   }
 
   static fromData(data: BorrowIntentionData) {
-    console.log('BorrowIntention.fromData', data);
     return new BorrowIntention(data);
   }
 }

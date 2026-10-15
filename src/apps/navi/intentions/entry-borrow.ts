@@ -25,7 +25,6 @@ export class EntryBorrowIntention extends BaseIntention<EntryBorrowIntentionData
   async build(input: { account: WalletAccount }): Promise<Transaction> {
     const { assetId, amount } = this.data;
     const tx = new Transaction();
-    console.log('build', this.data);
 
     const pool = await getPoolConfigByAssetId(assetId);
 

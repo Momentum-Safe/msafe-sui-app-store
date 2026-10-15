@@ -30,7 +30,6 @@ export class EntryMultiDepositIntention extends BaseIntention<EntryMultiDepositI
     const { suiClient, account } = input;
     const { list } = this.data;
     const tx = new Transaction();
-    console.log('build', this.data);
 
     for (let i = 0; i < list.length; i++) {
       const { assetId, amount } = list[i];

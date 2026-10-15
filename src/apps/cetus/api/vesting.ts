@@ -14,9 +14,6 @@ export const getVestingRedeemTxb = async (
   account: WalletAccount,
   network: SuiNetworks,
 ): Promise<Transaction> => {
-  console.log('getVestingRedeemTxb txbParams: ', txbParams);
-  console.log('getVestingRedeemTxb account: ', account);
-  console.log('getVestingRedeemTxb network: ', network);
   const { pool, nftId, periods, CLOCK_ADDRESS } = txbParams;
   const txb = new Transaction();
 

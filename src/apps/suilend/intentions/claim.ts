@@ -19,7 +19,6 @@ export class ClaimIntention extends SuilendBaseIntention<ClaimIntentionData> {
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
-    console.log('ClaimIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
@@ -37,7 +36,6 @@ export class ClaimIntention extends SuilendBaseIntention<ClaimIntentionData> {
   }
 
   static fromData(data: ClaimIntentionData) {
-    console.log('ClaimIntention.fromData', data);
     return new ClaimIntention(data);
   }
 }

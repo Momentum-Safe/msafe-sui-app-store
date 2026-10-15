@@ -24,7 +24,6 @@ export class DepositSingleAssetIntention extends BaseIntention<DepositSingleAsse
   }
 
   static fromData(data: DepositSingleAssetIntentionData) {
-    console.log('DepositSingleAssetIntention.fromData', data);
     return new DepositSingleAssetIntention(data);
   }
 }

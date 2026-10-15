@@ -18,15 +18,6 @@ export class ConvertIntention extends SpringSuiBaseIntention<ConvertIntentionDat
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, LIQUID_STAKING_INFO_MAP, obligationOwnerCap, obligation } = input;
-    console.log(
-      'ConvertIntention.build',
-      suiClient,
-      account,
-      suilendClient,
-      LIQUID_STAKING_INFO_MAP,
-      obligationOwnerCap,
-      obligation,
-    );
 
     const inLstClient = await LstClient.initialize(
       suiClient,
@@ -46,7 +37,6 @@ export class ConvertIntention extends SpringSuiBaseIntention<ConvertIntentionDat
   }
 
   static fromData(data: ConvertIntentionData) {
-    console.log('ConvertIntention.fromData', data);
     return new ConvertIntention(data);
   }
 }
