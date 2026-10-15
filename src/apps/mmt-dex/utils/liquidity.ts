@@ -427,6 +427,8 @@ export const executeSingleSidedClmmDeposit = async (
     tx.transferObjects([position!], tx.pure.address(address));
   } catch (error) {
     console.error(error);
+    // Keep the failed build from being proposed with only the commands added before the throw.
+    throw error;
   }
 };
 

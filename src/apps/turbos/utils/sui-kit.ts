@@ -18,6 +18,7 @@ export class SuiKit {
     let hasNextPage = true;
 
     while (hasNextPage) {
+      const previousCursor = cursor;
       const coinFields = await this.turbosSdk.provider.core.listCoins({
         owner: currentAddress,
         coinType: type,
@@ -30,8 +31,11 @@ export class SuiKit {
           coinType: coin.type,
         })),
       );
-      hasNextPage = coinFields.hasNextPage;
-      cursor = coinFields.cursor;
+      const nextCursor = coinFields.cursor;
+      // A repeated or missing cursor with hasNextPage would request the same page forever.
+      const cursorAdvanced = nextCursor != null && nextCursor !== previousCursor;
+      hasNextPage = Boolean(coinFields.hasNextPage) && cursorAdvanced;
+      cursor = nextCursor;
     }
 
     const resultCoinObjects: CoinData = [];

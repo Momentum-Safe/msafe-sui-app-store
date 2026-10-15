@@ -155,8 +155,22 @@ export async function updatePackageId() {
     return;
   }
   try {
-    const data = await fetch('https://open-api.naviprotocol.io/api/msafe').then((res) => res.json());
-    const { packageId, borrowFee, borrowFeeAddress, pool } = data;
+    const response = await fetch('https://open-api.naviprotocol.io/api/msafe', {
+      signal: AbortSignal.timeout(30_000),
+    });
+    if (!response.ok) {
+      throw new Error(`Navi config request failed: ${response.status}`);
+    }
+    const data: unknown = await response.json();
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      throw new Error('Navi config response is missing fields');
+    }
+    const { packageId, borrowFee, borrowFeeAddress, pool } = data as {
+      packageId?: string;
+      borrowFee?: number;
+      borrowFeeAddress?: string;
+      pool?: typeof config.pool;
+    };
     if (packageId) {
       config.ProtocolPackage = packageId;
     }
@@ -170,8 +184,9 @@ export async function updatePackageId() {
       config.pool = pool;
     }
     updated = true;
-  } catch (e: any) {
-    console.error(e.message);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(message);
   }
 }
 
