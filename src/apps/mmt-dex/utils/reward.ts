@@ -64,14 +64,6 @@ export async function claimRewardsAsTargetCoin({
   const pools = await sdk.Pool.getAllPools();
 
   if (rewarderCoinTypes.length > 0) {
-    console.log('claimRewardsAsTargetCoin input', {
-      pool: poolModel,
-      positionId,
-      rewarderCoinTypes,
-      targetCoinType,
-      slippage,
-      toAddress: address,
-    });
     await sdk.Pool.claimRewardsAs({
       txb,
       pool: poolModel,

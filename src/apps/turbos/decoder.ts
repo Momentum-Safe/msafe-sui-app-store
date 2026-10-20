@@ -227,7 +227,6 @@ export class Decoder {
     const moveCall = this.transactions.find((trans) => trans.$kind === 'MoveCall');
     let layer: 0 | 1 = 0;
     const moveCallTarget = `${moveCall.MoveCall.package}::${moveCall.MoveCall.module}::${moveCall.MoveCall.function}`;
-    console.log(moveCallTarget, 'moveCallTarget');
     if (this.swap2Layer.includes(moveCallTarget)) {
       layer = 1;
     }
@@ -290,7 +289,6 @@ export class Decoder {
   }
 
   private decodeAddLiquidity(): DecodeResult {
-    console.log(this.helper, 'decodeAddLiquidity this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
     const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(12));
 
@@ -320,8 +318,6 @@ export class Decoder {
   }
 
   private decodeIncreaseLiquidity(address: string): DecodeResult {
-    console.log(this.helper, 'decodeIncreaseLiquidity this.helper');
-
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
     const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(4));
     const amountA = this.helper.decodeInputU64(this.helper.getInputsIndex(5));
@@ -345,7 +341,6 @@ export class Decoder {
   }
 
   private decodeDecreaseLiquidity(address: string): DecodeResult {
-    console.log(this.helper, 'decodeDecreaseLiquidity this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
     const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const decreaseLiquidity = this.helper.decodeInputU64(this.helper.getInputsIndex(3));
@@ -371,7 +366,6 @@ export class Decoder {
   }
 
   private decodeDecreaseLiquidityWithReturn(address: string): DecodeResult {
-    console.log(this.helper, 'decodeDecreaseLiquidityWithReturn this.helper');
     const pool = this.helper.decodeSharedObjectId(0);
     const nft = this.helper.decodeOwnedObjectId(2);
     const decreaseLiquidity = this.helper.decodeInputU64(3);
@@ -397,7 +391,6 @@ export class Decoder {
   }
 
   private decodeCollectFee(): DecodeResult {
-    console.log(this.helper, 'decodeCollectFee this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
     const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(5));
@@ -421,7 +414,6 @@ export class Decoder {
   }
 
   private decodeCollectReward(): DecodeResult {
-    console.log(this.helper, 'decodeCollectReward this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
     const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
     const address = this.helper.decodeInputAddress(this.helper.getInputsIndex(6));
@@ -448,7 +440,6 @@ export class Decoder {
   }
 
   private decodeBurn(): DecodeResult {
-    console.log(this.helper, 'decodeBurn this.helper');
     const pool = this.helper.decodeSharedObjectId(this.helper.getInputsIndex(0));
     const nft = this.helper.decodeOwnedObjectId(this.helper.getInputsIndex(2));
 
@@ -463,7 +454,6 @@ export class Decoder {
   }
 
   private decodeRemoveLiquidity(address: string): DecodeResult {
-    console.log(this.helper, 'decodeRemoveLiquidity this.helper');
     const slippage = 30;
     const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(this.decreaseLiquidityHelper.getInputsIndex(0));
     const nft = this.decreaseLiquidityHelper.decodeOwnedObjectId(this.decreaseLiquidityHelper.getInputsIndex(2));
@@ -503,7 +493,6 @@ export class Decoder {
   }
 
   private decodeRemoveLiquidityWithReturn(address: string): DecodeResult {
-    console.log(this.helper, 'decodeRemoveLiquidityWithReturn this.helper');
     const pool = this.decreaseLiquidityHelper.decodeSharedObjectId(0);
     const nft = this.decreaseLiquidityHelper.decodeOwnedObjectId(2);
     const decreaseLiquidity = this.decreaseLiquidityHelper.decodeInputU64(3);

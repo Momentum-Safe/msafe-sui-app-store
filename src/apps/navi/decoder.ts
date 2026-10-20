@@ -3,16 +3,12 @@ import { bcs, fromBase64 } from '@mysten/bcs';
 import { Transaction } from '@mysten/sui/transactions';
 import { normalizeStructTag, normalizeSuiAddress } from '@mysten/sui/utils';
 
+import { getMoveCallTarget } from '@/lib/structTag';
+
 import config from './config';
 import { TransactionSubType } from './types';
 
-export function isSameCoinType(type1: string, type2: string) {
-  return normalizeStructTag(type1) === normalizeStructTag(type2);
-}
-
-export function isSameTarget(target1: string, target2: string): boolean {
-  return normalizeStructTag(target1) === normalizeStructTag(target2);
-}
+export { isSameCoinType, isSameTarget } from '@/lib/structTag';
 
 type DecodeResult = {
   txType: TransactionType;
@@ -24,14 +20,6 @@ type TxData = ReturnType<Transaction['getData']>;
 type TransactionCommand = TxData['commands'][number];
 type TransactionInput = TxData['inputs'][number];
 type MoveCallCommand = Extract<TransactionCommand, { $kind: 'MoveCall' }>;
-
-function getMoveCallTarget(command: TransactionCommand): string | null {
-  if (command.$kind !== 'MoveCall') {
-    return null;
-  }
-  const { package: pkg, module, function: fn } = command.MoveCall;
-  return `${pkg}::${module}::${fn}`;
-}
 
 export class Decoder {
   constructor(public readonly txb: Transaction) {}

@@ -21,7 +21,6 @@ export class PlainTransactionIntention extends BaseIntention<PlainTransactionInt
   }
 
   async build(input: { account: WalletAccount }): Promise<Transaction> {
-    console.log('build', this.data);
     return Transaction.from(this.data.content);
   }
 

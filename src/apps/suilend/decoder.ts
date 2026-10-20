@@ -54,12 +54,10 @@ export class Decoder {
   }
 
   private get inputs() {
-    console.log('this.transaction.getData().inputs', this.transaction.getData().inputs);
     return this.transaction.getData().inputs;
   }
 
   private get commands() {
-    console.log('this.transaction.getData().commands', this.transaction.getData().commands);
     return this.transaction.getData().commands;
   }
 
@@ -114,7 +112,6 @@ export class Decoder {
 
     const coinType = normalizeStructTag((events.MintEvent.parsedJson as any).coin_type.name as string);
     const value = (events.MintEvent.parsedJson as any).liquidity_amount as string;
-    console.log('Decoder.decodeDeposit', coinType, value);
 
     return {
       txType: TransactionType.Other,
@@ -136,22 +133,11 @@ export class Decoder {
 
     const coinType = normalizeStructTag((events.RedeemEvent.parsedJson as any).coin_type.name as string);
     let value = (events.RedeemEvent.parsedJson as any).liquidity_amount as string;
-    console.log('Decoder.decodeWithdraw', coinType, value);
 
     const inputIndex = (commands.withdraw_ctokens.MoveCall.arguments[4] as any).Input as number;
     const inputValue = new BigNumber(toHex(fromBase64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
 
     const isMax = inputValue === MAX_U64.toString();
-    console.log(
-      'decodeWithdraw - isMax:',
-      isMax,
-      'inputIndex:',
-      inputIndex,
-      'inputValue:',
-      inputValue,
-      'MAX_U64.toString():',
-      MAX_U64.toString(),
-    );
     if (isMax) {
       value = MAX_U64.toString();
     }
@@ -176,22 +162,11 @@ export class Decoder {
 
     const coinType = normalizeStructTag((events.BorrowEvent.parsedJson as any).coin_type.name as string);
     let value = `${+(events.BorrowEvent.parsedJson as any).liquidity_amount - +(events.BorrowEvent.parsedJson as any).origination_fee_amount}`;
-    console.log('Decoder.decodeBorrow', coinType, value);
 
     const inputIndex = (commands.borrow_request.MoveCall.arguments[4] as any).Input as number;
     const inputValue = new BigNumber(toHex(fromBase64(this.inputs[inputIndex].Pure!.bytes)), 16).toString();
 
     const isMax = inputValue === MAX_U64.toString();
-    console.log(
-      'decodeBorrow - isMax:',
-      isMax,
-      'inputIndex:',
-      inputIndex,
-      'inputValue:',
-      inputValue,
-      'MAX_U64.toString():',
-      MAX_U64.toString(),
-    );
     if (isMax) {
       value = MAX_U64.toString();
     }
@@ -213,7 +188,6 @@ export class Decoder {
 
     const coinType = normalizeStructTag((events.RepayEvent.parsedJson as any).coin_type.name as string);
     const value = (events.RepayEvent.parsedJson as any).liquidity_amount as string;
-    console.log('Decoder.decodeRepay', coinType, value);
 
     return {
       txType: TransactionType.Other,
@@ -239,7 +213,6 @@ export class Decoder {
 
       result[coinType] = `${+(result[coinType] ?? '0') + +value}`;
     }
-    console.log('Decoder.decodeClaimRewards', result);
 
     return {
       txType: TransactionType.Other,

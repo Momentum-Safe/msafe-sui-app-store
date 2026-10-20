@@ -28,6 +28,18 @@ import { RepayIntention } from './intentions/repay';
 import { WithdrawIntention } from './intentions/withdraw';
 import { TransactionSubType } from './types';
 
+function readStoredObligationId(): string | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  try {
+    return window.localStorage.getItem('obligationId');
+  } catch {
+    // Private mode can throw on localStorage. The caller already falls back to the first obligation.
+    return null;
+  }
+}
+
 export type Utils = {
   suilendClient: SuilendClient;
   obligationOwnerCaps: ObligationOwnerCap<string>[];
@@ -47,15 +59,6 @@ export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Pr
     obligationOwnerCaps.map((ownerCap) =>
       SuilendClient.getObligation(ownerCap.obligationId, suilendClient.lendingMarket.$typeArgs, suiClient),
     ),
-  );
-
-  console.log(
-    'XXX getUtils - suilendClient:',
-    suilendClient,
-    'obligations:',
-    obligations,
-    'obligationOwnerCaps:',
-    obligationOwnerCaps,
   );
 
   return { suilendClient, obligationOwnerCaps, obligations };
@@ -94,8 +97,6 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
       sender: account.address,
       transactionBlock: transaction,
     });
-
-    console.log('SuilendAppHelper.deserialize - simResult:', simResult, 'utils:', this.utils, 'suiClient:', suiClient);
 
     const decoder = new Decoder(transaction, simResult);
     const result = decoder.decode();
@@ -145,7 +146,8 @@ export class SuilendAppHelper implements IAppHelperInternal<SuilendIntentionData
         throw new Error('not implemented');
     }
 
-    const obligationId = window.localStorage.getItem('obligationId');
+    // localStorage exists only in the browser. API rebuilds run in Node and use the first obligation.
+    const obligationId = readStoredObligationId();
     const obligation = this.utils.obligations?.find((o) => o.id === obligationId) ?? this.utils.obligations?.[0];
     const obligationOwnerCap = this.utils.obligationOwnerCaps?.find((o) => o.obligationId === obligation?.id);
 

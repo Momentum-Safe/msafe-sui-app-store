@@ -68,7 +68,6 @@ export class BucketHelper implements IAppHelperInternal<BucketIntentionData> {
     suiClient: SuiClient;
     account: WalletAccount;
   }): Promise<{ txType: TransactionType; txSubType: string; intentionData: BucketIntentionData }> {
-    console.log('Bucket helper deserialize input: ', input);
     const { transaction } = input;
     const decoder = new Decoder(transaction);
     const result = decoder.decode();

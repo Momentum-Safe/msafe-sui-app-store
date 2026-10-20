@@ -24,7 +24,6 @@ export class WithdrawAlphaIntention extends BaseIntention<WithdrawAlphaIntention
   }
 
   static fromData(data: WithdrawAlphaIntentionData) {
-    console.log('WithdrawAlphaIntention.fromData', data);
     return new WithdrawAlphaIntention(data);
   }
 }

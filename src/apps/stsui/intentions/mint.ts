@@ -30,7 +30,6 @@ export class MintIntention extends BaseIntention<MintIntentionData> {
   }
 
   static fromData(data: MintIntentionData) {
-    console.log('MintIntention.fromData', data);
     return new MintIntention(data);
   }
 }

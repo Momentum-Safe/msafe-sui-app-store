@@ -31,8 +31,6 @@ export class EmberHelper implements IAppHelperInternal<EmberIntentionData> {
     txSubType: string;
     intentionData: EmberIntentionData & { appContext?: any };
   }> {
-    console.log('Ember helper deserialize input: ', input);
-
     const { transaction, appContext } = input;
 
     const decoder = new Decoder(transaction, appContext);
@@ -59,7 +57,6 @@ export class EmberHelper implements IAppHelperInternal<EmberIntentionData> {
   }): Promise<Transaction> {
     const { suiClient, account, network } = input;
 
-    console.log(input.txSubType);
     let intention: EmberIntention;
     switch (input.txSubType) {
       case TransactionSubType.DepositAsset:

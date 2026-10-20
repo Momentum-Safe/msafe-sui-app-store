@@ -32,7 +32,6 @@ export class StSuiHelper implements IAppHelperInternal<StSuiIntentionData> {
       sender: transaction.getData().sender,
       transactionBlock: transaction,
     });
-    console.log('StSuiHelper Sim result - ', simResult);
 
     const decoder = new Decoder(transaction, simResult);
     const result = decoder.decode();
@@ -53,7 +52,6 @@ export class StSuiHelper implements IAppHelperInternal<StSuiIntentionData> {
     network: SuiNetworks;
   }): Promise<Transaction> {
     const { account } = input;
-    console.log('StSui build transaction type', input.txSubType);
 
     let intention: StSuiIntention;
     switch (input.txSubType) {

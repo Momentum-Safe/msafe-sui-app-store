@@ -56,7 +56,7 @@ export const getUserCoins = async ({
         cursor = null;
       }
     } catch (error) {
-      console.log(error);
+      console.warn(error);
       cursor = null;
     }
     iter++;

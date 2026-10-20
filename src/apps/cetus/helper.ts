@@ -73,7 +73,6 @@ export class CetusHelper implements IAppHelperInternalGrpc<CetusIntentionData> {
       appContext: CetusIntentionData;
     },
   ): Promise<{ txType: TransactionType; txSubType: string; intentionData: CetusIntentionData }> {
-    console.log('Cetus helper deserialize input: ', input);
     const { appContext } = input;
 
     return {

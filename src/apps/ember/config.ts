@@ -14,12 +14,17 @@ export const getEmberSDK = async (network: SuiNetworks, account: WalletAccount) 
 
   const client = new SuiClient({ url: RPC_URL });
 
-  const response = await fetch(VAULTS_API_URL);
+  const response = await fetch(VAULTS_API_URL, {
+    signal: AbortSignal.timeout(30_000),
+  });
   if (!response.ok) {
     throw new Error(`Failed to fetch vault data: ${response.status} ${response.statusText}`);
   }
 
-  const contracts = await response.json();
+  const contracts: unknown = await response.json();
+  if (!contracts || typeof contracts !== 'object') {
+    throw new Error('Vault data is missing');
+  }
 
   const emberSDK = new UserCalls('mainnet', client, contracts, undefined, account.address);
 

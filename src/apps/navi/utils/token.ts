@@ -20,6 +20,5 @@ export async function getTokenObjs(client: SuiClient, sender: string, coinType: 
     owner: sender,
     coinType,
   });
-  console.log('getTokenObjs', sender, result);
   return result;
 }

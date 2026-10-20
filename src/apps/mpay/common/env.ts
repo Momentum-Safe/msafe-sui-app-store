@@ -114,14 +114,11 @@ export function getConfig(env: Env, options?: EnvConfigOptions): EnvConfig {
   if (!ec) {
     throw new Error(`Env not supported: ${env}`);
   }
-  if (options && options.rpc) {
-    ec.rpc = options.rpc;
-  }
-  if (options && options.backend) {
-    ec.backend = options.backend;
-  }
-  if (options && options.contract) {
-    ec.contract = options.contract;
-  }
-  return ec;
+  // Copy so one client's override cannot rewrite the shared map for the next client.
+  return {
+    env: ec.env,
+    rpc: { ...(options?.rpc ?? ec.rpc) },
+    backend: { ...(options?.backend ?? ec.backend) },
+    contract: { ...(options?.contract ?? ec.contract) },
+  };
 }

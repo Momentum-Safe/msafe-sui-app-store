@@ -23,7 +23,6 @@ export class ClaimRewardIntention extends BaseIntention<ClaimRewardIntentionData
 
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { type } = this.data;
-    console.log('claim reward', type);
     const txb = await claimReward(input.suiClient, input.account.address);
     return txb;
   }

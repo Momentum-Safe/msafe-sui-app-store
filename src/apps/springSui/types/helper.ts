@@ -1,7 +1,5 @@
 import { TransactionType } from '@msafe/sui3-utils';
 import { WalletAccount } from '@mysten/wallet-standard';
-import { LiquidStakingInfo } from '@suilend/springsui-sdk/_generated/liquid_staking/liquid-staking/structs';
-import { WeightHook } from '@suilend/springsui-sdk/_generated/liquid_staking/weight/structs';
 import { LiquidStakingObjectInfo } from '@suilend/springsui-sdk/client';
 import { API_URL } from '@suilend/sui-fe';
 
@@ -32,24 +30,27 @@ export type Utils = {
 export const getUtils = async (suiClient: SuiClient, account: WalletAccount): Promise<Utils> => {
   const suilendUtils = await getSuilendUtils(suiClient, account);
 
-  const lstInfoRes = await fetch(`${API_URL}/springsui/lst-info`);
-  const lstInfoJson: Record<
-    string,
-    {
-      LIQUID_STAKING_INFO: LiquidStakingObjectInfo;
-      liquidStakingInfo: LiquidStakingInfo<string>;
-      weightHook: WeightHook<string>;
-      apy: string;
-    }
-  > = await lstInfoRes.json();
-  if ((lstInfoRes as any)?.statusCode === 500) {
-    throw new Error('Failed to fetch SpringSui LST data');
+  const lstInfoRes = await fetch(`${API_URL}/springsui/lst-info`, {
+    signal: AbortSignal.timeout(30_000),
+  });
+  // Fetch Response uses status, not Node's statusCode, so a 500 used to be parsed as LST data.
+  if (!lstInfoRes.ok) {
+    throw new Error(`Failed to fetch SpringSui LST data: ${lstInfoRes.status}`);
   }
 
-  const lstInfoMap = lstInfoJson;
+  const lstInfoJson: unknown = await lstInfoRes.json();
+  if (!lstInfoJson || typeof lstInfoJson !== 'object') {
+    throw new Error('SpringSui LST data is missing');
+  }
 
   const LIQUID_STAKING_INFO_MAP = Object.fromEntries(
-    Object.values(lstInfoMap).map((info) => [info.LIQUID_STAKING_INFO.type, info.LIQUID_STAKING_INFO]),
+    Object.values(lstInfoJson as Record<string, unknown>).map((info) => {
+      const stakingInfo = (info as { LIQUID_STAKING_INFO?: LiquidStakingObjectInfo } | null)?.LIQUID_STAKING_INFO;
+      if (!stakingInfo?.type) {
+        throw new Error('SpringSui LST info is missing LIQUID_STAKING_INFO');
+      }
+      return [stakingInfo.type, stakingInfo];
+    }),
   );
 
   return { ...suilendUtils, LIQUID_STAKING_INFO_MAP };

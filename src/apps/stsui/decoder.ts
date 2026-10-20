@@ -41,7 +41,6 @@ export class Decoder {
       }
 
       const eventData = liquidityChangeEvent.parsedJson as MintEventType;
-      console.log('Decoder event data - ', eventData);
 
       return this.decodeMint(eventData);
     }
@@ -53,7 +52,6 @@ export class Decoder {
       }
 
       const eventData = liquidityChangeEvent.parsedJson as RedeemEventType;
-      console.log('Decoder event data - ', eventData);
 
       return this.decodeRedeem(eventData);
     }
@@ -95,7 +93,6 @@ export class Decoder {
     const {
       event: { sui_amount_in: amount },
     } = eventData;
-    console.log('Decoder.decodeMint', amount);
 
     return {
       txType: TransactionType.Other,
@@ -110,7 +107,6 @@ export class Decoder {
     const {
       event: { lst_amount_in: amount },
     } = eventData;
-    console.log('Decoder.decodeRedeem', amount);
 
     return {
       txType: TransactionType.Other,

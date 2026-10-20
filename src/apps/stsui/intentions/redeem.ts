@@ -30,7 +30,6 @@ export class RedeemIntention extends BaseIntention<RedeemIntentionData> {
   }
 
   static fromData(data: RedeemIntentionData) {
-    console.log('RedeemIntention.fromData', data);
     return new RedeemIntention(data);
   }
 }

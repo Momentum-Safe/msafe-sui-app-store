@@ -18,7 +18,6 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
-    console.log('RepayIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
@@ -37,7 +36,6 @@ export class RepayIntention extends SuilendBaseIntention<RepayIntentionData> {
   }
 
   static fromData(data: RepayIntentionData) {
-    console.log('RepayIntention.fromData', data);
     return new RepayIntention(data);
   }
 }

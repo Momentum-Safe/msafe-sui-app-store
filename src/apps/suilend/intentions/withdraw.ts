@@ -18,7 +18,6 @@ export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionDat
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, obligationOwnerCap, obligation } = input;
-    console.log('WithdrawIntention.build', suiClient, account, suilendClient, obligationOwnerCap, obligation);
 
     if (!obligationOwnerCap || !obligation) {
       throw new Error('Obligation not found');
@@ -38,7 +37,6 @@ export class WithdrawIntention extends SuilendBaseIntention<WithdrawIntentionDat
   }
 
   static fromData(data: WithdrawIntentionData) {
-    console.log('WithdrawIntention.fromData', data);
     return new WithdrawIntention(data);
   }
 }

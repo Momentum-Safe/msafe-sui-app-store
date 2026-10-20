@@ -54,7 +54,6 @@ export class SpringSuiAppHelper implements IAppHelperInternal<SpringSuiIntention
       sender: account.address,
       transactionBlock: transaction,
     });
-    console.log('SpringSuiAppHelper.deserialize', simResult);
 
     const decoder = new Decoder(transaction, simResult);
     const result = decoder.decode();

@@ -19,7 +19,6 @@ export class CollectRewardsAndFee extends BaseIntention<BluefinIntentionData> {
 
   async build(input: { network: SuiNetworks; suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { account, network } = input;
-    console.log(this.data);
     return TxBuilder.collectRewardsAndFee(this.data as CollectRewardsAndFeeIntentionData, account, network);
   }
 

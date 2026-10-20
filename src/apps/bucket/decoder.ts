@@ -225,8 +225,6 @@ export class Decoder {
       buckToCoin = true;
     }
 
-    console.log('Decoder.decodePsm', coinType, amount, buckToCoin);
-
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.Psm,
@@ -464,7 +462,6 @@ export class Decoder {
     }
 
     const isStake = this.isSBUCKStakeTransaction();
-    console.log('Decoder.decodeSBUCKDeposit', coinType, amount, isStake);
 
     return {
       txType: TransactionType.Other,
@@ -516,7 +513,6 @@ export class Decoder {
       isStake,
       toBuck,
     } as SBUCKUnstakeIntentionData;
-    console.log('Decoder.decodeSBUCKUnstake', intentionData);
 
     return {
       txType: TransactionType.Other,
@@ -533,8 +529,6 @@ export class Decoder {
     if (inputAmount.$kind === 'Input') {
       amount = this.getPureInputU64(inputAmount.Input);
     }
-
-    console.log('Decoder.SBUCKWithdraw', amount);
 
     return {
       txType: TransactionType.Other,
@@ -558,8 +552,6 @@ export class Decoder {
       }
     }
 
-    console.log('Decoder.decodeSBUCKClaim', stakeProofs);
-
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.SBUCKClaim,
@@ -579,8 +571,6 @@ export class Decoder {
 
     const command = this.getMoveCallModuleCommand('tank_operations', 'deposit').MoveCall;
     const coinType = command.typeArguments[0];
-
-    console.log('Decoder.decodeTankDeposit', coinType, amount);
 
     return {
       txType: TransactionType.Other,
@@ -602,8 +592,6 @@ export class Decoder {
       amount = this.getPureInputU64(amountArg.Input);
     }
 
-    console.log('Decoder.decodeTankWithdraw', coinType, amount);
-
     return {
       txType: TransactionType.Other,
       type: TransactionSubType.TankWithdraw,
@@ -617,8 +605,6 @@ export class Decoder {
   private decodeTankClaim(): DecodeResult {
     const command = this.getMoveCallModuleCommand('tank_operations', 'claim').MoveCall;
     const coinType = command.typeArguments[0];
-
-    console.log('Decoder.decodeTankClaim', coinType);
 
     return {
       txType: TransactionType.Other,
@@ -646,7 +632,6 @@ export class Decoder {
       [coinType] = command.MoveCall.typeArguments;
       proofCount++;
     }
-    console.log('Decoder.decodeLockedClaim', coinType, proofCount);
 
     return {
       txType: TransactionType.Other,

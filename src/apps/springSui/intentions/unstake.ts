@@ -18,15 +18,6 @@ export class UnstakeIntention extends SpringSuiBaseIntention<UnstakeIntentionDat
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, LIQUID_STAKING_INFO_MAP, obligationOwnerCap, obligation } = input;
-    console.log(
-      'UnstakeIntention.build',
-      suiClient,
-      account,
-      suilendClient,
-      LIQUID_STAKING_INFO_MAP,
-      obligationOwnerCap,
-      obligation,
-    );
 
     const inLstClient = await LstClient.initialize(
       suiClient,
@@ -43,7 +34,6 @@ export class UnstakeIntention extends SpringSuiBaseIntention<UnstakeIntentionDat
   }
 
   static fromData(data: UnstakeIntentionData) {
-    console.log('UnstakeIntention.fromData', data);
     return new UnstakeIntention(data);
   }
 }

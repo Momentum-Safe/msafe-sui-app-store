@@ -23,7 +23,6 @@ export class ClaimSupplyIntention extends BaseIntention<ClaimSupplyIntentionData
 
   async build(input: { suiClient: SuiClient; account: WalletAccount }): Promise<Transaction> {
     const { type } = this.data;
-    console.log('claim reward and supply', type);
     const txb = await claimSupply(input.suiClient, input.account.address);
     return txb;
   }

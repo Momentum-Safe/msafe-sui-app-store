@@ -19,15 +19,6 @@ export class StakeAndDepositIntention extends SpringSuiBaseIntention<StakeAndDep
 
   async build(input: IntentionInput): Promise<Transaction> {
     const { suiClient, account, suilendClient, LIQUID_STAKING_INFO_MAP, obligationOwnerCap, obligation } = input;
-    console.log(
-      'StakeAndDepositIntention.build',
-      suiClient,
-      account,
-      suilendClient,
-      LIQUID_STAKING_INFO_MAP,
-      obligationOwnerCap,
-      obligation,
-    );
 
     const outLstClient = await LstClient.initialize(
       suiClient,
@@ -55,7 +46,6 @@ export class StakeAndDepositIntention extends SpringSuiBaseIntention<StakeAndDep
   }
 
   static fromData(data: StakeAndDepositIntentionData) {
-    console.log('StakeAndDepositIntention.fromData', data);
     return new StakeAndDepositIntention(data);
   }
 }

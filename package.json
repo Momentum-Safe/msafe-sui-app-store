@@ -33,9 +33,9 @@
     "type": "git",
     "url": "https://github.com/Momentum-Safe/msafe-sui-app-store.git"
   },
-  "homepage": "https://github.com/Momentum-Safe/msafe-sui-wallet",
+  "homepage": "https://github.com/Momentum-Safe/msafe-sui-app-store",
   "bugs": {
-    "url": "https://github.com/Momentum-Safe/msafe-sui-wallet/issues"
+    "url": "https://github.com/Momentum-Safe/msafe-sui-app-store/issues"
   },
   "keywords": [
     "MSafe",

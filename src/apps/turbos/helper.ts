@@ -79,7 +79,6 @@ export class TURBOSAppHelper implements IAppHelperInternalGrpc<TURBOSIntentionDa
     txSubType: string;
     intentionData: TURBOSIntentionData;
   }> {
-    console.log(input, 'input');
     const turbosSdk = new TurbosSdk(input.network.replace('sui:', '') as Network, input.suiGrpcClient);
     const contract = await turbosSdk.contract.getConfig();
     const { transaction, account } = input;
@@ -101,7 +100,6 @@ export class TURBOSAppHelper implements IAppHelperInternalGrpc<TURBOSIntentionDa
     network: SuiNetworks;
   }): Promise<Transaction> {
     const { suiGrpcClient, account, network } = input;
-    console.log(input.intentionData, 'intentionData');
 
     let intention: TURBOSIntention;
     switch (input.txSubType) {
