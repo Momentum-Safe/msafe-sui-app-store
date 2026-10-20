@@ -20,6 +20,53 @@ function createSuiClient(network: SuiNetworks, clientUrl: string) {
 const SUI_COIN_TYPE = '0x2::sui::SUI';
 const MIN_GAS_BALANCE = 100_000_000;
 
+type Settled<T> = { ok: true; value: T } | { ok: false; error: unknown };
+
+// The rebuild is already converted to a settled result. Touch it so a balance failure
+// does not drop the promise, without waiting for the rebuild to finish.
+function observeSettled(pending: Promise<unknown>): void {
+  pending.then(
+    (): undefined => undefined,
+    (): undefined => undefined,
+  );
+}
+
+/**
+ * Overlap the gas-balance read with the helper rebuild.
+ * The returned value is still the helper transaction.
+ * A balance failure is thrown as soon as the read finishes, and it wins over a rebuild failure.
+ */
+async function buildWithGasBalance<T>(
+  readBalance: () => Promise<{ balance: { balance: string } }>,
+  buildTx: () => Promise<T>,
+): Promise<T> {
+  const built: Promise<Settled<T>> = buildTx().then(
+    (value): Settled<T> => ({ ok: true, value }),
+    (error: unknown): Settled<T> => ({ ok: false, error }),
+  );
+
+  let balance: { balance: string };
+  try {
+    ({ balance } = await readBalance());
+  } catch (error) {
+    observeSettled(built);
+    throw error;
+  }
+
+  if (Number(balance.balance) < MIN_GAS_BALANCE) {
+    observeSettled(built);
+    throw new Error('Insufficient gas fee');
+  }
+
+  const result = await built;
+  if (result.ok === true) {
+    return result.value;
+  }
+  // strictNullChecks is off, so a negated discriminant does not narrow Settled<T>.
+  const failed = result as { ok: false; error: unknown };
+  throw failed.error;
+}
+
 async function toDeserializeTransaction(transactionBlock: unknown): Promise<Transaction> {
   if (isTransaction(transactionBlock)) {
     return transactionBlock as Transaction;
@@ -128,15 +175,14 @@ export class SuiSdkAdapter implements IAppHelper<any> {
     network: SuiNetworks;
   }): Promise<Transaction> {
     const client = createSuiClient(input.network, input.clientUrl);
-    const { balance } = await client.getBalance({
-      owner: input.account.address,
-      coinType: SUI_COIN_TYPE,
-    });
-    // Prefer total spendable (coin objects + address balance).
-    if (Number(balance.balance) < MIN_GAS_BALANCE) {
-      throw new Error('Insufficient gas fee');
-    }
-    const tx = await this.helper.build({ ...input, suiClient: client });
+    const tx = await buildWithGasBalance(
+      () =>
+        client.getBalance({
+          owner: input.account.address,
+          coinType: SUI_COIN_TYPE,
+        }),
+      () => this.helper.build({ ...input, suiClient: client }),
+    );
     tx.setSender(input.account.address);
     // Do not tx.build() here. Early build triggers Mysten/node doGasSelection and can
     // bake gasData.budget="0" + payment=[] for Address Balance txs. Callers (sui3-sdk
@@ -172,15 +218,14 @@ export class SuiGrpcSdkAdapter implements IAppHelper<any> {
     network: SuiNetworks;
   }): Promise<Transaction> {
     const suiGrpcClient = getSuiGrpcClient(input.network, input.clientUrl);
-    const { balance } = await suiGrpcClient.core.getBalance({
-      owner: input.account.address,
-      coinType: SUI_COIN_TYPE,
-    });
-    // Prefer total spendable (coin objects + address balance).
-    if (Number(balance.balance) < MIN_GAS_BALANCE) {
-      throw new Error('Insufficient gas fee');
-    }
-    const tx = await this.helper.build({ ...input, suiGrpcClient });
+    const tx = await buildWithGasBalance(
+      () =>
+        suiGrpcClient.core.getBalance({
+          owner: input.account.address,
+          coinType: SUI_COIN_TYPE,
+        }),
+      () => this.helper.build({ ...input, suiGrpcClient }),
+    );
     tx.setSender(input.account.address);
     // Do not tx.build() here. Early build triggers Mysten/node doGasSelection and can
     // bake gasData.budget="0" + payment=[] for Address Balance txs. Callers (sui3-sdk

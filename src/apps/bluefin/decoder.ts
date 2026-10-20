@@ -1,4 +1,3 @@
-import { asIntN } from '@cetusprotocol/common-sdk';
 import { TransactionType } from '@msafe/sui3-utils';
 import { fromBase64 } from '@mysten/bcs';
 import { bcs } from '@mysten/sui/bcs';
@@ -20,6 +19,11 @@ import {
   RewardTokens,
   TransactionSubType,
 } from './types';
+
+// Signed integer with the same width default as @cetusprotocol/common-sdk asIntN.
+function asIntN(value: bigint, bits = 32): number {
+  return Number(BigInt.asIntN(bits, BigInt(value)));
+}
 
 export class Decoder {
   constructor(
