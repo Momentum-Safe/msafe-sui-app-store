@@ -6,6 +6,7 @@ import BN from 'bn.js';
 import type { MsafeSuiGrpcClient } from '@/lib/suiGrpcClient';
 
 import { getExactCoinByAmount, normalizeSuiCoinType } from './common';
+import { withoutMvr } from './msafeTransaction';
 import { claimV3Rewards } from './reward';
 import { V3PositionType, NormalizedPool } from '../types';
 // eslint-disable-next-line import/no-cycle
@@ -229,12 +230,14 @@ export function getNewPositionObject({
     poolModel.tickSpacing!,
   );
 
-  return mmt.Position.openPosition({
-    txb: tx,
-    pool: poolModel,
-    lowerTickSqrtPrice: lowerTickSqrtPrice.toString(),
-    upperTickSqrtPrice: upperTickSqrtPrice.toString(),
-  });
+  return mmt.Position.openPosition(
+    withoutMvr({
+      txb: tx,
+      pool: poolModel,
+      lowerTickSqrtPrice: lowerTickSqrtPrice.toString(),
+      upperTickSqrtPrice: upperTickSqrtPrice.toString(),
+    }),
+  );
 }
 
 const getResultAmountUsingSlippage = (amount: bigint, slippagePercentage: number) => {
@@ -349,17 +352,18 @@ export const executeClmmDeposit = async (
   const minimalAmountA = getMinimalAmountUsingSlippage(amountA, pool.tokenX.decimals, slippage);
   const minimalAmountB = getMinimalAmountUsingSlippage(amountB, pool.tokenY.decimals, slippage);
 
-  await mmt.Pool.addLiquidity({
-    txb: tx,
-    pool: poolModel,
-    position: position!,
-    coinX: inputCoinX!,
-    coinY: inputCoinY!,
-    minAmountX: minimalAmountA,
-    minAmountY: minimalAmountB,
-    transferToAddress: address,
-    useMvr: true,
-  });
+  await mmt.Pool.addLiquidity(
+    withoutMvr({
+      txb: tx,
+      pool: poolModel,
+      position: position!,
+      coinX: inputCoinX!,
+      coinY: inputCoinY!,
+      minAmountX: minimalAmountA,
+      minAmountY: minimalAmountB,
+      transferToAddress: address,
+    }),
+  );
   tx.transferObjects([position!], tx.pure.address(address));
 };
 
@@ -412,17 +416,18 @@ export const executeSingleSidedClmmDeposit = async (
       isTokenX,
     });
 
-    await mmt.Pool.zapInLiquidity({
-      txb: tx,
-      pool: poolModel,
-      position: position!,
-      inputCoin,
-      isXtoY: isTokenX,
-      limitSqrtPrice,
-      slippagePercentage: addLiquiditySlippage,
-      transferToAddress: address,
-      useMvr: true,
-    });
+    await mmt.Pool.zapInLiquidity(
+      withoutMvr({
+        txb: tx,
+        pool: poolModel,
+        position: position!,
+        inputCoin,
+        isXtoY: isTokenX,
+        limitSqrtPrice,
+        slippagePercentage: addLiquiditySlippage,
+        transferToAddress: address,
+      }),
+    );
 
     tx.transferObjects([position!], tx.pure.address(address));
   } catch (error) {
@@ -470,16 +475,18 @@ export const executeAddLiquidityToExistingPosition = async (
   const minimalXAmount = getMinimalAmountUsingSlippage(amountA, pool.tokenX.decimals, slippage);
   const minimalYAmount = getMinimalAmountUsingSlippage(amountB, pool.tokenY.decimals, slippage);
 
-  await mmt.Pool.addLiquidity({
-    txb: tx,
-    pool: poolModel,
-    position: positionObjectId,
-    coinX: inputCoinX,
-    coinY: inputCoinY,
-    minAmountX: minimalXAmount,
-    minAmountY: minimalYAmount,
-    transferToAddress: address,
-  });
+  await mmt.Pool.addLiquidity(
+    withoutMvr({
+      txb: tx,
+      pool: poolModel,
+      position: positionObjectId,
+      coinX: inputCoinX,
+      coinY: inputCoinY,
+      minAmountX: minimalXAmount,
+      minAmountY: minimalYAmount,
+      transferToAddress: address,
+    }),
+  );
 };
 
 export const executeAddSingleSidedLiquidityToExistingPosition = async (
@@ -521,16 +528,18 @@ export const executeAddSingleSidedLiquidityToExistingPosition = async (
       isTokenX,
     });
 
-    await mmt.Pool.zapInLiquidity({
-      txb: tx,
-      pool: poolModel,
-      position: positionObjectId,
-      inputCoin,
-      isXtoY: isTokenX,
-      limitSqrtPrice,
-      slippagePercentage: addLiquiditySlippage,
-      transferToAddress: address,
-    });
+    await mmt.Pool.zapInLiquidity(
+      withoutMvr({
+        txb: tx,
+        pool: poolModel,
+        position: positionObjectId,
+        inputCoin,
+        isXtoY: isTokenX,
+        limitSqrtPrice,
+        slippagePercentage: addLiquiditySlippage,
+        transferToAddress: address,
+      }),
+    );
   } catch (error) {
     console.error(error);
     throw error;
@@ -560,23 +569,27 @@ export const removeClmmLiquidity = async (
     isStable: pool.isStable,
   };
 
-  await sdk.Pool.removeLiquidity({
-    txb: tx,
-    pool: poolModel,
-    positionId: position.objectId,
-    liquidity: removeLiqAmount,
-    minAmountX: BigInt(0),
-    minAmountY: BigInt(0),
-    transferToAddress: address,
-  });
+  await sdk.Pool.removeLiquidity(
+    withoutMvr({
+      txb: tx,
+      pool: poolModel,
+      positionId: position.objectId,
+      liquidity: removeLiqAmount,
+      minAmountX: BigInt(0),
+      minAmountY: BigInt(0),
+      transferToAddress: address,
+    }),
+  );
 
   claimV3Rewards(sdk, address, position, pool, tx);
 
   if (withdrawPercentage === 100) {
-    sdk.Position.closePosition({
-      txb: tx,
-      positionId: position.objectId,
-    });
+    sdk.Position.closePosition(
+      withoutMvr({
+        txb: tx,
+        positionId: position.objectId,
+      }),
+    );
   }
 };
 
@@ -613,14 +626,16 @@ export const removeLiquiditySingleSided = async ({
     isStable: pool.isStable,
   };
 
-  const removeResult = sdk.Pool.removeLiquidity({
-    txb,
-    pool: poolModel,
-    positionId: position.objectId,
-    liquidity: removeLiqAmount,
-    minAmountX: BigInt(0),
-    minAmountY: BigInt(0),
-  });
+  const removeResult = sdk.Pool.removeLiquidity(
+    withoutMvr({
+      txb,
+      pool: poolModel,
+      positionId: position.objectId,
+      liquidity: removeLiqAmount,
+      minAmountX: BigInt(0),
+      minAmountY: BigInt(0),
+    }),
+  );
   const removeLpCoinA = removeResult?.removeLpCoinA;
   const removeLpCoinB = removeResult?.removeLpCoinB;
 
@@ -648,22 +663,26 @@ export const removeLiquiditySingleSided = async ({
 
   txb.transferObjects([isSwapXToY ? removeLpCoinB : removeLpCoinA], address);
 
-  sdk.Pool.swap({
-    txb,
-    transferToAddress: address,
-    pool: poolModel,
-    limitSqrtPrice,
-    amount,
-    inputCoin,
-    isXtoY: isSwapXToY,
-  });
+  sdk.Pool.swap(
+    withoutMvr({
+      txb,
+      transferToAddress: address,
+      pool: poolModel,
+      limitSqrtPrice,
+      amount,
+      inputCoin,
+      isXtoY: isSwapXToY,
+    }),
+  );
 
   claimV3Rewards(sdk, address, position, pool, txb);
 
   if (withdrawPercentage === 100) {
-    sdk.Position.closePosition({
-      txb,
-      positionId: position.objectId,
-    });
+    sdk.Position.closePosition(
+      withoutMvr({
+        txb,
+        positionId: position.objectId,
+      }),
+    );
   }
 };

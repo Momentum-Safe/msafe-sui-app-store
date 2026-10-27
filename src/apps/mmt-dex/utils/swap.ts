@@ -4,6 +4,7 @@ import { Transaction } from '@mysten/sui/transactions';
 import { normalizeSuiCoinType } from './common';
 // eslint-disable-next-line import/no-cycle
 import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
+import { withoutMvr } from './msafeTransaction';
 import { NormalizedPool, SwapIntentionParams, Tokens } from '../types';
 
 export type NormalizedRewarder = {
@@ -245,20 +246,22 @@ export const performMmtSwap = async (
       currentSqrtPrice,
     });
 
-    const result = mmtSdk.Pool.swap({
-      txb: tx,
-      pool: {
-        poolId: v3PoolId,
-        tokenXType: poolTokenX.coinType,
-        tokenYType: poolTokenY.coinType,
-        tickSpacing: routePool.tickSpacing,
-        isStable,
-      },
-      amount: inputAmount,
-      inputCoin,
-      isXtoY,
-      limitSqrtPrice,
-    });
+    const result = mmtSdk.Pool.swap(
+      withoutMvr({
+        txb: tx,
+        pool: {
+          poolId: v3PoolId,
+          tokenXType: poolTokenX.coinType,
+          tokenYType: poolTokenY.coinType,
+          tickSpacing: routePool.tickSpacing,
+          isStable,
+        },
+        amount: inputAmount,
+        inputCoin,
+        isXtoY,
+        limitSqrtPrice,
+      }),
+    );
 
     if (!result?.outputCoin) {
       throw new Error('Swap Failed: empty swap result');

@@ -1,6 +1,7 @@
 import { MmtSDK } from '@mmt-finance/clmm-sui-sdk';
 import { Transaction } from '@mysten/sui/transactions';
 
+import { withoutMvr } from './msafeTransaction';
 import { V3PositionType, ClaimRewardsAsParams, NormalizedPool } from '../types';
 
 export const claimV3Rewards = (
@@ -19,27 +20,31 @@ export const claimV3Rewards = (
   };
 
   if (pool?.rewarders && pool?.rewarders.length > 0) {
-    mmt.Pool.collectAllRewards({
-      txb: tx,
-      pool: poolModel,
-      rewarders: pool.rewarders.map((rewarder) => ({
-        coin_type: rewarder.coinType,
-        flow_rate: rewarder.flowRate,
-        reward_amount: rewarder.rewardAmount,
-        rewards_allocated: rewarder.rewardsAllocated,
-        hasEnded: rewarder.hasEnded,
-      })),
-      positionId: position.objectId,
-      transferToAddress: address,
-    });
+    mmt.Pool.collectAllRewards(
+      withoutMvr({
+        txb: tx,
+        pool: poolModel,
+        rewarders: pool.rewarders.map((rewarder) => ({
+          coin_type: rewarder.coinType,
+          flow_rate: rewarder.flowRate,
+          reward_amount: rewarder.rewardAmount,
+          rewards_allocated: rewarder.rewardsAllocated,
+          hasEnded: rewarder.hasEnded,
+        })),
+        positionId: position.objectId,
+        transferToAddress: address,
+      }),
+    );
   }
 
-  mmt.Pool.collectFee({
-    txb: tx,
-    pool: poolModel,
-    positionId: position.objectId,
-    transferToAddress: address,
-  });
+  mmt.Pool.collectFee(
+    withoutMvr({
+      txb: tx,
+      pool: poolModel,
+      positionId: position.objectId,
+      transferToAddress: address,
+    }),
+  );
 };
 
 export async function claimRewardsAsTargetCoin({
@@ -72,27 +77,31 @@ export async function claimRewardsAsTargetCoin({
       slippage,
       toAddress: address,
     });
-    await sdk.Pool.claimRewardsAs({
+    await sdk.Pool.claimRewardsAs(
+      withoutMvr({
+        txb,
+        pool: poolModel,
+        positionId,
+        rewarderCoinTypes,
+        targetCoinType,
+        slippage,
+        toAddress: address,
+        pools,
+      }),
+    );
+  }
+
+  await sdk.Pool.claimFeeAs(
+    withoutMvr({
       txb,
       pool: poolModel,
       positionId,
-      rewarderCoinTypes,
       targetCoinType,
       slippage,
       toAddress: address,
       pools,
-    });
-  }
-
-  await sdk.Pool.claimFeeAs({
-    txb,
-    pool: poolModel,
-    positionId,
-    targetCoinType,
-    slippage,
-    toAddress: address,
-    pools,
-  });
+    }),
+  );
 
   return txb;
 }

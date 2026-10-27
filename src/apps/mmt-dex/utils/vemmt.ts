@@ -9,6 +9,7 @@ import {
 } from '@mysten/sui/transactions';
 
 import { getCoinObject, getLimitSqrtPriceUsingSlippage } from './liquidity';
+import { withoutMvr } from './msafeTransaction';
 import { ClaimRoutes, MMT_TOKEN_TYPE, NormalizedPool, Tokens, VeMMTData } from '../types';
 import { normalizeSuiCoinType } from './common';
 
@@ -260,14 +261,16 @@ export const claimVeMMTRewardsAsTargetCoin = async (
 
     // Align with mmt-dex-v3 rewards.ts claim route swaps.
     const { outputCoin, leftoverCoin } =
-      mmtSdk.Pool.swap({
-        txb: tx,
-        pool: poolModel,
-        amount: currentAmount,
-        inputCoin: currentCoin,
-        isXtoY,
-        limitSqrtPrice,
-      }) || {};
+      mmtSdk.Pool.swap(
+        withoutMvr({
+          txb: tx,
+          pool: poolModel,
+          amount: currentAmount,
+          inputCoin: currentCoin,
+          isXtoY,
+          limitSqrtPrice,
+        }),
+      ) || {};
 
     if (!outputCoin || !leftoverCoin) {
       throw new Error(`Swap Failed: empty swap result for pool ${poolId}`);

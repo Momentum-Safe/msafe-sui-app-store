@@ -40,6 +40,7 @@ import {
   ManageLiquidityIntentionData,
   ClaimRewardsAsIntentionData,
 } from './types';
+import { assertMsafeTransactionSnapshot } from './utils/msafeTransaction';
 
 export type MMTDEXIntention =
   | AddLiquidityIntention
@@ -146,10 +147,12 @@ export class MMTDEXAppHelper implements IAppHelperInternalGrpc<MMTDEXIntentionDa
       default:
         throw new Error(`not implemented ${input.txSubType}`);
     }
-    return intention.build({
+    const tx = await intention.build({
       suiGrpcClient: input.suiGrpcClient,
       account: input.account,
       network: input.network,
     });
+    assertMsafeTransactionSnapshot(tx);
+    return tx;
   }
 }
